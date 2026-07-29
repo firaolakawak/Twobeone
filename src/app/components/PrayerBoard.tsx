@@ -199,29 +199,24 @@ export function PrayerBoard({
     setEditingPrayer(prayer);
     setTitle(prayer.title);
     setDescription(prayer.description);
-    setCategory(prayer.category);
+    setCategory(prayer.category || "General");
     setReminderDate(prayer.reminderDate || "");
-    setIsSharedWithCommunity(prayer.isSharedWithCommunity);
+    setIsSharedWithCommunity(Boolean(prayer.isSharedWithCommunity));
     setIsOpen(true);
   };
 
-  const handleTogglePrayed = async (
-    prayer: Prayer,
-    isPrayer: "you" | "partner",
-  ) => {
+  const handleTogglePrayed = async (prayer: Prayer) => {
     // Can't modify community prayers from others
     if (prayer.isCommunity) return;
 
     try {
-      if (isPrayer === "you") {
-        await onUpdatePrayer(prayer.id, {
-          youPrayed: !prayer.youPrayed,
-        });
-      } else {
-        await onUpdatePrayer(prayer.id, {
-          partnerPrayed: !prayer.partnerPrayed,
-        });
-      }
+      // The stored fields are relative to the prayer author. Map them to the
+      // current viewer so the "You" button always updates the person tapping
+      // it, including on a partner-authored prayer.
+      const prayedField = prayer.isPartner ? "partnerPrayed" : "youPrayed";
+      await onUpdatePrayer(prayer.id, {
+        [prayedField]: !prayer[prayedField],
+      });
     } catch (error) {
       toast.error("Failed to update prayer");
     }
@@ -403,6 +398,12 @@ export function PrayerBoard({
             const prayerCount =
               (prayer.youPrayed ? 1 : 0) +
               (prayer.partnerPrayed ? 1 : 0);
+            const youPrayed = prayer.isPartner
+              ? prayer.partnerPrayed
+              : prayer.youPrayed;
+            const partnerPrayed = prayer.isPartner
+              ? prayer.youPrayed
+              : prayer.partnerPrayed;
 
             return (
               <Card
@@ -454,12 +455,12 @@ export function PrayerBoard({
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() =>
-                            handleTogglePrayed(prayer, "you")
+                            handleTogglePrayed(prayer)
                           }
                           disabled={!canEdit}
                           className="flex flex-col items-center gap-1 disabled:opacity-50"
                         >
-                          {prayer.youPrayed ? (
+                          {youPrayed ? (
                             <div className="w-6 h-6 rounded-full bg-primary-600 flex items-center justify-center">
                               <Check className="w-4 h-4 text-white" />
                             </div>
@@ -472,16 +473,10 @@ export function PrayerBoard({
                         </button>
 
                         <button
-                          onClick={() =>
-                            handleTogglePrayed(
-                              prayer,
-                              "partner",
-                            )
-                          }
-                          disabled={!canEdit}
+                          disabled
                           className="flex flex-col items-center gap-1 disabled:opacity-50"
                         >
-                          {prayer.partnerPrayed ? (
+                          {partnerPrayed ? (
                             <div className="w-6 h-6 rounded-full bg-primary-600 flex items-center justify-center">
                               <Check className="w-4 h-4 text-white" />
                             </div>

@@ -1567,7 +1567,8 @@ app.post('/make-server-6d579fee/prayer', async (c) => {
       return c.json({ error: 'Unauthorized' }, 401);
     }
 
-    const { title, description, isShared } = await c.req.json();
+    const body = await c.req.json();
+    const title = typeof body.title === 'string' ? body.title.trim() : '';
 
     if (!title) {
       return c.json({ error: 'Title is required' }, 400);
@@ -1578,16 +1579,24 @@ app.post('/make-server-6d579fee/prayer', async (c) => {
       id: prayerId,
       userId,
       title,
-      description: description || '',
-      isShared: isShared || false,
+      description: typeof body.description === 'string' ? body.description : '',
+      // Keep the original sharing field for older clients while storing the
+      // fields sent by the current PrayerBoard as well.
+      isShared: typeof body.isShared === 'boolean' ? body.isShared : false,
+      category: typeof body.category === 'string' && body.category ? body.category : 'General',
+      reminderDate: typeof body.reminderDate === 'string' ? body.reminderDate : null,
+      isSharedWithCommunity: Boolean(body.isSharedWithCommunity),
       isAnswered: false,
+      answeredAt: null,
+      youPrayed: typeof body.youPrayed === 'boolean' ? body.youPrayed : false,
+      partnerPrayed: typeof body.partnerPrayed === 'boolean' ? body.partnerPrayed : false,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
 
     await kv.set(`prayer:${userId}:${prayerId}`, prayer);
     touchActivity(userId);
-    logAudit('prayer.created', userId, { prayerId, title, isShared: isShared || false });
+    logAudit('prayer.created', userId, { prayerId, title, isShared: prayer.isShared });
 
     return c.json({ success: true, prayer });
   } catch (error: any) {
@@ -1604,11 +1613,54 @@ app.put('/make-server-6d579fee/prayer/:id', async (c) => {
     }
 
     const prayerId = c.req.param('id');
-    const updates = await c.req.json();
+    const requestedUpdates = await c.req.json();
 
-    const prayer = await kv.get(`prayer:${userId}:${prayerId}`);
+    // A prayer can belong to either member of a linked couple. The board
+    // deliberately allows either partner to update a shared prayer, so look
+    // up the partner's record only after confirming the couple connection.
+    let prayer = await kv.get(`prayer:${userId}:${prayerId}`);
+    let prayerKey = `prayer:${userId}:${prayerId}`;
+    let ownerId = userId;
+
+    if (!prayer) {
+      const profile: any = await kv.get(`user:${userId}`);
+      const partnerId = profile?.partnerId;
+      if (partnerId) {
+        const partnerProfile: any = await kv.get(`user:${partnerId}`);
+        if (partnerProfile?.partnerId === userId) {
+          const partnerPrayer = await kv.get(`prayer:${partnerId}:${prayerId}`);
+          if (partnerPrayer) {
+            prayer = partnerPrayer;
+            prayerKey = `prayer:${partnerId}:${prayerId}`;
+            ownerId = partnerId;
+          }
+        }
+      }
+    }
+
     if (!prayer) {
       return c.json({ error: 'Prayer not found' }, 404);
+    }
+
+    // Whitelist editable fields. This prevents a client from changing the
+    // prayer ID or ownership when the record belongs to the other partner.
+    const updates: Record<string, unknown> = {};
+    if (requestedUpdates.title !== undefined) {
+      if (typeof requestedUpdates.title !== 'string' || !requestedUpdates.title.trim()) {
+        return c.json({ error: 'Title is required' }, 400);
+      }
+      updates.title = requestedUpdates.title.trim();
+    }
+    if (requestedUpdates.description !== undefined && typeof requestedUpdates.description === 'string') updates.description = requestedUpdates.description;
+    if (requestedUpdates.category !== undefined && typeof requestedUpdates.category === 'string') updates.category = requestedUpdates.category || 'General';
+    if (requestedUpdates.reminderDate !== undefined && (typeof requestedUpdates.reminderDate === 'string' || requestedUpdates.reminderDate === null)) updates.reminderDate = requestedUpdates.reminderDate;
+    if (typeof requestedUpdates.isShared === 'boolean') updates.isShared = requestedUpdates.isShared;
+    if (typeof requestedUpdates.isSharedWithCommunity === 'boolean') updates.isSharedWithCommunity = requestedUpdates.isSharedWithCommunity;
+    if (typeof requestedUpdates.youPrayed === 'boolean') updates.youPrayed = requestedUpdates.youPrayed;
+    if (typeof requestedUpdates.partnerPrayed === 'boolean') updates.partnerPrayed = requestedUpdates.partnerPrayed;
+    if (typeof requestedUpdates.isAnswered === 'boolean') {
+      updates.isAnswered = requestedUpdates.isAnswered;
+      updates.answeredAt = requestedUpdates.isAnswered ? new Date().toISOString() : null;
     }
 
     const updatedPrayer = {
@@ -1617,12 +1669,13 @@ app.put('/make-server-6d579fee/prayer/:id', async (c) => {
       updatedAt: new Date().toISOString()
     };
 
-    await kv.set(`prayer:${userId}:${prayerId}`, updatedPrayer);
-    if (updates.isAnswered && !prayer.isAnswered) {
+    await kv.set(prayerKey, updatedPrayer);
+    touchActivity(userId);
+    if (updates.isAnswered === true && !(prayer as any).isAnswered) {
       logAudit('prayer.answered', userId, { prayerId, title: prayer.title });
     }
 
-    return c.json({ success: true, prayer: updatedPrayer });
+    return c.json({ success: true, prayer: updatedPrayer, ownerId });
   } catch (error: any) {
     console.error('Prayer update error:', error);
     return c.json({ error: error.message }, 500);
@@ -1637,7 +1690,32 @@ app.delete('/make-server-6d579fee/prayer/:id', async (c) => {
     }
 
     const prayerId = c.req.param('id');
-    await kv.del(`prayer:${userId}:${prayerId}`);
+    let prayerKey = `prayer:${userId}:${prayerId}`;
+    let prayer = await kv.get(prayerKey);
+
+    // Match the update route: a linked partner may manage a shared prayer.
+    if (!prayer) {
+      const profile: any = await kv.get(`user:${userId}`);
+      const partnerId = profile?.partnerId;
+      if (partnerId) {
+        const partnerProfile: any = await kv.get(`user:${partnerId}`);
+        if (partnerProfile?.partnerId === userId) {
+          const partnerKey = `prayer:${partnerId}:${prayerId}`;
+          const partnerPrayer = await kv.get(partnerKey);
+          if (partnerPrayer) {
+            prayer = partnerPrayer;
+            prayerKey = partnerKey;
+          }
+        }
+      }
+    }
+
+    if (!prayer) {
+      return c.json({ error: 'Prayer not found' }, 404);
+    }
+
+    await kv.del(prayerKey);
+    touchActivity(userId);
 
     return c.json({ success: true });
   } catch (error: any) {
