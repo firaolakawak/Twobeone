@@ -289,10 +289,6 @@ export default function App() {
     }
   }, []);
 
-  const loadUserDataRef = useRef<
-    ((token?: string) => Promise<void>) | null
-  >(null);
-
   useEffect(() => {
     const supabase = createClient();
 
@@ -312,7 +308,6 @@ export default function App() {
           setUser(session.user);
           setAccessToken(session.access_token);
           setShowLanding(false);
-          await loadUserDataRef.current?.(session.access_token);
         } else {
           console.log("[App] No existing session");
         }
@@ -364,11 +359,9 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  useEffect(() => {
-    loadUserDataRef.current = loadUserData;
-  });
-
   const hasLoadedRef = useRef(false);
+  const loadUserDataInFlightRef = useRef(false);
+  const hasCheckedAdminRef = useRef(false);
   useEffect(() => {
     if (user && accessToken && !hasLoadedRef.current) {
       hasLoadedRef.current = true;
@@ -376,6 +369,7 @@ export default function App() {
     }
     if (!user) {
       hasLoadedRef.current = false;
+      hasCheckedAdminRef.current = false;
     }
   }, [user, accessToken]);
 
@@ -406,6 +400,7 @@ export default function App() {
 
   useEffect(() => {
     if (!user || !accessToken) return;
+    let pollInFlight = false;
 
     const checkForNewNotifications = async () => {
       try {
@@ -555,80 +550,120 @@ export default function App() {
       }
     };
 
-    checkForNewNotifications();
-    checkForProfileUpdates();
+    const poll = async () => {
+      if (pollInFlight || document.visibilityState === "hidden")
+        return;
+      pollInFlight = true;
+      try {
+        await Promise.all([
+          checkForNewNotifications(),
+          checkForProfileUpdates(),
+        ]);
+      } finally {
+        pollInFlight = false;
+      }
+    };
 
-    const interval = setInterval(() => {
-      checkForNewNotifications();
-      checkForProfileUpdates();
-    }, 15000);
-    return () => clearInterval(interval);
+    // Initial data loading already fetches the profile. Start background
+    // polling later so it cannot duplicate or compete with startup requests.
+    const interval = window.setInterval(poll, 30000);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") void poll();
+    };
+    document.addEventListener(
+      "visibilitychange",
+      handleVisibilityChange,
+    );
+
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibilityChange,
+      );
+    };
   }, [user, accessToken, selectedScreen]);
 
   const loadUserData = async (token?: string) => {
     const authToken = token || accessToken;
 
-    if (!authToken || !user) return;
+    if (
+      !authToken ||
+      !user ||
+      loadUserDataInFlightRef.current
+    )
+      return;
 
+    loadUserDataInFlightRef.current = true;
     setIsLoading(true);
     setLoadError(null);
 
     try {
-      const profileData = await api.profile.get();
-      setProfile(profileData.profile || null);
-      setPartner(profileData.partner || null);
-
-      adminApi
-        .checkPrivileges()
-        .then((d) => {
-          const admin = d.isAdmin || false;
-          setIsAdmin(admin);
-          if (admin) setSelectedScreen("admin");
-        })
-        .catch(() => setIsAdmin(false));
-
-      const [
-        journalResult,
-        prayerResult,
-        milestonesResult,
-        responsesResult,
-        devotionalsResult,
-        streaksResult,
-      ] = await Promise.allSettled([
-        api.journal.list(),
-        api.prayer.list(),
-        api.milestones.list(),
-        api.questions.getResponses(),
-        api.devotionals.list(),
-        api.streaks.get(),
-      ]);
-
-      if (journalResult.status === "fulfilled")
-        setJournalEntries(journalResult.value.entries || []);
-      if (prayerResult.status === "fulfilled")
-        setPrayers(prayerResult.value.prayers || []);
-      if (milestonesResult.status === "fulfilled")
-        setMilestones(milestonesResult.value.milestones || []);
-
-      if (responsesResult.status === "fulfilled") {
-        setResponses({
-          user: responsesResult.value.userResponses || [],
-          partner: responsesResult.value.partnerResponses || [],
-        });
+      if (!hasCheckedAdminRef.current) {
+        hasCheckedAdminRef.current = true;
+        adminApi
+          .checkPrivileges()
+          .then((d) => {
+            const admin = d.isAdmin || false;
+            setIsAdmin(admin);
+            if (admin) setSelectedScreen("admin");
+          })
+          .catch(() => {
+            hasCheckedAdminRef.current = false;
+            setIsAdmin(false);
+          });
       }
 
-      if (devotionalsResult.status === "fulfilled")
-        setDevotionals(devotionalsResult.value.devotions || []);
-
-      if (streaksResult.status === "fulfilled") {
-        const devotionalStreakData =
-          streaksResult.value.streaks?.find(
-            (s: any) => s.streak_type === "devotional",
+      let profileError: unknown = null;
+      const dataRequests = [
+        api.profile
+          .get()
+          .then((data) => {
+            setProfile(data.profile || null);
+            setPartner(data.partner || null);
+          })
+          .catch((error) => {
+            profileError = error;
+          }),
+        api.journal
+          .list()
+          .then((data) =>
+            setJournalEntries(data.entries || []),
+          ),
+        api.prayer
+          .list()
+          .then((data) => setPrayers(data.prayers || [])),
+        api.milestones
+          .list()
+          .then((data) =>
+            setMilestones(data.milestones || []),
+          ),
+        api.questions.getResponses().then((data) =>
+          setResponses({
+            user: data.userResponses || [],
+            partner: data.partnerResponses || [],
+          }),
+        ),
+        api.devotionals
+          .list()
+          .then((data) =>
+            setDevotionals(data.devotions || []),
+          ),
+        api.streaks.get().then((data) => {
+          const devotionalStreakData = data.streaks?.find(
+            (streak: any) =>
+              streak.streak_type === "devotional",
           );
-        setDevotionalStreak(
-          devotionalStreakData?.current_streak || 0,
-        );
-      }
+          setDevotionalStreak(
+            devotionalStreakData?.current_streak || 0,
+          );
+        }),
+      ];
+
+      // Each request updates its section as soon as it resolves; waiting here
+      // only controls the in-flight guard and final error state.
+      await Promise.allSettled(dataRequests);
+      if (profileError) throw profileError;
     } catch (error: any) {
       const errorMsg: string =
         error?.message || "Failed to load user data";
@@ -645,6 +680,7 @@ export default function App() {
         setLoadError(errorMsg);
       }
     } finally {
+      loadUserDataInFlightRef.current = false;
       setIsLoading(false);
     }
   };
@@ -766,93 +802,54 @@ export default function App() {
 
   const handleAddPrayer = useCallback(
     async (prayer: any) => {
-      try {
-        const response = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/prayer`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-            body: JSON.stringify(prayer),
-          },
-        );
-        if (!response.ok)
-          throw new Error("Failed to add prayer");
-        await loadUserData();
-      } catch (error) {
-        throw error;
-      }
+      const result = await api.prayer.create(prayer);
+      const createdPrayer = {
+        ...result.prayer,
+        ownerId:
+          result.prayer.ownerId || result.prayer.userId || user?.id,
+        isPartner: false,
+      };
+      setPrayers((previous) => [
+        createdPrayer,
+        ...previous.filter(
+          (existing) => existing.id !== createdPrayer.id,
+        ),
+      ]);
     },
-    [accessToken, profile],
+    [user?.id],
   );
 
   const handleUpdatePrayer = useCallback(
     async (id: string, updates: any) => {
-      try {
-        const response = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/prayer/${id}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-            body: JSON.stringify(updates),
-          },
-        );
-        if (!response.ok) {
-          const result = await response.json().catch(() => null);
-          throw new Error(result?.error || "Failed to update prayer");
-        }
-        await loadUserData();
-      } catch (error) {
-        throw error;
-      }
+      const result: any = await api.prayer.update(id, updates);
+      setPrayers((previous) =>
+        previous.map((existing) =>
+          existing.id === id
+            ? {
+                ...existing,
+                ...result.prayer,
+                ownerId:
+                  result.ownerId ||
+                  existing.ownerId ||
+                  existing.userId,
+                storageKey:
+                  existing.storageKey || updates.storageKey,
+              }
+            : existing,
+        ),
+      );
     },
-    [accessToken],
+    [],
   );
 
   const handleDeletePrayer = useCallback(
     async (id: string) => {
-      try {
-        const response = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/prayer/${id}`,
-          {
-            method: "DELETE",
-            headers: { Authorization: `Bearer ${accessToken}` },
-          },
-        );
-        if (!response.ok)
-          throw new Error("Failed to delete prayer");
-        await loadUserData();
-      } catch (error) {
-        throw error;
-      }
+      await api.prayer.delete(id);
+      setPrayers((previous) =>
+        previous.filter((prayer) => prayer.id !== id),
+      );
     },
-    [accessToken],
-  );
-
-  const handleMarkPrayed = useCallback(
-    async (id: string) => {
-      try {
-        const response = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/prayer/${id}/pray`,
-          {
-            method: "POST",
-            headers: { Authorization: `Bearer ${accessToken}` },
-          },
-        );
-        if (!response.ok)
-          throw new Error("Failed to mark as prayed");
-        await loadUserData();
-        toast.success("Marked as prayed! 🙏");
-      } catch (error) {
-        throw error;
-      }
-    },
-    [accessToken],
+    [],
   );
 
   const handleAddMilestone = useCallback(
@@ -1497,7 +1494,6 @@ export default function App() {
                   onAddPrayer={handleAddPrayer}
                   onUpdatePrayer={handleUpdatePrayer}
                   onDeletePrayer={handleDeletePrayer}
-                  onMarkPrayed={handleMarkPrayed}
                   onBackToHome={() => {
                     setActiveTab("home");
                     setSelectedScreen("dashboard");

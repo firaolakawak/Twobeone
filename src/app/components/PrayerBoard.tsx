@@ -36,8 +36,9 @@ import { toast } from "sonner";
 
 interface Prayer {
   id: string;
-  userId: string;
+  userId?: string;
   ownerId?: string;
+  storageKey?: string;
   title: string;
   description: string;
   category: string;
@@ -45,7 +46,7 @@ interface Prayer {
   answeredAt?: string | null;
   reminderDate?: string | null;
   isSharedWithCommunity: boolean;
-  prayerCount: number;
+  prayerCount?: number;
   youPrayed?: boolean;
   partnerPrayed?: boolean;
   createdAt: string;
@@ -59,7 +60,6 @@ interface PrayerBoardProps {
   onAddPrayer: (prayer: any) => Promise<void>;
   onUpdatePrayer: (id: string, updates: any) => Promise<void>;
   onDeletePrayer: (id: string) => Promise<void>;
-  onMarkPrayed: (id: string) => Promise<void>;
   onBackToHome?: () => void;
 }
 
@@ -125,7 +125,6 @@ export function PrayerBoard({
   onAddPrayer,
   onUpdatePrayer,
   onDeletePrayer,
-  onMarkPrayed,
   onBackToHome,
 }: PrayerBoardProps) {
   const { t } = useLanguage();
@@ -180,6 +179,7 @@ export function PrayerBoard({
         await onUpdatePrayer(editingPrayer.id, {
           ...prayerData,
           ownerId: editingPrayer.ownerId || editingPrayer.userId,
+          storageKey: editingPrayer.storageKey,
         });
         toast.success("Prayer updated!");
       } else {
@@ -225,6 +225,7 @@ export function PrayerBoard({
       await onUpdatePrayer(prayer.id, {
         [prayedField]: !prayer[prayedField],
         ownerId: prayer.ownerId || prayer.userId,
+        storageKey: prayer.storageKey,
       });
     } catch (error) {
       toast.error(
@@ -238,6 +239,7 @@ export function PrayerBoard({
       await onUpdatePrayer(prayer.id, {
         isAnswered: !prayer.isAnswered,
         ownerId: prayer.ownerId || prayer.userId,
+        storageKey: prayer.storageKey,
       });
       toast.success(
         prayer.isAnswered

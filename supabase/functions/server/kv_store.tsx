@@ -85,3 +85,20 @@ export const getByPrefix = async (prefix: string): Promise<any[]> => {
   }
   return data?.map((d) => d.value) ?? [];
 };
+
+// Search for key-value pairs by prefix while preserving their storage keys.
+// Some legacy records contain an id that differs from the suffix of the key,
+// so callers that update existing data need both values.
+export const getEntriesByPrefix = async (
+  prefix: string,
+): Promise<Array<{ key: string; value: any }>> => {
+  const supabase = client();
+  const { data, error } = await supabase
+    .from("kv_store_6d579fee")
+    .select("key, value")
+    .like("key", prefix + "%");
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data ?? [];
+};

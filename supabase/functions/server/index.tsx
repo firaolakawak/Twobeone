@@ -1530,13 +1530,14 @@ app.get('/make-server-6d579fee/prayer', async (c) => {
     console.log(`[GET /prayer] Loading prayers for user: ${userId}`);
 
     // Profile + user prayers in parallel
-    const [profile, rawUserPrayers] = await Promise.all([
+    const [profile, userPrayerEntries] = await Promise.all([
       kv.get(`user:${userId}`).catch(() => null),
-      kv.getByPrefix(`prayer:${userId}:`).catch(() => [] as any[]),
+      kv.getEntriesByPrefix(`prayer:${userId}:`).catch(() => []),
     ]);
-    const userPrayers = (rawUserPrayers as any[]).map((p: any) => ({
-      ...p,
+    const userPrayers = userPrayerEntries.map(({ key, value }: any) => ({
+      ...value,
       ownerId: userId,
+      storageKey: key,
       isPartner: false,
     }));
 
@@ -1546,11 +1547,12 @@ app.get('/make-server-6d579fee/prayer', async (c) => {
     let partnerPrayers: any[] = [];
     if ((profile as any)?.partnerId) {
       try {
-        const raw: any[] = await kv.getByPrefix(`prayer:${(profile as any).partnerId}:`);
+        const entries = await kv.getEntriesByPrefix(`prayer:${(profile as any).partnerId}:`);
         const partnerId = (profile as any).partnerId;
-        partnerPrayers = raw.map((p: any) => ({
-          ...p,
+        partnerPrayers = entries.map(({ key, value }: any) => ({
+          ...value,
           ownerId: partnerId,
+          storageKey: key,
           isPartner: true,
         }));
       } catch {
@@ -1633,6 +1635,10 @@ app.put('/make-server-6d579fee/prayer/:id', async (c) => {
       typeof requestedUpdates.ownerId === 'string'
         ? requestedUpdates.ownerId
         : undefined;
+    const requestedStorageKey =
+      typeof requestedUpdates.storageKey === 'string'
+        ? requestedUpdates.storageKey
+        : undefined;
     const allowedOwnerIds = [userId, profile?.partnerId].filter(Boolean);
 
     if (requestedOwnerId && !allowedOwnerIds.includes(requestedOwnerId)) {
@@ -1646,7 +1652,24 @@ app.put('/make-server-6d579fee/prayer/:id', async (c) => {
     let ownerId = userId;
     let prayerKey = '';
 
+    // Prefer the exact key supplied by the list endpoint, but only if it is
+    // inside one of the two linked users' prayer namespaces.
+    if (requestedStorageKey) {
+      const storageOwnerId = allowedOwnerIds.find((candidateOwnerId) =>
+        requestedStorageKey.startsWith(`prayer:${candidateOwnerId}:`)
+      );
+      if (storageOwnerId) {
+        const storedPrayer = await kv.get(requestedStorageKey);
+        if (storedPrayer) {
+          prayer = storedPrayer;
+          prayerKey = requestedStorageKey;
+          ownerId = storageOwnerId;
+        }
+      }
+    }
+
     for (const candidateOwnerId of ownerIdsToTry) {
+      if (prayer) break;
       const candidateKey = `prayer:${candidateOwnerId}:${prayerId}`;
       const candidatePrayer = await kv.get(candidateKey);
       if (candidatePrayer) {
@@ -1654,6 +1677,21 @@ app.put('/make-server-6d579fee/prayer/:id', async (c) => {
         prayerKey = candidateKey;
         ownerId = candidateOwnerId;
         break;
+      }
+    }
+
+    // Compatibility fallback for legacy records whose JSON id and key suffix
+    // do not match. The scan remains restricted to the authenticated couple.
+    if (!prayer) {
+      for (const candidateOwnerId of ownerIdsToTry) {
+        const entries = await kv.getEntriesByPrefix(`prayer:${candidateOwnerId}:`);
+        const match = entries.find(({ value }: any) => value?.id === prayerId);
+        if (match) {
+          prayer = match.value;
+          prayerKey = match.key;
+          ownerId = candidateOwnerId;
+          break;
+        }
       }
     }
 

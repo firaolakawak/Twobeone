@@ -5,6 +5,7 @@ const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-
 
 // Request deduplication - prevents duplicate simultaneous requests
 const pendingRequests = new Map<string, Promise<any>>();
+let pendingAccessToken: Promise<string | null> | null = null;
 
 function deduplicateRequest<T>(key: string, fn: () => Promise<T>): Promise<T> {
   if (pendingRequests.has(key)) {
@@ -22,12 +23,23 @@ function deduplicateRequest<T>(key: string, fn: () => Promise<T>): Promise<T> {
 
 // Helper to get access token, refreshing session if needed
 export async function getAccessToken(): Promise<string | null> {
-  const supabase = createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session?.access_token) return session.access_token;
-  // Session missing or expired — try refreshing
-  const { data: refreshed } = await supabase.auth.refreshSession();
-  return refreshed?.session?.access_token || null;
+  if (pendingAccessToken) return pendingAccessToken;
+
+  pendingAccessToken = (async () => {
+    const supabase = createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.access_token) return session.access_token;
+
+    // Session missing or expired — try refreshing once for all callers.
+    const { data: refreshed } = await supabase.auth.refreshSession();
+    return refreshed?.session?.access_token || null;
+  })();
+
+  try {
+    return await pendingAccessToken;
+  } finally {
+    pendingAccessToken = null;
+  }
 }
 
 // Helper for authenticated API calls with retry logic
