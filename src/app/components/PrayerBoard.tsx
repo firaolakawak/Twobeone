@@ -32,13 +32,11 @@ import {
   MessageCircle,
   Home,
 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "sonner@2.0.3";
 
 interface Prayer {
   id: string;
-  userId?: string;
-  ownerId?: string;
-  storageKey?: string;
+  userId: string;
   title: string;
   description: string;
   category: string;
@@ -46,7 +44,7 @@ interface Prayer {
   answeredAt?: string | null;
   reminderDate?: string | null;
   isSharedWithCommunity: boolean;
-  prayerCount?: number;
+  prayerCount: number;
   youPrayed?: boolean;
   partnerPrayed?: boolean;
   createdAt: string;
@@ -60,6 +58,7 @@ interface PrayerBoardProps {
   onAddPrayer: (prayer: any) => Promise<void>;
   onUpdatePrayer: (id: string, updates: any) => Promise<void>;
   onDeletePrayer: (id: string) => Promise<void>;
+  onMarkPrayed: (id: string) => Promise<void>;
   onBackToHome?: () => void;
 }
 
@@ -125,6 +124,7 @@ export function PrayerBoard({
   onAddPrayer,
   onUpdatePrayer,
   onDeletePrayer,
+  onMarkPrayed,
   onBackToHome,
 }: PrayerBoardProps) {
   const { t } = useLanguage();
@@ -173,21 +173,15 @@ export function PrayerBoard({
         category,
         reminderDate: reminderDate || null,
         isSharedWithCommunity,
+        youPrayed: true,
+        partnerPrayed: false,
       };
 
       if (editingPrayer) {
-        await onUpdatePrayer(editingPrayer.id, {
-          ...prayerData,
-          ownerId: editingPrayer.ownerId || editingPrayer.userId,
-          storageKey: editingPrayer.storageKey,
-        });
+        await onUpdatePrayer(editingPrayer.id, prayerData);
         toast.success("Prayer updated!");
       } else {
-        await onAddPrayer({
-          ...prayerData,
-          youPrayed: true,
-          partnerPrayed: false,
-        });
+        await onAddPrayer(prayerData);
         toast.success("Prayer request added!");
       }
 
@@ -195,9 +189,7 @@ export function PrayerBoard({
       setIsOpen(false);
     } catch (error) {
       console.error("Failed to save prayer:", error);
-      toast.error(
-        error instanceof Error ? error.message : "Failed to save prayer request",
-      );
+      toast.error("Failed to save prayer request");
     } finally {
       setIsLoading(false);
     }
@@ -206,31 +198,32 @@ export function PrayerBoard({
   const handleEdit = (prayer: Prayer) => {
     setEditingPrayer(prayer);
     setTitle(prayer.title);
-    setDescription(prayer.description || "");
-    setCategory(prayer.category || "General");
+    setDescription(prayer.description);
+    setCategory(prayer.category);
     setReminderDate(prayer.reminderDate || "");
-    setIsSharedWithCommunity(Boolean(prayer.isSharedWithCommunity));
+    setIsSharedWithCommunity(prayer.isSharedWithCommunity);
     setIsOpen(true);
   };
 
-  const handleTogglePrayed = async (prayer: Prayer) => {
+  const handleTogglePrayed = async (
+    prayer: Prayer,
+    isPrayer: "you" | "partner",
+  ) => {
     // Can't modify community prayers from others
     if (prayer.isCommunity) return;
 
     try {
-      // The stored fields are relative to the prayer author. Map them to the
-      // current viewer so the "You" button always updates the person tapping
-      // it, including on a partner-authored prayer.
-      const prayedField = prayer.isPartner ? "partnerPrayed" : "youPrayed";
-      await onUpdatePrayer(prayer.id, {
-        [prayedField]: !prayer[prayedField],
-        ownerId: prayer.ownerId || prayer.userId,
-        storageKey: prayer.storageKey,
-      });
+      if (isPrayer === "you") {
+        await onUpdatePrayer(prayer.id, {
+          youPrayed: !prayer.youPrayed,
+        });
+      } else {
+        await onUpdatePrayer(prayer.id, {
+          partnerPrayed: !prayer.partnerPrayed,
+        });
+      }
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to update prayer",
-      );
+      toast.error("Failed to update prayer");
     }
   };
 
@@ -238,8 +231,6 @@ export function PrayerBoard({
     try {
       await onUpdatePrayer(prayer.id, {
         isAnswered: !prayer.isAnswered,
-        ownerId: prayer.ownerId || prayer.userId,
-        storageKey: prayer.storageKey,
       });
       toast.success(
         prayer.isAnswered
@@ -247,9 +238,7 @@ export function PrayerBoard({
           : "Praise God! Prayer answered! 🎉",
       );
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to update prayer",
-      );
+      toast.error("Failed to update prayer");
     }
   };
 
@@ -414,12 +403,6 @@ export function PrayerBoard({
             const prayerCount =
               (prayer.youPrayed ? 1 : 0) +
               (prayer.partnerPrayed ? 1 : 0);
-            const youPrayed = prayer.isPartner
-              ? prayer.partnerPrayed
-              : prayer.youPrayed;
-            const partnerPrayed = prayer.isPartner
-              ? prayer.youPrayed
-              : prayer.partnerPrayed;
 
             return (
               <Card
@@ -471,12 +454,12 @@ export function PrayerBoard({
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() =>
-                            handleTogglePrayed(prayer)
+                            handleTogglePrayed(prayer, "you")
                           }
                           disabled={!canEdit}
                           className="flex flex-col items-center gap-1 disabled:opacity-50"
                         >
-                          {youPrayed ? (
+                          {prayer.youPrayed ? (
                             <div className="w-6 h-6 rounded-full bg-primary-600 flex items-center justify-center">
                               <Check className="w-4 h-4 text-white" />
                             </div>
@@ -489,10 +472,16 @@ export function PrayerBoard({
                         </button>
 
                         <button
-                          disabled
+                          onClick={() =>
+                            handleTogglePrayed(
+                              prayer,
+                              "partner",
+                            )
+                          }
+                          disabled={!canEdit}
                           className="flex flex-col items-center gap-1 disabled:opacity-50"
                         >
-                          {partnerPrayed ? (
+                          {prayer.partnerPrayed ? (
                             <div className="w-6 h-6 rounded-full bg-primary-600 flex items-center justify-center">
                               <Check className="w-4 h-4 text-white" />
                             </div>

@@ -4,7 +4,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Shield, ShieldCheck, ShieldOff, UserCheck, UserX, Search, Clock, AlertCircle, CheckCircle, XCircle, Users } from 'lucide-react';
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
-import { toast } from 'sonner';
+import { toast } from 'sonner@2.0.3';
 
 interface User {
   id: string;

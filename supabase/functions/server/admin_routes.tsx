@@ -37,6 +37,35 @@ async function isAdmin(userId: string): Promise<boolean> {
   return false;
 }
 
+function generateId(): string {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+async function logPrivilegeAudit(
+  event: 'admin.privilege_granted' | 'admin.privilege_revoked',
+  actorId: string,
+  targetId: string,
+  targetEmail: string
+): Promise<void> {
+  try {
+    const actor = await kv.get(`user:${actorId}`);
+    const id = generateId();
+    const timestamp = new Date().toISOString();
+    const tsMs = Date.now();
+    await kv.set(`auditlog:${tsMs}:${id}`, {
+      id, event, category: 'admin',
+      userId: actorId,
+      userName: actor?.name || actor?.full_name || 'Admin',
+      userEmail: actor?.email || '',
+      metadata: { targetUserId: targetId, targetEmail },
+      timestamp,
+    });
+    console.log(`[Audit] ✅ ${event} logged for actor ${actorId}`);
+  } catch (err) {
+    console.error('[Audit] ❌ Failed to write privilege audit entry:', err);
+  }
+}
+
 export function setupAdminRoutes(app: Hono, supabase: any) {
 
   // ============================================
@@ -186,8 +215,9 @@ export function setupAdminRoutes(app: Hono, supabase: any) {
       // Log the action
       const requesterProfile = await kv.get(`user:${userId}`);
       console.log(`Admin privilege granted: ${requesterProfile?.email} granted admin to ${targetUser.email}`);
+      await logPrivilegeAudit('admin.privilege_granted', userId, targetUserId, targetUser.email);
 
-      return c.json({ 
+      return c.json({
         success: true,
         message: `Admin privileges granted to ${targetUser.email}`,
         user: {
@@ -256,8 +286,9 @@ export function setupAdminRoutes(app: Hono, supabase: any) {
       // Log the action
       const requesterProfile = await kv.get(`user:${userId}`);
       console.log(`Admin privilege revoked: ${requesterProfile?.email} revoked admin from ${targetUser?.email}`);
+      await logPrivilegeAudit('admin.privilege_revoked', userId, targetUserId, targetUser?.email || '');
 
-      return c.json({ 
+      return c.json({
         success: true,
         message: `Admin privileges revoked from ${targetUser?.email}`,
         user: {

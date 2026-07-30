@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { AlertTriangle, Heart, HeartCrack, Clock, X, Check } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from 'sonner@2.0.3';
 import { api } from '../utils/api';
 
 interface PartnerDisconnectDialogProps {

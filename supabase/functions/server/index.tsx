@@ -150,7 +150,12 @@ type AuditEvent =
   | 'qa.answered'
   | 'mood.logged'
   | 'admin.privilege_granted' | 'admin.privilege_revoked'
-  | 'profile.updated';
+  | 'profile.updated'
+  | 'admin.devotional_created' | 'admin.devotional_updated' | 'admin.devotional_deleted' | 'admin.devotionals_imported'
+  | 'admin.question_created' | 'admin.question_updated' | 'admin.question_deleted'
+  | 'admin.module_created' | 'admin.module_updated' | 'admin.module_deleted' | 'admin.modules_imported'
+  | 'admin.group_created' | 'admin.group_updated' | 'admin.group_deleted'
+  | 'admin.user_deleted' | 'admin.landing_page_updated';
 
 const AUDIT_CATEGORY: Record<AuditEvent, AuditCategory> = {
   'user.signup': 'auth', 'user.email_verified': 'auth',
@@ -162,6 +167,13 @@ const AUDIT_CATEGORY: Record<AuditEvent, AuditCategory> = {
   'mood.logged': 'content',
   'admin.privilege_granted': 'admin', 'admin.privilege_revoked': 'admin',
   'profile.updated': 'social',
+  'admin.devotional_created': 'admin', 'admin.devotional_updated': 'admin',
+  'admin.devotional_deleted': 'admin', 'admin.devotionals_imported': 'admin',
+  'admin.question_created': 'admin', 'admin.question_updated': 'admin', 'admin.question_deleted': 'admin',
+  'admin.module_created': 'admin', 'admin.module_updated': 'admin',
+  'admin.module_deleted': 'admin', 'admin.modules_imported': 'admin',
+  'admin.group_created': 'admin', 'admin.group_updated': 'admin', 'admin.group_deleted': 'admin',
+  'admin.user_deleted': 'admin', 'admin.landing_page_updated': 'admin',
 };
 
 async function logAudit(
@@ -178,15 +190,17 @@ async function logAudit(
       event,
       category: AUDIT_CATEGORY[event],
       userId,
-      userName: profile?.name || 'Unknown',
+      userName: profile?.name || profile?.full_name || 'Unknown',
       userEmail: profile?.email || '',
       metadata,
       timestamp,
     };
-    // Key includes ISO timestamp for natural chronological ordering
-    await kv.set(`audit:${timestamp}:${id}`, entry);
-  } catch {
-    // Non-critical — never block the parent request
+    // Use simple numeric-prefixed key to avoid ISO-timestamp colons in LIKE queries
+    const tsMs = Date.now();
+    await kv.set(`auditlog:${tsMs}:${id}`, entry);
+    console.log(`[Audit] ✅ ${event} logged for user ${userId}`);
+  } catch (err) {
+    console.error('[Audit] ❌ Failed to write audit entry:', err);
   }
 }
 
@@ -256,7 +270,7 @@ app.post('/make-server-6d579fee/signup', async (c) => {
     console.log('User created:', { userId, email, name, inviteCode });
 
     // Audit log — fire-and-forget
-    logAudit('user.signup', userId, { email, name });
+    await logAudit('user.signup', userId, { email, name });
 
     return c.json({
       success: true,
@@ -591,8 +605,8 @@ app.post('/make-server-6d579fee/profile/link-by-code', async (c) => {
 
     console.log(`✅ Couple created! CoupleId: ${coupleId}, User1: ${userId}, User2: ${partnerId}`);
 
-    logAudit('couple.linked', userId, { partnerId, coupleId });
-    logAudit('couple.linked', partnerId, { partnerId: userId, coupleId });
+    await logAudit('couple.linked', userId, { partnerId, coupleId });
+    await logAudit('couple.linked', partnerId, { partnerId: userId, coupleId });
 
     return c.json({ success: true, partner: partnerProfile });
   } catch (error: any) {
@@ -1395,7 +1409,7 @@ app.post('/make-server-6d579fee/journal', async (c) => {
 
     await kv.set(`journal:${userId}:${entryId}`, entry);
     touchActivity(userId); // lets partner's poll detect this change
-    logAudit('journal.created', userId, { entryId, title, isShared: isShared || false });
+    await logAudit('journal.created', userId, { entryId, title, isShared: isShared || false });
 
     return c.json({ success: true, entry });
   } catch (error: any) {
@@ -1530,16 +1544,10 @@ app.get('/make-server-6d579fee/prayer', async (c) => {
     console.log(`[GET /prayer] Loading prayers for user: ${userId}`);
 
     // Profile + user prayers in parallel
-    const [profile, userPrayerEntries] = await Promise.all([
+    const [profile, userPrayers] = await Promise.all([
       kv.get(`user:${userId}`).catch(() => null),
-      kv.getEntriesByPrefix(`prayer:${userId}:`).catch(() => []),
+      kv.getByPrefix(`prayer:${userId}:`).catch(() => [] as any[]),
     ]);
-    const userPrayers = userPrayerEntries.map(({ key, value }: any) => ({
-      ...value,
-      ownerId: userId,
-      storageKey: key,
-      isPartner: false,
-    }));
 
     console.log(`[GET /prayer] Profile partnerId: ${(profile as any)?.partnerId || 'none'}, user prayers: ${(userPrayers as any[]).length}`);
 
@@ -1547,14 +1555,8 @@ app.get('/make-server-6d579fee/prayer', async (c) => {
     let partnerPrayers: any[] = [];
     if ((profile as any)?.partnerId) {
       try {
-        const entries = await kv.getEntriesByPrefix(`prayer:${(profile as any).partnerId}:`);
-        const partnerId = (profile as any).partnerId;
-        partnerPrayers = entries.map(({ key, value }: any) => ({
-          ...value,
-          ownerId: partnerId,
-          storageKey: key,
-          isPartner: true,
-        }));
+        const raw: any[] = await kv.getByPrefix(`prayer:${(profile as any).partnerId}:`);
+        partnerPrayers = raw.map((p: any) => ({ ...p, isPartner: true }));
       } catch {
         console.warn('[GET /prayer] Partner prayers fetch failed, continuing');
       }
@@ -1579,8 +1581,7 @@ app.post('/make-server-6d579fee/prayer', async (c) => {
       return c.json({ error: 'Unauthorized' }, 401);
     }
 
-    const body = await c.req.json();
-    const title = typeof body.title === 'string' ? body.title.trim() : '';
+    const { title, description, isShared } = await c.req.json();
 
     if (!title) {
       return c.json({ error: 'Title is required' }, 400);
@@ -1591,24 +1592,16 @@ app.post('/make-server-6d579fee/prayer', async (c) => {
       id: prayerId,
       userId,
       title,
-      description: typeof body.description === 'string' ? body.description : '',
-      // Keep the original sharing field for older clients while storing the
-      // fields sent by the current PrayerBoard as well.
-      isShared: typeof body.isShared === 'boolean' ? body.isShared : false,
-      category: typeof body.category === 'string' && body.category ? body.category : 'General',
-      reminderDate: typeof body.reminderDate === 'string' ? body.reminderDate : null,
-      isSharedWithCommunity: Boolean(body.isSharedWithCommunity),
+      description: description || '',
+      isShared: isShared || false,
       isAnswered: false,
-      answeredAt: null,
-      youPrayed: typeof body.youPrayed === 'boolean' ? body.youPrayed : false,
-      partnerPrayed: typeof body.partnerPrayed === 'boolean' ? body.partnerPrayed : false,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
 
     await kv.set(`prayer:${userId}:${prayerId}`, prayer);
     touchActivity(userId);
-    logAudit('prayer.created', userId, { prayerId, title, isShared: prayer.isShared });
+    await logAudit('prayer.created', userId, { prayerId, title, isShared: isShared || false });
 
     return c.json({ success: true, prayer });
   } catch (error: any) {
@@ -1625,99 +1618,11 @@ app.put('/make-server-6d579fee/prayer/:id', async (c) => {
     }
 
     const prayerId = c.req.param('id');
-    const requestedUpdates = await c.req.json();
+    const updates = await c.req.json();
 
-    // A prayer can belong to either member of a linked couple. The board
-    // deliberately allows either partner to update a shared prayer, so look
-    // up the partner's record only after confirming the couple connection.
-    const profile: any = await kv.get(`user:${userId}`);
-    const requestedOwnerId =
-      typeof requestedUpdates.ownerId === 'string'
-        ? requestedUpdates.ownerId
-        : undefined;
-    const requestedStorageKey =
-      typeof requestedUpdates.storageKey === 'string'
-        ? requestedUpdates.storageKey
-        : undefined;
-    const allowedOwnerIds = [userId, profile?.partnerId].filter(Boolean);
-
-    if (requestedOwnerId && !allowedOwnerIds.includes(requestedOwnerId)) {
-      return c.json({ error: 'Prayer not found' }, 404);
-    }
-
-    const ownerIdsToTry = requestedOwnerId
-      ? [requestedOwnerId]
-      : allowedOwnerIds;
-    let prayer: any = null;
-    let ownerId = userId;
-    let prayerKey = '';
-
-    // Prefer the exact key supplied by the list endpoint, but only if it is
-    // inside one of the two linked users' prayer namespaces.
-    if (requestedStorageKey) {
-      const storageOwnerId = allowedOwnerIds.find((candidateOwnerId) =>
-        requestedStorageKey.startsWith(`prayer:${candidateOwnerId}:`)
-      );
-      if (storageOwnerId) {
-        const storedPrayer = await kv.get(requestedStorageKey);
-        if (storedPrayer) {
-          prayer = storedPrayer;
-          prayerKey = requestedStorageKey;
-          ownerId = storageOwnerId;
-        }
-      }
-    }
-
-    for (const candidateOwnerId of ownerIdsToTry) {
-      if (prayer) break;
-      const candidateKey = `prayer:${candidateOwnerId}:${prayerId}`;
-      const candidatePrayer = await kv.get(candidateKey);
-      if (candidatePrayer) {
-        prayer = candidatePrayer;
-        prayerKey = candidateKey;
-        ownerId = candidateOwnerId;
-        break;
-      }
-    }
-
-    // Compatibility fallback for legacy records whose JSON id and key suffix
-    // do not match. The scan remains restricted to the authenticated couple.
-    if (!prayer) {
-      for (const candidateOwnerId of ownerIdsToTry) {
-        const entries = await kv.getEntriesByPrefix(`prayer:${candidateOwnerId}:`);
-        const match = entries.find(({ value }: any) => value?.id === prayerId);
-        if (match) {
-          prayer = match.value;
-          prayerKey = match.key;
-          ownerId = candidateOwnerId;
-          break;
-        }
-      }
-    }
-
+    const prayer = await kv.get(`prayer:${userId}:${prayerId}`);
     if (!prayer) {
       return c.json({ error: 'Prayer not found' }, 404);
-    }
-
-    // Whitelist editable fields. This prevents a client from changing the
-    // prayer ID or ownership when the record belongs to the other partner.
-    const updates: Record<string, unknown> = {};
-    if (requestedUpdates.title !== undefined) {
-      if (typeof requestedUpdates.title !== 'string' || !requestedUpdates.title.trim()) {
-        return c.json({ error: 'Title is required' }, 400);
-      }
-      updates.title = requestedUpdates.title.trim();
-    }
-    if (requestedUpdates.description !== undefined && typeof requestedUpdates.description === 'string') updates.description = requestedUpdates.description;
-    if (requestedUpdates.category !== undefined && typeof requestedUpdates.category === 'string') updates.category = requestedUpdates.category || 'General';
-    if (requestedUpdates.reminderDate !== undefined && (typeof requestedUpdates.reminderDate === 'string' || requestedUpdates.reminderDate === null)) updates.reminderDate = requestedUpdates.reminderDate;
-    if (typeof requestedUpdates.isShared === 'boolean') updates.isShared = requestedUpdates.isShared;
-    if (typeof requestedUpdates.isSharedWithCommunity === 'boolean') updates.isSharedWithCommunity = requestedUpdates.isSharedWithCommunity;
-    if (typeof requestedUpdates.youPrayed === 'boolean') updates.youPrayed = requestedUpdates.youPrayed;
-    if (typeof requestedUpdates.partnerPrayed === 'boolean') updates.partnerPrayed = requestedUpdates.partnerPrayed;
-    if (typeof requestedUpdates.isAnswered === 'boolean') {
-      updates.isAnswered = requestedUpdates.isAnswered;
-      updates.answeredAt = requestedUpdates.isAnswered ? new Date().toISOString() : null;
     }
 
     const updatedPrayer = {
@@ -1726,13 +1631,12 @@ app.put('/make-server-6d579fee/prayer/:id', async (c) => {
       updatedAt: new Date().toISOString()
     };
 
-    await kv.set(prayerKey, updatedPrayer);
-    touchActivity(userId);
-    if (updates.isAnswered === true && !(prayer as any).isAnswered) {
-      logAudit('prayer.answered', userId, { prayerId, title: prayer.title });
+    await kv.set(`prayer:${userId}:${prayerId}`, updatedPrayer);
+    if (updates.isAnswered && !prayer.isAnswered) {
+      await logAudit('prayer.answered', userId, { prayerId, title: prayer.title });
     }
 
-    return c.json({ success: true, prayer: updatedPrayer, ownerId });
+    return c.json({ success: true, prayer: updatedPrayer });
   } catch (error: any) {
     console.error('Prayer update error:', error);
     return c.json({ error: error.message }, 500);
@@ -2358,7 +2262,7 @@ app.post('/make-server-6d579fee/question-responses', async (c) => {
 
     await kv.set(`response:${userId}:${question_id}`, responseEntry);
     touchActivity(userId);
-    logAudit('qa.answered', userId, { questionId: question_id, isPrivate: is_private || false });
+    await logAudit('qa.answered', userId, { questionId: question_id, isPrivate: is_private || false });
 
     return c.json({ success: true, response: responseEntry });
   } catch (error: any) {
@@ -2776,7 +2680,7 @@ app.post('/make-server-6d579fee/devotional-completions', async (c) => {
       await kv.set(streakKey, updatedStreak);
     }
 
-    logAudit('devotional.completed', userId, { devotionId: devotion_id });
+    await logAudit('devotional.completed', userId, { devotionId: devotion_id });
 
     return c.json({ success: true, completion });
   } catch (error: any) {
@@ -3420,9 +3324,10 @@ app.delete('/make-server-6d579fee/admin/users/:userId', async (c) => {
     }
 
     console.log('[DELETE /admin/users/:userId] User deletion complete');
+    await logAudit('admin.user_deleted', adminUserId, { deletedUserId: userIdToDelete, deletedUserEmail: userToDelete.email, keysDeleted: keysToDelete.length });
 
-    return c.json({ 
-      success: true, 
+    return c.json({
+      success: true,
       message: `User ${userToDelete.name} (${userToDelete.email}) deleted successfully`,
       keysDeleted: keysToDelete.length
     });
@@ -3555,8 +3460,9 @@ app.get('/make-server-6d579fee/admin/audit-log', async (c) => {
     const limit = parseInt(c.req.query('limit') || '50', 10);
     const offset = parseInt(c.req.query('offset') || '0', 10);
 
-    const rawEntries = await kv.getByPrefix('audit:');
-    // KV prefix returns values; sort by ISO timestamp key (natural order)
+    const rawEntries = await kv.getByPrefix('auditlog:');
+    console.log(`[Audit GET] raw entries found: ${rawEntries.length}`);
+
     let entries: any[] = rawEntries
       .filter((e: any) => e && e.timestamp)
       .sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
@@ -3620,6 +3526,7 @@ app.post('/make-server-6d579fee/admin/devotionals', async (c) => {
     // Verify it was saved
     const saved = await kv.get(`devotional:${devotionalId}`);
     console.log(`[Devotional] ✅ Verified saved devotional: ${saved ? 'exists' : 'NOT FOUND'}`);
+    await logAudit('admin.devotional_created', userId, { devotionalId, title: devotionalData.title });
 
     return c.json({ success: true, devotionalId });
   } catch (error: any) {
@@ -3658,6 +3565,7 @@ app.put('/make-server-6d579fee/admin/devotionals/:id', async (c) => {
     
     await kv.set(`devotional:${devotionalId}`, updatedData);
     console.log(`[Devotional] ✅ Devotional updated: ${devotionalId}`);
+    await logAudit('admin.devotional_updated', userId, { devotionalId, title: existing.title });
 
     return c.json({ success: true });
   } catch (error: any) {
@@ -3679,6 +3587,7 @@ app.delete('/make-server-6d579fee/admin/devotionals/:id', async (c) => {
 
     const devotionalId = c.req.param('id');
     await kv.del(`devotional:${devotionalId}`);
+    await logAudit('admin.devotional_deleted', userId, { devotionalId });
 
     return c.json({ success: true });
   } catch (error: any) {
@@ -3795,10 +3704,11 @@ app.post('/make-server-6d579fee/admin/questions', async (c) => {
     console.log('Creating question with data:', JSON.stringify(questionData, null, 2));
     
     await kv.set(`question:${questionId}`, questionData);
-    
+
     // Verify it was saved
     const saved = await kv.get(`question:${questionId}`);
     console.log('Verified saved question:', JSON.stringify(saved, null, 2));
+    await logAudit('admin.question_created', userId, { questionId, title: questionData.title || questionData.category });
 
     return c.json({ success: true, questionId });
   } catch (error: any) {
@@ -3832,6 +3742,7 @@ app.put('/make-server-6d579fee/admin/questions/:id', async (c) => {
       id: questionId,
       updatedAt: new Date().toISOString()
     });
+    await logAudit('admin.question_updated', userId, { questionId, title: existing.title || existing.category });
 
     return c.json({ success: true });
   } catch (error: any) {
@@ -3853,6 +3764,7 @@ app.delete('/make-server-6d579fee/admin/questions/:id', async (c) => {
 
     const questionId = c.req.param('id');
     await kv.del(`question:${questionId}`);
+    await logAudit('admin.question_deleted', userId, { questionId });
 
     return c.json({ success: true });
   } catch (error: any) {
@@ -3943,6 +3855,7 @@ app.post('/make-server-6d579fee/admin/modules', async (c) => {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     });
+    await logAudit('admin.module_created', userId, { moduleId, title: module.title });
 
     return c.json({ success: true, moduleId });
   } catch (error: any) {
@@ -3976,6 +3889,7 @@ app.put('/make-server-6d579fee/admin/modules/:id', async (c) => {
       id: moduleId,
       updatedAt: new Date().toISOString()
     });
+    await logAudit('admin.module_updated', userId, { moduleId, title: existing.title });
 
     return c.json({ success: true });
   } catch (error: any) {
@@ -3997,6 +3911,7 @@ app.delete('/make-server-6d579fee/admin/modules/:id', async (c) => {
 
     const moduleId = c.req.param('id');
     await kv.del(`module:${moduleId}`);
+    await logAudit('admin.module_deleted', userId, { moduleId });
 
     return c.json({ success: true });
   } catch (error: any) {
@@ -4853,6 +4768,7 @@ app.post('/make-server-6d579fee/admin/groups', async (c) => {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     });
+    await logAudit('admin.group_created', userId, { groupId, name: group.name });
 
     return c.json({ success: true, groupId });
   } catch (error: any) {
@@ -4886,6 +4802,7 @@ app.put('/make-server-6d579fee/admin/groups/:id', async (c) => {
       id: groupId,
       updatedAt: new Date().toISOString()
     });
+    await logAudit('admin.group_updated', userId, { groupId, name: existing.name });
 
     return c.json({ success: true });
   } catch (error: any) {
@@ -4907,6 +4824,7 @@ app.delete('/make-server-6d579fee/admin/groups/:id', async (c) => {
 
     const groupId = c.req.param('id');
     await kv.del(`group:${groupId}`);
+    await logAudit('admin.group_deleted', userId, { groupId });
 
     return c.json({ success: true });
   } catch (error: any) {

@@ -24,7 +24,7 @@ import {
   Globe,
   Play
 } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from 'sonner@2.0.3';
 
 export default function LandingPage() {
   const [email, setEmail] = useState('');

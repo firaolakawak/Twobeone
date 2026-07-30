@@ -5,7 +5,6 @@ const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-
 
 // Request deduplication - prevents duplicate simultaneous requests
 const pendingRequests = new Map<string, Promise<any>>();
-let pendingAccessToken: Promise<string | null> | null = null;
 
 function deduplicateRequest<T>(key: string, fn: () => Promise<T>): Promise<T> {
   if (pendingRequests.has(key)) {
@@ -23,23 +22,12 @@ function deduplicateRequest<T>(key: string, fn: () => Promise<T>): Promise<T> {
 
 // Helper to get access token, refreshing session if needed
 export async function getAccessToken(): Promise<string | null> {
-  if (pendingAccessToken) return pendingAccessToken;
-
-  pendingAccessToken = (async () => {
-    const supabase = createClient();
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.access_token) return session.access_token;
-
-    // Session missing or expired — try refreshing once for all callers.
-    const { data: refreshed } = await supabase.auth.refreshSession();
-    return refreshed?.session?.access_token || null;
-  })();
-
-  try {
-    return await pendingAccessToken;
-  } finally {
-    pendingAccessToken = null;
-  }
+  const supabase = createClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session?.access_token) return session.access_token;
+  // Session missing or expired — try refreshing
+  const { data: refreshed } = await supabase.auth.refreshSession();
+  return refreshed?.session?.access_token || null;
 }
 
 // Helper for authenticated API calls with retry logic
@@ -75,9 +63,6 @@ async function apiCall<T>(
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      const errorBody = await response.json().catch(() => ({ error: 'Unknown error' }));
-      const errorMessage = errorBody.error || `API Error: ${response.status}`;
-
       // Handle 401 Unauthorized — try refreshing the session and retry once
       if (response.status === 401 && retries === 0) {
         const supabase = createClient();
@@ -94,20 +79,10 @@ async function apiCall<T>(
         throw new Error('Unauthorized');
       }
       
-      // Supabase can briefly return 5xx errors while PostgREST refreshes its
-      // schema cache. Treat these as transient when the caller requested
-      // retries, just like gateway timeouts and network failures.
-      const isTransientServerError =
-        response.status === 500 ||
-        response.status === 502 ||
-        response.status === 503 ||
-        response.status === 504 ||
-        errorMessage.toLowerCase().includes('schema cache') ||
-        errorMessage.toLowerCase().includes('database query');
-
-      if (isTransientServerError && retries > 0) {
-        const waitTime = Math.min(4000, (4 - retries) * 1000);
-        console.log(`[API] Transient server error on ${endpoint}, retrying in ${waitTime}ms... (${retries} attempts left)`);
+      // Handle 504 Gateway Timeout - retry if we have attempts left
+      if (response.status === 504 && retries > 0) {
+        const waitTime = (3 - retries) * 1000; // Exponential backoff
+        console.log(`[API] Server timeout (504) on ${endpoint}, retrying in ${waitTime}ms... (${retries} attempts left)`);
         await new Promise(resolve => setTimeout(resolve, waitTime)); // Wait before retry
         return apiCall<T>(endpoint, options, retries - 1, timeout);
       }
@@ -116,7 +91,8 @@ async function apiCall<T>(
         throw new Error('The server is taking too long to respond. Please try again in a moment.');
       }
       
-      throw new Error(errorMessage);
+      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(error.error || `API Error: ${response.status}`);
     }
 
     return response.json();

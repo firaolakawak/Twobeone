@@ -46,7 +46,6 @@ import type { User, JournalEntry, PrayerRequest, Progress as ProgressType, Quest
 import { moods as moodsApi, milestones as milestonesApi, questions as questionsApi } from '../utils/api';
 import { AddMilestoneDialog } from './AddMilestoneDialog';
 import { amharicVerses } from '../data/amharic-verses';
-import { getDailyBibleVerse } from '../utils/dailyBibleVerse';
 
 export interface CoupleDashboardProps {
   profile?: User;
@@ -236,15 +235,42 @@ export function CoupleDashboard({
   }, [profile?.id]);
 
   useEffect(() => {
+    // Fetch daily Bible verse from Bible API
     const fetchDailyVerse = async () => {
       try {
-        setDailyVerse(await getDailyBibleVerse());
+        // Using bible-api.com which is free and doesn't require auth
+        // Get a verse of the day (rotating through different verses)
+        const verses = [
+          'john 3:16',
+          'philippians 4:13',
+          'proverbs 3:5-6',
+          'romans 8:28',
+          'jeremiah 29:11',
+          'psalm 23:1',
+          'isaiah 40:31',
+          '1 corinthians 13:4-8'
+        ];
+        
+        const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
+        const verseIndex = dayOfYear % verses.length;
+        const selectedVerse = verses[verseIndex];
+        
+        const response = await fetch(`https://bible-api.com/${selectedVerse}?translation=kjv`);
+        if (!response.ok) throw new Error('Failed to fetch verse');
+        
+        const data = await response.json();
+        setDailyVerse({
+          reference: data.reference,
+          text: data.text.replace(/\\n/g, ' ').trim(),
+          translation: data.translation_name
+        });
       } catch (error) {
         console.error('Error fetching daily verse:', error);
+        // Fallback verse
         setDailyVerse({
-          reference: 'Genesis 1:1',
-          text: 'In the beginning God created the heaven and the earth.',
-          translation: 'King James Version'
+          reference: 'John 3:16',
+          text: 'For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.',
+          translation: 'KJV'
         });
       } finally {
         setIsLoadingVerse(false);

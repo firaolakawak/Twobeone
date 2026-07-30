@@ -139,32 +139,15 @@ export interface JournalComment {
 
 export interface PrayerRequest {
   id: string;
-  userId?: string;
-  ownerId?: string;
-  storageKey?: string;
+  couple_id: string;
+  author_id: string | null;
   title: string;
-  description: string;
-  category?: string;
-  isAnswered: boolean;
-  answeredAt?: string | null;
-  reminderDate?: string | null;
-  isShared?: boolean;
-  isSharedWithCommunity?: boolean;
-  prayerCount?: number;
-  youPrayed?: boolean;
-  partnerPrayed?: boolean;
-  createdAt: string;
-  updatedAt?: string | null;
-  isPartner?: boolean;
-  isCommunity?: boolean;
-  // Legacy relational-schema fields retained during data migration.
-  couple_id?: string;
-  author_id?: string | null;
-  is_answered?: boolean;
-  is_shared?: boolean;
-  answered_at?: string | null;
-  created_at?: string;
-  updated_at?: string | null;
+  description: string | null;
+  is_answered: boolean;
+  is_shared: boolean;
+  answered_at: string | null;
+  created_at: string;
+  updated_at: string | null;
 }
 
 export interface PrayerUpdate {
