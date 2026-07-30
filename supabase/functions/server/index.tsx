@@ -1530,10 +1530,15 @@ app.get('/make-server-6d579fee/prayer', async (c) => {
     console.log(`[GET /prayer] Loading prayers for user: ${userId}`);
 
     // Profile + user prayers in parallel
-    const [profile, userPrayers] = await Promise.all([
+    const [profile, rawUserPrayers] = await Promise.all([
       kv.get(`user:${userId}`).catch(() => null),
       kv.getByPrefix(`prayer:${userId}:`).catch(() => [] as any[]),
     ]);
+    const userPrayers = (rawUserPrayers as any[]).map((p: any) => ({
+      ...p,
+      ownerId: userId,
+      isPartner: false,
+    }));
 
     console.log(`[GET /prayer] Profile partnerId: ${(profile as any)?.partnerId || 'none'}, user prayers: ${(userPrayers as any[]).length}`);
 
@@ -1542,7 +1547,12 @@ app.get('/make-server-6d579fee/prayer', async (c) => {
     if ((profile as any)?.partnerId) {
       try {
         const raw: any[] = await kv.getByPrefix(`prayer:${(profile as any).partnerId}:`);
-        partnerPrayers = raw.map((p: any) => ({ ...p, isPartner: true }));
+        const partnerId = (profile as any).partnerId;
+        partnerPrayers = raw.map((p: any) => ({
+          ...p,
+          ownerId: partnerId,
+          isPartner: true,
+        }));
       } catch {
         console.warn('[GET /prayer] Partner prayers fetch failed, continuing');
       }
@@ -1618,23 +1628,32 @@ app.put('/make-server-6d579fee/prayer/:id', async (c) => {
     // A prayer can belong to either member of a linked couple. The board
     // deliberately allows either partner to update a shared prayer, so look
     // up the partner's record only after confirming the couple connection.
-    let prayer = await kv.get(`prayer:${userId}:${prayerId}`);
-    let prayerKey = `prayer:${userId}:${prayerId}`;
-    let ownerId = userId;
+    const profile: any = await kv.get(`user:${userId}`);
+    const requestedOwnerId =
+      typeof requestedUpdates.ownerId === 'string'
+        ? requestedUpdates.ownerId
+        : undefined;
+    const allowedOwnerIds = [userId, profile?.partnerId].filter(Boolean);
 
-    if (!prayer) {
-      const profile: any = await kv.get(`user:${userId}`);
-      const partnerId = profile?.partnerId;
-      if (partnerId) {
-        const partnerProfile: any = await kv.get(`user:${partnerId}`);
-        if (partnerProfile?.partnerId === userId) {
-          const partnerPrayer = await kv.get(`prayer:${partnerId}:${prayerId}`);
-          if (partnerPrayer) {
-            prayer = partnerPrayer;
-            prayerKey = `prayer:${partnerId}:${prayerId}`;
-            ownerId = partnerId;
-          }
-        }
+    if (requestedOwnerId && !allowedOwnerIds.includes(requestedOwnerId)) {
+      return c.json({ error: 'Prayer not found' }, 404);
+    }
+
+    const ownerIdsToTry = requestedOwnerId
+      ? [requestedOwnerId]
+      : allowedOwnerIds;
+    let prayer: any = null;
+    let ownerId = userId;
+    let prayerKey = '';
+
+    for (const candidateOwnerId of ownerIdsToTry) {
+      const candidateKey = `prayer:${candidateOwnerId}:${prayerId}`;
+      const candidatePrayer = await kv.get(candidateKey);
+      if (candidatePrayer) {
+        prayer = candidatePrayer;
+        prayerKey = candidateKey;
+        ownerId = candidateOwnerId;
+        break;
       }
     }
 
@@ -1690,32 +1709,7 @@ app.delete('/make-server-6d579fee/prayer/:id', async (c) => {
     }
 
     const prayerId = c.req.param('id');
-    let prayerKey = `prayer:${userId}:${prayerId}`;
-    let prayer = await kv.get(prayerKey);
-
-    // Match the update route: a linked partner may manage a shared prayer.
-    if (!prayer) {
-      const profile: any = await kv.get(`user:${userId}`);
-      const partnerId = profile?.partnerId;
-      if (partnerId) {
-        const partnerProfile: any = await kv.get(`user:${partnerId}`);
-        if (partnerProfile?.partnerId === userId) {
-          const partnerKey = `prayer:${partnerId}:${prayerId}`;
-          const partnerPrayer = await kv.get(partnerKey);
-          if (partnerPrayer) {
-            prayer = partnerPrayer;
-            prayerKey = partnerKey;
-          }
-        }
-      }
-    }
-
-    if (!prayer) {
-      return c.json({ error: 'Prayer not found' }, 404);
-    }
-
-    await kv.del(prayerKey);
-    touchActivity(userId);
+    await kv.del(`prayer:${userId}:${prayerId}`);
 
     return c.json({ success: true });
   } catch (error: any) {

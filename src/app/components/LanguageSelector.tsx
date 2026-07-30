@@ -16,7 +16,7 @@ import {
 import { Languages, Check } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { languages, Language } from '../utils/i18n';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { projectId } from '../utils/supabase/info';
 
 interface LanguageSelectorProps {

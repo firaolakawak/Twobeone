@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TwoBeOne PWA Test</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    
+    h1 {
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+    
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+    }
+    
+    .test-section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .test-title {
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #333;
+    }
+    
+    .test-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      padding: 12px;
+      background: white;
+      border-radius: 6px;
+    }
+    
+    .status {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      margin-right: 12px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    
+    .status.pass {
+      background: #10b981;
+      color: white;
+    }
+    
+    .status.fail {
+      background: #ef4444;
+      color: white;
+    }
+    
+    .status.info {
+      background: #3b82f6;
+      color: white;
+    }
+    
+    .test-label {
+      flex: 1;
+    }
+    
+    .test-value {
+      color: #666;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+    
+    .button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    
+    .button:hover {
+      background: #5568d3;
+    }
+    
+    .button.secondary {
+      background: #6b7280;
+    }
+    
+    .button.secondary:hover {
+      background: #4b5563;
+    }
+    
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+    
+    .icon-item {
+      text-align: center;
+      padding: 10px;
+      background: white;
+      border-radius: 8px;
+    }
+    
+    .icon-item img {
+      width: 72px;
+      height: 72px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      background: #f3f4f6;
+    }
+    
+    .icon-size {
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .score {
+      font-size: 48px;
+      font-weight: bold;
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .score.good { color: #10b981; }
+    .score.medium { color: #f59e0b; }
+    .score.bad { color: #ef4444; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎯 TwoBeOne PWA Test Suite</h1>
+    <p class="subtitle">Verify your Progressive Web App configuration</p>
+    
+    <!-- Overall Score -->
+    <div class="test-section">
+      <div class="test-title">Overall PWA Score</div>
+      <div id="score" class="score">--</div>
+      <div style="text-align: center; color: #666;">
+        <span id="score-text">Running tests...</span>
+      </div>
+    </div>
+    
+    <!-- PWA Features -->
+    <div class="test-section">
+      <div class="test-title">PWA Features</div>
+      <div id="pwa-features"></div>
+    </div>
+    
+    <!-- Service Worker -->
+    <div class="test-section">
+      <div class="test-title">Service Worker Status</div>
+      <div id="service-worker"></div>
+    </div>
+    
+    <!-- Manifest -->
+    <div class="test-section">
+      <div class="test-title">Web App Manifest</div>
+      <div id="manifest-info"></div>
+    </div>
+    
+    <!-- Icons -->
+    <div class="test-section">
+      <div class="test-title">App Icons</div>
+      <div id="icons-info"></div>
+      <div id="icons-grid" class="icon-grid"></div>
+    </div>
+    
+    <!-- Device Info -->
+    <div class="test-section">
+      <div class="test-title">Device Information</div>
+      <div id="device-info"></div>
+    </div>
+    
+    <!-- Actions -->
+    <div class="test-section">
+      <div class="test-title">Test Actions</div>
+      <button class="button" onclick="runTests()">🔄 Re-run Tests</button>
+      <button class="button" onclick="testOffline()">📡 Test Offline Mode</button>
+      <button class="button" onclick="clearCaches()">🗑️ Clear Cache</button>
+      <button class="button secondary" onclick="window.location.href='/'">← Back to App</button>
+    </div>
+  </div>
+  
+  <script>
+    let testResults = {
+      total: 0,
+      passed: 0,
+      failed: 0
+    };
+    
+    function addTest(containerId, label, status, value = '') {
+      const container = document.getElementById(containerId);
+      const div = document.createElement('div');
+      div.className = 'test-item';
+      
+      const statusDiv = document.createElement('div');
+      statusDiv.className = `status ${status}`;
+      statusDiv.textContent = status === 'pass' ? '✓' : status === 'fail' ? '✗' : 'ℹ';
+      
+      const labelDiv = document.createElement('div');
+      labelDiv.className = 'test-label';
+      labelDiv.innerHTML = `<div>${label}</div>${value ? `<div class="test-value">${value}</div>` : ''}`;
+      
+      div.appendChild(statusDiv);
+      div.appendChild(labelDiv);
+      container.appendChild(div);
+      
+      testResults.total++;
+      if (status === 'pass') testResults.passed++;
+      if (status === 'fail') testResults.failed++;
+    }
+    
+    async function runTests() {
+      // Reset
+      testResults = { total: 0, passed: 0, failed: 0 };
+      ['pwa-features', 'service-worker', 'manifest-info', 'icons-info', 'icons-grid', 'device-info'].forEach(id => {
+        document.getElementById(id).innerHTML = '';
+      });
+      
+      // Test HTTPS
+      const isHTTPS = window.location.protocol === 'https:';
+      addTest('pwa-features', 'HTTPS Enabled', isHTTPS ? 'pass' : 'fail', 
+        isHTTPS ? 'Secure connection ✓' : 'PWA requires HTTPS ✗');
+      
+      // Test Service Worker Support
+      const hasSW = 'serviceWorker' in navigator;
+      addTest('pwa-features', 'Service Worker Support', hasSW ? 'pass' : 'fail',
+        hasSW ? 'Browser supports service workers' : 'Browser does not support service workers');
+      
+      // Test if installed
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+      const isInstalled = isStandalone || window.navigator.standalone;
+      addTest('pwa-features', 'Installation Status', isInstalled ? 'pass' : 'info',
+        isInstalled ? 'Running as installed PWA' : 'Running in browser (not installed)');
+      
+      // Test Notification Support
+      const hasNotifications = 'Notification' in window;
+      addTest('pwa-features', 'Notifications Support', hasNotifications ? 'pass' : 'fail',
+        hasNotifications ? 'Browser supports notifications' : 'Notifications not supported');
+      
+      // Check Service Worker Registration
+      if (hasSW) {
+        try {
+          const registration = await navigator.serviceWorker.getRegistration();
+          if (registration) {
+            addTest('service-worker', 'Service Worker Registered', 'pass', 
+              `Scope: ${registration.scope}`);
+            
+            if (registration.active) {
+              addTest('service-worker', 'Service Worker Active', 'pass', 
+                `State: ${registration.active.state}`);
+            } else {
+              addTest('service-worker', 'Service Worker Active', 'fail', 
+                'No active service worker');
+            }
+            
+            // Check update
+            addTest('service-worker', 'Update Check', 'info', 
+              registration.waiting ? 'Update available' : 'Up to date');
+          } else {
+            addTest('service-worker', 'Service Worker Registered', 'fail', 
+              'No service worker registered');
+          }
+        } catch (error) {
+          addTest('service-worker', 'Service Worker Error', 'fail', error.message);
+        }
+      }
+      
+      // Test Manifest
+      try {
+        const response = await fetch('/manifest.json');
+        if (response.ok) {
+          const manifest = await response.json();
+          addTest('manifest-info', 'Manifest File Found', 'pass', 
+            `/manifest.json (${response.status})`);
+          
+          addTest('manifest-info', 'App Name', manifest.name ? 'pass' : 'fail', 
+            manifest.name || 'Not set');
+          
+          addTest('manifest-info', 'Display Mode', manifest.display ? 'pass' : 'fail', 
+            manifest.display || 'Not set');
+          
+          addTest('manifest-info', 'Theme Color', manifest.theme_color ? 'pass' : 'fail', 
+            manifest.theme_color || 'Not set');
+          
+          addTest('manifest-info', 'Icons Defined', manifest.icons?.length > 0 ? 'pass' : 'fail', 
+            `${manifest.icons?.length || 0} icons`);
+          
+          // Test Icons
+          const requiredSizes = [192, 512];
+          const hasCriticalIcons = requiredSizes.every(size => 
+            manifest.icons?.some(icon => icon.sizes.includes(`${size}x${size}`))
+          );
+          
+          addTest('icons-info', 'Critical Icons (192x192, 512x512)', 
+            hasCriticalIcons ? 'pass' : 'fail',
+            hasCriticalIcons ? 'All critical icons present' : 'Missing critical icons');
+          
+          // Display Icons
+          if (manifest.icons) {
+            const iconsGrid = document.getElementById('icons-grid');
+            for (const icon of manifest.icons) {
+              const iconDiv = document.createElement('div');
+              iconDiv.className = 'icon-item';
+              
+              const img = document.createElement('img');
+              img.src = icon.src;
+              img.onerror = () => {
+                img.style.border = '2px solid #ef4444';
+                img.alt = '✗';
+              };
+              
+              const size = document.createElement('div');
+              size.className = 'icon-size';
+              size.textContent = icon.sizes;
+              
+              iconDiv.appendChild(img);
+              iconDiv.appendChild(size);
+              iconsGrid.appendChild(iconDiv);
+            }
+          }
+        } else {
+          addTest('manifest-info', 'Manifest File Found', 'fail', 
+            `HTTP ${response.status}`);
+        }
+      } catch (error) {
+        addTest('manifest-info', 'Manifest Error', 'fail', error.message);
+      }
+      
+      // Device Info
+      addTest('device-info', 'User Agent', 'info', navigator.userAgent);
+      addTest('device-info', 'Platform', 'info', navigator.platform);
+      addTest('device-info', 'Online Status', navigator.onLine ? 'pass' : 'fail', 
+        navigator.onLine ? 'Online' : 'Offline');
+      
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isAndroid = /Android/.test(navigator.userAgent);
+      addTest('device-info', 'Device Type', 'info', 
+        isIOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop/Other');
+      
+      // Calculate Score
+      const score = Math.round((testResults.passed / testResults.total) * 100);
+      const scoreEl = document.getElementById('score');
+      const scoreTextEl = document.getElementById('score-text');
+      
+      scoreEl.textContent = score + '%';
+      scoreEl.className = 'score ' + (score >= 80 ? 'good' : score >= 60 ? 'medium' : 'bad');
+      
+      scoreTextEl.textContent = `${testResults.passed} of ${testResults.total} tests passed`;
+      
+      if (score >= 90) {
+        scoreTextEl.textContent += ' - Excellent! 🎉';
+      } else if (score >= 80) {
+        scoreTextEl.textContent += ' - Good! ✅';
+      } else if (score >= 60) {
+        scoreTextEl.textContent += ' - Needs Improvement ⚠️';
+      } else {
+        scoreTextEl.textContent += ' - Critical Issues ❌';
+      }
+    }
+    
+    async function testOffline() {
+      if (!navigator.onLine) {
+        alert('You are already offline! Try loading a page.');
+        return;
+      }
+      
+      alert('To test offline mode:\n1. Open DevTools (F12)\n2. Go to Network tab\n3. Check "Offline"\n4. Reload the page\n\nThe offline page should appear!');
+    }
+    
+    async function clearCaches() {
+      if (confirm('Clear all caches? This will remove offline data.')) {
+        try {
+          const cacheNames = await caches.keys();
+          await Promise.all(cacheNames.map(name => caches.delete(name)));
+          alert(`Cleared ${cacheNames.length} caches. Reload to test fresh install.`);
+        } catch (error) {
+          alert('Error clearing caches: ' + error.message);
+        }
+      }
+    }
+    
+    // Run tests on load
+    runTests();
+    
+    // Monitor online/offline
+    window.addEventListener('online', () => {
+      alert('✅ Back online!');
+      runTests();
+    });
+    
+    window.addEventListener('offline', () => {
+      alert('📡 You are now offline. Offline mode active!');
+      runTests();
+    });
+  </script>
+</body>
+</html>

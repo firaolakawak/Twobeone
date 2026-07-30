@@ -63,6 +63,9 @@ async function apiCall<T>(
     clearTimeout(timeoutId);
 
     if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({ error: 'Unknown error' }));
+      const errorMessage = errorBody.error || `API Error: ${response.status}`;
+
       // Handle 401 Unauthorized — try refreshing the session and retry once
       if (response.status === 401 && retries === 0) {
         const supabase = createClient();
@@ -79,10 +82,20 @@ async function apiCall<T>(
         throw new Error('Unauthorized');
       }
       
-      // Handle 504 Gateway Timeout - retry if we have attempts left
-      if (response.status === 504 && retries > 0) {
-        const waitTime = (3 - retries) * 1000; // Exponential backoff
-        console.log(`[API] Server timeout (504) on ${endpoint}, retrying in ${waitTime}ms... (${retries} attempts left)`);
+      // Supabase can briefly return 5xx errors while PostgREST refreshes its
+      // schema cache. Treat these as transient when the caller requested
+      // retries, just like gateway timeouts and network failures.
+      const isTransientServerError =
+        response.status === 500 ||
+        response.status === 502 ||
+        response.status === 503 ||
+        response.status === 504 ||
+        errorMessage.toLowerCase().includes('schema cache') ||
+        errorMessage.toLowerCase().includes('database query');
+
+      if (isTransientServerError && retries > 0) {
+        const waitTime = Math.min(4000, (4 - retries) * 1000);
+        console.log(`[API] Transient server error on ${endpoint}, retrying in ${waitTime}ms... (${retries} attempts left)`);
         await new Promise(resolve => setTimeout(resolve, waitTime)); // Wait before retry
         return apiCall<T>(endpoint, options, retries - 1, timeout);
       }
@@ -91,8 +104,7 @@ async function apiCall<T>(
         throw new Error('The server is taking too long to respond. Please try again in a moment.');
       }
       
-      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-      throw new Error(error.error || `API Error: ${response.status}`);
+      throw new Error(errorMessage);
     }
 
     return response.json();

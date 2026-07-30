@@ -1,0 +1,33 @@
+# TwoBeOne — robots.txt
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /functions
+Allow: /icons/
+Allow: /screenshots/
+
+# GEO: Allow AI crawlers to index public content
+User-agent: GPTBot
+Allow: /
+Disallow: /admin
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /admin
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin
+
+User-agent: GoogleOther
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+Sitemap: https://twobeone.app/sitemap.xml

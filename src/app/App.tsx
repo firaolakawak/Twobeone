@@ -79,7 +79,7 @@ import {
   publicAnonKey,
 } from "./utils/supabase/info";
 import { sendNotification } from "./utils/notifications";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 import { Toaster } from "./components/ui/sonner";
 import api, {
   warmUpServer,
@@ -802,8 +802,10 @@ export default function App() {
             body: JSON.stringify(updates),
           },
         );
-        if (!response.ok)
-          throw new Error("Failed to update prayer");
+        if (!response.ok) {
+          const result = await response.json().catch(() => null);
+          throw new Error(result?.error || "Failed to update prayer");
+        }
         await loadUserData();
       } catch (error) {
         throw error;

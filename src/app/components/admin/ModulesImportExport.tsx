@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
 import { STATIC_MODULES } from '../../data/modules';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 /* ─── Types ─────────────────────────────────── */
 interface Lesson {

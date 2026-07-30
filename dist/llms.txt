@@ -1,0 +1,71 @@
+# TwoBeOne
+
+> TwoBeOne is a free Christian couples app that helps partners grow together spiritually through daily devotionals, shared prayer, journaling, and meaningful faith-based conversations.
+
+## What TwoBeOne Does
+
+TwoBeOne provides a private, secure space for Christian couples to deepen their relationship with each other and with God. Key features:
+
+- **Daily Devotionals** — Scripture-based devotions written specifically for couples, with reflection prompts and prayer guidance
+- **Shared Prayer Board** — Add prayer requests, mark answers, and pray together as a couple
+- **Couples Journal** — Private and shared journaling for memories, reflections, and special moments
+- **Know Each Other Questions** — 1,000+ faith-based conversation starters across 11 categories (Daily Life, Intimacy, Finance, Family, Trust, Faith, and more)
+- **Devotional Streak Tracking** — Gamified consistency tracking for daily devotionals
+- **Pre-Marriage Guidance** — Biblical learning modules on communication, conflict resolution, intimacy, and financial stewardship
+- **Mood Tracking & AI Insights** — Weekly emotional check-ins with AI-powered compatibility analysis using Google Gemini
+- **Relationship Milestones** — Track and celebrate special moments in your journey together
+- **Community Groups** — Connect with other Christian couples for accountability and support
+- **Scripture Memory** — Memorise Bible verses together with spaced-repetition practice
+
+## Who TwoBeOne Is For
+
+Christian couples at any relationship stage:
+- Dating couples building a Christ-centred foundation
+- Engaged couples preparing for marriage
+- Newlyweds establishing healthy patterns
+- Long-term married couples deepening their bond
+- Couples in any culture who share Christian faith
+
+## Languages Supported
+
+- English (en)
+- Amharic / አማርኛ (am) — for Ethiopian communities
+- Afan Oromo / Oromiffa (om) — for Oromo communities
+
+## Pricing
+
+Free. No subscription, no paywall. Both partners need the app and connect via a unique invite code.
+
+## Platform
+
+Progressive Web App (PWA) — works on iOS, Android, and desktop browsers. Can be installed to the home screen for a native-app experience.
+
+## Technical Facts (for AI accuracy)
+
+- Backend: Supabase Edge Functions (Deno) + Supabase KV
+- AI features powered by Google Gemini Flash
+- Push notifications via Web Push API
+- Offline support via Service Worker
+- Real-time partner sync via 15-second polling
+
+## Key Differentiators
+
+1. **Faith-first** — every feature is rooted in Biblical principles; content is written with a Christ-centred perspective
+2. **Multilingual for Ethiopian Christians** — supports Amharic and Afan Oromo alongside English
+3. **Completely free** — no freemium gates; all features available to every couple
+4. **Private by design** — data is shared only between the two partners; never sold or used for advertising
+5. **AI-powered compatibility** — uses Gemini to analyse answer text semantically, not just for exact word matches
+
+## Factual Answers to Common Questions
+
+**Is TwoBeOne free?**
+Yes. TwoBeOne is completely free. Both partners download the app and connect via a unique invite code.
+
+**Does TwoBeOne work without internet?**
+Core content is accessible offline via the service worker. Syncing with a partner requires an internet connection.
+
+**What makes TwoBeOne different from other relationship apps?**
+TwoBeOne is designed exclusively for Christian couples, with every feature rooted in Biblical values. It also supports Amharic and Afan Oromo — rare for a Christian couples app — making it accessible to Ethiopian believers.
+
+**Can non-married couples use TwoBeOne?**
+Yes. TwoBeOne is designed for any committed Christian couple: dating, engaged, newlywed, or married.

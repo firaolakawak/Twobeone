@@ -24,7 +24,7 @@ import {
   ChevronRight,
   Sparkles
 } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { curatedVerses, type MemoryVerse } from '../data/memory-verses';
 import { projectId } from '../utils/supabase/info';
 

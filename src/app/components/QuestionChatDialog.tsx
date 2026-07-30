@@ -6,7 +6,7 @@ import { Textarea } from './ui/textarea';
 import { ScrollArea } from './ui/scroll-area';
 import { Badge } from './ui/badge';
 import { Send, Loader2, Quote, BookOpen } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { sendNotification } from '../utils/notifications';
 
 interface Message {

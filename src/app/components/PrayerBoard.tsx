@@ -32,11 +32,12 @@ import {
   MessageCircle,
   Home,
 } from "lucide-react";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 
 interface Prayer {
   id: string;
   userId: string;
+  ownerId?: string;
   title: string;
   description: string;
   category: string;
@@ -173,15 +174,20 @@ export function PrayerBoard({
         category,
         reminderDate: reminderDate || null,
         isSharedWithCommunity,
-        youPrayed: true,
-        partnerPrayed: false,
       };
 
       if (editingPrayer) {
-        await onUpdatePrayer(editingPrayer.id, prayerData);
+        await onUpdatePrayer(editingPrayer.id, {
+          ...prayerData,
+          ownerId: editingPrayer.ownerId || editingPrayer.userId,
+        });
         toast.success("Prayer updated!");
       } else {
-        await onAddPrayer(prayerData);
+        await onAddPrayer({
+          ...prayerData,
+          youPrayed: true,
+          partnerPrayed: false,
+        });
         toast.success("Prayer request added!");
       }
 
@@ -189,7 +195,9 @@ export function PrayerBoard({
       setIsOpen(false);
     } catch (error) {
       console.error("Failed to save prayer:", error);
-      toast.error("Failed to save prayer request");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to save prayer request",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -198,7 +206,7 @@ export function PrayerBoard({
   const handleEdit = (prayer: Prayer) => {
     setEditingPrayer(prayer);
     setTitle(prayer.title);
-    setDescription(prayer.description);
+    setDescription(prayer.description || "");
     setCategory(prayer.category || "General");
     setReminderDate(prayer.reminderDate || "");
     setIsSharedWithCommunity(Boolean(prayer.isSharedWithCommunity));
@@ -216,9 +224,12 @@ export function PrayerBoard({
       const prayedField = prayer.isPartner ? "partnerPrayed" : "youPrayed";
       await onUpdatePrayer(prayer.id, {
         [prayedField]: !prayer[prayedField],
+        ownerId: prayer.ownerId || prayer.userId,
       });
     } catch (error) {
-      toast.error("Failed to update prayer");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to update prayer",
+      );
     }
   };
 
@@ -226,6 +237,7 @@ export function PrayerBoard({
     try {
       await onUpdatePrayer(prayer.id, {
         isAnswered: !prayer.isAnswered,
+        ownerId: prayer.ownerId || prayer.userId,
       });
       toast.success(
         prayer.isAnswered
@@ -233,7 +245,9 @@ export function PrayerBoard({
           : "Praise God! Prayer answered! 🎉",
       );
     } catch (error) {
-      toast.error("Failed to update prayer");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to update prayer",
+      );
     }
   };
 

@@ -21,7 +21,7 @@ import { FaithJourneyQuiz } from './FaithJourneyQuiz';
 import { ConflictStyleQuiz } from './ConflictStyleQuiz';
 import { QuizComparison } from './QuizComparison';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { User as UserType } from '../types';
 
 interface QuizzesHubProps {
