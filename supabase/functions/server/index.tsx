@@ -1581,7 +1581,8 @@ app.post('/make-server-6d579fee/prayer', async (c) => {
       return c.json({ error: 'Unauthorized' }, 401);
     }
 
-    const { title, description, isShared } = await c.req.json();
+    const body = await c.req.json();
+    const { title, description, category, reminderDate, isSharedWithCommunity, isShared, youPrayed, partnerPrayed } = body;
 
     if (!title) {
       return c.json({ error: 'Title is required' }, 400);
@@ -1593,15 +1594,21 @@ app.post('/make-server-6d579fee/prayer', async (c) => {
       userId,
       title,
       description: description || '',
-      isShared: isShared || false,
+      category: category || 'General',
+      reminderDate: reminderDate || null,
+      isSharedWithCommunity: isSharedWithCommunity ?? isShared ?? false,
+      isShared: isSharedWithCommunity ?? isShared ?? false,
       isAnswered: false,
+      youPrayed: youPrayed ?? true,
+      partnerPrayed: partnerPrayed ?? false,
+      prayerCount: 0,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
 
     await kv.set(`prayer:${userId}:${prayerId}`, prayer);
     touchActivity(userId);
-    await logAudit('prayer.created', userId, { prayerId, title, isShared: isShared || false });
+    await logAudit('prayer.created', userId, { prayerId, title, isShared: prayer.isShared });
 
     return c.json({ success: true, prayer });
   } catch (error: any) {
@@ -1620,7 +1627,20 @@ app.put('/make-server-6d579fee/prayer/:id', async (c) => {
     const prayerId = c.req.param('id');
     const updates = await c.req.json();
 
-    const prayer = await kv.get(`prayer:${userId}:${prayerId}`);
+    // Try current user's prayer first; fall back to partner's prayer
+    let prayer = await kv.get(`prayer:${userId}:${prayerId}`);
+    let ownerKey = `prayer:${userId}:${prayerId}`;
+
+    if (!prayer) {
+      const profile: any = await kv.get(`user:${userId}`).catch(() => null);
+      if (profile?.partnerId) {
+        prayer = await kv.get(`prayer:${profile.partnerId}:${prayerId}`);
+        if (prayer) {
+          ownerKey = `prayer:${profile.partnerId}:${prayerId}`;
+        }
+      }
+    }
+
     if (!prayer) {
       return c.json({ error: 'Prayer not found' }, 404);
     }
@@ -1631,9 +1651,9 @@ app.put('/make-server-6d579fee/prayer/:id', async (c) => {
       updatedAt: new Date().toISOString()
     };
 
-    await kv.set(`prayer:${userId}:${prayerId}`, updatedPrayer);
-    if (updates.isAnswered && !prayer.isAnswered) {
-      await logAudit('prayer.answered', userId, { prayerId, title: prayer.title });
+    await kv.set(ownerKey, updatedPrayer);
+    if (updates.isAnswered && !(prayer as any).isAnswered) {
+      await logAudit('prayer.answered', userId, { prayerId, title: (prayer as any).title });
     }
 
     return c.json({ success: true, prayer: updatedPrayer });
@@ -1651,7 +1671,22 @@ app.delete('/make-server-6d579fee/prayer/:id', async (c) => {
     }
 
     const prayerId = c.req.param('id');
-    await kv.del(`prayer:${userId}:${prayerId}`);
+    const userKey = `prayer:${userId}:${prayerId}`;
+
+    // Check if it's the user's own prayer; if not, check partner's
+    const ownPrayer = await kv.get(userKey);
+    if (ownPrayer) {
+      await kv.del(userKey);
+    } else {
+      const profile: any = await kv.get(`user:${userId}`).catch(() => null);
+      if (profile?.partnerId) {
+        const partnerKey = `prayer:${profile.partnerId}:${prayerId}`;
+        const partnerPrayer = await kv.get(partnerKey);
+        if (partnerPrayer) {
+          await kv.del(partnerKey);
+        }
+      }
+    }
 
     return c.json({ success: true });
   } catch (error: any) {
@@ -1834,13 +1869,8 @@ Keep the tone warm, encouraging, and Christ-centered. Limit response to 300 word
     try {
       analysis = await callGemini(moodPrompt);
     } catch (aiError: any) {
-      console.error('[Mood Analysis] Gemini failed:', aiError.message);
-      return c.json({
-        error: aiError.message?.includes('not configured')
-          ? 'Gemini API key is not configured. Please add GEMINI_API_KEY to your Supabase secrets.'
-          : `Gemini unavailable: ${aiError.message}`,
-        retryable: true,
-      }, 503);
+      console.warn('[Mood Analysis] Gemini failed - Using fallback message:', aiError.message);
+      analysis = buildFallbackAnalysis();
     }
 
     const analysisResult = {
@@ -1999,13 +2029,7 @@ Keep it under 150 words, loving and Christ-centered.`;
 
       aiAnalysis = await callGemini(weeklyPrompt);
     } catch (aiError: any) {
-      console.error('[Weekly Report] Gemini failed:', aiError.message);
-      return c.json({
-        error: aiError.message?.includes('not configured')
-          ? 'Gemini API key is not configured. Please add GEMINI_API_KEY to your Supabase secrets.'
-          : `AI unavailable: ${aiError.message}`,
-        retryable: true,
-      }, 503);
+      console.warn('[Weekly Report] Gemini failed - Using fallback message:', aiError.message);
     }
 
     // Create notifications for both partners
