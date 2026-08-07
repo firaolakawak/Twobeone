@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   ClipboardList,
+  ShieldAlert,
 } from "lucide-react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
@@ -25,6 +26,7 @@ import { UsersManager } from "./admin/UsersManager";
 import { LandingPageManager } from "./admin/LandingPageManager";
 import { PrivilegeManager } from "./admin/PrivilegeManager";
 import { AuditLog } from "./admin/AuditLog";
+import { AccountRecovery } from "./admin/AccountRecovery";
 import { ContentLanguageProvider } from "../contexts/ContentLanguageContext";
 
 interface AdminPanelProps {
@@ -76,6 +78,11 @@ export function AdminPanel({
       id: "auditLog",
       label: "Audit Log",
       icon: ClipboardList,
+    },
+    {
+      id: "accountRecovery",
+      label: "Account Recovery",
+      icon: ShieldAlert,
     },
   ];
 
@@ -236,6 +243,9 @@ export function AdminPanel({
               )}
               {activeSection === "auditLog" && (
                 <AuditLog accessToken={accessToken || ''} />
+              )}
+              {activeSection === "accountRecovery" && (
+                <AccountRecovery accessToken={accessToken} />
               )}
             </div>
           </div>

@@ -1,22 +1,9 @@
-import { useState } from 'react';
-import { Button } from './ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from './ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from './ui/dropdown-menu';
-import { Languages, Check } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Globe, Check } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { languages, Language } from '../utils/i18n';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { projectId } from '../utils/supabase/info';
 
 interface LanguageSelectorProps {
@@ -26,141 +13,160 @@ interface LanguageSelectorProps {
   userId?: string;
 }
 
-export function LanguageSelector({ 
-  variant = 'dropdown', 
-  showLabel = true,
+export function LanguageSelector({
   accessToken,
-  userId 
+  userId,
 }: LanguageSelectorProps) {
-  const { language, setLanguage, t } = useLanguage();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { language, setLanguage } = useLanguage();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
-  const handleLanguageChange = async (newLang: Language) => {
-    const oldLang = language;
-    setLanguage(newLang);
-    
-    const langName = languages.find(l => l.code === newLang)?.nativeName;
-    toast.success(`${t.common.success} - ${langName}`);
+  // Close on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    if (open) document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [open]);
 
-    // Save to backend if user is logged in
+  // Close on Escape
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpen(false);
+    }
+    if (open) document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [open]);
+
+  const handleSelect = async (code: Language) => {
+    setOpen(false);
+    setLanguage(code);
+    const langName = languages.find(l => l.code === code)?.nativeName;
+    toast.success(`Language set to ${langName}`);
+
     if (accessToken && userId) {
       try {
-        const response = await fetch(
+        await fetch(
           `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/profile`,
           {
             method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${accessToken}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              language: newLang
-            })
+            headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ language: code }),
           }
         );
-
-        if (!response.ok) {
-          throw new Error('Failed to save language preference');
-        }
-
-        console.log('[Language] Saved preference to backend:', newLang);
-      } catch (error) {
-        console.error('[Language] Failed to save preference:', error);
-        // Don't revert language change - local preference is still valid
-      }
+      } catch { /* non-fatal */ }
     }
-
-    setIsDialogOpen(false);
   };
 
-  if (variant === 'dialog') {
-    return (
-      <>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setIsDialogOpen(true)}
-          className="gap-2"
-        >
-          <Languages className="w-4 h-4" />
-          {showLabel && <span>{t.profile.language}</span>}
-        </Button>
+  const current = languages.find(l => l.code === language);
 
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Languages className="w-5 h-5 text-primary-600" />
-                {t.profile.language}
-              </DialogTitle>
-              <DialogDescription>
-                Choose your preferred language / ተመራጭ ቋንቋዎን ይምረጡ
-              </DialogDescription>
-            </DialogHeader>
+  return (
+    <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
+      {/* Borderless icon button */}
+      <button
+        onClick={() => setOpen(v => !v)}
+        aria-label="Select language"
+        aria-expanded={open}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          padding: '6px 10px',
+          borderRadius: 'var(--radius-full)',
+          border: 'none',
+          background: open ? 'var(--neutral-100)' : 'transparent',
+          cursor: 'pointer',
+          transition: 'background 0.15s ease',
+          color: 'var(--foreground)',
+          fontFamily: 'inherit',
+        }}
+        onMouseEnter={e => { if (!open) (e.currentTarget as HTMLButtonElement).style.background = 'var(--neutral-100)'; }}
+        onMouseLeave={e => { if (!open) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+      >
+        <Globe
+          strokeWidth={1.6}
+          style={{ width: 'var(--icon-sm)', height: 'var(--icon-sm)', color: 'var(--muted-foreground)' }}
+        />
+      </button>
 
-            <div className="space-y-2 py-4">
-              {languages.map((lang) => (
+      {/* Floating menu — no hard border, soft shadow only */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: -6 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -6 }}
+            transition={{ duration: 0.14, ease: [0.2, 0, 0, 1] }}
+            style={{
+              position: 'absolute',
+              top: 'calc(100% + 6px)',
+              right: 0,
+              minWidth: 192,
+              background: 'var(--card)',
+              borderRadius: 'var(--radius-lg)',
+              boxShadow: '0 8px 32px -4px rgba(0,0,0,0.14), 0 2px 8px -2px rgba(0,0,0,0.08)',
+              padding: '6px',
+              zIndex: 200,
+              overflow: 'hidden',
+            }}
+            role="menu"
+          >
+            {languages.map((lang) => {
+              const isActive = language === lang.code;
+              return (
                 <button
                   key={lang.code}
-                  onClick={() => handleLanguageChange(lang.code)}
-                  className={`w-full flex items-center justify-between p-4 rounded-lg border-2 transition-all ${
-                    language === lang.code
-                      ? 'border-primary-500 bg-primary-50'
-                      : 'border-border hover:border-primary-300 hover:bg-muted'
-                  }`}
+                  role="menuitem"
+                  onClick={() => handleSelect(lang.code)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: 'var(--radius-md)',
+                    border: 'none',
+                    background: isActive ? 'var(--primary-50)' : 'transparent',
+                    cursor: 'pointer',
+                    fontFamily: 'inherit',
+                    transition: 'background 0.12s ease',
+                    textAlign: 'left',
+                  }}
+                  onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = 'var(--neutral-100)'; }}
+                  onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="text-3xl">{lang.flag}</span>
-                    <div className="text-left">
-                      <p className="font-semibold">{lang.nativeName}</p>
-                      <p className="text-sm text-muted-foreground">{lang.name}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <span style={{ fontSize: 20, lineHeight: 1 }}>{lang.flag}</span>
+                    <div>
+                      <p style={{
+                        fontSize: 'var(--text-caption)',
+                        fontWeight: isActive ? 'var(--font-weight-semibold)' : 'var(--font-weight-medium)',
+                        color: isActive ? 'var(--primary-700)' : 'var(--foreground)',
+                        lineHeight: 1.3,
+                        margin: 0,
+                      }}>
+                        {lang.nativeName}
+                      </p>
+                      <p style={{
+                        fontSize: 'var(--text-label)',
+                        color: 'var(--muted-foreground)',
+                        margin: 0,
+                        lineHeight: 1.2,
+                      }}>
+                        {lang.name}
+                      </p>
                     </div>
                   </div>
-                  {language === lang.code && (
-                    <Check className="w-5 h-5 text-primary-600" />
+                  {isActive && (
+                    <Check strokeWidth={2.5} style={{ width: 14, height: 14, color: 'var(--primary-600)', flexShrink: 0 }} />
                   )}
                 </button>
-              ))}
-            </div>
-          </DialogContent>
-        </Dialog>
-      </>
-    );
-  }
-
-  // Dropdown variant (default)
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
-          <Languages className="w-4 h-4" />
-          {showLabel && (
-            <span className="hidden sm:inline">
-              {languages.find(l => l.code === language)?.nativeName}
-            </span>
-          )}
-          <span className="sm:hidden">
-            {languages.find(l => l.code === language)?.flag}
-          </span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
-        {languages.map((lang) => (
-          <DropdownMenuItem
-            key={lang.code}
-            onClick={() => handleLanguageChange(lang.code)}
-            className="flex items-center justify-between cursor-pointer"
-          >
-            <div className="flex items-center gap-2">
-              <span className="text-xl">{lang.flag}</span>
-              <span>{lang.nativeName}</span>
-            </div>
-            {language === lang.code && (
-              <Check className="w-4 h-4 text-primary-600" />
-            )}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

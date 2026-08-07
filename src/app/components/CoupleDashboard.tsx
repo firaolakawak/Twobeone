@@ -31,10 +31,10 @@ import {
   Star,
   PartyPopper,
   Brain,
-  Trash2
+  Trash2,
+  ChevronDown,
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
-import { BibleReader } from './BibleReader';
 import { ComprehensiveBibleReader } from './ComprehensiveBibleReader';
 import { LearningModulesCard } from './LearningModulesCard';
 import { PushNotificationSetup } from './PushNotificationSetup';
@@ -168,8 +168,7 @@ export function CoupleDashboard({
   const [showMoodDialog, setShowMoodDialog] = useState(false);
   const [todayMood, setTodayMood] = useState<string | null>(null);
   const [showMilestoneDialog, setShowMilestoneDialog] = useState(false);
-  const [showBibleReader, setShowBibleReader] = useState(false);
-  const [isComprehensiveBibleReader, setIsComprehensiveBibleReader] = useState(false);
+
   const [showPushNotificationSetup, setShowPushNotificationSetup] = useState(false);
   const [showLocationSettings, setShowLocationSettings] = useState(false);
   const [userLocation, setUserLocation] = useState<any>(null);
@@ -187,6 +186,8 @@ export function CoupleDashboard({
   const [todaysMood, setTodaysMood] = useState<MoodEntry | null>(null);
   const [partnerMood, setPartnerMood] = useState<MoodEntry | null>(null);
   const [totalQuestionsCount, setTotalQuestionsCount] = useState(0);
+  const [stageExpanded, setStageExpanded] = useState(false);
+  const [countdownExpanded, setCountdownExpanded] = useState(false);
 
   const userInitials = profile?.name?.split(' ').map(n => n[0]).join('') || '?';
   const partnerInitials = partner?.name?.split(' ').map(n => n[0]).join('') || '?';
@@ -520,9 +521,19 @@ export function CoupleDashboard({
   }));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
+      {/* Page-level ambient radial glow */}
+      <div className="pointer-events-none absolute -top-8 left-0 right-0 overflow-hidden" style={{ height: 260, zIndex: 0 }}>
+        <div style={{
+          position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
+          width: 480, height: 260,
+          background: 'radial-gradient(ellipse at top, rgba(244,63,94,0.10) 0%, rgba(139,92,246,0.06) 45%, transparent 72%)',
+          filter: 'blur(2px)',
+        }} />
+      </div>
+
       {/* Couple Header */}
-      <Card className="overflow-hidden relative">
+      <Card className="overflow-hidden relative" style={{ zIndex: 1 }}>
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary-100 via-primary-50 to-primary-100 opacity-50" />
         {coupleData.couplePicture && (
@@ -644,62 +655,110 @@ export function CoupleDashboard({
             return (
               <div style={{
                 margin: '14px 0 0',
-                padding: '12px 16px 10px',
                 borderRadius: 'var(--radius-lg, 14px)',
                 border: `1.5px solid ${accent}`,
                 background: 'var(--background)',
+                overflow: 'hidden',
               }}>
-                {/* Stage header row */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                {/* Tap-to-toggle header — always visible */}
+                <button
+                  onClick={() => setStageExpanded(v => !v)}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    width: '100%', padding: '10px 14px',
+                    background: 'transparent', border: 'none', cursor: 'pointer',
+                    fontFamily: 'inherit',
+                  }}
+                >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 22, lineHeight: 1 }}>{stage.emoji}</span>
-                    <div>
-                      <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: 'var(--foreground)', lineHeight: 1.2 }}>
+                    <span style={{ fontSize: 20, lineHeight: 1 }}>{stage.emoji}</span>
+                    <div style={{ textAlign: 'left' }}>
+                      <p style={{ margin: 0, fontSize: 'var(--text-caption)', fontWeight: 'var(--font-weight-bold)', color: 'var(--foreground)', lineHeight: 1.2 }}>
                         {stage.label} Stage
                       </p>
-                      <p style={{ margin: 0, fontSize: 10, color: 'var(--muted-foreground)' }}>
+                      <p style={{ margin: 0, fontSize: 'var(--text-label)', color: 'var(--muted-foreground)' }}>
                         {daysTogether} days together
                       </p>
                     </div>
                   </div>
-                  {nextStage && (
-                    <p style={{ margin: 0, fontSize: 10, color: 'var(--muted-foreground)', textAlign: 'right' }}>
-                      {nextStage.emoji} {nextStage.label}<br />
-                      <span style={{ color: accent, fontWeight: 600 }}>{nextStage.minDays - daysTogether}d to go</span>
-                    </p>
-                  )}
-                </div>
-                {/* Progress bar */}
-                <div style={{ height: 5, borderRadius: 999, background: 'var(--border)', overflow: 'hidden', marginBottom: 10 }}>
-                  <div style={{ height: '100%', width: `${pct}%`, background: accent, borderRadius: 999, transition: 'width 1s ease' }} />
-                </div>
-                {/* 5 stage nodes */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
-                  {STAGES.map((s, i) => {
-                    const done = i < idx;
-                    const active = i === idx;
-                    return (
-                      <div key={s.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: 1 }}>
-                        <div style={{
-                          width: active ? 32 : 24, height: active ? 32 : 24,
-                          borderRadius: '50%',
-                          fontSize: active ? 16 : 12,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          background: active ? accent : done ? 'var(--muted-foreground)' : 'var(--muted)',
-                          opacity: i > idx ? 0.35 : 1,
-                          transition: 'all 0.3s ease',
-                          boxShadow: active ? `0 0 0 3px color-mix(in srgb, ${accent} 25%, transparent)` : 'none',
-                        }}>
-                          {s.emoji}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {/* Mini progress pill — visible in collapsed state */}
+                    {!stageExpanded && (
+                      <div style={{
+                        display: 'flex', alignItems: 'center', gap: 5,
+                        padding: '3px 8px', borderRadius: 'var(--radius-full)',
+                        background: `color-mix(in srgb, ${accent} 12%, transparent)`,
+                      }}>
+                        <div style={{ width: 48, height: 3, borderRadius: 999, background: 'var(--border)', overflow: 'hidden' }}>
+                          <div style={{ height: '100%', width: `${pct}%`, background: accent, borderRadius: 999 }} />
                         </div>
-                        <span style={{
-                          fontSize: 9, fontWeight: active ? 700 : 500,
-                          color: active ? accent : i < idx ? 'var(--foreground)' : 'var(--muted-foreground)',
-                          whiteSpace: 'nowrap',
-                        }}>{s.label}</span>
+                        <span style={{ fontSize: 'var(--text-label)', fontWeight: 'var(--font-weight-semibold)', color: accent }}>
+                          {pct}%
+                        </span>
                       </div>
-                    );
-                  })}
+                    )}
+                    {nextStage && !stageExpanded && (
+                      <span style={{ fontSize: 'var(--text-label)', color: 'var(--muted-foreground)' }}>
+                        {nextStage.minDays - daysTogether}d left
+                      </span>
+                    )}
+                    <ChevronDown
+                      style={{
+                        width: 15, height: 15, color: 'var(--muted-foreground)',
+                        transform: stageExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                        transition: 'transform 0.22s ease',
+                        flexShrink: 0,
+                      }}
+                    />
+                  </div>
+                </button>
+
+                {/* Expandable body */}
+                <div style={{
+                  overflow: 'hidden',
+                  maxHeight: stageExpanded ? 160 : 0,
+                  transition: 'max-height 0.28s cubic-bezier(0.4,0,0.2,1)',
+                }}>
+                  <div style={{ padding: '0 14px 12px' }}>
+                    {/* Progress bar */}
+                    <div style={{ height: 5, borderRadius: 999, background: 'var(--border)', overflow: 'hidden', marginBottom: 12 }}>
+                      <div style={{ height: '100%', width: `${pct}%`, background: accent, borderRadius: 999, transition: 'width 1s ease' }} />
+                    </div>
+                    {/* Next stage label */}
+                    {nextStage && (
+                      <p style={{ margin: '0 0 10px', fontSize: 'var(--text-label)', color: 'var(--muted-foreground)', textAlign: 'right' }}>
+                        {nextStage.emoji} Next: <strong style={{ color: accent }}>{nextStage.label}</strong> in {nextStage.minDays - daysTogether} days
+                      </p>
+                    )}
+                    {/* 5 stage nodes */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      {STAGES.map((s, i) => {
+                        const done = i < idx;
+                        const active = i === idx;
+                        return (
+                          <div key={s.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: 1 }}>
+                            <div style={{
+                              width: active ? 30 : 22, height: active ? 30 : 22,
+                              borderRadius: '50%',
+                              fontSize: active ? 15 : 11,
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              background: active ? accent : done ? 'var(--muted-foreground)' : 'var(--muted)',
+                              opacity: i > idx ? 0.35 : 1,
+                              transition: 'all 0.3s ease',
+                              boxShadow: active ? `0 0 0 3px color-mix(in srgb, ${accent} 25%, transparent)` : 'none',
+                            }}>
+                              {s.emoji}
+                            </div>
+                            <span style={{
+                              fontSize: 9, fontWeight: active ? 700 : 500,
+                              color: active ? accent : i < idx ? 'var(--foreground)' : 'var(--muted-foreground)',
+                              whiteSpace: 'nowrap',
+                            }}>{s.label}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
               </div>
             );
@@ -717,27 +776,116 @@ export function CoupleDashboard({
             const hours = Math.floor((diff % 86_400_000) / 3_600_000);
             const mins = Math.floor((diff % 3_600_000) / 60_000);
             return (
-              <div className="mt-4 mx-auto max-w-xs rounded-xl border border-primary-200 bg-primary-50 px-4 py-3 text-center">
-                <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--primary-600)', marginBottom: 'var(--spacing-1)' }}>
-                  {upcoming.icon || '🗓️'} {upcoming.title}
-                </p>
-                <div className="flex items-center justify-center gap-3 mt-1">
-                  {[
-                    { val: days,  label: 'days' },
-                    { val: hours, label: 'hrs'  },
-                    { val: mins,  label: 'min'  },
-                  ].map(({ val, label }) => (
-                    <div key={label} className="flex flex-col items-center">
-                      <span className="text-2xl font-bold" style={{ color: 'var(--primary-700)', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
-                        {String(val).padStart(2, '0')}
+              <div
+                style={{
+                  marginTop: 'var(--spacing-4)',
+                  marginLeft: 'auto',
+                  marginRight: 'auto',
+                  maxWidth: 320,
+                  borderRadius: 'var(--radius-xl)',
+                  border: '1.5px solid var(--primary-200)',
+                  background: 'var(--primary-50)',
+                  overflow: 'hidden',
+                }}
+              >
+                {/* Tap-to-toggle header — always visible */}
+                <button
+                  onClick={() => setCountdownExpanded(v => !v)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    padding: 'var(--spacing-3) var(--spacing-4)',
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontFamily: 'inherit',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
+                    
+                    <span style={{
+                      fontSize: 'var(--text-caption)',
+                      fontWeight: 'var(--font-weight-semibold)',
+                      color: 'var(--primary-700)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.06em',
+                    }}>
+                      {upcoming.title}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
+                    {/* Compact pill shown when collapsed */}
+                    {!countdownExpanded && (
+                      <span style={{
+                        fontSize: 'var(--text-label)',
+                        fontWeight: 'var(--font-weight-semibold)',
+                        color: 'var(--primary-600)',
+                        background: 'color-mix(in srgb, var(--primary-600) 10%, transparent)',
+                        padding: '2px 8px',
+                        borderRadius: 'var(--radius-full)',
+                        fontVariantNumeric: 'tabular-nums',
+                      }}>
+                        {days}d {String(hours).padStart(2, '0')}h
                       </span>
-                      <span className="text-[10px] text-muted-foreground uppercase tracking-widest">{label}</span>
+                    )}
+                    <ChevronDown style={{
+                      width: 15,
+                      height: 15,
+                      color: 'var(--primary-500)',
+                      transform: countdownExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                      transition: 'transform 0.22s ease',
+                      flexShrink: 0,
+                    }} />
+                  </div>
+                </button>
+
+                {/* Expandable countdown body */}
+                <div style={{
+                  overflow: 'hidden',
+                  maxHeight: countdownExpanded ? 120 : 0,
+                  transition: 'max-height 0.28s cubic-bezier(0.4,0,0.2,1)',
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 'var(--spacing-1)',
+                    padding: '0 var(--spacing-4) var(--spacing-3)',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--spacing-3)' }}>
+                      {[
+                        { val: days,  label: 'days' },
+                        { val: hours, label: 'hrs'  },
+                        { val: mins,  label: 'min'  },
+                      ].map(({ val, label }) => (
+                        <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          <span style={{
+                            fontSize: 'var(--text-2xl)',
+                            fontWeight: 'var(--font-weight-bold)',
+                            color: 'var(--primary-700)',
+                            fontVariantNumeric: 'tabular-nums',
+                            lineHeight: 1,
+                          }}>
+                            {String(val).padStart(2, '0')}
+                          </span>
+                          <span style={{
+                            fontSize: 10,
+                            color: 'var(--muted-foreground)',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.08em',
+                          }}>
+                            {label}
+                          </span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                    <p style={{ margin: 0, fontSize: 'var(--text-label)', color: 'var(--muted-foreground)' }}>
+                      {new Date(upcoming.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-[11px] text-muted-foreground mt-1">
-                  {new Date(upcoming.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                </p>
               </div>
             );
           })()}
@@ -757,83 +905,83 @@ export function CoupleDashboard({
         />
       )}
 
-      {/* Quick Stats Grid */}
-      <div className="grid grid-cols-2 gap-4">
-        {/* Devotional Streak */}
-        <Card 
-          className="bg-gradient-to-br from-primary-50 to-primary-100 border-primary-200 cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => onNavigate?.('devotions')}
-        >
-          <CardContent className="pt-6">
+      {/* Quick Stats Grid — neumorphic soft-shadow cards */}
+      <div className="grid grid-cols-2 gap-3">
+        {[
+          {
+            label: t.dashboard.devotionalStreak,
+            value: devotionalStreakValue,
+            sub: devotionalStreakValue === 1 ? 'day' : 'days',
+            icon: Calendar,
+            onClick: () => onNavigate?.('devotions'),
+            accent: 'var(--primary-500)',
+            bg: 'linear-gradient(135deg, var(--primary-50) 0%, #fff0f5 100%)',
+            iconBg: 'var(--primary-100)',
+            textColor: 'var(--primary-700)',
+            numColor: 'var(--primary-900)',
+          },
+          {
+            label: t.dashboard.journalEntries,
+            value: sharedJournalEntries,
+            sub: 'shared',
+            icon: BookHeart,
+            onClick: () => onNavigate?.('journal'),
+            accent: 'var(--secondary-500)',
+            bg: 'linear-gradient(135deg, var(--secondary-50) 0%, #f0f9ff 100%)',
+            iconBg: 'var(--secondary-100)',
+            textColor: 'var(--secondary-700)',
+            numColor: 'var(--secondary-700)',
+          },
+          {
+            label: t.dashboard.prayers,
+            value: `${answeredPrayers}/${totalPrayers}`,
+            sub: 'answered',
+            icon: HandHeart,
+            onClick: () => onNavigate?.('prayer'),
+            accent: '#8b5cf6',
+            bg: 'linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%)',
+            iconBg: '#ede9fe',
+            textColor: '#6d28d9',
+            numColor: '#5b21b6',
+          },
+          {
+            label: t.dashboard.questions,
+            value: `${questionsAnswered}/${totalQuestionsCount}`,
+            sub: 'answered',
+            icon: MessageCircleHeart,
+            onClick: () => onScreenNavigate?.('category-selection'),
+            accent: 'var(--success-500)',
+            bg: 'linear-gradient(135deg, var(--success-50) 0%, #dcfce7 100%)',
+            iconBg: '#bbf7d0',
+            textColor: 'var(--success-700)',
+            numColor: 'var(--success-700)',
+          },
+        ].map(({ label, value, sub, icon: Icon, onClick, accent, bg, iconBg, textColor, numColor }) => (
+          <button
+            key={label}
+            onClick={onClick}
+            className="text-left rounded-2xl p-4 transition-all duration-200 active:scale-[0.97]"
+            style={{
+              background: bg,
+              border: 'none',
+              boxShadow: `0 2px 0 0 var(--neutral-200), 0 8px 24px -4px ${accent}22, 0 1px 3px 0 ${accent}18`,
+            }}
+          >
             <div className="flex items-start justify-between">
-              <div className="space-y-1">
-                <p className="text-sm text-primary-700">{t.dashboard.devotionalStreak}</p>
-                <p className="text-3xl font-bold text-primary-900">{devotionalStreakValue}</p>
-                <p className="text-xs text-primary-600">{devotionalStreakValue === 1 ? 'day' : 'days'}</p>
+              <div className="space-y-0.5">
+                <p className="text-xs font-medium" style={{ color: textColor }}>{label}</p>
+                <p className="text-3xl font-bold leading-none mt-1" style={{ color: numColor }}>{value}</p>
+                <p className="text-xs" style={{ color: textColor, opacity: 0.75 }}>{sub}</p>
               </div>
-              <div className="w-12 h-12 rounded-full bg-primary-200 flex items-center justify-center">
-                <Calendar className="w-6 h-6 text-primary-700" />
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: iconBg }}>
+                <Icon className="w-5 h-5" style={{ color: accent }} />
               </div>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Journal Entries */}
-        <Card 
-          className="bg-gradient-to-br from-primary-50 to-primary-100 border-primary-200 cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => onNavigate?.('journal')}
-        >
-          <CardContent className="pt-6">
-            <div className="flex items-start justify-between">
-              <div className="space-y-1">
-                <p className="text-sm text-primary-700">{t.dashboard.journalEntries}</p>
-                <p className="text-3xl font-bold text-primary-900">{sharedJournalEntries}</p>
-                <p className="text-xs text-primary-600">shared</p>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-primary-200 flex items-center justify-center">
-                <BookHeart className="w-6 h-6 text-primary-700" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Prayers */}
-        <Card 
-          className="bg-gradient-to-br from-sky-50 to-sky-100 border-sky-200 cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => onNavigate?.('prayer')}
-        >
-          <CardContent className="pt-6">
-            <div className="flex items-start justify-between">
-              <div className="space-y-1">
-                <p className="text-sm text-sky-700">{t.dashboard.prayers}</p>
-                <p className="text-3xl font-bold text-sky-700">{answeredPrayers}/{totalPrayers}</p>
-                <p className="text-xs text-sky-600">answered</p>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-sky-100 flex items-center justify-center">
-                <HandHeart className="w-6 h-6 text-sky-700" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Questions */}
-        <Card 
-          className="bg-gradient-to-br from-success-50 to-success-50 border-success-500/30 cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => onScreenNavigate?.('category-selection')}
-        >
-          <CardContent className="pt-6">
-            <div className="flex items-start justify-between">
-              <div className="space-y-1">
-                <p className="text-sm text-success-700">{t.dashboard.questions}</p>
-                <p className="text-3xl font-bold text-success-700">{questionsAnswered}/{totalQuestionsCount}</p>
-                <p className="text-xs text-success-700">answered</p>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-success-50 flex items-center justify-center">
-                <MessageCircleHeart className="w-6 h-6 text-success-700" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            {/* Subtle bottom accent bar */}
+            <div className="mt-3 h-0.5 rounded-full w-full opacity-30" style={{ background: accent }} />
+          </button>
+        ))}
       </div>
 
       {/* Daily Bible Verse */}
@@ -858,40 +1006,39 @@ export function CoupleDashboard({
             </div>
           ) : dailyVerse ? (
             <div className="space-y-3">
-              {/* Language toggle */}
-              <div style={{ display: 'flex', gap: 'var(--spacing-1)', padding: 'var(--spacing-1)', width: 'fit-content' }} onClick={e => e.stopPropagation()}>
-                <button
-                  onClick={() => setVerseLanguage('en')}
-                  style={{
-                    background: verseLanguage === 'en' ? 'var(--primary)' : 'transparent',
-                    color: verseLanguage === 'en' ? 'var(--primary-foreground)' : 'var(--muted-foreground)',
-                    borderRadius: 'var(--radius-full)',
-                    fontSize: 'var(--text-xs)',
-                    padding: 'var(--spacing-1) var(--spacing-2)',
-                    border: verseLanguage === 'en' ? 'none' : '1px solid var(--border)',
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
-                    transition: 'all 0.15s ease',
-                  }}
-                >
-                  English
-                </button>
-                <button
-                  onClick={() => setVerseLanguage('am')}
-                  style={{
-                    background: verseLanguage === 'am' ? 'var(--primary)' : 'transparent',
-                    color: verseLanguage === 'am' ? 'var(--primary-foreground)' : 'var(--muted-foreground)',
-                    borderRadius: 'var(--radius-full)',
-                    fontSize: 'var(--text-xs)',
-                    padding: 'var(--spacing-1) var(--spacing-2)',
-                    border: verseLanguage === 'am' ? 'none' : '1px solid var(--border)',
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
-                    transition: 'all 0.15s ease',
-                  }}
-                >
-                  አማርኛ
-                </button>
+              {/* Language toggle — borderless floating pill */}
+              <div
+                onClick={e => e.stopPropagation()}
+                style={{
+                  display: 'inline-flex',
+                  background: 'var(--neutral-100)',
+                  borderRadius: 'var(--radius-full)',
+                  padding: '3px',
+                  gap: '2px',
+                  width: 'fit-content',
+                }}
+              >
+                {(['en', 'am'] as const).map(lang => (
+                  <button
+                    key={lang}
+                    onClick={() => setVerseLanguage(lang)}
+                    style={{
+                      background: verseLanguage === lang ? 'var(--card)' : 'transparent',
+                      color: verseLanguage === lang ? 'var(--foreground)' : 'var(--muted-foreground)',
+                      borderRadius: 'var(--radius-full)',
+                      fontSize: 'var(--text-caption-small)',
+                      fontWeight: verseLanguage === lang ? 'var(--font-weight-semibold)' : 'var(--font-weight-normal)',
+                      padding: '4px 12px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontFamily: 'inherit',
+                      transition: 'all 0.18s ease',
+                      boxShadow: verseLanguage === lang ? '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08)' : 'none',
+                    }}
+                  >
+                    {lang === 'en' ? 'English' : 'አማርኛ'}
+                  </button>
+                ))}
               </div>
 
               {verseLanguage === 'en' ? (

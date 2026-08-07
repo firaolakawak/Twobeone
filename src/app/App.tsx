@@ -4,42 +4,20 @@ import {
   useCallback,
   useMemo,
   useRef,
+  lazy,
+  Suspense,
+  startTransition,
 } from "react";
+
+// ── Critical path — loaded eagerly (needed before/at first paint) ──────────
 import { SEOHead } from "./components/SEOHead";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { LanguageSelector } from "./components/LanguageSelector";
 import { SplashScreen } from "./components/SplashScreen";
 import { AuthPage } from "./components/AuthPage";
-import { CoupleDashboard } from "./components/CoupleDashboard";
-import { NotificationCenter } from "./components/NotificationCenter";
-import { QuizzesHub } from "./components/QuizzesHub";
-import { PreMarriageHub } from "./components/PreMarriageHub";
-import { LessonScreen } from "./components/LessonScreen";
-import { DailyDevotionsFeed } from "./components/DailyDevotionsFeed";
-import { EnhancedJournal } from "./components/EnhancedJournal";
-import { PrayerBoard } from "./components/PrayerBoard";
-import { CommunityGroups } from "./components/CommunityGroups";
-import { GroupDetailScreen } from "./components/GroupDetailScreen";
-import { SettingsScreen } from "./components/SettingsScreen";
-import { QuestionsSection } from "./components/QuestionsSection";
-import { ProgressSection } from "./components/ProgressSection";
+import { LandingPage } from "./components/LandingPage";
 import { BottomNavigation } from "./components/BottomNavigation";
-import { FloatingActionButtons } from "./components/FloatingActionButtons";
-import { DevotionalDialog } from "./components/DevotionalDialog";
-import { RelationshipTimeline } from "./components/RelationshipTimeline";
-import { AdminPanel } from "./components/AdminPanel";
-import { CategorySelection } from "./components/CategorySelection";
-import { QADiscussionHub } from "./components/QADiscussionHub";
-import { DebugQuestions } from "./components/DebugQuestions";
-import { DebugResponses } from "./components/DebugResponses";
-import { TestingDashboard } from "./components/TestingDashboard";
-import { ScriptureMemory } from "./components/ScriptureMemory";
-import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
-import { PWAUpdateNotification } from "./components/PWAUpdateNotification";
-import { IOSInstallPrompt } from "./components/IOSInstallPrompt";
-import { PWADebugInfo } from "./components/PWADebugInfo";
-import { IconsMissingNotice } from "./components/IconsMissingNotice";
-import { InstallBanner } from "./components/InstallBanner";
+import { OfflineIndicator } from "./components/OfflineIndicator";
 import { Button } from "./components/ui/button";
 import {
   Heart,
@@ -63,16 +41,53 @@ import {
   TabsList,
   TabsTrigger,
 } from "./components/ui/tabs";
-import { CoupleProfile } from "./components/CoupleProfile";
-import { CoupleHeader } from "./components/CoupleHeader";
-import { DailyVerseCard } from "./components/DailyVerseCard";
-import { TodaysReflection } from "./components/TodaysReflection";
-import { RecentMilestones } from "./components/RecentMilestones";
-import { PreMarriageGuidance } from "./components/PreMarriageGuidance";
-import { MoodTracker } from "./components/MoodTracker";
-import { MoodAnalytics } from "./components/MoodAnalytics";
-import { MarriageReadinessReport } from "./components/MarriageReadinessReport";
-import { DailyQuestion } from "./components/DailyQuestion";
+import { Toaster } from "./components/ui/sonner";
+
+// ── Deferred — lazy-loaded after auth / on first navigation ───────────────
+const CoupleDashboard      = lazy(() => import("./components/CoupleDashboard").then(m => ({ default: m.CoupleDashboard })));
+const NotificationCenter   = lazy(() => import("./components/NotificationCenter").then(m => ({ default: m.NotificationCenter })));
+const QuizzesHub           = lazy(() => import("./components/QuizzesHub").then(m => ({ default: m.QuizzesHub })));
+const PreMarriageHub       = lazy(() => import("./components/PreMarriageHub").then(m => ({ default: m.PreMarriageHub })));
+const LessonScreen         = lazy(() => import("./components/LessonScreen").then(m => ({ default: m.LessonScreen })));
+const DailyDevotionsFeed   = lazy(() => import("./components/DailyDevotionsFeed").then(m => ({ default: m.DailyDevotionsFeed })));
+const EnhancedJournal      = lazy(() => import("./components/EnhancedJournal").then(m => ({ default: m.EnhancedJournal })));
+const PrayerBoard          = lazy(() => import("./components/PrayerBoard").then(m => ({ default: m.PrayerBoard })));
+const CommunityGroups      = lazy(() => import("./components/CommunityGroups").then(m => ({ default: m.CommunityGroups })));
+const GroupDetailScreen    = lazy(() => import("./components/GroupDetailScreen").then(m => ({ default: m.GroupDetailScreen })));
+const SettingsScreen       = lazy(() => import("./components/SettingsScreen").then(m => ({ default: m.SettingsScreen })));
+const QuestionsSection     = lazy(() => import("./components/QuestionsSection").then(m => ({ default: m.QuestionsSection })));
+const ProgressSection      = lazy(() => import("./components/ProgressSection").then(m => ({ default: m.ProgressSection })));
+const FloatingActionButtons= lazy(() => import("./components/FloatingActionButtons").then(m => ({ default: m.FloatingActionButtons })));
+const DevotionalDialog     = lazy(() => import("./components/DevotionalDialog").then(m => ({ default: m.DevotionalDialog })));
+const RelationshipTimeline = lazy(() => import("./components/RelationshipTimeline").then(m => ({ default: m.RelationshipTimeline })));
+const AdminPanel           = lazy(() => import("./components/AdminPanel").then(m => ({ default: m.AdminPanel })));
+const CategorySelection    = lazy(() => import("./components/CategorySelection").then(m => ({ default: m.CategorySelection })));
+const QADiscussionHub      = lazy(() => import("./components/QADiscussionHub").then(m => ({ default: m.QADiscussionHub })));
+const DebugQuestions       = lazy(() => import("./components/DebugQuestions").then(m => ({ default: m.DebugQuestions })));
+const DebugResponses       = lazy(() => import("./components/DebugResponses").then(m => ({ default: m.DebugResponses })));
+const TestingDashboard     = lazy(() => import("./components/TestingDashboard").then(m => ({ default: m.TestingDashboard })));
+const ScriptureMemory      = lazy(() => import("./components/ScriptureMemory").then(m => ({ default: m.ScriptureMemory })));
+const CoupleProfile        = lazy(() => import("./components/CoupleProfile").then(m => ({ default: m.CoupleProfile })));
+const CoupleHeader         = lazy(() => import("./components/CoupleHeader").then(m => ({ default: m.CoupleHeader })));
+const DailyVerseCard       = lazy(() => import("./components/DailyVerseCard").then(m => ({ default: m.DailyVerseCard })));
+const TodaysReflection     = lazy(() => import("./components/TodaysReflection").then(m => ({ default: m.TodaysReflection })));
+const RecentMilestones     = lazy(() => import("./components/RecentMilestones").then(m => ({ default: m.RecentMilestones })));
+const PreMarriageGuidance  = lazy(() => import("./components/PreMarriageGuidance").then(m => ({ default: m.PreMarriageGuidance })));
+const MoodTracker          = lazy(() => import("./components/MoodTracker").then(m => ({ default: m.MoodTracker })));
+const MoodAnalytics        = lazy(() => import("./components/MoodAnalytics").then(m => ({ default: m.MoodAnalytics })));
+const MarriageReadinessReport = lazy(() => import("./components/MarriageReadinessReport").then(m => ({ default: m.MarriageReadinessReport })));
+const DailyQuestion        = lazy(() => import("./components/DailyQuestion").then(m => ({ default: m.DailyQuestion })));
+const PWAInstallPrompt     = lazy(() => import("./components/PWAInstallPrompt").then(m => ({ default: m.PWAInstallPrompt })));
+const PWAUpdateNotification= lazy(() => import("./components/PWAUpdateNotification").then(m => ({ default: m.PWAUpdateNotification })));
+const IOSInstallPrompt     = lazy(() => import("./components/IOSInstallPrompt").then(m => ({ default: m.IOSInstallPrompt })));
+const PWADebugInfo         = lazy(() => import("./components/PWADebugInfo").then(m => ({ default: m.PWADebugInfo })));
+const IconsMissingNotice   = lazy(() => import("./components/IconsMissingNotice").then(m => ({ default: m.IconsMissingNotice })));
+const InstallBanner        = lazy(() => import("./components/InstallBanner").then(m => ({ default: m.InstallBanner })));
+const InstallPrompt        = lazy(() => import("./components/InstallPrompt").then(m => ({ default: m.InstallPrompt })));
+const PWAWelcome           = lazy(() => import("./components/PWAWelcome").then(m => ({ default: m.PWAWelcome })));
+const PWAUpdateAvailable   = lazy(() => import("./components/PWAUpdateAvailable").then(m => ({ default: m.PWAUpdateAvailable })));
+const LegalFooter          = lazy(() => import("./components/LegalFooter").then(m => ({ default: m.LegalFooter })));
+
 import { createClient } from "./utils/supabase/client";
 import {
   projectId,
@@ -80,18 +95,11 @@ import {
 } from "./utils/supabase/info";
 import { sendNotification } from "./utils/notifications";
 import { toast } from "sonner@2.0.3";
-import { Toaster } from "./components/ui/sonner";
 import api, {
   warmUpServer,
   admin as adminApi,
 } from "./utils/api";
 import { registerServiceWorker } from "./utils/pwa";
-import { InstallPrompt } from "./components/InstallPrompt";
-import { OfflineIndicator } from "./components/OfflineIndicator";
-import { PWAWelcome } from "./components/PWAWelcome";
-import { PWAUpdateAvailable } from "./components/PWAUpdateAvailable";
-import { LegalFooter } from "./components/LegalFooter";
-import { LandingPage } from "./components/LandingPage";
 import type {
   JournalEntry,
   PrayerRequest,
@@ -99,6 +107,19 @@ import type {
   QuestionResponse,
   User as UserType,
 } from "./types";
+
+// Shared fallback for lazy-loaded screens
+function ScreenLoader() {
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      minHeight: '60vh', flexDirection: 'column', gap: 'var(--spacing-3)',
+    }}>
+      <Loader2 style={{ width: 28, height: 28, color: 'var(--primary-500)', animation: 'spin 1s linear infinite' }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
+}
 
 const QA_CATEGORY_LABELS: Record<string, string> = {
   "daily-life": "Daily Life & Habits",
@@ -177,10 +198,19 @@ const APP_TRANSLATIONS: Record<
 
 export default function App() {
   const [showLanding, setShowLanding] = useState(true);
-  const [activeTab, setActiveTab] = useState("home");
-  const [selectedScreen, setSelectedScreen] = useState<
+  const [activeTab, setActiveTabRaw] = useState("home");
+  const [selectedScreen, setSelectedScreenRaw] = useState<
     string | null
   >("dashboard");
+
+  // Wrap navigation setters in startTransition so lazy-loaded screens
+  // suspend gracefully instead of blocking synchronous input events.
+  const setActiveTab = useCallback((tab: string) => {
+    startTransition(() => setActiveTabRaw(tab));
+  }, []);
+  const setSelectedScreen = useCallback((screen: string | null) => {
+    startTransition(() => setSelectedScreenRaw(screen));
+  }, []);
   const [user, setUser] = useState<any | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(
     null,
@@ -309,9 +339,11 @@ export default function App() {
         }
         if (session?.access_token) {
           console.log("[App] Restoring existing session");
-          setUser(session.user);
-          setAccessToken(session.access_token);
-          setShowLanding(false);
+          startTransition(() => {
+            setUser(session.user);
+            setAccessToken(session.access_token);
+            setShowLanding(false);
+          });
           await loadUserDataRef.current?.(session.access_token);
         } else {
           console.log("[App] No existing session");
@@ -336,25 +368,33 @@ export default function App() {
         );
 
         if (event === "SIGNED_IN" && session?.access_token) {
-          setUser(session.user);
-          setAccessToken(session.access_token);
-          setShowLanding(false);
+          startTransition(() => {
+            setUser(session.user);
+            setAccessToken(session.access_token);
+            setShowLanding(false);
+          });
         } else if (
           event === "TOKEN_REFRESHED" &&
           session?.access_token
         ) {
-          setUser(session.user);
-          setAccessToken(session.access_token);
+          startTransition(() => {
+            setUser(session.user);
+            setAccessToken(session.access_token);
+          });
         } else if (event === "SIGNED_OUT") {
           const {
             data: { session: current },
           } = await supabase.auth.getSession();
           if (current?.access_token) {
-            setUser(current.user);
-            setAccessToken(current.access_token);
+            startTransition(() => {
+              setUser(current.user);
+              setAccessToken(current.access_token);
+            });
           } else {
-            setUser(null);
-            setAccessToken(null);
+            startTransition(() => {
+              setUser(null);
+              setAccessToken(null);
+            });
           }
         }
       },
@@ -1093,9 +1133,11 @@ export default function App() {
         <SEOHead />
         <AuthPage
           onAuthSuccess={(token, userObj) => {
-            setUser(userObj);
-            setAccessToken(token);
-            setShowLanding(false);
+            startTransition(() => {
+              setUser(userObj);
+              setAccessToken(token);
+              setShowLanding(false);
+            });
           }}
         />
       </LanguageProvider>
@@ -1110,9 +1152,11 @@ export default function App() {
   if (selectedScreen === "testing") {
     return (
       <LanguageProvider>
-        <TestingDashboard
-          onBack={() => setSelectedScreen("dashboard")}
-        />
+        <Suspense fallback={<ScreenLoader />}>
+          <TestingDashboard
+            onBack={() => setSelectedScreen("dashboard")}
+          />
+        </Suspense>
       </LanguageProvider>
     );
   }
@@ -1120,11 +1164,13 @@ export default function App() {
   if (isAdmin && selectedScreen === "admin") {
     return (
       <LanguageProvider>
-        <AdminPanel
-          onSignOut={handleSignOut}
-          accessToken={accessToken || undefined}
-          onBackToHome={() => setSelectedScreen("dashboard")}
-        />
+        <Suspense fallback={<ScreenLoader />}>
+          <AdminPanel
+            onSignOut={handleSignOut}
+            accessToken={accessToken || undefined}
+            onBackToHome={() => setSelectedScreen("dashboard")}
+          />
+        </Suspense>
       </LanguageProvider>
     );
   }
@@ -1132,20 +1178,22 @@ export default function App() {
   if (selectedScreen === "debug-questions") {
     return (
       <LanguageProvider>
-        <div className="min-h-screen bg-background">
-          <div className="pt-11 pb-28">
-            <div className="max-w-6xl mx-auto px-4">
-              <Button
-                onClick={() => setSelectedScreen("dashboard")}
-                variant="outline"
-                className="mb-4"
-              >
-                ← Back to Dashboard
-              </Button>
-              <DebugQuestions />
+        <Suspense fallback={<ScreenLoader />}>
+          <div className="min-h-screen bg-background">
+            <div className="pt-11 pb-28">
+              <div className="max-w-6xl mx-auto px-4">
+                <Button
+                  onClick={() => setSelectedScreen("dashboard")}
+                  variant="outline"
+                  className="mb-4"
+                >
+                  ← Back to Dashboard
+                </Button>
+                <DebugQuestions />
+              </div>
             </div>
           </div>
-        </div>
+        </Suspense>
       </LanguageProvider>
     );
   }
@@ -1153,20 +1201,22 @@ export default function App() {
   if (selectedScreen === "debug-responses") {
     return (
       <LanguageProvider>
-        <div className="min-h-screen bg-background">
-          <div className="pt-11 pb-28">
-            <div className="max-w-6xl mx-auto px-4">
-              <Button
-                onClick={() => setSelectedScreen("dashboard")}
-                variant="outline"
-                className="mb-4"
-              >
-                ← Back to Dashboard
-              </Button>
-              <DebugResponses />
+        <Suspense fallback={<ScreenLoader />}>
+          <div className="min-h-screen bg-background">
+            <div className="pt-11 pb-28">
+              <div className="max-w-6xl mx-auto px-4">
+                <Button
+                  onClick={() => setSelectedScreen("dashboard")}
+                  variant="outline"
+                  className="mb-4"
+                >
+                  ← Back to Dashboard
+                </Button>
+                <DebugResponses />
+              </div>
             </div>
           </div>
-        </div>
+        </Suspense>
       </LanguageProvider>
     );
   }
@@ -1176,7 +1226,7 @@ export default function App() {
       <SEOHead />
       <div className="min-h-screen bg-background flex flex-col">
         {/* SOLID OPAQUE HEADER TRUNK BAR CONTAINER */}
-        <header className="sticky top-0 left-0 right-0 h-14 bg-white border-b border-slate-200 z-50 shadow-sm flex items-center">
+        <header className="sticky top-0 left-0 right-0 h-14 z-50 flex items-center" style={{ background: 'var(--card)', borderBottom: '1px solid var(--border)', boxShadow: '0 1px 0 0 var(--border)' }}>
           <div className="w-full max-w-2xl mx-auto px-4 flex items-center justify-between">
             {/* Platform Brand Title Identification */}
             <div className="flex items-center gap-2">
@@ -1189,12 +1239,11 @@ export default function App() {
             {/* Consolidated Switcher Operations Header End Block */}
             <div className="flex items-center gap-2">
               <LanguageSelector
-                variant="dropdown"
-                showLabel={true}
                 accessToken={accessToken || undefined}
                 userId={profile?.id}
               />
               {user && (
+                <Suspense fallback={null}>
                 <NotificationCenter
                   accessToken={accessToken}
                   projectId={projectId}
@@ -1238,6 +1287,7 @@ export default function App() {
                     }
                   }}
                 />
+                </Suspense>
               )}
             </div>
           </div>
@@ -1247,16 +1297,17 @@ export default function App() {
         <div className="flex-1 w-full pt-4 pb-28">
           <div className="max-w-6xl mx-auto px-4">
             <Toaster />
-            <PWAWelcome />
-            <InstallBanner />
-            <OfflineIndicator />
-            <InstallPrompt />
-            <PWAUpdateAvailable />
-            <IconsMissingNotice />
-            <PWAInstallPrompt />
-            <IOSInstallPrompt />
-            <PWAUpdateNotification />
-            <PWADebugInfo />
+            <Suspense fallback={null}>
+              <PWAWelcome />
+              <InstallBanner />
+              <InstallPrompt />
+              <PWAUpdateAvailable />
+              <IconsMissingNotice />
+              <PWAInstallPrompt />
+              <IOSInstallPrompt />
+              <PWAUpdateNotification />
+              <PWADebugInfo />
+            </Suspense>
 
             {/* Error Banner */}
             {loadError && (
@@ -1285,6 +1336,7 @@ export default function App() {
 
             {/* Main Application Interface Core Components Render Frame */}
             <main className="container mx-auto px-2 max-w-2xl">
+              <Suspense fallback={<ScreenLoader />}>
               {activeTab === "home" &&
                 selectedScreen === "dashboard" && (
                   <CoupleDashboard
@@ -1584,6 +1636,7 @@ export default function App() {
               {activeTab === "progress" && progress && (
                 <ProgressSection progress={progress} />
               )}
+              </Suspense>
             </main>
 
             <BottomNavigation
@@ -1595,10 +1648,13 @@ export default function App() {
                 }
               }}
             />
-            <FloatingActionButtons
-              onPrayClick={handlePrayClick}
-            />
+            <Suspense fallback={null}>
+              <FloatingActionButtons
+                onPrayClick={handlePrayClick}
+              />
+            </Suspense>
 
+            <Suspense fallback={null}>
             <DevotionalDialog
               devotional={(() => {
                 if (
@@ -1649,6 +1705,7 @@ export default function App() {
                 (profile?.language as "en" | "am") || "en"
               }
             />
+            </Suspense>
           </div>
         </div>
       </div>

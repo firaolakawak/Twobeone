@@ -62,29 +62,30 @@ export function NotificationCenter({
   const fetchNotifications = useCallback(async () => {
     if (!accessToken) return;
 
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10_000);
+
     try {
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/notifications`,
-        { headers: { Authorization: `Bearer ${accessToken}` } },
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+          signal: controller.signal,
+        },
       );
 
       if (!response.ok) {
-        if (response.status !== 401) {
-          console.warn(
-            "Failed to fetch notifications (status:",
-            response.status,
-            ")",
-          );
-        }
         setNotifications([]);
         return;
       }
 
       const data = await response.json();
       setNotifications(data.notifications || []);
-    } catch (error: any) {
-      console.warn("Could not load notifications:", error);
+    } catch {
+      // Notifications are non-critical — fail silently
       setNotifications([]);
+    } finally {
+      clearTimeout(timeout);
     }
   }, [accessToken, projectId]);
 

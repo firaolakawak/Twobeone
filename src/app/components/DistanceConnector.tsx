@@ -265,266 +265,208 @@ export function DistanceConnector({
 
   return (
     <>
-      <Card className="relative overflow-hidden border border-slate-100 bg-white rounded-2xl shadow-sm">
-        {/* Soft Modern Aesthetic Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-rose-50/60 via-purple-50/40 to-sky-50/60" />
+      {/* Keyframe styles */}
+      <style>{`
+        @keyframes arcDash { to { stroke-dashoffset: -180; } }
+        @keyframes heartFloat {
+          0%   { offset-distance: 0%;   opacity: 0; transform: scale(0.55); }
+          8%   { opacity: 1; }
+          92%  { opacity: 1; }
+          100% { offset-distance: 100%; opacity: 0; transform: scale(0.55); }
+        }
+        @keyframes pulseRing {
+          0%   { transform: scale(1);   opacity: 0.5; }
+          100% { transform: scale(1.7); opacity: 0; }
+        }
+      `}</style>
 
-        {/* Ambient floating elements in card container background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
-          {[...Array(4)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute text-sm select-none"
-              style={{ left: `${20 + i * 20}%` }}
-              initial={{ y: "120%", opacity: 0 }}
-              animate={{
-                y: "-20%",
-                opacity: [0, 0.6, 0],
-              }}
-              transition={{
-                duration: 10 + i * 2,
-                repeat: Infinity,
-                delay: i * 2,
-                ease: "linear",
-              }}
-            >
-              🌸
-            </motion.div>
-          ))}
+      <div
+        className="relative overflow-hidden rounded-2xl"
+        style={{
+          background: 'var(--card)',
+          boxShadow: '0 2px 0 0 var(--neutral-200), 0 12px 32px -6px rgba(244,63,94,0.12), 0 4px 8px -2px rgba(0,0,0,0.06)',
+        }}
+      >
+        {/* Radial ambient glow — directs focus to avatars */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div style={{
+            position: 'absolute', top: '10%', left: '8%',
+            width: 120, height: 120, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(244,63,94,0.18) 0%, transparent 70%)',
+            filter: 'blur(12px)',
+          }} />
+          <div style={{
+            position: 'absolute', top: '10%', right: '8%',
+            width: 120, height: 120, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(14,165,233,0.16) 0%, transparent 70%)',
+            filter: 'blur(12px)',
+          }} />
+          <div style={{
+            position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
+            width: 160, height: 60, borderRadius: '50%',
+            background: 'radial-gradient(ellipse, rgba(139,92,246,0.08) 0%, transparent 70%)',
+            filter: 'blur(8px)',
+          }} />
         </div>
 
-        <CardContent className="p-5 relative z-10">
-          {/* Settings Trigger */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-3 right-3 h-8 w-8 text-slate-400 hover:text-slate-900 rounded-xl hover:bg-slate-100 transition-colors"
+        <div className="relative z-10 p-5">
+          {/* Settings button — ghost, no border */}
+          <button
             onClick={() => setShowSettings(true)}
+            className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-xl transition-colors"
+            style={{ color: 'var(--muted-foreground)', background: 'transparent' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--neutral-100)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
             <Settings className="w-4 h-4" />
-          </Button>
+          </button>
 
           <div className="space-y-4">
-            {/* Visual Arc Connector Layer */}
+            {/* Arc connector row */}
             <div className="relative flex items-center justify-between px-3 mt-4">
-              {/* User Avatar */}
+
+              {/* User avatar with pulsing ring */}
               <div className="relative">
-                <Avatar className="w-16 h-16 border-4 border-white shadow-md ring-1 ring-slate-100 z-10">
-                  <AvatarImage
-                    src={userAvatar}
-                    alt={userName}
-                  />
-                  <AvatarFallback className="bg-gradient-to-br from-rose-500 to-rose-600 text-white font-semibold">
+                {userLocation?.location && (
+                  <div style={{
+                    position: 'absolute', inset: -4, borderRadius: '50%',
+                    border: '2px solid rgba(244,63,94,0.35)',
+                    animation: 'pulseRing 2s ease-out infinite',
+                  }} />
+                )}
+                <Avatar className="w-16 h-16 z-10 relative" style={{ border: '3px solid var(--card)', boxShadow: '0 4px 12px rgba(244,63,94,0.25)' }}>
+                  <AvatarImage src={userAvatar} alt={userName} />
+                  <AvatarFallback style={{ background: 'linear-gradient(135deg, var(--primary-400), var(--primary-600))', color: '#fff', fontWeight: 600 }}>
                     {userInitials}
                   </AvatarFallback>
                 </Avatar>
                 {userLocation?.location && (
-                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center shadow z-20">
-                    <MapPin className="w-3 h-3 text-white fill-current" />
+                  <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 flex items-center justify-center z-20"
+                    style={{ background: 'var(--success-500)', borderColor: 'var(--card)' }}>
+                    <MapPin className="w-2.5 h-2.5" style={{ color: '#fff' }} />
                   </div>
                 )}
               </div>
 
-              {/* Dynamic Connection Path Line & Floating Flying Hearts */}
-              <div className="absolute left-[4.2rem] right-[4.2rem] top-0 bottom-0 flex flex-col items-center justify-center">
-                {/* Distance Center Counter Badge */}
+              {/* Bezier arc SVG canvas */}
+              <div className="absolute left-[4.5rem] right-[4.5rem] top-0 bottom-0 flex items-center justify-center">
+                {/* Distance badge floating above arc midpoint */}
                 <AnimatePresence>
                   {distance !== null && (
                     <motion.div
-                      initial={{
-                        scale: 0.8,
-                        opacity: 0,
-                        y: 10,
+                      initial={{ scale: 0.7, opacity: 0, y: 6 }}
+                      animate={{ scale: 1, opacity: 1, y: -14 }}
+                      exit={{ scale: 0.7, opacity: 0 }}
+                      className="absolute z-20 flex items-center gap-1 px-2.5 py-1 rounded-full"
+                      style={{
+                        background: 'var(--card)',
+                        boxShadow: '0 2px 8px rgba(139,92,246,0.18), 0 1px 3px rgba(0,0,0,0.08)',
+                        border: '1px solid rgba(139,92,246,0.15)',
                       }}
-                      animate={{ scale: 1, opacity: 1, y: -16 }}
-                      exit={{ scale: 0.8, opacity: 0, y: 10 }}
-                      className="z-30 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm border border-purple-100 flex items-center gap-1.5"
                     >
-                      <Heart className="w-3.5 h-3.5 fill-rose-500 text-rose-500" />
-                      <span className="text-xs font-bold text-slate-900 tracking-tight mx-[0px] my-[-6px]">
+                      <Heart className="w-3 h-3" style={{ fill: 'var(--primary-500)', color: 'var(--primary-500)' }} />
+                      <span className="text-xs font-bold" style={{ color: 'var(--foreground)', letterSpacing: '-0.01em' }}>
                         {formatDistance(distance)}
                       </span>
                     </motion.div>
                   )}
                 </AnimatePresence>
 
-                {/* SVG Curve Canvas Frame */}
                 <svg
-                  className="w-full h-12 overflow-visible absolute top-1/2 -translate-y-1/2"
-                  viewBox="0 0 200 40"
+                  className="w-full overflow-visible"
+                  style={{ height: 48 }}
+                  viewBox="0 0 200 48"
                   preserveAspectRatio="none"
                 >
                   <defs>
-                    <linearGradient
-                      id="arcGradient"
-                      x1="0%"
-                      y1="0%"
-                      x2="100%"
-                      y2="0%"
-                    >
-                      <stop offset="0%" stopColor="#ec4899" />
-                      <stop offset="50%" stopColor="#8b5cf6" />
-                      <stop offset="100%" stopColor="#3b82f6" />
+                    <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="var(--primary-400)" />
+                      <stop offset="48%" stopColor="#8b5cf6" />
+                      <stop offset="100%" stopColor="var(--secondary-400)" />
                     </linearGradient>
-
-                    {/* Reusable Heart path definition for traveling nodes */}
-                    <g id="traveling-heart">
-                      <path
-                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                        fill="#f43f5e"
-                        stroke="#ffffff"
-                        strokeWidth="1.5"
-                        transform="scale(0.6) translate(-12, -12)"
-                      />
-                    </g>
+                    <path id="arcPath" d="M 4 40 Q 100 4, 196 40" />
                   </defs>
 
-                  {/* The Curved Path */}
-                  <path
-                    id="connector-curve-path"
-                    d="M 0 30 Q 100 0, 200 30"
-                    stroke="url(#arcGradient)"
-                    strokeWidth="2.5"
-                    fill="none"
-                    strokeLinecap="round"
-                    className="opacity-40"
-                  />
+                  {/* Faint base arc */}
+                  <use href="#arcPath" stroke="url(#arcGrad)" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.25" />
 
-                  {/* High Contrast Moving Pulse Guide */}
-                  <path
-                    d="M 0 30 Q 100 0, 200 30"
-                    stroke="url(#arcGradient)"
-                    strokeWidth="2.5"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeDasharray="30 120"
-                    className="animate-[dash_4s_linear_infinite]"
-                    style={{ strokeDashoffset: 0 }}
-                  />
+                  {/* Animated dashed pulse */}
+                  <use href="#arcPath" stroke="url(#arcGrad)" strokeWidth="2" fill="none" strokeLinecap="round"
+                    strokeDasharray="22 180"
+                    style={{ animation: 'arcDash 3s linear infinite', strokeDashoffset: 0 }} />
 
-                  {/* Continuous Stream of Traveling Hearts */}
-                  {distance !== null && (
-                    <>
-                      {/* Heart Node 1 */}
-                      <g className="animate-[heartTravel_3s_linear_infinite]">
-                        <use href="#traveling-heart" />
-                      </g>
-                      {/* Heart Node 2 (Delayed) */}
-                      <g
-                        className="animate-[heartTravel_3s_linear_infinite]"
-                        style={{ animationDelay: "1s" }}
-                      >
-                        <use href="#traveling-heart" />
-                      </g>
-                      {/* Heart Node 3 (Delayed) */}
-                      <g
-                        className="animate-[heartTravel_3s_linear_infinite]"
-                        style={{ animationDelay: "2s" }}
-                      >
-                        <use href="#traveling-heart" />
-                      </g>
-                    </>
-                  )}
+                  {/* Traveling hearts via offset-path */}
+                  {distance !== null && [0, 1.1, 2.2].map((delay, i) => (
+                    <g key={i} style={{
+                      offsetPath: 'path("M 4 40 Q 100 4, 196 40")',
+                      offsetDistance: '0%',
+                      animation: `heartFloat 3s ${delay}s linear infinite`,
+                    }}>
+                      <circle cx="0" cy="0" r="4" fill="var(--primary-500)" opacity="0.9" />
+                    </g>
+                  ))}
                 </svg>
               </div>
 
-              {/* Partner Avatar */}
+              {/* Partner avatar with pulsing ring */}
               <div className="relative">
-                <Avatar className="w-16 h-16 border-4 border-white shadow-md ring-1 ring-slate-100 z-10">
-                  <AvatarImage
-                    src={partnerAvatar}
-                    alt={partnerName}
-                  />
-                  <AvatarFallback className="bg-gradient-to-br from-sky-500 to-sky-600 text-white font-semibold">
+                {partnerLocation?.location && (
+                  <div style={{
+                    position: 'absolute', inset: -4, borderRadius: '50%',
+                    border: '2px solid rgba(14,165,233,0.35)',
+                    animation: 'pulseRing 2s ease-out infinite 0.5s',
+                  }} />
+                )}
+                <Avatar className="w-16 h-16 z-10 relative" style={{ border: '3px solid var(--card)', boxShadow: '0 4px 12px rgba(14,165,233,0.22)' }}>
+                  <AvatarImage src={partnerAvatar} alt={partnerName} />
+                  <AvatarFallback style={{ background: 'linear-gradient(135deg, var(--secondary-400), var(--secondary-600))', color: '#fff', fontWeight: 600 }}>
                     {partnerInitials}
                   </AvatarFallback>
                 </Avatar>
                 {partnerLocation?.location && (
-                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center shadow z-20">
-                    <MapPin className="w-3 h-3 text-white fill-current" />
+                  <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 flex items-center justify-center z-20"
+                    style={{ background: 'var(--success-500)', borderColor: 'var(--card)' }}>
+                    <MapPin className="w-2.5 h-2.5" style={{ color: '#fff' }} />
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Custom Global Styles for SVG CSS Animations */}
-            <style>{`
-              @keyframes dash {
-                to {
-                  stroke-dashoffset: -150;
-                }
-              }
-              @keyframes heartTravel {
-                0% {
-                  motion-path: path('M 0 30 Q 100 0, 200 30');
-                  motion-distance: 0%;
-                  offset-path: path('M 0 30 Q 100 0, 200 30');
-                  offset-distance: 0%;
-                  transform: scale(0.6);
-                  opacity: 0;
-                }
-                10% {
-                  opacity: 1;
-                }
-                90% {
-                  opacity: 1;
-                }
-                100% {
-                  motion-path: path('M 0 30 Q 100 0, 200 30');
-                  motion-distance: 100%;
-                  offset-path: path('M 0 30 Q 100 0, 200 30');
-                  offset-distance: 100%;
-                  transform: scale(0.6);
-                  opacity: 0;
-                }
-              }
-            `}</style>
-
-            {/* Names and Locations Metadata footer columns */}
-            <div className="grid grid-cols-3 items-center text-center px-1">
-              <div className="text-left truncate">
-                <p className="text-xs font-bold text-slate-950">
-                  {userLocation?.location?.city || "Not set"}
-                </p>
-              </div>
-
+            {/* Names / status footer */}
+            <div className="grid grid-cols-3 items-center text-center px-1 pt-1">
+              <p className="text-left text-xs font-semibold truncate" style={{ color: 'var(--foreground)' }}>
+                {userLocation?.location?.city || <span style={{ color: 'var(--muted-foreground)', fontStyle: 'italic' }}>Not set</span>}
+              </p>
               <div className="flex justify-center">
                 {distance !== null ? (
-                  <span className="text-[11px] font-bold text-rose-600 uppercase tracking-wider bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-100">
-                    {getDistanceDescription(distance) ||
-                      "Connected"}
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full"
+                    style={{ background: 'var(--primary-50)', color: 'var(--primary-600)', border: '1px solid var(--primary-200)' }}>
+                    {getDistanceDescription(distance) || 'Connected'}
                   </span>
                 ) : (
-                  <span className="text-[11px] font-medium text-slate-400 italic">
+                  <span className="text-[10px]" style={{ color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
                     Awaiting location
                   </span>
                 )}
               </div>
-
-              <div className="text-right truncate">
-                <p className="text-xs font-bold text-slate-950">
-                  {partnerLocation?.location?.city || "Not set"}
-                </p>
-              </div>
+              <p className="text-right text-xs font-semibold truncate" style={{ color: 'var(--foreground)' }}>
+                {partnerLocation?.location?.city || <span style={{ color: 'var(--muted-foreground)', fontStyle: 'italic' }}>Not set</span>}
+              </p>
             </div>
 
-            {/* Empty State Call to Action Link */}
             {!userLocation?.location && (
-              <div className="text-center pt-1">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setShowSettings(true)}
-                  className="text-xs font-semibold text-slate-800 bg-white hover:bg-slate-50 border-slate-200 shadow-sm h-8 px-4 rounded-xl"
-                >
-                  <MapPin className="w-3.5 h-3.5 mr-1.5 text-rose-500" />
+              <div className="text-center">
+                <Button size="sm" variant="outline" onClick={() => setShowSettings(true)}
+                  className="text-xs font-semibold h-8 px-4 rounded-xl"
+                  style={{ borderColor: 'var(--border)', color: 'var(--foreground)' }}>
+                  <MapPin className="w-3.5 h-3.5 mr-1.5" style={{ color: 'var(--primary-500)' }} />
                   Share Your Location
                 </Button>
               </div>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Control Panel Dialog Settings */}
       <Dialog
