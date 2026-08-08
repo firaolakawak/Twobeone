@@ -1008,48 +1008,7 @@ export function PreMarriageHub({
       )}
 
       {/* Language Toggle Options */}
-      <div
-        style={{
-          display: "flex",
-          gap: "8px",
-          flexWrap: "wrap",
-        }}
-      >
-        {[
-          { code: "en" as const, label: "English", flag: "🇺🇸" },
-          { code: "am" as const, label: "አማርኛ", flag: "🇪🇹" },
-          {
-            code: "om" as const,
-            label: "Oromiffa",
-            flag: "🇪🇹",
-          },
-        ].map(({ code, label, flag }) => {
-          const active = selectedLanguage === code;
-          return (
-            <button
-              key={code}
-              onClick={() => setSelectedLanguage(code)}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                padding: "8px 16px",
-                borderRadius: "9999px",
-                border: `1px solid ${active ? "#f43f5e" : "#cbd5e1"}`,
-                backgroundColor: active ? "#fff1f2" : "#ffffff",
-                color: active ? "#e11d48" : "#475569",
-                fontSize: "14px",
-                fontWeight: 500,
-                cursor: "pointer",
-                transition: "all 0.15s ease",
-              }}
-            >
-              <span>{flag}</span>
-              <span>{label}</span>
-            </button>
-          );
-        })}
-      </div>
+      
 
       {/* Segment Header */}
       <div>

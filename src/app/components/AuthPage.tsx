@@ -256,7 +256,7 @@ export function AuthPage({ onAuthSuccess }: AuthPageProps) {
     borderRadius: 'var(--radius-lg)',
     border: 'none',
     background: 'var(--primary-600)',
-    color: '#fff',
+    color: 'var(--primary-foreground)',
     fontSize: 'var(--text-callout)',
     fontWeight: 'var(--font-weight-semibold)',
     fontFamily: 'inherit',
@@ -281,7 +281,7 @@ export function AuthPage({ onAuthSuccess }: AuthPageProps) {
       {/* Ambient background orbs */}
       <FloatingOrb style={{ width: 400, height: 400, background: 'var(--primary-100)', top: '-120px', right: '-100px', opacity: 0.6 }} />
       <FloatingOrb style={{ width: 300, height: 300, background: 'var(--primary-50)', bottom: '-80px', left: '-80px', opacity: 0.8 }} />
-      <FloatingOrb style={{ width: 200, height: 200, background: '#e0f2fe', top: '40%', left: '5%', opacity: 0.5 }} />
+      <FloatingOrb style={{ width: 200, height: 200, background: 'var(--secondary-100)', top: '40%', left: '5%', opacity: 0.5 }} />
 
       {/* Language selector */}
       <div style={{ position: 'fixed', top: 'var(--spacing-4)', right: 'var(--spacing-4)', zIndex: 50 }}>
@@ -318,7 +318,7 @@ export function AuthPage({ onAuthSuccess }: AuthPageProps) {
             boxShadow: '0 8px 24px -4px color-mix(in srgb, var(--primary-500) 40%, transparent)',
             marginBottom: 'var(--spacing-4)',
           }}>
-            <Heart style={{ width: 30, height: 30, color: '#fff', fill: '#fff' }} />
+            <Heart style={{ width: 30, height: 30, color: 'var(--primary-foreground)', fill: 'var(--primary-foreground)' }} />
           </div>
           <h1 style={{
             margin: 0,
@@ -736,10 +736,10 @@ function ErrorBanner({ message }: { message: string }) {
     <div style={{
       padding: 'var(--spacing-3) var(--spacing-4)',
       borderRadius: 'var(--radius-md)',
-      background: 'color-mix(in srgb, #d4183d 8%, transparent)',
-      border: '1px solid color-mix(in srgb, #d4183d 25%, transparent)',
+      background: 'color-mix(in srgb, var(--destructive) 8%, transparent)',
+      border: '1px solid color-mix(in srgb, var(--destructive) 25%, transparent)',
       fontSize: 'var(--text-caption)',
-      color: '#be123c',
+      color: 'var(--primary-700)',
       lineHeight: 1.5,
     }}>
       {message}

@@ -45,7 +45,7 @@ import { toast } from 'sonner';
 import type { User, JournalEntry, PrayerRequest, Progress as ProgressType, QuestionResponse } from '../types';
 import { moods as moodsApi, milestones as milestonesApi, questions as questionsApi } from '../utils/api';
 import { AddMilestoneDialog } from './AddMilestoneDialog';
-import { amharicVerses } from '../data/amharic-verses';
+import { fetchAmharicChapter, getAmharicBookName } from '../utils/amharicBibleApi';
 
 export interface CoupleDashboardProps {
   profile?: User;
@@ -71,6 +71,8 @@ interface BibleVerse {
   reference: string;
   text: string;
   translation: string;
+  amharicText?: string;
+  amharicReference?: string;
 }
 
 interface Milestone {
@@ -98,6 +100,119 @@ interface Notification {
   read: boolean;
   createdAt: string;
 }
+
+// Fancy SVG mood face illustrations
+const MoodFace = ({ mood, size = 44 }: { mood: string; size?: number }) => {
+  if (mood === 'great') return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="mf-great" cx="42%" cy="32%" r="68%">
+          <stop offset="0%" stopColor="#FFFDE7"/>
+          <stop offset="55%" stopColor="#FFD600"/>
+          <stop offset="100%" stopColor="#FF8F00"/>
+        </radialGradient>
+      </defs>
+      <circle cx="24" cy="24" r="22" fill="url(#mf-great)"/>
+      <circle cx="24" cy="24" r="22" fill="none" stroke="#F9A825" strokeWidth="1.5"/>
+      {/* Excitement brows */}
+      <path d="M11 16 Q15 11 19 14" stroke="#7B5800" strokeWidth="2" strokeLinecap="round" fill="none"/>
+      <path d="M29 14 Q33 11 37 16" stroke="#7B5800" strokeWidth="2" strokeLinecap="round" fill="none"/>
+      {/* Star eyes */}
+      <path d="M16 24 L17.2 20.8 L18.4 24 L21.6 24 L19 26.2 L19.9 29.4 L16 27.2 L12.1 29.4 L13 26.2 L10.4 24 L13.6 24 Z" fill="#E65100"/>
+      <path d="M32 24 L33.2 20.8 L34.4 24 L37.6 24 L35 26.2 L35.9 29.4 L32 27.2 L28.1 29.4 L29 26.2 L26.4 24 L29.6 24 Z" fill="#E65100"/>
+      {/* Big open grin */}
+      <path d="M11 31 Q24 45 37 31" fill="white" stroke="#C17900" strokeWidth="2" strokeLinejoin="round"/>
+      <path d="M11 31 Q24 38 37 31" fill="#C17900"/>
+      <ellipse cx="24" cy="39" rx="5.5" ry="3.5" fill="#FF5252" opacity="0.65"/>
+      {/* Rosy cheeks */}
+      <ellipse cx="9" cy="31" rx="5.5" ry="3.5" fill="#FF8A65" opacity="0.5"/>
+      <ellipse cx="39" cy="31" rx="5.5" ry="3.5" fill="#FF8A65" opacity="0.5"/>
+      {/* Sparkles */}
+      <path d="M4 8 L4 12 M2 10 L6 10" stroke="#FFD600" strokeWidth="1.4" strokeLinecap="round"/>
+      <path d="M44 6 L44 10 M42 8 L46 8" stroke="#FFD600" strokeWidth="1.2" strokeLinecap="round"/>
+      <circle cx="5" cy="10" r="1.2" fill="#FFD600"/>
+      <circle cx="44" cy="8" r="1" fill="#FFD600"/>
+    </svg>
+  );
+  if (mood === 'good') return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="mf-good" cx="42%" cy="32%" r="68%">
+          <stop offset="0%" stopColor="#FFFDE7"/>
+          <stop offset="55%" stopColor="#FFD54F"/>
+          <stop offset="100%" stopColor="#FFA000"/>
+        </radialGradient>
+      </defs>
+      <circle cx="24" cy="24" r="22" fill="url(#mf-good)"/>
+      <circle cx="24" cy="24" r="22" fill="none" stroke="#FFB300" strokeWidth="1.5"/>
+      {/* Gentle brows */}
+      <path d="M11 17 Q15.5 13.5 20 16" stroke="#7B5800" strokeWidth="2" strokeLinecap="round" fill="none"/>
+      <path d="M28 16 Q32.5 13.5 37 17" stroke="#7B5800" strokeWidth="2" strokeLinecap="round" fill="none"/>
+      {/* Happy crescent eyes */}
+      <path d="M11 23 Q16 18 21 23" stroke="#4E342E" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+      <path d="M27 23 Q32 18 37 23" stroke="#4E342E" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+      {/* Warm smile */}
+      <path d="M14 31 Q24 42 34 31" fill="none" stroke="#7B5800" strokeWidth="2.5" strokeLinecap="round"/>
+      {/* Cheeks */}
+      <ellipse cx="10" cy="29" rx="5.5" ry="3.5" fill="#FF8A65" opacity="0.45"/>
+      <ellipse cx="38" cy="29" rx="5.5" ry="3.5" fill="#FF8A65" opacity="0.45"/>
+    </svg>
+  );
+  if (mood === 'okay') return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="mf-okay" cx="42%" cy="32%" r="68%">
+          <stop offset="0%" stopColor="#EDE7F6"/>
+          <stop offset="55%" stopColor="#B39DDB"/>
+          <stop offset="100%" stopColor="#673AB7"/>
+        </radialGradient>
+      </defs>
+      <circle cx="24" cy="24" r="22" fill="url(#mf-okay)"/>
+      <circle cx="24" cy="24" r="22" fill="none" stroke="#9575CD" strokeWidth="1.5"/>
+      {/* Flat brows */}
+      <path d="M11 17 L20 17" stroke="#311B92" strokeWidth="2.2" strokeLinecap="round"/>
+      <path d="M28 17 L37 17" stroke="#311B92" strokeWidth="2.2" strokeLinecap="round"/>
+      {/* Round eyes with pupils */}
+      <ellipse cx="16" cy="23" rx="4.5" ry="5" fill="white"/>
+      <circle cx="16" cy="24" r="2.8" fill="#1A237E"/>
+      <circle cx="17.2" cy="22.5" r="1.1" fill="white" opacity="0.7"/>
+      <ellipse cx="32" cy="23" rx="4.5" ry="5" fill="white"/>
+      <circle cx="32" cy="24" r="2.8" fill="#1A237E"/>
+      <circle cx="33.2" cy="22.5" r="1.1" fill="white" opacity="0.7"/>
+      {/* Neutral mouth */}
+      <path d="M17 34 Q24 31 31 34" fill="none" stroke="#311B92" strokeWidth="2.2" strokeLinecap="round"/>
+    </svg>
+  );
+  if (mood === 'sad') return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="mf-sad" cx="42%" cy="32%" r="68%">
+          <stop offset="0%" stopColor="#E3F2FD"/>
+          <stop offset="55%" stopColor="#90CAF9"/>
+          <stop offset="100%" stopColor="#1565C0"/>
+        </radialGradient>
+      </defs>
+      <circle cx="24" cy="24" r="22" fill="url(#mf-sad)"/>
+      <circle cx="24" cy="24" r="22" fill="none" stroke="#42A5F5" strokeWidth="1.5"/>
+      {/* Sad brows — drooping inward */}
+      <path d="M11 16 Q15 19.5 19 17" stroke="#0D47A1" strokeWidth="2" strokeLinecap="round" fill="none"/>
+      <path d="M29 17 Q33 19.5 37 16" stroke="#0D47A1" strokeWidth="2" strokeLinecap="round" fill="none"/>
+      {/* Watery eyes */}
+      <ellipse cx="16" cy="23" rx="4.5" ry="5" fill="white" opacity="0.9"/>
+      <circle cx="16" cy="24" r="2.8" fill="#0D47A1"/>
+      <circle cx="17.2" cy="22.5" r="1.1" fill="white" opacity="0.6"/>
+      <ellipse cx="32" cy="23" rx="4.5" ry="5" fill="white" opacity="0.9"/>
+      <circle cx="32" cy="24" r="2.8" fill="#0D47A1"/>
+      <circle cx="33.2" cy="22.5" r="1.1" fill="white" opacity="0.6"/>
+      {/* Frown */}
+      <path d="M15 36 Q24 29 33 36" fill="none" stroke="#0D47A1" strokeWidth="2.5" strokeLinecap="round"/>
+      {/* Teardrop */}
+      <ellipse cx="32" cy="31.5" rx="2.2" ry="3.5" fill="#64B5F6" opacity="0.8"/>
+      <path d="M29.8 29.5 Q32 26 34.2 29.5" fill="#64B5F6" opacity="0.6"/>
+    </svg>
+  );
+  return null;
+};
 
 // Isolated timer component — owns its own 1-second interval so the parent never re-renders from it
 const TimerDisplay = memo(function TimerDisplay({
@@ -163,7 +278,7 @@ export function CoupleDashboard({
   accessToken,
   devotionalStreak
 }: CoupleDashboardProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   // timeTogether state moved into TimerDisplay to prevent 60 re-renders/min on this component
   const [showMoodDialog, setShowMoodDialog] = useState(false);
   const [todayMood, setTodayMood] = useState<string | null>(null);
@@ -181,13 +296,18 @@ export function CoupleDashboard({
   const [dailyVerse, setDailyVerse] = useState<BibleVerse | null>(null);
   const [isLoadingVerse, setIsLoadingVerse] = useState(true);
   const [isBibleReaderOpen, setIsBibleReaderOpen] = useState(false);
-  const [verseLanguage, setVerseLanguage] = useState<'en' | 'am'>('am');
+  const [verseLanguage, setVerseLanguage] = useState<'en' | 'am'>(() => language === 'en' ? 'en' : 'am');
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [todaysMood, setTodaysMood] = useState<MoodEntry | null>(null);
   const [partnerMood, setPartnerMood] = useState<MoodEntry | null>(null);
   const [totalQuestionsCount, setTotalQuestionsCount] = useState(0);
   const [stageExpanded, setStageExpanded] = useState(false);
   const [countdownExpanded, setCountdownExpanded] = useState(false);
+
+  // Keep verse language in sync with the app language switcher
+  useEffect(() => {
+    setVerseLanguage(language === 'en' ? 'en' : 'am');
+  }, [language]);
 
   const userInitials = profile?.name?.split(' ').map(n => n[0]).join('') || '?';
   const partnerInitials = partner?.name?.split(' ').map(n => n[0]).join('') || '?';
@@ -239,31 +359,133 @@ export function CoupleDashboard({
     // Fetch daily Bible verse from Bible API
     const fetchDailyVerse = async () => {
       try {
-        // Using bible-api.com which is free and doesn't require auth
-        // Get a verse of the day (rotating through different verses)
+        // 365-verse pool spanning all 66 books of the Bible (OT + NT)
         const verses = [
-          'john 3:16',
-          'philippians 4:13',
-          'proverbs 3:5-6',
-          'romans 8:28',
-          'jeremiah 29:11',
-          'psalm 23:1',
-          'isaiah 40:31',
-          '1 corinthians 13:4-8'
+          // Genesis – Deuteronomy
+          'genesis 1:1','genesis 1:27','genesis 2:24','genesis 12:1-2','genesis 15:6',
+          'genesis 28:15','genesis 50:20','exodus 14:14','exodus 20:1-3','exodus 33:14',
+          'leviticus 19:18','numbers 6:24-26','deuteronomy 6:5','deuteronomy 7:9',
+          'deuteronomy 31:6','deuteronomy 31:8',
+          // Joshua – Esther
+          'joshua 1:8','joshua 1:9','joshua 24:15','judges 6:12','ruth 1:16',
+          '1 samuel 16:7','2 samuel 22:3','1 kings 3:12','1 chronicles 16:11',
+          '2 chronicles 7:14','ezra 8:22','nehemiah 8:10','esther 4:14',
+          // Job – Song of Solomon
+          'job 19:25','job 23:10','job 42:2','psalm 1:1-2','psalm 4:8','psalm 9:1',
+          'psalm 16:8','psalm 18:2','psalm 19:1','psalm 23:1','psalm 23:4','psalm 27:1',
+          'psalm 27:4','psalm 28:7','psalm 29:11','psalm 31:3','psalm 32:8','psalm 34:8',
+          'psalm 34:18','psalm 37:4','psalm 37:5','psalm 40:1-3','psalm 42:1','psalm 46:1',
+          'psalm 46:10','psalm 51:10','psalm 55:22','psalm 56:3','psalm 62:5','psalm 63:1',
+          'psalm 63:3','psalm 71:5','psalm 73:26','psalm 84:2','psalm 86:5','psalm 90:2',
+          'psalm 91:1-2','psalm 91:4','psalm 94:19','psalm 100:4-5','psalm 103:1-2',
+          'psalm 103:12','psalm 107:1','psalm 111:10','psalm 118:14','psalm 118:24',
+          'psalm 119:9','psalm 119:11','psalm 119:105','psalm 119:114','psalm 121:1-2',
+          'psalm 121:7-8','psalm 127:1','psalm 128:1','psalm 133:1','psalm 136:1',
+          'psalm 139:14','psalm 139:23-24','psalm 143:10','psalm 145:18','psalm 147:3',
+          'proverbs 1:7','proverbs 2:6','proverbs 3:5-6','proverbs 3:9-10','proverbs 4:7',
+          'proverbs 4:23','proverbs 10:12','proverbs 12:15','proverbs 13:20','proverbs 14:29',
+          'proverbs 15:1','proverbs 16:3','proverbs 16:9','proverbs 17:17','proverbs 18:10',
+          'proverbs 18:24','proverbs 19:20','proverbs 22:6','proverbs 27:17','proverbs 28:13',
+          'proverbs 31:25','ecclesiastes 3:1','ecclesiastes 3:11','ecclesiastes 4:9-10',
+          'song of solomon 2:16','song of solomon 8:6-7',
+          // Isaiah – Daniel
+          'isaiah 9:6','isaiah 26:3','isaiah 30:15','isaiah 40:8','isaiah 40:29',
+          'isaiah 40:31','isaiah 41:10','isaiah 43:1-2','isaiah 43:19','isaiah 46:4',
+          'isaiah 48:17','isaiah 53:5','isaiah 54:10','isaiah 55:8-9','isaiah 55:10-11',
+          'isaiah 58:11','isaiah 61:1','isaiah 64:8','jeremiah 17:7-8','jeremiah 29:11',
+          'jeremiah 29:13','jeremiah 31:3','jeremiah 33:3','lamentations 3:22-23',
+          'lamentations 3:25','ezekiel 36:26','daniel 2:20','daniel 6:10',
+          // Hosea – Malachi
+          'hosea 2:19-20','hosea 6:6','joel 2:25','joel 2:28','amos 5:24',
+          'micah 6:8','micah 7:18','nahum 1:7','habakkuk 2:4','habakkuk 3:19',
+          'zephaniah 3:17','haggai 2:4','zechariah 4:6','malachi 3:10',
+          // Matthew – John
+          'matthew 5:3','matthew 5:6','matthew 5:8','matthew 5:9','matthew 5:14-15',
+          'matthew 5:44','matthew 6:9-10','matthew 6:20-21','matthew 6:33','matthew 7:7',
+          'matthew 7:12','matthew 11:28-30','matthew 17:20','matthew 18:20','matthew 19:26',
+          'matthew 22:37-39','matthew 25:40','matthew 28:19-20','mark 10:27','mark 10:45',
+          'mark 11:24','mark 12:30-31','mark 16:15','luke 1:37','luke 6:38','luke 10:27',
+          'luke 11:9','luke 15:7','luke 17:21','luke 18:27','john 1:1','john 1:14',
+          'john 3:16','john 3:17','john 4:14','john 6:35','john 8:12','john 8:32',
+          'john 10:10','john 11:25','john 13:34-35','john 14:1-2','john 14:6',
+          'john 14:13','john 14:27','john 15:5','john 15:9-10','john 15:12-13',
+          'john 16:33','john 17:17',
+          // Acts – Galatians
+          'acts 1:8','acts 2:38','acts 4:12','acts 5:29','acts 16:31','acts 17:28',
+          'romans 1:16','romans 3:23','romans 5:1','romans 5:3-5','romans 5:8',
+          'romans 6:23','romans 8:1','romans 8:11','romans 8:18','romans 8:26',
+          'romans 8:28','romans 8:37','romans 8:38-39','romans 10:9-10','romans 12:1-2',
+          'romans 12:10','romans 12:12','romans 15:4','romans 15:13','1 corinthians 1:18',
+          '1 corinthians 2:9','1 corinthians 10:13','1 corinthians 13:4-8','1 corinthians 15:10',
+          '1 corinthians 15:55','1 corinthians 16:13-14','2 corinthians 1:3-4','2 corinthians 4:17',
+          '2 corinthians 5:7','2 corinthians 5:17','2 corinthians 9:8','2 corinthians 12:9',
+          'galatians 2:20','galatians 5:22-23','galatians 6:2','galatians 6:9',
+          // Ephesians – Colossians
+          'ephesians 1:3','ephesians 2:8-9','ephesians 2:10','ephesians 3:17-19',
+          'ephesians 3:20','ephesians 4:2-3','ephesians 4:29','ephesians 4:32',
+          'ephesians 5:25','ephesians 6:10-11','philippians 1:6','philippians 2:3-4',
+          'philippians 2:13','philippians 3:13-14','philippians 4:6-7','philippians 4:8',
+          'philippians 4:11','philippians 4:13','philippians 4:19','colossians 1:17',
+          'colossians 3:12-13','colossians 3:15','colossians 3:17','colossians 3:23',
+          // 1 Thessalonians – Hebrews
+          '1 thessalonians 5:16-18','1 thessalonians 5:23','2 thessalonians 3:3',
+          '1 timothy 4:12','1 timothy 6:6','1 timothy 6:12','2 timothy 1:7',
+          '2 timothy 2:15','2 timothy 3:16-17','titus 3:5','hebrews 4:12',
+          'hebrews 4:16','hebrews 10:23','hebrews 11:1','hebrews 11:6','hebrews 12:1-2',
+          'hebrews 13:5','hebrews 13:8',
+          // James – Revelation
+          'james 1:2-3','james 1:5','james 1:17','james 1:19','james 1:22',
+          'james 4:7','james 4:8','james 5:16','1 peter 1:3-4','1 peter 2:9',
+          '1 peter 3:15','1 peter 4:8','1 peter 5:7','1 peter 5:8','2 peter 1:3',
+          '2 peter 3:9','1 john 1:7','1 john 1:9','1 john 4:7-8','1 john 4:10',
+          '1 john 4:18','1 john 4:19','1 john 5:14','jude 1:24-25',
+          'revelation 1:8','revelation 3:20','revelation 21:4','revelation 21:5',
+          'revelation 22:20'
         ];
-        
-        const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
-        const verseIndex = dayOfYear % verses.length;
-        const selectedVerse = verses[verseIndex];
+
+        const now = new Date();
+        const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000);
+        // Spread across 2 years so consecutive years don't repeat identically
+        const seed = (now.getFullYear() * 1000 + dayOfYear) % verses.length;
+        const selectedVerse = verses[seed];
         
         const response = await fetch(`https://bible-api.com/${selectedVerse}?translation=kjv`);
         if (!response.ok) throw new Error('Failed to fetch verse');
-        
         const data = await response.json();
+
+        const engText = data.text.replace(/\n/g, ' ').trim();
+        const engRef: string = data.reference;
+
+        // Fetch the same passage from the Amharic XML Bible
+        let amharicText = '';
+        let amharicReference = '';
+        try {
+          const firstVerse = data.verses?.[0];
+          const bookName: string = firstVerse?.book_name ?? '';
+          const chapterNum: number = firstVerse?.chapter ?? 0;
+          if (bookName && chapterNum) {
+            const verseNumbers: number[] = data.verses.map((v: any) => v.verse as number);
+            const amChapter = await fetchAmharicChapter(bookName, chapterNum);
+            const parts = verseNumbers
+              .map((vn) => amChapter.verses.find((v) => v.number === vn)?.text ?? '')
+              .filter(Boolean);
+            amharicText = parts.join(' ');
+            const amBook = getAmharicBookName(bookName);
+            const range = verseNumbers.length > 1
+              ? `${verseNumbers[0]}-${verseNumbers[verseNumbers.length - 1]}`
+              : `${verseNumbers[0]}`;
+            amharicReference = `${amBook} ${chapterNum}:${range}`;
+          }
+        } catch (amErr) {
+          console.warn('[DailyVerse] Amharic fetch failed, will show English only:', amErr);
+        }
+
         setDailyVerse({
-          reference: data.reference,
-          text: data.text.replace(/\\n/g, ' ').trim(),
-          translation: data.translation_name
+          reference: engRef,
+          text: engText,
+          translation: data.translation_name,
+          amharicText: amharicText || undefined,
+          amharicReference: amharicReference || undefined,
         });
       } catch (error) {
         console.error('Error fetching daily verse:', error);
@@ -405,57 +627,52 @@ export function CoupleDashboard({
 
   // Auto-check for weekly mood report (only if user has a partner)
   useEffect(() => {
+    /** Returns "YYYY-Www" ISO week string so the key is unambiguous. */
+    const isoWeekKey = (d: Date): string => {
+      const tmp = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+      const dayNum = tmp.getUTCDay() || 7; // Mon=1 … Sun=7
+      tmp.setUTCDate(tmp.getUTCDate() + 4 - dayNum); // nearest Thursday
+      const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));
+      const week = Math.ceil(
+        ((tmp.getTime() - yearStart.getTime()) / 86400000 + 1) / 7,
+      );
+      return `${tmp.getUTCFullYear()}-W${String(week).padStart(2, '0')}`;
+    };
+
     const checkWeeklyReport = async () => {
       if (!profile?.id || !partner?.id) return;
-      
+
       try {
         const now = new Date();
         const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
-        
-        // Calculate days until next Saturday
-        const daysUntilSaturday = dayOfWeek === 6 ? 0 : (6 - dayOfWeek + 7) % 7;
-        
-        // Only run on Saturdays (day 6)
-        if (dayOfWeek !== 6) {
-          console.log(`[WeeklyMoodReport] Next auto-report will be generated on Saturday (in ${daysUntilSaturday} days)`);
+
+        // Only trigger on Saturdays
+        if (dayOfWeek !== 6) return;
+
+        // Use an ISO-week key so it can never collide across weeks
+        const weekKey = isoWeekKey(now);
+        const storageKey = `lastMoodReport:${profile.id}:${weekKey}`;
+
+        if (localStorage.getItem(storageKey)) {
+          console.log('[WeeklyMoodReport] Report already sent this week:', weekKey);
           return;
         }
-        
-        // Check if we've already sent a report this week
-        const lastReportCheck = localStorage.getItem(`lastMoodReport:${profile.id}`);
-        
-        if (lastReportCheck) {
-          const lastReportDate = new Date(parseInt(lastReportCheck));
-          const currentWeekStart = new Date(now);
-          currentWeekStart.setDate(now.getDate() - dayOfWeek); // Go back to Sunday
-          currentWeekStart.setHours(0, 0, 0, 0);
-          
-          // If we already sent a report this week, skip
-          if (lastReportDate >= currentWeekStart) {
-            console.log('[WeeklyMoodReport] Report already sent this week (Saturday)');
-            return;
-          }
-        }
-        
-        console.log('[WeeklyMoodReport] 🎯 It\'s Saturday! Auto-generating weekly mood report...');
-        
-        // Try to generate the report
+
+        console.log('[WeeklyMoodReport] 🎯 Saturday — generating weekly mood report for', weekKey);
+
         await moodsApi.generateWeeklyReport();
-        
-        // Store the timestamp
-        localStorage.setItem(`lastMoodReport:${profile.id}`, now.getTime().toString());
-        
-        console.log('[WeeklyMoodReport] ✅ Weekly report generated successfully and sent to both partners!');
+
+        // Mark this ISO week as done so no duplicate fires later in the day
+        localStorage.setItem(storageKey, '1');
+
+        console.log('[WeeklyMoodReport] ✅ Report generated for', weekKey);
       } catch (error: any) {
-        // Silently fail - this is a background task
         console.log('[WeeklyMoodReport] ⚠️ Could not auto-generate report:', error.message);
       }
     };
 
-    // Check on mount
+    // Check on mount then every 6 hours (to catch Saturday if the app was already open)
     checkWeeklyReport();
-    
-    // Check every 6 hours to catch Saturday
     const interval = setInterval(checkWeeklyReport, 6 * 60 * 60 * 1000);
     return () => clearInterval(interval);
   }, [profile?.id, partner?.id]);
@@ -1041,7 +1258,17 @@ export function CoupleDashboard({
                 ))}
               </div>
 
-              {verseLanguage === 'en' ? (
+              {verseLanguage === 'am' && dailyVerse.amharicText ? (
+                <>
+                  <blockquote lang="am" style={{ fontSize: 'var(--text-base)', color: 'var(--foreground)', lineHeight: 1.9, borderLeft: '4px solid var(--primary)', paddingLeft: 'var(--spacing-3)', margin: 0, opacity: 0.9 }}>
+                    "{dailyVerse.amharicText}"
+                  </blockquote>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--font-weight-medium)', color: 'var(--primary)' }}>{dailyVerse.amharicReference}</span>
+                    <span style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>አማርኛ መጽሐፍ ቅዱስ</span>
+                  </div>
+                </>
+              ) : (
                 <>
                   <blockquote style={{ fontSize: 'var(--text-base)', fontStyle: 'italic', color: 'var(--foreground)', lineHeight: 1.6, borderLeft: '4px solid var(--primary)', paddingLeft: 'var(--spacing-3)', margin: 0, opacity: 0.85 }}>
                     "{dailyVerse.text}"
@@ -1051,30 +1278,7 @@ export function CoupleDashboard({
                     <span style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>{dailyVerse.translation}</span>
                   </div>
                 </>
-              ) : (() => {
-                const amVerse = amharicVerses[dailyVerse.reference];
-                return amVerse ? (
-                  <>
-                    <blockquote style={{ fontSize: 'var(--text-base)', color: 'var(--foreground)', lineHeight: 1.8, borderLeft: '4px solid var(--primary)', paddingLeft: 'var(--spacing-3)', margin: 0, opacity: 0.85 }}>
-                      "{amVerse.text}"
-                    </blockquote>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--font-weight-medium)', color: 'var(--primary)' }}>{amVerse.referenceAmharic}</span>
-                      <span style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>{amVerse.translation}</span>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <blockquote style={{ fontSize: 'var(--text-base)', fontStyle: 'italic', color: 'var(--foreground)', lineHeight: 1.6, borderLeft: '4px solid var(--primary)', paddingLeft: 'var(--spacing-3)', margin: 0, opacity: 0.85 }}>
-                      "{dailyVerse.text}"
-                    </blockquote>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--font-weight-medium)', color: 'var(--primary)' }}>{dailyVerse.reference}</span>
-                      <span style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>{dailyVerse.translation}</span>
-                    </div>
-                  </>
-                );
-              })()}
+              )}
 
               <Button
                 variant="outline"
@@ -1180,11 +1384,11 @@ export function CoupleDashboard({
                 <p style={{ fontSize: 'var(--text-callout)', fontWeight: 'var(--font-weight-medium)', color: 'var(--muted-foreground)' }}>{t.dashboard.yourMood}</p>
                 <div className="grid grid-cols-4 gap-2">
                   {([
-                    { mood: 'great', emoji: '🤩', label: 'Great', bg: 'var(--success-50)', border: 'var(--success-500)', labelColor: 'var(--success-700)' },
-                    { mood: 'good',  emoji: '😊', label: 'Good',  bg: 'var(--secondary-50)', border: 'var(--secondary-500)', labelColor: 'var(--secondary-700)' },
-                    { mood: 'okay',  emoji: '😐', label: 'Okay',  bg: 'var(--warning-50)', border: 'var(--warning-500)', labelColor: 'var(--warning-700)' },
-                    { mood: 'sad',   emoji: '😔', label: 'Sad',   bg: 'var(--neutral-100)', border: 'var(--neutral-400)', labelColor: 'var(--neutral-600)' },
-                  ] as const).map(({ mood, emoji, label, bg, border, labelColor }) => {
+                    { mood: 'great', label: 'Great', bg: 'linear-gradient(135deg, var(--success-50), var(--warning-50))', border: 'var(--success-400)', labelColor: 'var(--success-700)', glow: 'var(--success-200)' },
+                    { mood: 'good',  label: 'Good',  bg: 'linear-gradient(135deg, var(--warning-50), var(--secondary-50))', border: 'var(--warning-400)', labelColor: 'var(--warning-700)', glow: 'var(--warning-200)' },
+                    { mood: 'okay',  label: 'Okay',  bg: 'linear-gradient(135deg, var(--secondary-50), var(--primary-50))', border: 'var(--secondary-400)', labelColor: 'var(--secondary-700)', glow: 'var(--secondary-200)' },
+                    { mood: 'sad',   label: 'Sad',   bg: 'linear-gradient(135deg, var(--primary-50), var(--neutral-100))', border: 'var(--primary-300)', labelColor: 'var(--primary-700)', glow: 'var(--primary-100)' },
+                  ] as const).map(({ mood, label, bg, border, labelColor, glow }) => {
                     const isSelected = todaysMood?.mood === mood;
                     return (
                       <button
@@ -1193,18 +1397,19 @@ export function CoupleDashboard({
                         style={{
                           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                           gap: 'var(--spacing-1)',
-                          height: 'var(--touch-target-comfortable)',
-                          borderRadius: 'var(--radius-md)',
+                          paddingTop: 'var(--spacing-3)',
+                          paddingBottom: 'var(--spacing-2)',
+                          borderRadius: 'var(--radius-lg)',
                           border: `2px solid ${isSelected ? border : 'var(--neutral-200)'}`,
                           background: isSelected ? bg : 'var(--card)',
                           cursor: 'pointer',
-                          padding: 'var(--spacing-1)',
-                          transition: 'all 0.15s ease',
-                          boxShadow: isSelected ? `0 0 className="p-[0px] p-[0px] px-[0px] py-[1px] px-[0px] py-[2px] px-[0px] py-[3px] px-[0px] py-[4px] px-[0px] py-[4px] px-[0px] py-[4px] px-[0px] py-[5px] px-[0px] py-[6px] px-[0px] py-[6px] px-[0px] py-[6px] px-[0px] py-[6px] px-[0px] py-[6px] px-[0px] py-[6px] px-[0px] py-[5px] px-[0px] py-[5px] px-[0px] py-[5px] px-[0px] py-[4px] px-[0px] py-[4px] px-[0px] py-[3px] px-[0px] py-[3px] px-[0px] py-[2px] px-[0px] py-[1px] p-[0px] p-[0px] p-[0px] p-[0px] p-[0px] p-[0px] p-[0px]" 0 2px ${border}33` : 'none',
+                          transition: 'all 0.2s cubic-bezier(0.34,1.56,0.64,1)',
+                          transform: isSelected ? 'scale(1.08)' : 'scale(1)',
+                          boxShadow: isSelected ? `0 4px 16px ${glow}, 0 0 0 3px ${glow}` : '0 1px 3px rgba(0,0,0,0.06)',
                         }}
                       >
-                        <span style={{ fontSize: 'var(--icon-lg)', lineHeight: 1 }}>{emoji}</span>
-                        <span style={{ fontSize: 'var(--text-label)', fontWeight: 'var(--font-weight-medium)', color: isSelected ? labelColor : 'var(--neutral-500)' }}>{label}</span>
+                        <MoodFace mood={mood} size={44} />
+                        <span style={{ fontSize: 'var(--text-label)', fontWeight: isSelected ? 'var(--font-weight-semibold)' : 'var(--font-weight-medium)', color: isSelected ? labelColor : 'var(--neutral-500)' }}>{label}</span>
                       </button>
                     );
                   })}
@@ -1218,23 +1423,23 @@ export function CoupleDashboard({
               <div className="space-y-3">
                 <p style={{ fontSize: 'var(--text-callout)', fontWeight: 'var(--font-weight-medium)', color: 'var(--muted-foreground)' }}>{partner.name}'s Mood</p>
                 {partnerMood ? (() => {
-                  const moodMap: Record<string, { emoji: string; label: string; bg: string; border: string; color: string }> = {
-                    great: { emoji: '🤩', label: 'Feeling great!', bg: 'var(--success-50)', border: 'var(--success-500)', color: 'var(--success-700)' },
-                    good:  { emoji: '😊', label: 'Feeling good',   bg: 'var(--secondary-50)', border: 'var(--secondary-500)', color: 'var(--secondary-700)' },
-                    okay:  { emoji: '😐', label: 'Feeling okay',   bg: 'var(--warning-50)', border: 'var(--warning-500)', color: 'var(--warning-700)' },
-                    sad:   { emoji: '😔', label: 'Feeling sad',    bg: 'var(--neutral-100)', border: 'var(--neutral-400)', color: 'var(--neutral-600)' },
+                  const moodMap: Record<string, { label: string; bg: string; border: string; color: string; glow: string }> = {
+                    great: { label: 'Feeling great!', bg: 'linear-gradient(135deg, var(--success-50), var(--warning-50))', border: 'var(--success-400)', color: 'var(--success-700)', glow: 'var(--success-100)' },
+                    good:  { label: 'Feeling good',   bg: 'linear-gradient(135deg, var(--warning-50), var(--secondary-50))', border: 'var(--warning-400)', color: 'var(--warning-700)', glow: 'var(--warning-100)' },
+                    okay:  { label: 'Feeling okay',   bg: 'linear-gradient(135deg, var(--secondary-50), var(--primary-50))', border: 'var(--secondary-400)', color: 'var(--secondary-700)', glow: 'var(--secondary-100)' },
+                    sad:   { label: 'Feeling sad',    bg: 'linear-gradient(135deg, var(--primary-50), var(--neutral-100))', border: 'var(--primary-300)', color: 'var(--primary-700)', glow: 'var(--primary-50)' },
                   };
                   const m = moodMap[partnerMood.mood] ?? moodMap.okay;
                   return (
                     <div style={{
-                      display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)',
+                      display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)',
                       padding: 'var(--spacing-3) var(--spacing-4)',
                       background: m.bg,
                       border: `1.5px solid ${m.border}`,
-                      borderRadius: 'var(--radius-md)',
-                      minHeight: 'var(--touch-target-comfortable)',
+                      borderRadius: 'var(--radius-lg)',
+                      boxShadow: `0 2px 12px ${m.glow}`,
                     }}>
-                      <span style={{ fontSize: '2rem', lineHeight: 1 }}>{m.emoji}</span>
+                      <MoodFace mood={partnerMood.mood} size={52} />
                       <div>
                         <p style={{ fontSize: 'var(--text-callout)', fontWeight: 'var(--font-weight-semibold)', color: m.color, margin: 0 }}>{m.label}</p>
                         <p style={{ fontSize: 'var(--text-caption-small)', color: 'var(--muted-foreground)', margin: 0 }}>Today</p>

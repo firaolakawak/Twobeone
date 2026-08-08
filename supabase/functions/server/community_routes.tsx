@@ -223,8 +223,7 @@ app.get('/groups/:groupId/members', async (c) => {
   try {
     const { groupId } = c.req.param();
     
-    const memberKeys = await kv.getByPrefix(`group:${groupId}:member:`);
-    const members = memberKeys.map((key: any) => key.value);
+    const members = await kv.getByPrefix(`group:${groupId}:member:`);
 
     // Fetch user details for each member
     const membersWithDetails = await Promise.all(
@@ -417,7 +416,7 @@ app.post('/groups/:groupId/events/:eventId/rsvp', async (c) => {
     const event = await kv.get(`group:${groupId}:event:${eventId}`);
     if (event) {
       const allRsvps = await kv.getByPrefix(`event:${eventId}:rsvp:`);
-      event.rsvpCount = allRsvps.filter((r: any) => r.value.status === 'going').length;
+      event.rsvpCount = allRsvps.filter((r: any) => r?.status === 'going').length;
       await kv.set(`group:${groupId}:event:${eventId}`, event);
     }
 
@@ -434,7 +433,7 @@ app.get('/groups/:groupId/events/:eventId/rsvps', async (c) => {
     const { eventId } = c.req.param();
     
     const rsvps = await kv.getByPrefix(`event:${eventId}:rsvp:`);
-    const rsvpList = rsvps.map((r: any) => r.value);
+    const rsvpList = rsvps.filter(Boolean);
 
     return c.json({ rsvps: rsvpList });
   } catch (error) {
@@ -498,7 +497,7 @@ app.post('/groups/:groupId/live', async (c) => {
     // Notify all group members
     const members = await kv.getByPrefix(`group:${groupId}:member:`);
     for (const member of members) {
-      const memberId = member.value?.userId;
+      const memberId = member?.userId;
       if (memberId && memberId !== userId) {
         const notification = {
           id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,

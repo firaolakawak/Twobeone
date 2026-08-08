@@ -869,7 +869,7 @@ END:VCALENDAR`;
 
       <div className="space-y-4">
         {events.map((event) => {
-          const eventRsvps = rsvps[event.id] || [];
+          const eventRsvps = (rsvps[event.id] || []).filter(Boolean);
           const goingCount = eventRsvps.filter(r => r.status === 'going').length;
           
           return (

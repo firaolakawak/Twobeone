@@ -50,6 +50,8 @@ export function useNotifications() {
               duration: 8000
             }
           );
+          // Mark read immediately so it never re-surfaces on the next login
+          api.notifications.markAsRead(notification.id).catch(() => {});
         } else {
           toast.info(notification.title, {
             description: notification.message.substring(0, 100),

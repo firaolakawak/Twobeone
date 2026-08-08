@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { BookOpen, Play, Headphones, Bookmark, CheckCircle2, ArrowLeft, Home, Trash2, Pause, Globe } from 'lucide-react';
+import { BookOpen, Play, Headphones, Bookmark, CheckCircle2, ArrowLeft, Home, Trash2, Pause } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
@@ -72,22 +72,17 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
   const [currentlyPlayingId, setCurrentlyPlayingId] = useState<string | null>(null);
   const [audioElements, setAudioElements] = useState<Map<string, HTMLAudioElement>>(new Map());
   
-  // Devotional content language — defaults to app UI language but independently switchable
-  const [devotionalLanguage, setDevotionalLanguage] = useState<'en' | 'am' | 'om'>(
-    (language as 'en' | 'am' | 'om') || 'en'
-  );
-
-  // Filter by selected content language; untagged devotionals treated as English
+  // Filter devotionals by the global app language so switching language updates content instantly
   const filteredDevotionals = devotionals.filter(d =>
-    devotionalLanguage === 'en'
+    language === 'en'
       ? !d.language || d.language === 'en'
-      : d.language === devotionalLanguage
+      : d.language === language
   );
 
   const filteredAudioDevotionals = audioDevotionals.filter(d =>
-    devotionalLanguage === 'en'
+    language === 'en'
       ? !d.language || d.language === 'en'
-      : d.language === devotionalLanguage
+      : d.language === language
   );
 
   // Load devotionals from backend (admin-created only)
@@ -404,38 +399,6 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
       <div className="text-center space-y-2">
         <h1 className="text-3xl">{t.devotionals.title}</h1>
         <p className="text-muted-foreground">{t.dashboard.growingTogetherInFaith}</p>
-      </div>
-
-      {/* Devotional language switcher */}
-      <div className="flex justify-center gap-2 pb-2">
-        {([
-          { code: 'en' as const, label: 'English', flag: '🇺🇸' },
-          { code: 'am' as const, label: 'አማርኛ', flag: '🇪🇹' },
-          { code: 'om' as const, label: 'Oromiffa', flag: '🇪🇹' },
-        ]).map(lang => {
-          const count = devotionals.filter(d =>
-            lang.code === 'en' ? !d.language || d.language === 'en' : d.language === lang.code
-          ).length;
-          const isActive = devotionalLanguage === lang.code;
-          return (
-            <Button
-              key={lang.code}
-              size="sm"
-              variant={isActive ? 'default' : 'outline'}
-              onClick={() => setDevotionalLanguage(lang.code)}
-              className={isActive
-                ? 'bg-primary-600 hover:bg-primary-700 text-white text-xs px-3'
-                : 'text-xs px-3 text-muted-foreground hover:text-foreground'
-              }
-            >
-              <span className="mr-1">{lang.flag}</span>
-              {lang.label}
-              <span className={`ml-1.5 text-xs font-bold ${isActive ? 'text-white/80' : 'text-muted-foreground'}`}>
-                {count}
-              </span>
-            </Button>
-          );
-        })}
       </div>
 
       {/* Tabs */}

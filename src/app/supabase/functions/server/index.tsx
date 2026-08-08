@@ -1985,6 +1985,28 @@ app.post('/make-server-6d579fee/moods/weekly-report', async (c) => {
       return c.json({ error: 'Partner required for weekly reports' }, 400);
     }
 
+    // ── Server-side weekly deduplication ─────────────────────────────────
+    // Compute the start of the current ISO week (Monday 00:00:00 UTC).
+    const now = new Date();
+    const dayOfWeek = now.getUTCDay(); // 0 = Sun … 6 = Sat
+    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    const weekStart = new Date(now);
+    weekStart.setUTCDate(now.getUTCDate() - daysToMonday);
+    weekStart.setUTCHours(0, 0, 0, 0);
+
+    const allUserNotifications = await kv.getByPrefix(`notification:${userId}:`);
+    const alreadySentThisWeek = allUserNotifications.some(
+      (n: any) => n.type === 'mood_report' && new Date(n.createdAt) >= weekStart
+    );
+
+    if (alreadySentThisWeek) {
+      const existing = allUserNotifications
+        .filter((n: any) => n.type === 'mood_report' && new Date(n.createdAt) >= weekStart)
+        .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+      return c.json({ success: true, report: existing?.data ?? {}, alreadyGenerated: true });
+    }
+    // ─────────────────────────────────────────────────────────────────────
+
     const partner = await kv.get(`user:${profile.partnerId}`);
 
     // Get moods from the last 7 days
