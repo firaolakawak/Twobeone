@@ -43,7 +43,8 @@
       "icons": [
         {
           "src": "/_assets/v11/aa687d3ea77202367b7db44a45f4e5e66fc9d8e2.png",
-          "sizes": "192x192"
+          "sizes": "192x192",
+          "type": "image/png"
         }
       ]
     },
@@ -55,7 +56,8 @@
       "icons": [
         {
           "src": "/_assets/v11/aa687d3ea77202367b7db44a45f4e5e66fc9d8e2.png",
-          "sizes": "192x192"
+          "sizes": "192x192",
+          "type": "image/png"
         }
       ]
     },
@@ -67,7 +69,8 @@
       "icons": [
         {
           "src": "/_assets/v11/aa687d3ea77202367b7db44a45f4e5e66fc9d8e2.png",
-          "sizes": "192x192"
+          "sizes": "192x192",
+          "type": "image/png"
         }
       ]
     }
