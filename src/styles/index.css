@@ -2,30 +2,5 @@
 @source '../../**/*.{js,ts,jsx,tsx}';
 @import 'tw-animate-css';
 @import './fonts.css';
-@import './theme.css';
-
-@layer base {
-  *, *::before, *::after {
-    box-sizing: border-box;
-  }
-
-  body {
-    @apply bg-background text-foreground font-sans;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  /* PWA safe-area bottom padding utility */
-  .pb-safe {
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
-
-  /* Slide-up animation for install banners */
-  @keyframes slide-up {
-    from { transform: translateY(100%); opacity: 0; }
-    to   { transform: translateY(0);    opacity: 1; }
-  }
-  .animate-slide-up {
-    animation: slide-up 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  }
-}
+@import './default_theme.css';
+@import './globals.css';
