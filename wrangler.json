@@ -3,7 +3,6 @@
   "name": "twobeone",
   "compatibility_date": "2026-08-01",
   "assets": {
-    "directory": "./dist",
-    "binding": "ASSETS"
+    "directory": "./dist"
   }
 }
