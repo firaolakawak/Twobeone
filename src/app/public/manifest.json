@@ -1,101 +1,48 @@
 {
-  "name": "TwoBeOne - Christian Couples App",
+  "id": "twobeone-app",
+  "name": "TwoBeOne App",
   "short_name": "TwoBeOne",
-  "description": "Strengthen your relationship through Bible-based guidance, shared reflection, and spiritual growth together",
+  "description": "TwoBeOne helps Christian couples grow together through daily devotionals, shared journaling, prayer tracking, and guided conversations.",
+  "lang": "en",
+  "dir": "ltr",
   "start_url": "/",
-  "display": "standalone",
-  "background_color": "#f43f5e",
-  "theme_color": "#f43f5e",
-  "orientation": "portrait-primary",
   "scope": "/",
-  "categories": ["lifestyle", "social", "productivity"],
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#e11d48",
+  "categories": ["lifestyle", "social", "productivity", "education"],
+  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "/icons/icon-72x72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-96x96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-144x144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-152x152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-167x167.png",
-      "sizes": "167x167",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-180x180.png",
-      "sizes": "180x180",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-192x192.png",
+      "src": "/_assets/v11/aa687d3ea77202367b7db44a45f4e5e66fc9d8e2.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "/icons/icon-384x384.png",
-      "sizes": "384x384",
+      "src": "/_assets/v11/aa687d3ea77202367b7db44a45f4e5e66fc9d8e2.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-512x512.png",
+      "src": "/_assets/v11/aa687d3ea77202367b7db44a45f4e5e66fc9d8e2.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     }
   ],
-  "screenshots": [
-    {
-      "src": "/screenshots/screenshot1.png",
-      "sizes": "1170x2532",
-      "type": "image/png",
-      "form_factor": "narrow"
-    },
-    {
-      "src": "/screenshots/screenshot2.png",
-      "sizes": "2048x1536",
-      "type": "image/png",
-      "form_factor": "wide"
-    }
-  ],
-  "related_applications": [],
-  "prefer_related_applications": false,
   "shortcuts": [
     {
       "name": "Daily Devotional",
-      "short_name": "Devotional",
-      "description": "Read today's devotional",
-      "url": "/?shortcut=devotional",
+      "short_name": "Devotions",
+      "description": "Read today's devotional together",
+      "url": "/?tab=devotions",
       "icons": [
         {
-          "src": "/icons/icon-192x192.png",
+          "src": "/_assets/v11/aa687d3ea77202367b7db44a45f4e5e66fc9d8e2.png",
           "sizes": "192x192"
         }
       ]
@@ -103,36 +50,26 @@
     {
       "name": "Prayer Board",
       "short_name": "Prayer",
-      "description": "View prayer requests",
-      "url": "/?shortcut=prayer",
+      "description": "View and add prayer requests",
+      "url": "/?tab=prayer",
       "icons": [
         {
-          "src": "/icons/icon-192x192.png",
+          "src": "/_assets/v11/aa687d3ea77202367b7db44a45f4e5e66fc9d8e2.png",
           "sizes": "192x192"
         }
       ]
     },
     {
-      "name": "Journal",
+      "name": "Shared Journal",
       "short_name": "Journal",
-      "description": "Write in shared journal",
-      "url": "/?shortcut=journal",
+      "description": "Write in your shared journal",
+      "url": "/?tab=journal",
       "icons": [
         {
-          "src": "/icons/icon-192x192.png",
+          "src": "/_assets/v11/aa687d3ea77202367b7db44a45f4e5e66fc9d8e2.png",
           "sizes": "192x192"
         }
       ]
     }
-  ],
-  "share_target": {
-    "action": "/share",
-    "method": "POST",
-    "enctype": "multipart/form-data",
-    "params": {
-      "title": "title",
-      "text": "text",
-      "url": "url"
-    }
-  }
+  ]
 }
