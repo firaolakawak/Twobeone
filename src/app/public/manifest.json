@@ -15,24 +15,9 @@
   "categories": ["lifestyle", "social", "productivity", "education"],
   "prefer_related_applications": false,
   "icons": [
-    {
-      "src": "/_assets/v11/aa687d3ea77202367b7db44a45f4e5e66fc9d8e2.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/_assets/v11/aa687d3ea77202367b7db44a45f4e5e66fc9d8e2.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/_assets/v11/aa687d3ea77202367b7db44a45f4e5e66fc9d8e2.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
+    { "src": "/icons/icon-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512x512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
     {
@@ -40,39 +25,21 @@
       "short_name": "Devotions",
       "description": "Read today's devotional together",
       "url": "/?tab=devotions",
-      "icons": [
-        {
-          "src": "/_assets/v11/aa687d3ea77202367b7db44a45f4e5e66fc9d8e2.png",
-          "sizes": "192x192",
-          "type": "image/png"
-        }
-      ]
+      "icons": [ { "src": "/icons/icon-192x192.png", "sizes": "192x192", "type": "image/png" } ]
     },
     {
       "name": "Prayer Board",
       "short_name": "Prayer",
       "description": "View and add prayer requests",
       "url": "/?tab=prayer",
-      "icons": [
-        {
-          "src": "/_assets/v11/aa687d3ea77202367b7db44a45f4e5e66fc9d8e2.png",
-          "sizes": "192x192",
-          "type": "image/png"
-        }
-      ]
+      "icons": [ { "src": "/icons/icon-192x192.png", "sizes": "192x192", "type": "image/png" } ]
     },
     {
       "name": "Shared Journal",
       "short_name": "Journal",
       "description": "Write in your shared journal",
       "url": "/?tab=journal",
-      "icons": [
-        {
-          "src": "/_assets/v11/aa687d3ea77202367b7db44a45f4e5e66fc9d8e2.png",
-          "sizes": "192x192",
-          "type": "image/png"
-        }
-      ]
+      "icons": [ { "src": "/icons/icon-192x192.png", "sizes": "192x192", "type": "image/png" } ]
     }
   ]
 }
