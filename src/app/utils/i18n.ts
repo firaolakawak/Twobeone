@@ -190,29 +190,33 @@ export interface Translations {
       conflict: string;
       finance: string;
       daily: string;
+      dailyLifeHabits: string;
+      intimacyLifestyle: string;
+      loveBalance: string;
+      dreamWeddingHome: string;
+      travelAdventure: string;
+      relationshipBoundaries: string;
+      trustTruth: string;
+      kidsFuture: string;
+      financeGoals: string;
+      familyRelations: string;
+      bibleConvictions: string;
+    };
+    categoryDescriptions: {
+      dailyLifeHabits: string;
+      intimacyLifestyle: string;
+      loveBalance: string;
+      dreamWeddingHome: string;
+      travelAdventure: string;
+      relationshipBoundaries: string;
+      trustTruth: string;
+      kidsFuture: string;
+      financeGoals: string;
+      familyRelations: string;
+      bibleConvictions: string;
     };
   };
 
-  // Profile
-  profile: {
-    title: string;
-    myProfile: string;
-    editProfile: string;
-    partnerCode: string;
-    enterPartnerCode: string;
-    linkPartner: string;
-    relationshipStart: string;
-    linkedWith: string;
-    notLinked: string;
-    preferences: string;
-    language: string;
-    notifications: string;
-    theme: string;
-    about: string;
-    version: string;
-  };
-
-  // Bible
   bible: {
     title: string;
     selectBook: string;
@@ -246,20 +250,6 @@ export interface Translations {
     stayConnected: string;
     permissionRequired: string;
     enableInSettings: string;
-  };
-
-  // Milestones
-  milestones: {
-    title: string;
-    addMilestone: string;
-    editMilestone: string;
-    deleteMilestone: string;
-    milestoneTitle: string;
-    milestoneDescription: string;
-    milestoneDate: string;
-    selectIcon: string;
-    noMilestones: string;
-    addFirstMilestone: string;
   };
 
   // Mood
@@ -570,6 +560,30 @@ export const translations: Record<Language, Translations> = {
         conflict: 'Conflict Resolution',
         finance: 'Money & Finance',
         daily: 'Daily Life',
+        dailyLifeHabits: 'Daily Life & Habits',
+        intimacyLifestyle: 'Intimacy & Lifestyle',
+        loveBalance: 'Love & Balance',
+        dreamWeddingHome: 'Dream Wedding / Dream Home',
+        travelAdventure: 'Travel & Adventure',
+        relationshipBoundaries: 'Relationship Boundaries',
+        trustTruth: 'Trust & Truth',
+        kidsFuture: 'Kids & Future',
+        financeGoals: 'Finance & Goals',
+        familyRelations: 'Family Relations',
+        bibleConvictions: 'Bible Convictions',
+      },
+      categoryDescriptions: {
+        dailyLifeHabits: 'Explore daily routines and habits',
+        intimacyLifestyle: 'Deepen connection and understanding',
+        loveBalance: 'Finding harmony in relationships',
+        dreamWeddingHome: 'Plan your future together',
+        travelAdventure: 'Explore the world together',
+        relationshipBoundaries: 'Establish healthy boundaries',
+        trustTruth: 'Build trust and transparency',
+        kidsFuture: 'Discuss family planning',
+        financeGoals: 'Plan your financial future',
+        familyRelations: 'Navigate family dynamics',
+        bibleConvictions: 'Discuss faith and beliefs',
       },
     },
 
@@ -938,6 +952,30 @@ export const translations: Record<Language, Translations> = {
         conflict: 'ግጭት አፈታት',
         finance: 'ገንዘብ እና ፋይናንስ',
         daily: 'የእለት ተእለት ህይወት',
+        dailyLifeHabits: 'ዕለታዊ ሕይወት እና የልምድ ልምዶች',
+        intimacyLifestyle: 'ውርደት እና የሕይወት ሁኔታ',
+        loveBalance: 'ፍቅር እና ሚዛን',
+        dreamWeddingHome: 'የጋራ ሕልም / የወደፍት ቤታችን',
+        travelAdventure: 'በጋራ ማየት የምፍልጉ ቦታዎች',
+        relationshipBoundaries: 'የግንኙነት ገደሎች',
+        trustTruth: 'እምነት እና እውነታ',
+        kidsFuture: 'የወደፍት ልጆች ',
+        financeGoals: 'የፋይናንስ አጠቃቀም',
+        familyRelations: 'የቤተሰብ ግንኙነቶች',
+        bibleConvictions: 'የመጽሐፍ ቅዱስ ኃላፊነቶች',
+      },
+      categoryDescriptions: {
+        dailyLifeHabits: 'ዕለታዊ ሕይወት እና ልምዶችን ይሙከሩ',
+        intimacyLifestyle: 'ግንኙነትን ያሳድጉ እና ያስተዋወቁ',
+        loveBalance: 'በግንኙነት ውስጥ ሚዛን ይፈልጉ',
+        dreamWeddingHome: 'የፊትለፊት እቅድዎን ያውቁ',
+        travelAdventure: 'ከእርስዎ ጋር ዓለምን ይጎብኙ',
+        relationshipBoundaries: 'ጤናማ ገደሎችን ያቋቋሙ',
+        trustTruth: 'እምነትን እና እውነታን ያከብሩ',
+        kidsFuture: 'የቤተሰብ እቅድን ይወዱ',
+        financeGoals: 'የፋይናንስ ፍላጎቶችን ይዘጋጁ',
+        familyRelations: 'የቤተሰብ ውይይትን ያስተካክሉ',
+        bibleConvictions: 'እምነት እና ሃላፊነትን ያውሩ',
       },
     },
 
@@ -1299,6 +1337,30 @@ export const translations: Record<Language, Translations> = {
         conflict: 'Rakkoo Furuu',
         finance: 'Faayinaansii fi Qabeenya',
         daily: 'Jireenya Guyyaa Guyyaa',
+        dailyLifeHabits: 'Jireenya Guyyaa fi Hojii Guyyaa',
+        intimacyLifestyle: 'Jaalalaa fi Jireenya',
+        loveBalance: 'Jaalala fi Madaallii',
+        dreamWeddingHome: 'Fuulduratti Waaqeeffannaa / Mana Abdi',
+        travelAdventure: 'Imala fi Bashannana',
+        relationshipBoundaries: 'Daangaa Walqunnamtii',
+        trustTruth: 'Amantii fi Dhugaa',
+        kidsFuture: 'Ijoollee fi Fuuldura',
+        financeGoals: 'Maallaqa fi Kaayyoo',
+        familyRelations: 'Walitti Dhufeenya Maatii',
+        bibleConvictions: 'Amantii Macaafa Qulqulluu',
+      },
+      categoryDescriptions: {
+        dailyLifeHabits: 'Jireenya guyyaa fi akkamitti hojjechuu baradhu',
+        intimacyLifestyle: 'Waliin hariiroo siif cimu tolchi',
+        loveBalance: 'Madaallii waliinii argadhu',
+        dreamWeddingHome: 'Fuulduratti karoora kee qopheessi',
+        travelAdventure: 'Addunyaa waliin qoradhu',
+        relationshipBoundaries: 'Daangaa fayyaa uumi',
+        trustTruth: 'Amantii fi dhugaa ijaari',
+        kidsFuture: 'Karoorri maatii ni mari’adha',
+        financeGoals: 'Maallaqaaf karoora qopheessi',
+        familyRelations: 'Waliigaltee maatii tasgabbeessi',
+        bibleConvictions: 'Amantii fi yaada Macaafa Qulqulluu irratti mariadhu',
       },
     },
     profile: {

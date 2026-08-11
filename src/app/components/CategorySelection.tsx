@@ -1,4 +1,4 @@
-import { MessageCircle, Sun, Heart, Scale, Church, Plane, Shield, Handshake, Baby, DollarSign, Users, BookOpen, ArrowLeft } from 'lucide-react';
+import { Sun, Heart, Scale, Church, Plane, Shield, Handshake, Baby, DollarSign, Users, BookOpen, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
@@ -13,113 +13,113 @@ export function CategorySelection({ onSelectCategory, onBack }: CategorySelectio
   const categories = [
     { 
       id: 'daily-life', 
-      label: 'Daily Life & Habits', 
+      label: t.questions.categories.dailyLifeHabits,
       icon: Sun,
       color: 'from-warning-500 to-warning-500',
       bgColor: 'bg-gradient-to-br from-warning-50 to-warning-50',
       borderColor: 'border-warning-500/30',
       textColor: 'text-warning-700',
-      description: 'Explore daily routines and habits'
+      description: t.questions.categoryDescriptions.dailyLifeHabits,
     },
     { 
       id: 'intimacy', 
-      label: 'Intimacy & Lifestyle', 
+      label: t.questions.categories.intimacyLifestyle,
       icon: Heart,
       color: 'from-primary-500 to-primary-600',
       bgColor: 'bg-gradient-to-br from-primary-50 to-primary-100',
       borderColor: 'border-primary-200',
       textColor: 'text-primary-700',
-      description: 'Deepen connection and understanding'
+      description: t.questions.categoryDescriptions.intimacyLifestyle,
     },
     { 
       id: 'love-balance', 
-      label: 'Love & Balance', 
+      label: t.questions.categories.loveBalance,
       icon: Scale,
       color: 'from-primary-500 to-primary-600',
       bgColor: 'bg-gradient-to-br from-primary-50 to-primary-100',
       borderColor: 'border-primary-200',
       textColor: 'text-primary-700',
-      description: 'Finding harmony in relationships'
+      description: t.questions.categoryDescriptions.loveBalance,
     },
     { 
       id: 'dream-wedding', 
-      label: 'Dream Wedding / Dream Home', 
+      label: t.questions.categories.dreamWeddingHome,
       icon: Church,
       color: 'from-sky-500 to-primary-500',
       bgColor: 'bg-gradient-to-br from-sky-50 to-primary-50',
       borderColor: 'border-sky-200',
       textColor: 'text-sky-700',
-      description: 'Plan your future together'
+      description: t.questions.categoryDescriptions.dreamWeddingHome,
     },
     { 
       id: 'travel', 
-      label: 'Travel & Adventure', 
+      label: t.questions.categories.travelAdventure,
       icon: Plane,
       color: 'from-sky-500 to-sky-500',
       bgColor: 'bg-gradient-to-br from-sky-50 to-sky-50',
       borderColor: 'border-sky-200',
       textColor: 'text-sky-700',
-      description: 'Explore the world together'
+      description: t.questions.categoryDescriptions.travelAdventure,
     },
     { 
       id: 'boundaries', 
-      label: 'Relationship Boundaries', 
+      label: t.questions.categories.relationshipBoundaries,
       icon: Shield,
       color: 'from-success-500 to-sky-500',
       bgColor: 'bg-gradient-to-br from-success-50 to-sky-50',
       borderColor: 'border-success-500/30',
       textColor: 'text-success-700',
-      description: 'Establish healthy boundaries'
+      description: t.questions.categoryDescriptions.relationshipBoundaries,
     },
     { 
       id: 'trust', 
-      label: 'Trust & Truth', 
+      label: t.questions.categories.trustTruth,
       icon: Handshake,
       color: 'from-sky-500 to-sky-500',
       bgColor: 'bg-gradient-to-br from-sky-50 to-sky-100',
       borderColor: 'border-sky-200',
       textColor: 'text-sky-700',
-      description: 'Build trust and transparency'
+      description: t.questions.categoryDescriptions.trustTruth,
     },
     { 
       id: 'kids-future', 
-      label: 'Kids & Future', 
+      label: t.questions.categories.kidsFuture,
       icon: Baby,
       color: 'from-primary-500 to-primary-500',
       bgColor: 'bg-gradient-to-br from-primary-50 to-primary-50',
       borderColor: 'border-primary-200',
       textColor: 'text-primary-700',
-      description: 'Discuss family planning'
+      description: t.questions.categoryDescriptions.kidsFuture,
     },
     { 
       id: 'finance', 
-      label: 'Finance & Goals', 
+      label: t.questions.categories.financeGoals,
       icon: DollarSign,
       color: 'from-success-500 to-success-700',
       bgColor: 'bg-gradient-to-br from-success-50 to-success-50',
       borderColor: 'border-success-500/30',
       textColor: 'text-success-700',
-      description: 'Plan your financial future'
+      description: t.questions.categoryDescriptions.financeGoals,
     },
     { 
       id: 'family', 
-      label: 'Family Relations', 
+      label: t.questions.categories.familyRelations,
       icon: Users,
       color: 'from-warning-500 to-warning-500',
       bgColor: 'bg-gradient-to-br from-warning-50 to-warning-50',
       borderColor: 'border-warning-500/30',
       textColor: 'text-warning-700',
-      description: 'Navigate family dynamics'
+      description: t.questions.categoryDescriptions.familyRelations,
     },
     { 
       id: 'bible', 
-      label: 'Bible Convictions', 
+      label: t.questions.categories.bibleConvictions,
       icon: BookOpen,
       color: 'from-primary-500 to-primary-500',
       bgColor: 'bg-gradient-to-br from-primary-50 to-primary-50',
       borderColor: 'border-primary-200',
       textColor: 'text-primary-700',
-      description: 'Discuss faith and beliefs'
+      description: t.questions.categoryDescriptions.bibleConvictions,
     },
   ];
 
@@ -170,33 +170,6 @@ export function CategorySelection({ onSelectCategory, onBack }: CategorySelectio
             );
           })}
         </div>
-
-        {/* All Categories Option */}
-        <Card
-          className="bg-gradient-to-br from-primary-50 to-sky-50 border-primary-200 cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.02] border-2"
-          onClick={() => onSelectCategory('all')}
-        >
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-500 to-sky-500 flex items-center justify-center shadow-lg">
-                  <MessageCircle className="w-7 h-7 text-white" />
-                </div>
-                <div className="space-y-1">
-                  <h3 className="font-semibold text-lg text-primary-700">
-                    All Questions
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Browse all available questions across every category
-                  </p>
-                </div>
-              </div>
-              <div className="text-2xl font-bold text-primary-600">
-                →
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Back Button */}
         {onBack && (

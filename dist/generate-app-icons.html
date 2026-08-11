@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate TwoBeOne Icons - REQUIRED for iOS</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+      min-height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #7c3aed;
+      margin: 0 0 8px 0;
+      font-size: 28px;
+    }
+    .alert {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 16px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+    .alert h2 {
+      margin: 0 0 8px 0;
+      color: #92400e;
+      font-size: 18px;
+    }
+    .alert p {
+      margin: 4px 0;
+      color: #78350f;
+      line-height: 1.6;
+    }
+    .steps {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+    .steps h3 {
+      margin: 0 0 12px 0;
+      color: #1e40af;
+      font-size: 16px;
+    }
+    .steps ol {
+      margin: 0;
+      padding-left: 24px;
+    }
+    .steps li {
+      margin: 10px 0;
+      line-height: 1.6;
+      color: #1e3a8a;
+    }
+    button {
+      background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      width: 100%;
+      margin: 8px 0;
+      transition: all 0.2s;
+    }
+    button:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(124, 58, 237, 0.4);
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    #status {
+      padding: 16px;
+      border-radius: 8px;
+      margin: 16px 0;
+      display: none;
+      font-weight: 500;
+    }
+    #status.success {
+      background: #d1fae5;
+      color: #065f46;
+      border-left: 4px solid #10b981;
+      display: block;
+    }
+    #status.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border-left: 4px solid #ef4444;
+      display: block;
+    }
+    .icon-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 20px 0;
+      padding: 20px;
+      background: #f9fafb;
+      border-radius: 12px;
+    }
+    .icon-item {
+      text-align: center;
+      flex: 0 0 calc(20% - 10px);
+      min-width: 100px;
+    }
+    .icon-item img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 8px;
+    }
+    .icon-item span {
+      font-size: 11px;
+      color: #6b7280;
+      display: block;
+    }
+    .progress {
+      margin: 20px 0;
+    }
+    .progress-bar {
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+      transition: width 0.3s;
+      width: 0%;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎨 Generate TwoBeOne Icons</h1>
+    
+    <div class="alert">
+      <h2>⚠️ iOS Icons Missing!</h2>
+      <p>The TwoBeOne app icon is not displaying on iOS because the PNG icon files are missing.</p>
+      <p><strong>Follow the steps below to fix this:</strong></p>
+    </div>
+
+    <div class="steps">
+      <h3>📋 How to Fix</h3>
+      <ol>
+        <li>Click the <strong>"Generate All Icons"</strong> button below</li>
+        <li>Wait for all 10 icons to be generated (takes ~5 seconds)</li>
+        <li>Click <strong>"Download All as ZIP"</strong></li>
+        <li>Extract the ZIP file to get all PNG icons</li>
+        <li>Upload ALL PNG files to your <code>/public/icons/</code> folder</li>
+        <li>Refresh your app and test - the icon should now appear! ✨</li>
+      </ol>
+    </div>
+
+    <button id="generateBtn" onclick="generateAllIcons()">
+      🚀 Generate All Icons
+    </button>
+
+    <div class="progress" id="progressContainer" style="display:none;">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <div id="status"></div>
+
+    <div id="iconPreview" class="icon-preview" style="display:none;"></div>
+
+    <button id="downloadBtn" onclick="downloadAllAsZip()" style="display:none;">
+      📦 Download All Icons as ZIP
+    </button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script>
+    const svgSource = `<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="115" fill="url(#gradient)"/>
+  <g transform="translate(256, 256)">
+    <path d="M-60 -20 C-60 -60, -90 -80, -120 -60 C-150 -40, -150 0, -120 30 L-60 80 L-60 -20 Z" fill="white" opacity="0.9"/>
+    <path d="M60 -20 C60 -60, 90 -80, 120 -60 C150 -40, 150 0, 120 30 L60 80 L60 -20 Z" fill="white" opacity="0.9"/>
+    <path d="M0 -30 C0 -70, -30 -90, -60 -70 C-75 -60, -80 -40, -80 -20 C-80 10, -60 40, 0 90 C60 40, 80 10, 80 -20 C80 -40, 75 -60, 60 -70 C30 -90, 0 -70, 0 -30 Z" fill="white"/>
+  </g>
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ec4899;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>`;
+
+    const iconSizes = [
+      { size: 72, name: 'icon-72x72.png' },
+      { size: 96, name: 'icon-96x96.png' },
+      { size: 128, name: 'icon-128x128.png' },
+      { size: 144, name: 'icon-144x144.png' },
+      { size: 152, name: 'icon-152x152.png' },
+      { size: 180, name: 'icon-180x180.png' },
+      { size: 192, name: 'icon-192x192.png' },
+      { size: 384, name: 'icon-384x384.png' },
+      { size: 512, name: 'icon-512x512.png' },
+      { size: 1024, name: 'icon-1024x1024.png' },
+    ];
+
+    const generatedIcons = {};
+
+    function showStatus(message, type) {
+      const status = document.getElementById('status');
+      status.textContent = message;
+      status.className = type;
+    }
+
+    function updateProgress(current, total) {
+      const progress = document.getElementById('progressFill');
+      const percent = (current / total) * 100;
+      progress.style.width = percent + '%';
+    }
+
+    async function generateAllIcons() {
+      const generateBtn = document.getElementById('generateBtn');
+      const downloadBtn = document.getElementById('downloadBtn');
+      const progressContainer = document.getElementById('progressContainer');
+      const preview = document.getElementById('iconPreview');
+      
+      generateBtn.disabled = true;
+      generateBtn.textContent = '⏳ Generating...';
+      progressContainer.style.display = 'block';
+      preview.style.display = 'flex';
+      preview.innerHTML = '';
+      
+      showStatus('Generating icons... Please wait.', 'success');
+
+      let completed = 0;
+
+      for (const { size, name } of iconSizes) {
+        await new Promise((resolve) => {
+          const canvas = document.createElement('canvas');
+          canvas.width = size;
+          canvas.height = size;
+
+          const img = new Image();
+          const blob = new Blob([svgSource], { type: 'image/svg+xml' });
+          const url = URL.createObjectURL(blob);
+
+          img.onload = () => {
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, size, size);
+            URL.revokeObjectURL(url);
+
+            canvas.toBlob((blob) => {
+              generatedIcons[name] = blob;
+              completed++;
+              updateProgress(completed, iconSizes.length);
+
+              // Add to preview
+              const item = document.createElement('div');
+              item.className = 'icon-item';
+              const previewImg = document.createElement('img');
+              previewImg.src = URL.createObjectURL(blob);
+              const label = document.createElement('span');
+              label.textContent = `${size}×${size}`;
+              item.appendChild(previewImg);
+              item.appendChild(label);
+              preview.appendChild(item);
+
+              if (completed === iconSizes.length) {
+                showStatus(`✅ Successfully generated all ${iconSizes.length} icons!`, 'success');
+                generateBtn.textContent = '✓ Icons Generated';
+                downloadBtn.style.display = 'block';
+              }
+              resolve();
+            }, 'image/png', 1.0);
+          };
+
+          img.onerror = () => {
+            showStatus('❌ Error generating icons. Please refresh and try again.', 'error');
+            generateBtn.disabled = false;
+            generateBtn.textContent = '🚀 Generate All Icons';
+            resolve();
+          };
+
+          img.src = url;
+        });
+      }
+    }
+
+    async function downloadAllAsZip() {
+      if (Object.keys(generatedIcons).length === 0) {
+        showStatus('⚠️ Please generate icons first!', 'error');
+        return;
+      }
+
+      try {
+        const downloadBtn = document.getElementById('downloadBtn');
+        downloadBtn.disabled = true;
+        downloadBtn.textContent = '⏳ Creating ZIP...';
+        
+        showStatus('📦 Creating ZIP file...', 'success');
+
+        const zip = new JSZip();
+
+        for (const [name, blob] of Object.entries(generatedIcons)) {
+          zip.file(name, blob);
+        }
+
+        const zipBlob = await zip.generateAsync({ 
+          type: 'blob',
+          compression: 'DEFLATE',
+          compressionOptions: { level: 6 }
+        });
+        
+        const url = URL.createObjectURL(zipBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'twobeone-icons.zip';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        showStatus(`✅ Downloaded twobeone-icons.zip with ${Object.keys(generatedIcons).length} icons! Now extract and upload to /public/icons/`, 'success');
+        downloadBtn.disabled = false;
+        downloadBtn.textContent = '✓ Download Complete - Click to Download Again';
+      } catch (error) {
+        showStatus(`❌ Error creating ZIP: ${error.message}`, 'error');
+        console.error('Error creating ZIP:', error);
+        const downloadBtn = document.getElementById('downloadBtn');
+        downloadBtn.disabled = false;
+        downloadBtn.textContent = '📦 Download All Icons as ZIP';
+      }
+    }
+  </script>
+</body>
+</html>

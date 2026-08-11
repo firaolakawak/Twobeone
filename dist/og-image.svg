@@ -1,0 +1,36 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="TwoBeOne — Grow Together in Faith">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9f1239"/>
+      <stop offset="50%" stop-color="#be123c"/>
+      <stop offset="100%" stop-color="#e11d48"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.12)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.04)"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1100" cy="80"  r="180" fill="rgba(255,255,255,0.05)"/>
+  <circle cx="80"   cy="550" r="220" fill="rgba(255,255,255,0.04)"/>
+  <rect x="80" y="80" width="1040" height="470" rx="32" fill="url(#card)" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+  <!-- Two hearts -->
+  <path d="M480 230 C480 230 430 200 430 165 C430 145 445 135 460 140 C470 143 478 152 480 160 C482 152 490 143 500 140 C515 135 530 145 530 165 C530 200 480 230 480 230Z" fill="rgba(255,255,255,0.9)"/>
+  <path d="M720 230 C720 230 670 200 670 165 C670 145 685 135 700 140 C710 143 718 152 720 160 C722 152 730 143 740 140 C755 135 770 145 770 165 C770 200 720 230 720 230Z" fill="rgba(255,255,255,0.9)"/>
+  <path d="M600 210 C600 210 575 193 575 177 C575 165 583 159 592 162 C596 163 599 168 600 172 C601 168 604 163 608 162 C617 159 625 165 625 177 C625 193 600 210 600 210Z" fill="rgba(255,255,255,0.7)"/>
+  <!-- App name -->
+  <text x="600" y="315" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="96" font-weight="800" fill="white" letter-spacing="-2">TwoBeOne</text>
+  <!-- Tagline -->
+  <text x="600" y="385" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="36" font-weight="400" fill="rgba(255,255,255,0.85)" letter-spacing="1">Grow Together in Faith</text>
+  <!-- Feature pills -->
+  <rect x="258" y="440" width="180" height="40" rx="20" fill="rgba(255,255,255,0.15)"/>
+  <text x="348" y="466" text-anchor="middle" font-family="sans-serif" font-size="22" fill="white">📖 Devotionals</text>
+  <rect x="458" y="440" width="140" height="40" rx="20" fill="rgba(255,255,255,0.15)"/>
+  <text x="528" y="466" text-anchor="middle" font-family="sans-serif" font-size="22" fill="white">🙏 Prayer</text>
+  <rect x="608" y="440" width="145" height="40" rx="20" fill="rgba(255,255,255,0.15)"/>
+  <text x="681" y="466" text-anchor="middle" font-family="sans-serif" font-size="22" fill="white">📝 Journal</text>
+  <rect x="763" y="440" width="180" height="40" rx="20" fill="rgba(255,255,255,0.15)"/>
+  <text x="853" y="466" text-anchor="middle" font-family="sans-serif" font-size="22" fill="white">💬 Questions</text>
+  <!-- URL -->
+  <text x="600" y="590" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="22" fill="rgba(255,255,255,0.5)" letter-spacing="1">twobeone.app · Free · English · አማርኛ · Oromiffa</text>
+</svg>
