@@ -132,6 +132,8 @@ self.addEventListener('push', (event) => {
     icon: '/icons/icon-192x192.png',
     badge: '/icons/icon-72x72.png',
     vibrate: [200, 100, 200],
+    requireInteraction: true,
+    renotify: true,
     data: notificationData,
     tag: notificationData.tag || 'twobeone-notification',
     actions: [
