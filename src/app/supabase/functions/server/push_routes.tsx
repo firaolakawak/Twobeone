@@ -8,6 +8,65 @@ const pushRoutes = new Hono();
 const VAPID_PUBLIC_KEY = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDCoXjbK3s9gE8ZCXzp8zQJZs8qI67y_NvZy7p3kk0z0';
 const VAPID_PRIVATE_KEY = 'sMIyJcgzS-OKkMHmQkfO9V5rNkVGXrQvZOJGm3I2QFk';
 
+type PushNotificationPayload = {
+  title: string;
+  body: string;
+  data?: Record<string, any>;
+  icon?: string;
+  badge?: string;
+  url?: string;
+  tag?: string;
+};
+
+async function sendPushPayload(recipientId: string, payload: PushNotificationPayload) {
+  const subscription = await kv.get(`push_subscription:${recipientId}`);
+
+  if (!subscription) {
+    return { sent: false, reason: 'no-subscription' };
+  }
+
+  try {
+    const webpush = await import('npm:web-push@3.6.7');
+
+    webpush.setVapidDetails(
+      'mailto:support@twobeone.app',
+      VAPID_PUBLIC_KEY,
+      VAPID_PRIVATE_KEY
+    );
+
+    const message = JSON.stringify({
+      title: payload.title,
+      body: payload.body,
+      icon: payload.icon || '/icons/icon-192x192.png',
+      badge: payload.badge || '/icons/icon-72x72.png',
+      data: payload.data || {},
+      url: payload.url || '/',
+      tag: payload.tag
+    });
+
+    await webpush.sendNotification(subscription, message);
+    return { sent: true };
+  } catch (pushError: any) {
+    if (pushError.statusCode === 410 || pushError.statusCode === 404) {
+      await kv.del(`push_subscription:${recipientId}`);
+    }
+    throw pushError;
+  }
+}
+
+export async function sendWebPushToUser(recipientId: string, payload: PushNotificationPayload) {
+  return sendPushPayload(recipientId, payload);
+}
+
+export async function sendWebPushToPartner(userId: string, payload: PushNotificationPayload) {
+  const userProfile = await kv.get(`profile:${userId}`);
+  if (!userProfile?.partnerId) {
+    return { sent: false, reason: 'no-partner' };
+  }
+
+  return sendPushPayload(userProfile.partnerId, payload);
+}
+
 // Helper function to get user ID from auth header
 async function getUserFromToken(authHeader: string | null, supabase: any): Promise<string | null> {
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -113,53 +172,30 @@ pushRoutes.post('/send-push', async (c) => {
       return c.json({ error: 'Missing required fields' }, 400);
     }
 
-    // Get recipient's push subscription
-    const subscription = await kv.get(`push_subscription:${recipientId}`);
-    
-    if (!subscription) {
-      console.log('[Push] No subscription found for recipient:', recipientId);
-      return c.json({ 
-        success: false, 
-        message: 'Recipient has not enabled push notifications' 
-      });
-    }
-
-    // Send push notification using web-push
     try {
-      const webpush = await import('npm:web-push@3.6.7');
-      
-      webpush.setVapidDetails(
-        'mailto:support@twobeone.app',
-        VAPID_PUBLIC_KEY,
-        VAPID_PRIVATE_KEY
-      );
-
-      const payload = JSON.stringify({
+      const result = await sendWebPushToUser(recipientId, {
         title,
         body,
-        icon: icon || '/icons/icon-192x192.png',
-        badge: '/icons/icon-72x72.png',
+        icon,
         data: data || {},
         url: data?.url || '/'
       });
 
-      await webpush.sendNotification(subscription, payload);
-      
+      if (!result.sent) {
+        console.log('[Push] No subscription found for recipient:', recipientId);
+        return c.json({
+          success: false,
+          message: 'Recipient has not enabled push notifications'
+        });
+      }
+
       console.log('[Push] Notification sent successfully to:', recipientId);
-      
       return c.json({ success: true });
     } catch (pushError: any) {
       console.error('[Push] Error sending notification:', pushError);
-      
-      // If subscription is no longer valid, delete it
-      if (pushError.statusCode === 410 || pushError.statusCode === 404) {
-        await kv.del(`push_subscription:${recipientId}`);
-        console.log('[Push] Removed invalid subscription for:', recipientId);
-      }
-      
-      return c.json({ 
-        success: false, 
-        error: 'Failed to send push notification' 
+      return c.json({
+        success: false,
+        error: 'Failed to send push notification'
       }, 500);
     }
   } catch (error) {
@@ -196,54 +232,30 @@ pushRoutes.post('/send-push-to-partner', async (c) => {
 
     const partnerId = userProfile.partnerId;
 
-    // Get partner's push subscription
-    const subscription = await kv.get(`push_subscription:${partnerId}`);
-    
-    if (!subscription) {
-      console.log('[Push] Partner has not enabled push notifications:', partnerId);
-      return c.json({ 
-        success: false, 
-        message: 'Partner has not enabled push notifications' 
-      });
-    }
-
-    // Send push notification
     try {
-      const webpush = await import('npm:web-push@3.6.7');
-      
-      webpush.setVapidDetails(
-        'mailto:support@twobeone.app',
-        VAPID_PUBLIC_KEY,
-        VAPID_PRIVATE_KEY
-      );
-
-      const payload = JSON.stringify({
+      const result = await sendWebPushToPartner(userId, {
         title,
         body,
-        icon: '/icons/icon-192x192.png',
-        badge: '/icons/icon-72x72.png',
         data: data || {},
         url: data?.url || '/',
         tag: data?.tag || 'partner-notification'
       });
 
-      await webpush.sendNotification(subscription, payload);
-      
+      if (!result.sent) {
+        console.log('[Push] Partner has not enabled push notifications:', partnerId);
+        return c.json({
+          success: false,
+          message: 'Partner has not enabled push notifications'
+        });
+      }
+
       console.log('[Push] Notification sent to partner:', partnerId);
-      
       return c.json({ success: true });
     } catch (pushError: any) {
       console.error('[Push] Error sending notification to partner:', pushError);
-      
-      // If subscription is no longer valid, delete it
-      if (pushError.statusCode === 410 || pushError.statusCode === 404) {
-        await kv.del(`push_subscription:${partnerId}`);
-        console.log('[Push] Removed invalid subscription for partner:', partnerId);
-      }
-      
-      return c.json({ 
-        success: false, 
-        error: 'Failed to send push notification to partner' 
+      return c.json({
+        success: false,
+        error: 'Failed to send push notification to partner'
       }, 500);
     }
   } catch (error) {

@@ -510,6 +510,12 @@ export default function App() {
             });
             // Mark read immediately so it never re-surfaces on the next login
             api.notifications.markAsRead(notification.id).catch(() => {});
+          } else if (notification.type === "mood_analysis") {
+            toast.success(notification.title || "🧠 AI analysis ready", {
+              description: notification.data?.summary || "Your AI mood analysis is ready to review.",
+              duration: 8000,
+            });
+            api.notifications.markAsRead(notification.id).catch(() => {});
           } else {
             toast.info(notification.title, {
               description: notification.message.substring(

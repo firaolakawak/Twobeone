@@ -123,15 +123,17 @@ self.addEventListener('sync', (event) => {
 // Handle push notifications
 self.addEventListener('push', (event) => {
   console.log('[Service Worker] Push notification received');
-  
+
   const data = event.data ? event.data.json() : {};
   const title = data.title || 'TwoBeOne';
+  const notificationData = (data && typeof data === 'object' && data !== null) ? data : { url: data || '/' };
   const options = {
-    body: data.body || 'New update available',
+    body: notificationData.body || 'New update available',
     icon: '/icons/icon-192x192.png',
     badge: '/icons/icon-72x72.png',
     vibrate: [200, 100, 200],
-    data: data.url || '/',
+    data: notificationData,
+    tag: notificationData.tag || 'twobeone-notification',
     actions: [
       {
         action: 'open',
@@ -154,9 +156,25 @@ self.addEventListener('notificationclick', (event) => {
   console.log('[Service Worker] Notification clicked');
   event.notification.close();
 
+  const rawData = event.notification.data || {};
+  const targetUrl = typeof rawData === 'string'
+    ? rawData
+    : rawData.url || '/';
+  const url = targetUrl.startsWith('http') ? targetUrl : new URL(targetUrl, self.location.origin).toString();
+
   if (event.action === 'open' || !event.action) {
     event.waitUntil(
-      clients.openWindow(event.notification.data)
+      clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+        for (const client of clientList) {
+          if ('focus' in client) {
+            client.focus();
+            if ('navigate' in client) {
+              return client.navigate(url);
+            }
+          }
+        }
+        return clients.openWindow(url);
+      })
     );
   }
 });

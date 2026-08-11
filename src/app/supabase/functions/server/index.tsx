@@ -5,7 +5,7 @@ import { createClient } from 'jsr:@supabase/supabase-js@2.49.8';
 import * as kv from './kv_store.tsx';
 import communityRoutes from './community_routes.tsx';
 import { webrtcRoutes } from './webrtc_routes.tsx';
-import pushRoutes from './push_routes.tsx';
+import pushRoutes, { sendWebPushToUser } from './push_routes.tsx';
 import newsletterRoutes from './newsletter_routes.tsx';
 import landingRoutes from './landing_routes.tsx';
 import { setupAdminRoutes } from './admin_routes.tsx';
@@ -1881,6 +1881,36 @@ Keep the tone warm, encouraging, and Christ-centered. Limit response to 300 word
     // Save analysis
     await kv.set(`mood-analysis:${userId}:${analysisResult.id}`, analysisResult);
 
+    const analysisNotificationId = generateId();
+    const analysisNotification = {
+      id: analysisNotificationId,
+      recipientId: userId,
+      userId,
+      type: 'mood_analysis',
+      title: '🧠 AI Mood Analysis Ready',
+      message: 'Your relationship analysis is ready to review.',
+      data: {
+        analysisId: analysisResult.id,
+        summary: analysis.slice(0, 160),
+        period: analysisResult.period
+      },
+      isRead: false,
+      createdAt: new Date().toISOString()
+    };
+
+    await kv.set(`notification:${userId}:${analysisNotificationId}`, analysisNotification);
+
+    try {
+      await sendWebPushToUser(userId, {
+        title: '🧠 AI Mood Analysis Ready',
+        body: 'Your mood analysis is ready to review.',
+        data: { type: 'mood_analysis', analysisId: analysisResult.id, url: '/' },
+        tag: 'mood-analysis'
+      });
+    } catch (pushError: any) {
+      console.warn('[Mood Analysis] Push notification failed:', pushError?.message || pushError);
+    }
+
     return c.json({ analysis: analysisResult });
   } catch (error: any) {
     console.error('Mood analysis error:', error);
@@ -2158,6 +2188,7 @@ Your mood data is tracked! AI insights will be available when the service is res
     const userNotificationId = generateId();
     const userNotification = {
       id: userNotificationId,
+      recipientId: userId,
       userId,
       type: 'mood_report',
       title: '💝 Weekly Mood Report',
@@ -2176,6 +2207,7 @@ Your mood data is tracked! AI insights will be available when the service is res
     const partnerNotificationId = generateId();
     const partnerNotification = {
       id: partnerNotificationId,
+      recipientId: profile.partnerId,
       userId: profile.partnerId,
       type: 'mood_report',
       title: '💝 Weekly Mood Report',
@@ -2192,6 +2224,28 @@ Your mood data is tracked! AI insights will be available when the service is res
 
     await kv.set(`notification:${userId}:${userNotificationId}`, userNotification);
     await kv.set(`notification:${profile.partnerId}:${partnerNotificationId}`, partnerNotification);
+
+    try {
+      await sendWebPushToUser(userId, {
+        title: '💝 Weekly Mood Report',
+        body: reportSummary,
+        data: { type: 'mood_report', url: '/' },
+        tag: 'weekly-report'
+      });
+    } catch (pushError: any) {
+      console.warn('[Weekly Report] Push notification for user failed:', pushError?.message || pushError);
+    }
+
+    try {
+      await sendWebPushToUser(profile.partnerId, {
+        title: '💝 Weekly Mood Report',
+        body: reportSummary,
+        data: { type: 'mood_report', url: '/' },
+        tag: 'weekly-report'
+      });
+    } catch (pushError: any) {
+      console.warn('[Weekly Report] Push notification for partner failed:', pushError?.message || pushError);
+    }
 
     console.log(`[Weekly Report] Generated for ${profile.name} & ${partner?.name}`);
 
