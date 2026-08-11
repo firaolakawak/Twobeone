@@ -1340,7 +1340,7 @@ export const translations: Record<Language, Translations> = {
         dailyLifeHabits: 'Jireenya Guyyaa fi Hojii Guyyaa',
         intimacyLifestyle: 'Jaalalaa fi Jireenya',
         loveBalance: 'Jaalala fi Madaallii',
-        dreamWeddingHome: 'Fuulduratti Waaqeeffannaa / Mana Abdi',
+        dreamWeddingHome: 'Abdi kan Fuulduratti ',
         travelAdventure: 'Imala fi Bashannana',
         relationshipBoundaries: 'Daangaa Walqunnamtii',
         trustTruth: 'Amantii fi Dhugaa',
