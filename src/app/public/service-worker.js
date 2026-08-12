@@ -6,7 +6,7 @@ const OFFLINE_URL = '/offline.html';
 const PRECACHE_URLS = [
   '/',
   '/offline.html',
-  '/icons/icon-192x192.png',
+  '/icons/icon-192x192.p  GET https://<projectId>.supabase.co/functions/v1/make-server-6d579fee/newsletter/subscribers  GET https://<projectId>.supabase.co/functions/v1/make-server-6d579fee/newsletter/subscribersng',
   '/icons/icon-512x512.png',
 ];
 

@@ -1,0 +1,123 @@
+/* Dashboard design tokens and utilities - TwoBeOne Admin */
+:root{
+  --tb-primary:#4A4CE0;
+  --tb-accent:#6E6BEF;
+  --tb-surface:#FFFFFF;
+  --tb-subsurface:#F7F8FA;
+  --tb-borders:#E4E6EB;
+  --tb-success:#3CCB7F;
+  --tb-warning:#FFB84D;
+  --tb-danger:#FF5A5A;
+
+  --tb-radius:12px;
+  --tb-shadow-1: 0 2px 6px rgba(9,10,20,0.04);
+  --tb-shadow-2: 0 8px 20px rgba(9,10,20,0.06);
+  --tb-shadow-3: 0 18px 60px rgba(9,10,20,0.08);
+
+  --tb-transition: 180ms cubic-bezier(.2,.9,.2,1);
+}
+
+.tb-dashboard {
+  background: var(--tb-subsurface);
+  min-height: 100vh;
+}
+
+/* Dark theme variables (activated via data-theme="dark" on <html>) */
+:root[data-theme="dark"]{
+  --tb-primary:#6E6BEF;
+  --tb-accent:#4A4CE0;
+  --tb-surface:#0B1020;
+  --tb-subsurface:#071025;
+  --tb-borders: rgba(255,255,255,0.06);
+  --tb-success:#29c57a;
+  --tb-warning:#ffb84d;
+  --tb-danger:#ff6b6b;
+  --tb-shadow-1: 0 2px 6px rgba(2,6,23,0.6);
+  --tb-shadow-2: 0 10px 30px rgba(2,6,23,0.6);
+  --tb-shadow-3: 0 30px 80px rgba(2,6,23,0.6);
+}
+
+.tb-topbar {
+  backdrop-filter: blur(8px);
+  background: linear-gradient(180deg, rgba(255,255,255,0.65), rgba(255,255,255,0.5));
+  border: 1px solid var(--tb-borders);
+  border-radius: 10px;
+  box-shadow: var(--tb-shadow-1);
+}
+
+.tb-sidebar {
+  background: linear-gradient(180deg, var(--tb-surface), var(--tb-subsurface));
+  border-right: 1px solid var(--tb-borders);
+  padding: 16px;
+  border-radius: var(--tb-radius);
+}
+
+.tb-kpi-card{
+  border-radius:var(--tb-radius);
+  background: linear-gradient(180deg,var(--tb-surface),#fbfdff);
+  box-shadow: var(--tb-shadow-1);
+  border: 1px solid var(--tb-borders);
+  padding: 18px;
+  transition: transform var(--tb-transition), box-shadow var(--tb-transition);
+  opacity:0;
+  transform: translateY(8px);
+  animation: tb-fade-up 360ms var(--tb-transition) forwards;
+}
+.tb-kpi-card:hover{transform:translateY(-4px);box-shadow:var(--tb-shadow-2)}
+
+.tb-kpi-number{font-family:"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Segoe UI Mono", monospace;font-size:2.25rem;font-weight:700;letter-spacing:0.6px}
+.tb-kpi-label{font-size:0.8125rem;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px}
+
+.tb-timeline{background:var(--tb-surface);border:1px solid var(--tb-borders);border-radius:var(--tb-radius);padding:12px}
+.tb-kanban{background:var(--tb-surface);border:1px solid var(--tb-borders);border-radius:var(--tb-radius);padding:12px}
+
+/* Timeline item animations and hover reveal */
+.tb-timeline .tb-timeline-item{opacity:0;transform:translateX(-6px);animation:tb-fade-in-left 320ms var(--delay,0ms) forwards;border-radius:8px;padding:8px}
+.tb-timeline .tb-timeline-item + .tb-timeline-item{margin-top:6px}
+.tb-timeline .tb-timeline-item:hover{background:rgba(0,0,0,0.03)}
+.tb-timeline .tb-timeline-item .details{max-height:0;overflow:hidden;transition:max-height 220ms ease}
+.tb-timeline .tb-timeline-item:hover .details{max-height:240px}
+
+/* Kanban card styles and drag micro-animations */
+.tb-kanban .kanban-card{background:var(--tb-surface);border:1px solid var(--tb-borders);padding:10px;border-radius:10px;box-shadow:var(--tb-shadow-1);transition:transform var(--tb-transition),box-shadow var(--tb-transition),opacity var(--tb-transition)}
+.tb-kanban .kanban-card:hover{transform:translateY(-4px);box-shadow:var(--tb-shadow-2)}
+.tb-kanban .kanban-card[draggable="true"]:active{transform:scale(0.985)}
+.tb-kanban .kanban-column{background:linear-gradient(180deg,var(--tb-subsurface),rgba(255,255,255,0.02));padding:8px;border-radius:8px}
+
+/* Dark-mode tweaks for timeline/kanban elevations */
+:root[data-theme="dark"] .tb-timeline,
+:root[data-theme="dark"] .tb-kanban{
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow: var(--tb-shadow-2);
+}
+
+@keyframes tb-fade-in-left{
+  from{opacity:0;transform:translateX(-8px)}
+  to{opacity:1;transform:translateX(0)}
+}
+
+.tb-quick-actions{position:sticky;bottom:18px;z-index:30}
+.tb-action-pill{display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border-radius:999px;background:linear-gradient(90deg,var(--tb-primary),var(--tb-accent));color:white;box-shadow:var(--tb-shadow-2);transition:transform var(--tb-transition)}
+.tb-action-pill:hover{transform:translateY(-6px)}
+
+/* Small utilities */
+.tb-muted{color:#6b7280}
+
+@media (max-width: 1024px){
+  .tb-sidebar{display:none}
+}
+
+/* Micro-animation keyframes */
+@keyframes tb-fade-up{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* Helper class for staggered items (override with inline animation-delay) */
+.tb-animate-in{animation-name:tb-fade-up;animation-duration:360ms;animation-fill-mode:forwards;opacity:0}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce){
+  .tb-kpi-card,.tb-animate-in{animation:none;transform:none;transition:none}
+}

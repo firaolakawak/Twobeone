@@ -91,51 +91,60 @@ export function AdminPanel({
     setIsMobileMenuOpen(false);
   };
 
+  const activeSectionLabel =
+    sections.find((section) => section.id === activeSection)
+      ?.label ??
+    activeSection;
+
   return (
     <ContentLanguageProvider>
-      <div className="min-h-screen bg-muted">
+      <div className="min-h-screen bg-slate-50 text-slate-900">
         {/* Header */}
-        <header className="bg-gradient-to-r from-primary-600 to-sky-600 text-white shadow-lg sticky top-0 z-50">
-          <div className="container mx-auto px-4 sm:px-6 py-4">
-            <div className="flex items-center justify-between">
+        <header className="bg-white border-b border-slate-200 text-slate-900 sticky top-0 z-50 shadow-sm">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 py-5">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex items-center gap-3">
-                {/* Mobile Menu Toggle */}
                 <button
-                  onClick={() =>
-                    setIsMobileMenuOpen(!isMobileMenuOpen)
-                  }
-                  className="lg:hidden p-2 hover:bg-primary-700 rounded-lg transition-colors"
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  className="lg:hidden p-2 rounded-xl border border-slate-200 bg-slate-100 text-slate-700 shadow-sm hover:bg-slate-50 transition-colors"
                   aria-label="Toggle menu"
                 >
                   {isMobileMenuOpen ? (
-                    <X className="w-6 h-6" />
+                    <X className="w-5 h-5" />
                   ) : (
-                    <Menu className="w-6 h-6" />
+                    <Menu className="w-5 h-5" />
                   )}
                 </button>
-                <Shield className="w-7 h-7 sm:w-8 sm:h-8" />
-                <div>
-                  <h1 className="text-xl sm:text-2xl font-bold">
-                    TwoBeOne Admin
-                  </h1>
-                  <p className="text-sm text-primary-100 hidden sm:block">
-                    Content Management System
-                  </p>
+                <div className="flex items-center gap-3 rounded-3xl bg-slate-100 px-4 py-3 shadow-sm">
+                  <Shield className="w-5 h-5 text-slate-700" />
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.22em] text-slate-500">
+                      Admin Console
+                    </p>
+                    <h1 className="text-lg font-semibold">
+                      TwoBeOne Dashboard
+                    </h1>
+                  </div>
                 </div>
               </div>
-              <Button
-                variant="secondary"
-                onClick={onSignOut}
-                size="sm"
-                className="text-sm px-4 text-[#6d0d3a] text-[#a1044e]"
-              >
-                Sign Out
-              </Button>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div className="rounded-3xl bg-slate-100 px-4 py-2 text-sm text-slate-600 shadow-sm">
+                  {activeSectionLabel}
+                </div>
+                <Button
+                  variant="ghost"
+                  onClick={onSignOut}
+                  size="sm"
+                  className="px-4"
+                >
+                  Sign Out
+                </Button>
+              </div>
             </div>
           </div>
         </header>
 
-        <div className="container mx-auto mx-[100px] my-[0px] p-[0px]">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6">
           <div className="lg:grid lg:grid-cols-12 lg:gap-6">
             {/* Mobile Sidebar Overlay */}
             {isMobileMenuOpen && (
@@ -158,31 +167,28 @@ export function AdminPanel({
               ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
             `}
             >
-              <Card className="p-5 sticky top-[73px] h-[calc(100vh-73px)] overflow-y-auto">
-                <h3 className="font-semibold mb-5 text-sm text-muted-foreground uppercase tracking-wide">
+              <Card className="p-5 sticky top-[73px] h-[calc(100vh-73px)] overflow-y-auto bg-white/95 border border-slate-200 shadow-sm">
+                <h3 className="font-semibold mb-5 text-sm text-slate-500 uppercase tracking-[0.18em]">
                   Navigation
                 </h3>
                 <nav className="space-y-2">
                   {sections.map((section) => {
                     const Icon = section.icon;
-                    const isActive =
-                      activeSection === section.id;
+                    const isActive = activeSection === section.id;
 
                     return (
                       <button
                         key={section.id}
-                        onClick={() =>
-                          handleNavigate(section.id)
-                        }
-                        className={`w-full flex items-center justify-between px-4 py-3.5 rounded-lg transition-all ${
+                        onClick={() => handleNavigate(section.id)}
+                        className={`w-full flex items-center justify-between gap-3 px-4 py-3.5 rounded-3xl text-left transition-all duration-200 ${
                           isActive
-                            ? "bg-primary-600 text-white shadow-md"
-                            : "text-foreground hover:bg-muted"
+                            ? "bg-slate-900 text-white shadow-lg"
+                            : "text-slate-700 hover:bg-slate-100"
                         }`}
                       >
                         <div className="flex items-center gap-3">
                           <Icon className="w-5 h-5 flex-shrink-0" />
-                          <span className="font-medium text-base">
+                          <span className="font-medium text-sm">
                             {section.label}
                           </span>
                         </div>
@@ -198,11 +204,11 @@ export function AdminPanel({
                         onBackToHome();
                         setIsMobileMenuOpen(false);
                       }}
-                      className="w-full flex items-center justify-between px-4 py-3.5 rounded-lg transition-all text-foreground hover:bg-muted"
+                      className="w-full flex items-center justify-between gap-3 px-4 py-3.5 rounded-3xl transition-all duration-200 text-slate-700 hover:bg-slate-100"
                     >
                       <div className="flex items-center gap-3">
                         <Home className="w-5 h-5 flex-shrink-0" />
-                        <span className="font-medium text-base">
+                        <span className="font-medium text-sm">
                           Home
                         </span>
                       </div>
@@ -215,10 +221,12 @@ export function AdminPanel({
             {/* Main Content */}
             <div className="lg:col-span-9 mt-4 lg:mt-0">
               {activeSection === "dashboard" && (
-                <AdminDashboard
-                  accessToken={accessToken}
-                  onNavigate={setActiveSection}
-                />
+                <div className="rounded-[28px] bg-white border border-slate-200 p-6 shadow-sm">
+                  <AdminDashboard
+                    accessToken={accessToken}
+                    onNavigate={setActiveSection}
+                  />
+                </div>
               )}
               {activeSection === "devotionals" && (
                 <DevotionalsManager accessToken={accessToken} />
