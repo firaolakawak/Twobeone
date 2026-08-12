@@ -3205,16 +3205,34 @@ app.get('/make-server-6d579fee/admin/users', async (c) => {
     const allUsers = await kv.getByPrefix('user:');
     
     // Filter out system keys and format user data
-    const users = allUsers
+    const users = await Promise.all(allUsers
       .filter((u: any) => u.id && u.email)
-      .map((u: any) => ({
-        id: u.id,
-        name: u.name,
-        email: u.email,
-        partnerId: u.partnerId || null,
-        partnerName: u.partnerName || null,
-        createdAt: u.createdAt,
-        relationshipStart: u.relationshipStart
+      .map(async (u: any) => {
+        const [journalEntries, prayerRequests] = await Promise.all([
+          kv.getByPrefix(`journal:${u.id}:`),
+          kv.getByPrefix(`prayer:${u.id}:`)
+        ]);
+        const activityDates = [
+          u.updatedAt,
+          u.createdAt,
+          ...journalEntries.map((entry: any) => entry.updatedAt || entry.createdAt),
+          ...prayerRequests.map((prayer: any) => prayer.updatedAt || prayer.createdAt)
+        ].filter(Boolean).map((value: string) => new Date(value).getTime()).filter(Number.isFinite);
+        return {
+          id: u.id,
+          name: u.name,
+          email: u.email,
+          partnerId: u.partnerId || null,
+          partnerName: u.partnerName || null,
+          createdAt: u.createdAt,
+          updatedAt: u.updatedAt,
+          lastActive: activityDates.length ? new Date(Math.max(...activityDates)).toISOString() : u.createdAt,
+          relationshipStart: u.relationshipStart,
+          daysTogether: u.daysTogether || 0,
+          completedDays: u.completedDays || u.daysTogether || 0,
+          journalEntries: journalEntries.length,
+          prayerRequests: prayerRequests.length
+        };
       }));
 
     return c.json({ users });
@@ -4608,7 +4626,10 @@ app.get('/make-server-6d579fee/admin/groups/list', async (c) => {
       return c.json({ error: 'Forbidden - Admin access required' }, 403);
     }
 
-    const groups = await kv.getByPrefix('group:');
+    const records = await kv.getByPrefix('group:');
+    // The group namespace also contains memberships, messages, events, and live
+    // session pointers. Only return actual group records to the admin console.
+    const groups = records.filter((record: any) => record && record.id && record.name);
     return c.json({ groups });
   } catch (error: any) {
     console.error('Admin list groups error:', error);

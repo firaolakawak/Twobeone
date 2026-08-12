@@ -185,6 +185,13 @@ export function setupAdminRoutes(app: Hono, supabase: any) {
 
       // Log the action
       const requesterProfile = await kv.get(`user:${userId}`);
+      await kv.set(`admin_activity:${Date.now()}:${targetUserId}`, {
+        id: `admin_activity_${Date.now()}_${targetUserId}`,
+        action: 'granted',
+        targetUser: { id: targetUser.id, email: targetUser.email, name: targetUser.name || targetUser.full_name },
+        performedBy: { id: userId, email: requesterProfile?.email || 'System', name: requesterProfile?.name || requesterProfile?.full_name },
+        timestamp: new Date().toISOString()
+      });
       console.log(`Admin privilege granted: ${requesterProfile?.email} granted admin to ${targetUser.email}`);
 
       return c.json({ 
@@ -255,6 +262,13 @@ export function setupAdminRoutes(app: Hono, supabase: any) {
 
       // Log the action
       const requesterProfile = await kv.get(`user:${userId}`);
+      await kv.set(`admin_activity:${Date.now()}:${targetUserId}`, {
+        id: `admin_activity_${Date.now()}_${targetUserId}`,
+        action: 'revoked',
+        targetUser: { id: targetUser?.id, email: targetUser?.email, name: targetUser?.name || targetUser?.full_name },
+        performedBy: { id: userId, email: requesterProfile?.email || 'System', name: requesterProfile?.name || requesterProfile?.full_name },
+        timestamp: new Date().toISOString()
+      });
       console.log(`Admin privilege revoked: ${requesterProfile?.email} revoked admin from ${targetUser?.email}`);
 
       return c.json({ 
@@ -286,7 +300,15 @@ export function setupAdminRoutes(app: Hono, supabase: any) {
         return c.json({ error: 'Forbidden - Admin access required' }, 403);
       }
 
-      // Get all users and check for admin activity
+      // Prefer the append-only audit ledger. Fall back to legacy profile markers
+      // for installations that have not recorded a ledger event yet.
+      const storedActivity = await kv.getByPrefix('admin_activity:');
+      if (storedActivity.length > 0) {
+        storedActivity.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        return c.json({ activityLog: storedActivity });
+      }
+
+      // Get all users and check for legacy admin activity
       const allUsers = await kv.getByPrefix('user:');
       const activityLog = [];
 

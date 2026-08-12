@@ -21,12 +21,14 @@ import {
   SelectValue,
 } from '../ui/select';
 import { ScreenshotUploader } from './ScreenshotUploader';
+import { LandingPageWorkspace } from './landing/LandingPageWorkspace';
+import '../../styles/landing-console.css';
 
 interface LandingPageManagerProps {
   accessToken?: string;
 }
 
-interface LandingContent {
+export interface LandingContent {
   hero: {
     badge: string;
     title: string;
@@ -100,6 +102,13 @@ interface LandingContent {
     buttonText: string;
     footer: string;
   };
+  updatedAt?: string;
+}
+
+export interface NewsletterSubscriber {
+  email: string;
+  subscribedAt: string;
+  status?: string;
 }
 
 const iconOptions = [
@@ -125,8 +134,11 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [subscribersCount, setSubscribersCount] = useState(0);
-  const [subscribers, setSubscribers] = useState<any[]>([]);
+  const [subscribers, setSubscribers] = useState<NewsletterSubscriber[]>([]);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['hero']));
+  const [isDirty, setIsDirty] = useState(false);
+  const [activeView, setActiveView] = useState<'content' | 'media' | 'subscribers'>('content');
+  const [activeSection, setActiveSection] = useState<'hero' | 'features' | 'why' | 'stats' | 'testimonials' | 'faqs' | 'cta'>('hero');
 
   useEffect(() => {
     loadContent();
@@ -149,6 +161,7 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
       if (response.ok) {
         const { content: loadedContent } = await response.json();
         setContent(loadedContent);
+        setIsDirty(false);
       }
     } catch (error) {
       console.error('Failed to load landing page content:', error);
@@ -217,6 +230,7 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
 
       if (response.ok) {
         toast.success('Landing page content saved successfully!');
+        setIsDirty(false);
       } else {
         throw new Error('Failed to save content');
       }
@@ -276,6 +290,26 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
       </div>
     );
   }
+
+  return (
+    <LandingPageWorkspace
+      content={content}
+      subscribers={subscribers}
+      subscribersCount={subscribersCount}
+      isLoading={isLoading}
+      isSaving={isSaving}
+      isDirty={isDirty}
+      activeView={activeView}
+      activeSection={activeSection}
+      onViewChange={setActiveView}
+      onSectionChange={setActiveSection}
+      onContentChange={(nextContent) => { setContent(nextContent); setIsDirty(true); }}
+      onSave={handleSave}
+      onReload={loadContent}
+      onReset={handleReset}
+      media={<ScreenshotUploader accessToken={accessToken || publicAnonKey} />}
+    />
+  );
 
   return (
     <div className="space-y-6">

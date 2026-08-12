@@ -303,13 +303,15 @@ export function setupRecoveryRoutes(app: Hono<any>) {
       if (!adminUserId) return c.json({ error: 'Unauthorized' }, 401);
       if (!(await isAdminUser(adminUserId))) return c.json({ error: 'Forbidden' }, 403);
 
-      const { email } = await c.req.json();
-      if (!email) return c.json({ error: 'email is required' }, 400);
+      const { email, userId } = await c.req.json();
+      if (!email && !userId) return c.json({ error: 'email or userId is required' }, 400);
 
       const allProfiles: any[] = await kv.getByPrefix('user:');
-      const matches = allProfiles.filter((p: any) => p?.email?.toLowerCase() === email.toLowerCase().trim());
+      const matches = allProfiles.filter((p: any) => userId
+        ? p?.id === userId
+        : p?.email?.toLowerCase() === email.toLowerCase().trim());
 
-      if (matches.length === 0) return c.json({ accounts: [], message: 'No KV profiles found for this email.' });
+      if (matches.length === 0) return c.json({ accounts: [], message: 'No matching KV profiles found.' });
 
       const accounts = await Promise.all(matches.map(async (profile: any) => {
         const uid = profile.id;
