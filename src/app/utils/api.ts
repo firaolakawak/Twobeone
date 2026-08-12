@@ -138,6 +138,38 @@ export const admin = {
   checkPrivileges: async () => {
     return apiCall<{ isAdmin: boolean }>('/admin/privileges/check', {}, 1, 15000);
   },
+  getStats: async () => {
+    return apiCall<{
+      stats: {
+        totalUsers: number;
+        activeCouples: number;
+        totalDevotionals: number;
+        totalQuestions: number;
+        totalModules: number;
+        totalJournalEntries: number;
+        totalPrayers: number;
+        completionRate: number;
+        _error?: string;
+      };
+    }>('/admin/stats', {}, 2, 25000);
+  },
+  getActivityLog: async (limit = 20) => {
+    return apiCall<{
+      entries: Array<{
+        id: string;
+        event: string;
+        category: string;
+        userId: string;
+        userName: string;
+        userEmail: string;
+        metadata: Record<string, unknown>;
+        timestamp: string;
+      }>;
+      total: number;
+      offset: number;
+      limit: number;
+    }>(`/admin/audit-log?limit=${limit}&offset=0`, {}, 2, 25000);
+  },
 };
 
 // ============================================

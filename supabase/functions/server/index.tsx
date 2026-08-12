@@ -3563,48 +3563,16 @@ app.get('/make-server-6d579fee/admin/recent-activity', async (c) => {
       return c.json({ error: 'Forbidden - Admin access required' }, 403);
     }
 
-    // Gather recent activities from different sources
-    const activities: any[] = [];
+    // The live feed is a projection of the persisted audit log. Do not scan
+    // content tables here: audit entries preserve the actor, event and metadata.
+    const activities = (await kv.getByPrefix('auditlog:'))
+      .filter((entry: any) => entry?.id && entry?.event && entry?.timestamp)
+      .sort((a: any, b: any) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      )
+      .slice(0, 20);
 
-    // Recent journal entries
-    const journals = await kv.getByPrefix('journal:');
-    journals.slice(0, 10).forEach((j: any) => {
-      activities.push({
-        action: 'Journal entry created',
-        user: j.authorName || 'Unknown',
-        time: formatTimeAgo(j.createdAt),
-        timestamp: j.createdAt
-      });
-    });
-
-    // Recent prayers
-    const prayers = await kv.getByPrefix('prayer:');
-    prayers.slice(0, 10).forEach((p: any) => {
-      activities.push({
-        action: 'Prayer request added',
-        user: p.authorName || 'Unknown',
-        time: formatTimeAgo(p.createdAt),
-        timestamp: p.createdAt
-      });
-    });
-
-    // Recent devotional completions
-    const completions = await kv.getByPrefix('completion:');
-    completions.slice(0, 10).forEach((c: any) => {
-      activities.push({
-        action: 'Devotional completed',
-        user: c.userName || 'Unknown',
-        time: formatTimeAgo(c.completedAt),
-        timestamp: c.completedAt
-      });
-    });
-
-    // Sort by timestamp and return top 20
-    activities.sort((a, b) => 
-      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    );
-
-    return c.json({ activities: activities.slice(0, 20) });
+    return c.json({ activities });
   } catch (error: any) {
     console.error('Admin activity fetch error:', error);
     return c.json({ error: error.message }, 500);

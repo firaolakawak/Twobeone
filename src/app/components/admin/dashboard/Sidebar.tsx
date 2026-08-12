@@ -1,40 +1,70 @@
-import React from 'react';
-import { Home, BookOpen, MessageSquare, Users, Shield, Archive, LogOut } from 'lucide-react';
+import { useState, type ComponentType } from "react";
+import { ChevronLeft, ChevronRight, Home } from "lucide-react";
 
-const items = [
-  {label:'Dashboard',icon:Home,key:'dashboard'},
-  {label:'Devotionals',icon:BookOpen,key:'devotionals'},
-  {label:'Q&A',icon:MessageSquare,key:'questions'},
-  {label:'Modules',icon:Archive,key:'modules'},
-  {label:'Groups',icon:Users,key:'groups'},
-  {label:'Landing Page',icon:Shield,key:'landing'},
-  {label:'Audit Log',icon:Shield,key:'audit'},
-]
+export interface SidebarItem {
+  id: string;
+  label: string;
+  icon: ComponentType<{ className?: string }>;
+}
 
-export function Sidebar({active, onNavigate}:{active?:string,onNavigate?:(k:string)=>void}){
+interface SidebarProps {
+  items?: SidebarItem[];
+  active: string;
+  onNavigate: (id: string) => void;
+  onHome?: () => void;
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
+}
+
+export function Sidebar({ items = [], active, onNavigate, onHome, mobileOpen = false, onMobileClose }: SidebarProps) {
+  const [collapsed, setCollapsed] = useState(false);
+  const go = (id: string) => {
+    onNavigate(id);
+    onMobileClose?.();
+  };
+
   return (
-    <aside className="tb-sidebar h-full">
-      <div className="mb-6">
-        <div className="text-sm tb-muted">Content</div>
-        <div className="mt-3 space-y-1">
-          {items.slice(0,4).map(it=>{
-            const Icon = it.icon as any;
-            return (
-              <button key={it.key} onClick={()=>onNavigate?.(it.key)} className={`w-full flex items-center gap-3 p-2 rounded-md hover:bg-gray-50 ${active===it.key? 'bg-gradient-to-r from-[--tb-primary] to-[--tb-accent] text-white':''}`}>
-                <Icon className="w-4 h-4" />
-                <span className="text-sm">{it.label}</span>
-              </button>
-            )
-          })}
-        </div>
+    <aside className={`admin-sidebar ${collapsed ? "admin-sidebar--collapsed" : ""} ${mobileOpen ? "admin-sidebar--mobile-open" : ""}`} aria-label="Admin sidebar">
+      <div className="admin-sidebar__brand">
+        <span className="admin-sidebar__mark" aria-hidden="true">2·1</span>
+        {!collapsed && <span>TwoBeOne</span>}
       </div>
-      <div className="mt-8">
-        <div className="text-sm tb-muted">Users</div>
-        <div className="mt-3 space-y-1">
-          <button className="w-full flex items-center gap-3 p-2 rounded-md hover:bg-gray-50"><Users className="w-4 h-4"/><span className="text-sm">Couples</span></button>
-          <button className="w-full flex items-center gap-3 p-2 rounded-md hover:bg-gray-50"><Shield className="w-4 h-4"/><span className="text-sm">User Management</span></button>
-        </div>
-      </div>
+      <button
+        className="admin-sidebar__collapse"
+        type="button"
+        onClick={() => setCollapsed((value) => !value)}
+        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        aria-expanded={!collapsed}
+      >
+        {collapsed ? <ChevronRight /> : <ChevronLeft />}
+      </button>
+      <nav className="admin-sidebar__nav" aria-label="Admin navigation">
+        {items.map((item) => {
+          const Icon = item.icon;
+          const isActive = active === item.id;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              className="admin-sidebar__item"
+              data-active={isActive || undefined}
+              onClick={() => go(item.id)}
+              aria-current={isActive ? "page" : undefined}
+              aria-label={item.label}
+              title={collapsed ? item.label : undefined}
+            >
+              <Icon className="admin-sidebar__icon" />
+              {!collapsed && <span>{item.label}</span>}
+            </button>
+          );
+        })}
+        {onHome && (
+          <button type="button" className="admin-sidebar__item" onClick={onHome} aria-label="Back to app" title={collapsed ? "Back to app" : undefined}>
+            <Home className="admin-sidebar__icon" />
+            {!collapsed && <span>Back to app</span>}
+          </button>
+        )}
+      </nav>
     </aside>
-  )
+  );
 }

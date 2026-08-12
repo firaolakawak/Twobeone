@@ -1,347 +1,204 @@
-import { useState, useEffect } from "react";
-import {
-  TrendingUp,
-  Users,
-  BookOpen,
-  MessageCircle,
-  GraduationCap,
-  Heart,
-  RefreshCw,
-} from "lucide-react";
-import '../../styles/dashboard.css';
-import { KPICard } from './dashboard/KPICard';
-import { Timeline } from './dashboard/Timeline';
-import { Kanban } from './dashboard/Kanban';
-import { QuickActions } from './dashboard/QuickActions';
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { projectId } from "../../utils/supabase/info";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { BookOpen, GraduationCap, Heart, MessageCircle, RefreshCw, TrendingUp, Users } from "lucide-react";
 import { toast } from "sonner";
+import { projectId } from "../../utils/supabase/info";
+import { admin as adminApi } from "../../utils/api";
+import { ActionBar } from "./dashboard/ActionBar";
+import { KPICard } from "./dashboard/KPICard";
+import { Timeline, type TimelineEvent } from "./dashboard/Timeline";
+import type { KanbanColumn, KanbanStatePayload } from "./dashboard/MiniKanban";
+import "../../styles/dashboard.css";
+
+const MiniKanban = lazy(() =>
+  import("./dashboard/MiniKanban").then((module) => ({ default: module.MiniKanban })),
+);
 
 interface AdminDashboardProps {
   accessToken?: string;
   onNavigate?: (section: string) => void;
 }
 
-export function AdminDashboard({
-  accessToken,
-  onNavigate,
-}: AdminDashboardProps) {
-  const [stats, setStats] = useState({
-    totalUsers: 0,
-    activeCouples: 0,
-    totalDevotionals: 0,
-    totalQuestions: 0,
-    totalJournalEntries: 0,
-    totalPrayers: 0,
-    completionRate: 0,
-  });
-  const [recentActivity, setRecentActivity] = useState<any[]>(
-    [],
-  );
-  const [isLoading, setIsLoading] = useState(true);
+interface DashboardStats {
+  totalUsers: number;
+  activeCouples: number;
+  totalDevotionals: number;
+  totalQuestions: number;
+  totalJournalEntries: number;
+  totalPrayers: number;
+  completionRate: number;
+}
 
-  useEffect(() => {
-    // Guard: only fetch once a real user token is available.
-    // Using the anon key on admin routes causes the edge function to crash
-    // before sending response headers → browser throws TypeError: Failed to fetch.
+interface ActivityLogEntry {
+  id: string;
+  event: string;
+  category: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  metadata: Record<string, unknown>;
+  timestamp: string;
+}
+
+const emptyStats: DashboardStats = {
+  totalUsers: 0,
+  activeCouples: 0,
+  totalDevotionals: 0,
+  totalQuestions: 0,
+  totalJournalEntries: 0,
+  totalPrayers: 0,
+  completionRate: 0,
+};
+
+const initialColumns: KanbanColumn[] = [
+  {
+    id: "needed",
+    title: "Needed",
+    cards: [
+      { id: "devotional-15", title: "Hope in waiting", category: "Devotional", dueDate: "2026-08-15", priority: "High" },
+      { id: "questions-growth", title: "Spiritual growth prompts", category: "Q&A", dueDate: "2026-08-18", priority: "Medium" },
+    ],
+  },
+  {
+    id: "in-progress",
+    title: "In Progress",
+    cards: [
+      { id: "module-finance", title: "Financial planning", category: "Module", dueDate: "2026-08-20", priority: "High" },
+    ],
+  },
+  { id: "completed", title: "Completed", cards: [] },
+];
+
+export function AdminDashboard({ accessToken, onNavigate }: AdminDashboardProps) {
+  const [stats, setStats] = useState<DashboardStats>(emptyStats);
+  const [activityLog, setActivityLog] = useState<ActivityLogEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const apiBase = `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee`;
+
+  const loadDashboardData = useCallback(async () => {
     if (!accessToken) {
       setIsLoading(false);
       return;
     }
-    loadDashboardData();
-  }, [accessToken]); // re-run when token becomes available after async auth
 
-  const loadDashboardData = async () => {
-    if (!accessToken) return;
     setIsLoading(true);
-    try {
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-      };
-      const base = `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee`;
+    const [statsResult, activityResult] = await Promise.allSettled([
+      adminApi.getStats(),
+      adminApi.getActivityLog(20),
+    ]);
 
-      const [statsRes, activityRes] = await Promise.all([
-        fetch(`${base}/admin/stats`, { headers }),
-        fetch(`${base}/admin/recent-activity`, { headers }),
-      ]);
-
-      if (statsRes.ok) {
-        const { stats: apiStats } = await statsRes.json();
-        setStats({
-          totalUsers: apiStats.totalUsers || 0,
-          activeCouples: apiStats.activeCouples || 0,
-          totalDevotionals: apiStats.totalDevotionals || 0,
-          totalQuestions: apiStats.totalQuestions || 0,
-          totalJournalEntries:
-            apiStats.totalJournalEntries || 0,
-          totalPrayers: apiStats.totalPrayers || 0,
-          completionRate: apiStats.completionRate || 0,
-        });
+    if (statsResult.status === "fulfilled") {
+      const nextStats = statsResult.value.stats;
+      if (nextStats?._error) {
+        console.error("Admin stats query failed:", nextStats._error);
+        toast.error(`Could not load KPI data: ${nextStats._error}`);
       } else {
-        console.warn(
-          "Admin stats:",
-          statsRes.status,
-          await statsRes.text(),
-        );
+        setStats({ ...emptyStats, ...(nextStats ?? {}) });
       }
-
-      if (activityRes.ok) {
-        const { activities } = await activityRes.json();
-        setRecentActivity(activities || []);
-      } else {
-        console.warn(
-          "Admin activity:",
-          activityRes.status,
-          await activityRes.text(),
-        );
-      }
-    } catch (error) {
-      console.error("Failed to load dashboard data:", error);
-      toast.error(
-        "Failed to load dashboard data. Please refresh.",
-      );
-    } finally {
-      setIsLoading(false);
+    } else {
+      console.error("Failed to load KPI data:", statsResult.reason);
+      toast.error(`Could not load KPI data: ${statsResult.reason?.message ?? "Unknown error"}`);
     }
-  }; // Sample statistics - will be replaced with real data
 
-  const displayStats = [
-    {
-      label: "Total Users",
-      value: stats.totalUsers.toString(),
-      change: "+12%",
-      trend: "up",
-      icon: Users,
-      color: "text-sky-600",
-      bgColor: "bg-sky-100",
-      link: "users",
-    },
-    {
-      label: "Active Couples",
-      value: stats.activeCouples.toString(),
-      change: "+8%",
-      trend: "up",
-      icon: Heart,
-      color: "text-primary-600",
-      bgColor: "bg-primary-100",
-      link: "users",
-    },
-    {
-      label: "Devotionals",
-      value: stats.totalDevotionals.toString(),
-      change: "+2",
-      trend: "up",
-      icon: BookOpen,
-      color: "text-primary-600",
-      bgColor: "bg-primary-100",
-      link: "devotionals",
-    },
-    {
-      label: "Q&A Questions",
-      value: stats.totalQuestions.toString(),
-      change: "+8",
-      trend: "up",
-      icon: MessageCircle,
-      color: "text-success-700",
-      bgColor: "bg-success-50",
-      link: "questions",
-    },
-    {
-      label: "Journal Entries",
-      value: stats.totalJournalEntries.toString(),
-      change: "+15",
-      trend: "up",
-      icon: GraduationCap,
-      color: "text-sky-600",
-      bgColor: "bg-sky-100",
-      link: "modules",
-    },
-    {
-      label: "Completion Rate",
-      value: `${stats.completionRate}%`,
-      change: "+5%",
-      trend: "up",
-      icon: TrendingUp,
-      color: "text-warning-500",
-      bgColor: "bg-warning-50",
-      link: "dashboard",
-    },
-  ];
+    if (activityResult.status === "fulfilled") {
+      const entries = activityResult.value.entries;
+      setActivityLog(Array.isArray(entries) ? entries : []);
+    } else {
+      console.error("Failed to load recent activity:", activityResult.reason);
+    }
+    setIsLoading(false);
+  }, [accessToken]);
 
-  const contentNeeded = [
-    {
-      type: "Devotional",
-      date: "November 15, 2025",
-      status: "needed",
-    },
-    {
-      type: "Devotional",
-      date: "November 16, 2025",
-      status: "needed",
-    },
-    {
-      type: "Module",
-      title: "Financial Planning",
-      status: "in-progress",
-    },
-    {
-      type: "Q&A Questions",
-      category: "Spiritual Growth",
-      status: "needed",
-    },
-  ];
+  useEffect(() => {
+    void loadDashboardData();
+  }, [loadDashboardData]);
+
+  const kpis = useMemo(() => [
+    { label: "Total users", value: stats.totalUsers, trend: { direction: "up" as const, value: "12%" }, sparklineData: [24, 29, 27, 35, 38, 42, 48], icon: <Users /> },
+    { label: "Active couples", value: stats.activeCouples, trend: { direction: "up" as const, value: "8%" }, sparklineData: [18, 21, 24, 23, 30, 34, 37], icon: <Heart /> },
+    { label: "Devotionals", value: stats.totalDevotionals, trend: { direction: "up" as const, value: "+2" }, sparklineData: [12, 12, 14, 15, 15, 16, 18], icon: <BookOpen /> },
+    { label: "Q&A questions", value: stats.totalQuestions, trend: { direction: "up" as const, value: "+8" }, sparklineData: [31, 34, 33, 38, 41, 47, 51], icon: <MessageCircle /> },
+    { label: "Journal entries", value: stats.totalJournalEntries, trend: { direction: "up" as const, value: "+15" }, sparklineData: [40, 46, 43, 51, 58, 62, 70], icon: <GraduationCap /> },
+    { label: "Completion rate", value: `${stats.completionRate}%`, trend: { direction: "up" as const, value: "5%" }, sparklineData: [62, 64, 67, 65, 73, 78, 82], icon: <TrendingUp /> },
+  ], [stats]);
+
+  const events = useMemo<TimelineEvent[]>(() => {
+    const formatEventName = (event: string) => {
+      const words = event.replace(/[._-]+/g, " ").trim();
+      return words ? words.charAt(0).toUpperCase() + words.slice(1) : "Activity recorded";
+    };
+    const formatDetails = (entry: ActivityLogEntry) => {
+      const metadata = Object.entries(entry.metadata ?? {})
+        .filter(([, value]) => value !== undefined && value !== null && value !== "")
+        .map(([key, value]) => `${key.replace(/([A-Z])/g, " $1").toLowerCase()}: ${String(value)}`)
+        .join(" · ");
+      const actor = entry.userName || entry.userEmail || entry.userId || "Unknown user";
+      return metadata ? `${actor} · ${metadata}` : actor;
+    };
+
+    return activityLog.slice(0, 6).map((entry) => ({
+      id: entry.id,
+      type: entry.category || entry.event.split(".")[0] || "system",
+      title: formatEventName(entry.event),
+      time: entry.timestamp,
+      details: formatDetails(entry),
+    }));
+  }, [activityLog]);
+
+  const persistKanban = useCallback(async (payload: KanbanStatePayload) => {
+    if (!accessToken) throw new Error("An admin session is required");
+    const response = await fetch(`${apiBase}/admin/kanban`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) throw new Error("Could not persist Kanban state");
+  }, [accessToken, apiBase]);
 
   return (
-    <div className="tb-dashboard space-y-6">
-      <section className="grid gap-6 lg:grid-cols-[1.8fr_1fr]">
-        <div className="rounded-[32px] bg-white border border-slate-200 p-6 shadow-sm">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm uppercase tracking-[0.24em] text-slate-500">
-                Overview
-              </p>
-              <h2 className="mt-2 text-3xl font-semibold text-slate-900">
-                Calm admin review
-              </h2>
-              <p className="mt-3 max-w-2xl text-slate-600">
-                A premium dashboard for content, growth, and user health.
-                Monitor core metrics, see recent activity, and keep the admin
-                experience clean and understated.
-              </p>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-3xl bg-slate-50 border border-slate-200 p-4">
-                <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
-                  Live users
-                </p>
-                <p className="mt-2 text-2xl font-semibold text-slate-900">
-                  {stats.totalUsers}
-                </p>
-              </div>
-              <div className="rounded-3xl bg-slate-50 border border-slate-200 p-4">
-                <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
-                  Active couples
-                </p>
-                <p className="mt-2 text-2xl font-semibold text-slate-900">
-                  {stats.activeCouples}
-                </p>
-              </div>
-            </div>
+    <main className="admin-dashboard" aria-busy={isLoading}>
+      <header className="admin-dashboard__hero">
+        <div>
+          <p className="admin-eyebrow">Overview</p>
+          <h1>Good morning, Admin</h1>
+          <p>Here’s what’s happening across TwoBeOne today.</p>
+        </div>
+        <button className="admin-secondary-button" type="button" onClick={() => void loadDashboardData()} aria-label="Refresh dashboard data" disabled={isLoading}>
+          <RefreshCw aria-hidden="true" /> {isLoading ? "Refreshing…" : "Refresh"}
+        </button>
+      </header>
+
+      <section className="admin-grid admin-kpi-grid" aria-label="Platform metrics">
+        {kpis.map((kpi) => <KPICard key={kpi.label} {...kpi} />)}
+      </section>
+
+      <section className="admin-grid admin-dashboard__content">
+        <div className="admin-panel admin-dashboard__timeline">
+          <div className="admin-panel__heading">
+            <div><p className="admin-eyebrow">Live feed</p><h2>Recent activity</h2></div>
+            <span className="admin-live-chip">Live</span>
           </div>
+          <Timeline events={events} />
         </div>
 
-        <div className="rounded-[32px] bg-white border border-slate-200 p-6 shadow-sm">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm uppercase tracking-[0.24em] text-slate-500">
-                Admin insights
-              </p>
-              <h3 className="mt-2 text-xl font-semibold text-slate-900">
-                Platform pulse
-              </h3>
-            </div>
-            <Badge variant="secondary">Updated just now</Badge>
+        <div className="admin-panel admin-dashboard__health">
+          <p className="admin-eyebrow">Platform health</p>
+          <h2>Strong momentum</h2>
+          <div className="admin-health-score"><span>{stats.completionRate}%</span><small>completion rate</small></div>
+          <p>Couples are consistently returning to complete weekly content.</p>
+        </div>
+
+        <div className="admin-panel admin-dashboard__kanban">
+          <div className="admin-panel__heading">
+            <div><p className="admin-eyebrow">Editorial workflow</p><h2>Content pipeline</h2></div>
+            <p>Use Space, then arrow keys, to move cards.</p>
           </div>
-          <div className="mt-6 grid gap-4">
-            <div className="rounded-3xl bg-slate-50 border border-slate-200 p-4">
-              <p className="text-sm text-slate-600">Completion rate</p>
-              <p className="mt-2 text-2xl font-semibold text-slate-900">
-                {stats.completionRate}%
-              </p>
-            </div>
-            <div className="rounded-3xl bg-slate-50 border border-slate-200 p-4">
-              <p className="text-sm text-slate-600">Recent activity items</p>
-              <p className="mt-2 text-2xl font-semibold text-slate-900">
-                {recentActivity.length}
-              </p>
-            </div>
-          </div>
+          <Suspense fallback={<div className="admin-kanban-skeleton" aria-label="Loading content pipeline" />}>
+            <MiniKanban columns={initialColumns} onPersist={persistKanban} />
+          </Suspense>
         </div>
       </section>
 
-      <section className="grid gap-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {displayStats.map((stat, i) => (
-            <KPICard
-              key={stat.label}
-              label={stat.label}
-              value={stat.value}
-              change={stat.change}
-              icon={<span style={{ opacity: 0.08, fontSize: 56 }}>★</span>}
-              delay={i * 90}
-            />
-          ))}
-        </div>
-      </section>
-
-      <section className="grid gap-6 lg:grid-cols-[1.4fr_0.8fr]">
-        <div className="space-y-6">
-          <div className="rounded-[32px] bg-white border border-slate-200 p-6 shadow-sm">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <h3 className="text-xl font-semibold text-slate-900">
-                  Recent activity
-                </h3>
-                <p className="mt-2 text-sm text-slate-600">
-                  Latest platform events and content changes.
-                </p>
-              </div>
-              <Button variant="outline" size="sm">
-                Refresh
-              </Button>
-            </div>
-            <div className="mt-6">
-              <Timeline items={recentActivity.slice(0, 6)} />
-            </div>
-          </div>
-
-          <div className="rounded-[32px] bg-white border border-slate-200 p-6 shadow-sm">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <h3 className="text-xl font-semibold text-slate-900">
-                  Content pipeline
-                </h3>
-                <p className="mt-2 text-sm text-slate-600">
-                  Track what needs attention this week.
-                </p>
-              </div>
-            </div>
-            <div className="mt-6">
-              <Kanban
-                columns={[
-                  { title: 'Needed', cards: contentNeeded },
-                  { title: 'In Progress', cards: [] },
-                  { title: 'Completed', cards: [] },
-                ]}
-              />
-            </div>
-          </div>
-        </div>
-
-        <aside className="space-y-6">
-          <div className="rounded-[32px] bg-white border border-slate-200 p-6 shadow-sm">
-            <h3 className="text-xl font-semibold text-slate-900">
-              Quick actions
-            </h3>
-            <p className="mt-2 text-sm text-slate-600">
-              Create new content and manage workflows with one tap.
-            </p>
-            <div className="mt-6">
-              <QuickActions onAction={(a) => onNavigate?.(a)} />
-            </div>
-          </div>
-
-          <div className="rounded-[32px] bg-slate-50 border border-slate-200 p-6 shadow-sm">
-            <h3 className="text-base font-semibold text-slate-900">
-              Health summary
-            </h3>
-            <p className="mt-3 text-sm text-slate-600">
-              Couple Health Score: <strong>82%</strong>
-            </p>
-          </div>
-        </aside>
-      </section>
-    </div>
+      <ActionBar onAction={onNavigate} />
+    </main>
   );
 }

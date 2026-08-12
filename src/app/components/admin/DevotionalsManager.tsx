@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { Plus, Edit, Trash2, Search, Calendar, BookOpen, RefreshCw, Upload, Music, X, Play, Pause, Copy, FileJson, CheckCircle2 } from 'lucide-react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { Plus, Edit, Trash2, Search, Calendar, BookOpen, RefreshCw, Upload, Music, X, Play, Pause, Copy, FileJson, CheckCircle2, SlidersHorizontal, Headphones, Languages, Sparkles, ArrowUpDown, Eye, Library } from 'lucide-react';
 import { DevotionalsImportExport } from './DevotionalsImportExport';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
@@ -13,8 +13,10 @@ import { toast } from 'sonner';
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
 import { useContentLanguage } from '../../contexts/ContentLanguageContext';
 import { ContentLanguageSelector } from './ContentLanguageSelector';
+import { DevotionalsWorkspace } from './devotionals/DevotionalsWorkspace';
+import '../../styles/devotionals-console.css';
 
-interface Devotional {
+export interface Devotional {
   id: string;
   date: string;
   title: string;
@@ -39,6 +41,11 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
   const [editingDevotional, setEditingDevotional] = useState<Devotional | null>(null);
   const [devotionals, setDevotionals] = useState<Devotional[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'draft'>('all');
+  const [languageFilter, setLanguageFilter] = useState<'all' | 'en' | 'am' | 'om'>('all');
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest' | 'title'>('newest');
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [isToolsOpen, setIsToolsOpen] = useState(false);
   const [uploadingAudioFor, setUploadingAudioFor] = useState<string | null>(null);
   const [audioPreviewUrl, setAudioPreviewUrl] = useState<string | null>(null);
   const [isPlayingPreview, setIsPlayingPreview] = useState(false);
@@ -88,7 +95,8 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
             tags: d.tags || [],
             status: d.status || 'published',
             audioUrl: d.audioUrl,
-            audioFileName: d.audioFileName
+            audioFileName: d.audioFileName,
+            language: d.language || 'en'
           })));
         } else {
           setDevotionals([]);
@@ -417,11 +425,97 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
     }
   };
 
-  const filteredDevotionals = devotionals.filter(d =>
-    d.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    d.reference.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredDevotionals = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    return devotionals
+      .filter((devotional) => {
+        const matchesSearch = !query ||
+          devotional.title?.toLowerCase().includes(query) ||
+          devotional.reference?.toLowerCase().includes(query) ||
+          devotional.verse?.toLowerCase().includes(query) ||
+          devotional.tags?.some((tag) => tag.toLowerCase().includes(query));
+        const matchesStatus = statusFilter === 'all' || devotional.status === statusFilter;
+        const matchesLanguage = languageFilter === 'all' || (devotional.language ?? 'en') === languageFilter;
+        return matchesSearch && matchesStatus && matchesLanguage;
+      })
+      .sort((a, b) => {
+        if (sortOrder === 'title') return a.title.localeCompare(b.title);
+        const difference = new Date(b.date).getTime() - new Date(a.date).getTime();
+        return sortOrder === 'newest' ? difference : -difference;
+      });
+  }, [devotionals, languageFilter, searchQuery, sortOrder, statusFilter]);
 
+  const selectedDevotional =
+    filteredDevotionals.find((devotional) => devotional.id === selectedId) ??
+    filteredDevotionals[0] ??
+    null;
+
+  const publishedCount = devotionals.filter((devotional) => devotional.status === 'published').length;
+  const draftCount = devotionals.filter((devotional) => devotional.status === 'draft').length;
+  const audioCount = devotionals.filter((devotional) => devotional.audioUrl).length;
+
+  const openNewDevotional = () => {
+    setEditingDevotional(null);
+    setFormData({
+      title: '', verse: '', reference: '', reflection: '', prayerPrompt: '',
+      date: new Date().toISOString().split('T')[0], tags: [], status: 'draft',
+    });
+    setIsDialogOpen(true);
+  };
+
+  // The upgraded console keeps the existing API and mutation handlers while
+  // moving the editorial experience into a focused, reusable workspace.
+  return (
+      <DevotionalsWorkspace
+        devotionals={devotionals}
+        filteredDevotionals={filteredDevotionals}
+        selectedDevotional={selectedDevotional}
+        selectedId={selectedId}
+        onSelect={setSelectedId}
+        isLoading={isLoading}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        statusFilter={statusFilter}
+        onStatusFilterChange={setStatusFilter}
+        languageFilter={languageFilter}
+        onLanguageFilterChange={setLanguageFilter}
+        sortOrder={sortOrder}
+        onSortOrderChange={setSortOrder}
+        publishedCount={publishedCount}
+        draftCount={draftCount}
+        audioCount={audioCount}
+        onRefresh={loadDevotionals}
+        onNew={openNewDevotional}
+        onEdit={handleEdit}
+        onDuplicate={handleDuplicate}
+        onDelete={handleDelete}
+        onAudioUpload={handleAudioUpload}
+        onAudioDelete={handleDeleteAudio}
+        onAudioToggle={toggleAudioPreview}
+        uploadingAudioFor={uploadingAudioFor}
+        audioPreviewUrl={audioPreviewUrl}
+        isPlayingPreview={isPlayingPreview}
+        audioRef={audioRef}
+        onAudioEnded={() => setIsPlayingPreview(false)}
+        editorOpen={isDialogOpen}
+        onEditorOpenChange={setIsDialogOpen}
+        editingDevotional={editingDevotional}
+        formData={formData}
+        onFormDataChange={setFormData}
+        onSubmit={handleSubmit}
+        toolsOpen={isToolsOpen}
+        onToolsOpenChange={setIsToolsOpen}
+        tools={
+          <DevotionalsImportExport
+            devotionals={devotionals}
+            accessToken={accessToken}
+            onImportComplete={loadDevotionals}
+          />
+        }
+      />
+    );
+
+  /* Previous console retained temporarily below for migration reference. */
   return (
     <div className="space-y-6">
       {/* Hidden audio player for previews */}

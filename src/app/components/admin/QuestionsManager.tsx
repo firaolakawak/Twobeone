@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -13,12 +13,14 @@ import { Plus, Search, Edit, Trash2, Loader2, X, MessageCircle, Download, Upload
 import { toast } from 'sonner@2.0.3';
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
 import { createClient } from '../../utils/supabase/client';
+import { QuestionsWorkspace } from './questions/QuestionsWorkspace';
+import '../../styles/questions-console.css';
 
 const supabase = createClient();
 
-type QuestionType = 'text' | 'multiple_choice' | 'multiple_select' | 'like_dislike' | 'love_hate' | 'scale' | 'yes_no';
+export type QuestionType = 'text' | 'multiple_choice' | 'multiple_select' | 'like_dislike' | 'love_hate' | 'scale' | 'yes_no';
 
-interface Question {
+export interface Question {
   id: string;
   category: string;
   title: string;
@@ -29,7 +31,7 @@ interface Question {
   language?: string; // Add language field
 }
 
-interface QuestionPrompt {
+export interface QuestionPrompt {
   id: string;
   text: string;
   type: QuestionType;
@@ -44,6 +46,11 @@ interface QuestionsManagerProps {
 export function QuestionsManager({ accessToken: propAccessToken }: QuestionsManagerProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [languageFilter, setLanguageFilter] = useState<'all' | 'en' | 'am' | 'om'>('all');
+  const [sortOrder, setSortOrder] = useState<'title' | 'category' | 'prompts'>('category');
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [isToolsOpen, setIsToolsOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -510,16 +517,90 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
     loadQuestions();
   };
 
-  const filteredQuestions = questions.filter(q => {
-    const matchesSearch = q.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      q.verseReference.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = filterCategory === 'all' || q.category === filterCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredQuestions = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    return questions
+      .filter((question) => {
+        const matchesSearch = !query || question.title?.toLowerCase().includes(query) ||
+          question.verseReference?.toLowerCase().includes(query) ||
+          question.verse?.toLowerCase().includes(query) ||
+          question.prompts?.some((prompt) => prompt.text.toLowerCase().includes(query));
+        return matchesSearch &&
+          (filterCategory === 'all' || question.category === filterCategory) &&
+          (statusFilter === 'all' || question.status === statusFilter) &&
+          (languageFilter === 'all' || (question.language || 'en') === languageFilter);
+      })
+      .sort((a, b) => {
+        if (sortOrder === 'title') return a.title.localeCompare(b.title);
+        if (sortOrder === 'prompts') return (b.prompts?.length || 0) - (a.prompts?.length || 0);
+        return a.category.localeCompare(b.category) || a.title.localeCompare(b.title);
+      });
+  }, [filterCategory, languageFilter, questions, searchQuery, sortOrder, statusFilter]);
 
   const getQuestionTypeLabel = (type: QuestionType) => {
     return questionTypes.find(qt => qt.value === type)?.label || type;
   };
+
+  const selectedQuestion = filteredQuestions.find((question) => question.id === selectedId) ?? filteredQuestions[0] ?? null;
+  const openNewQuestion = () => {
+    setEditingQuestion(null);
+    setFormData({ title: '', category: 'daily-life', verse: '', verseReference: '', prompts: [], status: 'active', language: 'en' });
+    setIsDialogOpen(true);
+  };
+
+  return (
+    <QuestionsWorkspace
+      questions={questions}
+      filteredQuestions={filteredQuestions}
+      selectedQuestion={selectedQuestion}
+      selectedId={selectedId}
+      onSelect={setSelectedId}
+      categories={categories}
+      questionTypes={questionTypes}
+      isLoading={isLoading}
+      searchQuery={searchQuery}
+      onSearchChange={setSearchQuery}
+      categoryFilter={filterCategory}
+      onCategoryFilterChange={setFilterCategory}
+      statusFilter={statusFilter}
+      onStatusFilterChange={setStatusFilter}
+      languageFilter={languageFilter}
+      onLanguageFilterChange={setLanguageFilter}
+      sortOrder={sortOrder}
+      onSortOrderChange={setSortOrder}
+      onRefresh={loadQuestions}
+      onNew={openNewQuestion}
+      onEdit={handleEdit}
+      onDelete={handleDelete}
+      onDeduplicate={handleDeduplicateAll}
+      editorOpen={isDialogOpen}
+      onEditorOpenChange={setIsDialogOpen}
+      editingQuestion={editingQuestion}
+      formData={formData}
+      onFormDataChange={setFormData}
+      onSubmit={handleSubmit}
+      onAddPrompt={addPrompt}
+      onRemovePrompt={removePrompt}
+      onUpdatePrompt={updatePrompt}
+      onAddOption={addOption}
+      onUpdateOption={updateOption}
+      onRemoveOption={removeOption}
+      toolsOpen={isToolsOpen}
+      onToolsOpenChange={setIsToolsOpen}
+      importCategory={importCategory}
+      onImportCategoryChange={setImportCategory}
+      importLanguage={importLanguage}
+      onImportLanguageChange={setImportLanguage}
+      importPreview={importPreview}
+      importError={importError}
+      isImporting={isImporting}
+      onImportFile={handleImportFile}
+      onImportSubmit={handleImportSubmit}
+      exportCategory={exportCategory}
+      onExportCategoryChange={setExportCategory}
+      onExport={handleExport}
+    />
+  );
 
   return (
     <div className="space-y-6">

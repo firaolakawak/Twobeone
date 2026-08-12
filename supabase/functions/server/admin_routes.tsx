@@ -68,6 +68,29 @@ async function logPrivilegeAudit(
 
 export function setupAdminRoutes(app: Hono, supabase: any) {
 
+  // Persist the editorial MiniKanban order. The whole board is stored as one
+  // versioned document so cross-column moves remain atomic.
+  app.get('/make-server-6d579fee/admin/kanban', async (c) => {
+    const userId = await getUserFromToken(c.req.header('Authorization'), supabase);
+    if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+    if (!(await isAdmin(userId))) return c.json({ error: 'Forbidden - Admin access required' }, 403);
+    const state = await kv.get('admin:kanban:v1');
+    return c.json(state || { columns: [] });
+  });
+
+  app.put('/make-server-6d579fee/admin/kanban', async (c) => {
+    const userId = await getUserFromToken(c.req.header('Authorization'), supabase);
+    if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+    if (!(await isAdmin(userId))) return c.json({ error: 'Forbidden - Admin access required' }, 403);
+    const payload = await c.req.json();
+    if (!Array.isArray(payload?.columns) || payload.columns.length !== 3) {
+      return c.json({ error: 'A three-column Kanban payload is required' }, 400);
+    }
+    const state = { columns: payload.columns, updatedAt: new Date().toISOString(), updatedBy: userId };
+    await kv.set('admin:kanban:v1', state);
+    return c.json(state);
+  });
+
   // ============================================
   // ADMIN PRIVILEGE MANAGEMENT
   // ============================================

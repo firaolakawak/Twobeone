@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Plus, Edit, Trash2, Search, GraduationCap, ChevronRight, X, Bold, Italic, Heading2, Quote, List, ListOrdered, Link, Minus } from 'lucide-react';
 import { ModulesImportExport } from './ModulesImportExport';
 import { Card } from '../ui/card';
@@ -11,6 +11,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { ScrollArea } from '../ui/scroll-area';
 import { toast } from 'sonner@2.0.3';
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
+import { ModulesWorkspace } from './modules/ModulesWorkspace';
+import '../../styles/modules-console.css';
 
 const mdToHtml = (md: string): string => {
   if (!md) return '';
@@ -39,14 +41,14 @@ const mdToHtml = (md: string): string => {
   return out.join('');
 };
 
-interface Lesson {
+export interface Lesson {
   id: string;
   title: string;
   duration: string;
   content: string;
 }
 
-interface Module {
+export interface Module {
   id: string;
   title: string;
   subtitle: string;
@@ -68,6 +70,11 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
   const [editingModule, setEditingModule] = useState<Module | null>(null);
   const [modules, setModules] = useState<Module[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState<'all' | Module['status']>('all');
+  const [languageFilter, setLanguageFilter] = useState<'all' | 'en' | 'am'>('all');
+  const [sortOrder, setSortOrder] = useState<'title' | 'lessons' | 'status'>('title');
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [isToolsOpen, setIsToolsOpen] = useState(false);
 
   useEffect(() => {
     loadModules();
@@ -98,7 +105,8 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
             lessons: m.lessons || [],
             icon: m.icon || '📚',
             color: m.color || 'bg-primary-500',
-            status: m.status || 'draft'
+            status: m.status || 'draft',
+            language: m.language || 'en'
           })));
         } else {
           // Use default data as fallback
@@ -188,6 +196,15 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
   const handleEdit = (module: Module) => {
     setEditingModule(module);
     setFormData(module);
+    setIsDialogOpen(true);
+  };
+
+  const openNewModule = () => {
+    setEditingModule(null);
+    setFormData({
+      title: '', subtitle: '', description: '', lessons: [], icon: '📚',
+      color: 'bg-primary-500', status: 'draft', language: 'en',
+    });
     setIsDialogOpen(true);
   };
 
@@ -322,9 +339,54 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
     });
   };
 
-  const filteredModules = modules.filter(m =>
-    m.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    m.subtitle.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredModules = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    return modules
+      .filter((module) => !query || [module.title, module.subtitle, module.description, ...module.lessons.map((lesson) => lesson.title)].some((value) => value.toLowerCase().includes(query)))
+      .filter((module) => statusFilter === 'all' || module.status === statusFilter)
+      .filter((module) => languageFilter === 'all' || (module.language || 'en') === languageFilter)
+      .sort((a, b) => {
+        if (sortOrder === 'lessons') return b.lessons.length - a.lessons.length;
+        if (sortOrder === 'status') return a.status.localeCompare(b.status);
+        return a.title.localeCompare(b.title);
+      });
+  }, [modules, searchQuery, statusFilter, languageFilter, sortOrder]);
+
+  const selectedModule = filteredModules.find((module) => module.id === selectedId) || filteredModules[0] || null;
+
+  return (
+    <ModulesWorkspace
+      modules={modules}
+      filteredModules={filteredModules}
+      selectedModule={selectedModule}
+      selectedId={selectedId}
+      isLoading={isLoading}
+      searchQuery={searchQuery}
+      statusFilter={statusFilter}
+      languageFilter={languageFilter}
+      sortOrder={sortOrder}
+      editorOpen={isDialogOpen}
+      editingModule={editingModule}
+      formData={formData}
+      toolsOpen={isToolsOpen}
+      onSearchChange={setSearchQuery}
+      onStatusFilterChange={setStatusFilter}
+      onLanguageFilterChange={setLanguageFilter}
+      onSortOrderChange={setSortOrder}
+      onSelect={setSelectedId}
+      onRefresh={loadModules}
+      onNew={openNewModule}
+      onEdit={handleEdit}
+      onDelete={handleDelete}
+      onEditorOpenChange={setIsDialogOpen}
+      onToolsOpenChange={setIsToolsOpen}
+      onSubmit={handleSubmit}
+      setFormData={setFormData}
+      addLesson={addLesson}
+      updateLesson={updateLesson}
+      removeLesson={removeLesson}
+      tools={<ModulesImportExport modules={modules} accessToken={accessToken} onImportComplete={loadModules} />}
+    />
   );
 
   return (

@@ -1,0 +1,111 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`KPICard > matches the accessible KPI snapshot 1`] = `
+<article
+  aria-label="Active couples: 1,248. Trend up, 8%"
+  class="admin-kpi"
+  tabindex="0"
+>
+  <span
+    aria-hidden="true"
+    class="admin-kpi__watermark"
+  >
+    <svg
+      class="lucide lucide-users"
+      fill="none"
+      height="24"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+      />
+      <circle
+        cx="9"
+        cy="7"
+        r="4"
+      />
+      <path
+        d="M22 21v-2a4 4 0 0 0-3-3.87"
+      />
+      <path
+        d="M16 3.13a4 4 0 0 1 0 7.75"
+      />
+    </svg>
+  </span>
+  <div
+    class="admin-kpi__heading"
+  >
+    <span
+      aria-hidden="true"
+      class="admin-kpi__icon"
+    >
+      <svg
+        class="lucide lucide-users"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+        />
+        <circle
+          cx="9"
+          cy="7"
+          r="4"
+        />
+        <path
+          d="M22 21v-2a4 4 0 0 0-3-3.87"
+        />
+        <path
+          d="M16 3.13a4 4 0 0 1 0 7.75"
+        />
+      </svg>
+    </span>
+    <span
+      class="admin-trend admin-trend--up"
+    >
+      <span
+        aria-hidden="true"
+      >
+        ↑
+      </span>
+       
+      8%
+    </span>
+  </div>
+  <p
+    class="admin-kpi__value"
+  >
+    1,248
+  </p>
+  <p
+    class="admin-kpi__label"
+  >
+    Active couples
+  </p>
+  <svg
+    aria-label="Active couples trend"
+    class="admin-sparkline admin-sparkline--up"
+    role="img"
+    viewBox="0 0 120 44"
+  >
+    <polyline
+      fill="none"
+      points="0,38 30,28.857142857142858 60,31.142857142857142 90,17.428571428571427 120,6"
+      vector-effect="non-scaling-stroke"
+    />
+  </svg>
+</article>
+`;
