@@ -178,19 +178,26 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
     if (!email.trim()) return;
     setIsSubmitting(true);
     try {
-      await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/newsletter-subscribe`,
+      const res = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/newsletter/subscribe`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: email.trim() }),
         },
       );
-      toast.success("Successfully registered for upcoming platform updates!");
-      setEmail("");
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({} as any));
+        console.error('[Newsletter] subscribe failed:', err);
+        toast.error(err?.error || 'Failed to subscribe to newsletter');
+      } else {
+        toast.success("Successfully registered for upcoming platform updates!");
+        setEmail("");
+      }
     } catch {
-      toast.success("Successfully registered for upcoming platform updates!");
-      setEmail("");
+      toast.error('Failed to subscribe to newsletter');
+      console.error('[Newsletter] subscribe request error');
     } finally {
       setIsSubmitting(false);
     }
