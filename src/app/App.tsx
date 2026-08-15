@@ -95,6 +95,7 @@ import api, {
   admin as adminApi,
 } from "./utils/api";
 import { registerServiceWorker } from "./utils/pwa";
+import { useEngagementTracking } from "./hooks/useEngagementTracking";
 import type {
   JournalEntry,
   PrayerRequest,
@@ -257,6 +258,12 @@ export default function App() {
     any | null
   >(null);
   const [isAdmin, setIsAdmin] = useState(false);
+
+  useEngagementTracking({
+    activeTab,
+    selectedScreen,
+    enabled: Boolean(user && accessToken && profile && !showLanding),
+  });
 
   const currentLangCode =
     localStorage.getItem("twobeone_language") || "en";

@@ -38,6 +38,7 @@ import {
 } from "../utils/location";
 import { projectId } from "../utils/supabase/info";
 import { createClient } from "../utils/supabase/client";
+import { useLanguage } from "../contexts/LanguageContext";
 
 interface DistanceConnectorProps {
   userId: string;
@@ -69,6 +70,7 @@ export function DistanceConnector({
   embedded = false,
   centerContent,
 }: DistanceConnectorProps) {
+  const { t } = useLanguage();
   const [userLocation, setUserLocation] =
     useState<UserLocation | null>(null);
   const [partnerLocation, setPartnerLocation] =
@@ -394,8 +396,8 @@ export function DistanceConnector({
           <button
             type="button"
             onClick={() => setShowSettings(true)}
-            aria-label="Location settings"
-            title="Location settings"
+            aria-label={t.dashboard.locationSettings}
+            title={t.dashboard.locationSettings}
             className="absolute -right-1 -top-1 z-30 flex h-8 w-8 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-white/80 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
           >
             <Settings className="h-4 w-4" />
@@ -439,12 +441,12 @@ export function DistanceConnector({
                   <AvatarImage src={userAvatar} alt={userName} />
                   <AvatarFallback className="bg-gradient-to-br from-primary-400 to-primary-600 text-lg font-semibold text-white">{userInitials}</AvatarFallback>
                 </Avatar>
-                <PresenceBadge online={userOnline} label={`${userName} is ${userOnline ? "online" : "offline"}`} />
+                <PresenceBadge online={userOnline} label={`${userName}: ${userOnline ? t.dashboard.online : t.dashboard.offline}`} />
               </div>
               <p className="mt-2 max-w-full truncate text-sm font-semibold text-foreground">{userName}</p>
               <p className="mt-0.5 flex max-w-full items-center justify-center gap-1 truncate text-[11px] font-medium text-muted-foreground">
                 <MapPin className="h-3 w-3 shrink-0 text-primary-500" />
-                {userLocation?.location?.city || <span className="font-normal italic">Location not set</span>}
+                {userLocation?.location?.city || <span className="font-normal italic">{t.dashboard.locationNotSet}</span>}
               </p>
             </div>
 
@@ -472,12 +474,12 @@ export function DistanceConnector({
                   <AvatarImage src={partnerAvatar} alt={partnerName} />
                   <AvatarFallback className="bg-gradient-to-br from-sky-400 to-sky-600 text-lg font-semibold text-white">{partnerInitials}</AvatarFallback>
                 </Avatar>
-                <PresenceBadge online={partnerOnline} label={`${partnerName} is ${partnerOnline ? "online" : "offline"}`} />
+                <PresenceBadge online={partnerOnline} label={`${partnerName}: ${partnerOnline ? t.dashboard.online : t.dashboard.offline}`} />
               </div>
               <p className="mt-2 max-w-full truncate text-sm font-semibold text-foreground">{partnerName}</p>
               <p className="mt-0.5 flex max-w-full items-center justify-center gap-1 truncate text-[11px] font-medium text-muted-foreground">
                 <MapPin className="h-3 w-3 shrink-0 text-sky-500" />
-                {partnerLocation?.location?.city || <span className="font-normal italic">Location not set</span>}
+                {partnerLocation?.location?.city || <span className="font-normal italic">{t.dashboard.locationNotSet}</span>}
               </p>
             </div>
           </div>
@@ -485,10 +487,10 @@ export function DistanceConnector({
           <div className="mt-1 flex items-center justify-center" aria-label={embeddedDistanceLabel ? `${embeddedDistanceLabel} between you` : 'Couple distance unavailable'}>
             {!userLocation?.location ? (
               <Button size="sm" variant="outline" onClick={() => setShowSettings(true)} className="h-8 rounded-xl px-4 text-xs font-semibold">
-                <MapPin className="mr-1.5 h-3.5 w-3.5 text-primary-500" /> Share your location
+                <MapPin className="mr-1.5 h-3.5 w-3.5 text-primary-500" /> {t.dashboard.shareLocation}
               </Button>
             ) : distance === null ? (
-              <span className="text-[10px] italic text-muted-foreground">Waiting for your partner’s location</span>
+              <span className="text-[10px] italic text-muted-foreground">{t.dashboard.waitingForPartnerLocation}</span>
             ) : null}
           </div>
         </div>
@@ -553,7 +555,7 @@ export function DistanceConnector({
                     {userInitials}
                   </AvatarFallback>
                 </Avatar>
-                <PresenceBadge online={userOnline} label={`${userName} is ${userOnline ? "online" : "offline"}`} />
+                <PresenceBadge online={userOnline} label={`${userName}: ${userOnline ? t.dashboard.online : t.dashboard.offline}`} />
               </div>
 
               {/* Bezier arc SVG canvas */}
@@ -631,7 +633,7 @@ export function DistanceConnector({
                     {partnerInitials}
                   </AvatarFallback>
                 </Avatar>
-                <PresenceBadge online={partnerOnline} label={`${partnerName} is ${partnerOnline ? "online" : "offline"}`} />
+                <PresenceBadge online={partnerOnline} label={`${partnerName}: ${partnerOnline ? t.dashboard.online : t.dashboard.offline}`} />
               </div>
             </div>
 

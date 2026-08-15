@@ -38,6 +38,54 @@ function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
+type ReportLanguage = 'en' | 'am' | 'om';
+const resolveReportLanguage = (value: unknown): ReportLanguage => value === 'am' || value === 'om' ? value : 'en';
+const reportLanguageInstruction = (language: ReportLanguage) => language === 'am'
+  ? 'Write entirely in natural, modern Amharic (አማርኛ).'
+  : language === 'om' ? 'Write entirely in natural Afaan Oromo.' : 'Write entirely in clear, natural English.';
+const cleanGeneratedReport = (value: unknown) => String(value || '')
+  .replace(/^[ \t]*#{1,6}[ \t]*/gm, '').replace(/\*\*([^*]+)\*\*/g, '$1')
+  .replace(/__([^_]+)__/g, '$1').replace(/`{1,3}/g, '')
+  .replace(/^[ \t]*[-*][ \t]+/gm, '').replace(/^[ \t]*\d+[.)][ \t]+/gm, '')
+  .replace(/\n{3,}/g, '\n\n').trim();
+
+type EngagementCategory = 'reading' | 'answering' | 'journaling' | 'praying' | 'other';
+const ENGAGEMENT_CATEGORIES: EngagementCategory[] = ['reading', 'answering', 'journaling', 'praying', 'other'];
+const emptyEngagementPeriod = () => ({ totalSeconds: 0, byCategory: { reading: 0, answering: 0, journaling: 0, praying: 0, other: 0 } as Record<EngagementCategory, number> });
+
+async function getEngagementSummary(userIds: string[], now = new Date()) {
+  const periods = { today: emptyEngagementPeriod(), week: emptyEngagementPeriod(), month: emptyEngagementPeriod() };
+  const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  const events = (await Promise.all(userIds.filter(Boolean).map(id => kv.getByPrefix(`engagement:${id}:`)))).flat() as any[];
+  for (const event of events) {
+    const timestamp = new Date(event?.createdAt || 0).getTime();
+    const category = event?.category as EngagementCategory;
+    const seconds = Math.max(0, Math.min(120, Number(event?.seconds) || 0));
+    if (!ENGAGEMENT_CATEGORIES.includes(category) || timestamp < today - 29 * 86_400_000) continue;
+    const targets = [periods.month];
+    if (timestamp >= today - 6 * 86_400_000) targets.push(periods.week);
+    if (timestamp >= today) targets.push(periods.today);
+    targets.forEach(period => { period.totalSeconds += seconds; period.byCategory[category] += seconds; });
+  }
+  const weekly = periods.week.totalSeconds;
+  const tiers = [{ level: 'starting', min: 0, next: 1800 }, { level: 'growing', min: 1800, next: 7200 }, { level: 'devoted', min: 7200, next: 18000 }, { level: 'champion', min: 18000, next: null }] as const;
+  const tier = [...tiers].reverse().find(item => weekly >= item.min) || tiers[0];
+  const progress = tier.next === null ? 100 : Math.max(0, Math.min(100, Math.round(((weekly - tier.min) / (tier.next - tier.min)) * 100)));
+  return { ...periods, champion: { level: tier.level, progress, nextTargetSeconds: tier.next } };
+}
+
+// Atomically reserves an idempotency key. The KV table's primary key makes
+// simultaneous requests from two devices safe: exactly one insert can win.
+async function claimIdempotencyKey(key: string, value: Record<string, unknown>): Promise<boolean> {
+  const { error } = await getSupabase()
+    .from('kv_store_6d579fee')
+    .insert({ key, value });
+
+  if (!error) return true;
+  if (error.code === '23505') return false;
+  throw new Error(`Failed to claim notification idempotency key: ${error.message}`);
+}
+
 // Generate invite code
 function generateInviteCode(): string {
   return Math.random().toString(36).substr(2, 8).toUpperCase();
@@ -1702,6 +1750,34 @@ app.get('/make-server-6d579fee/moods', async (c) => {
   }
 });
 
+app.post('/make-server-6d579fee/engagement/time', async (c) => {
+  try {
+    const userId = await getUserFromToken(c.req.header('Authorization'));
+    if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+    const body = await c.req.json();
+    const category = body?.category as EngagementCategory;
+    const seconds = Math.floor(Number(body?.seconds));
+    const eventId = String(body?.eventId || '');
+    if (!ENGAGEMENT_CATEGORIES.includes(category) || !Number.isFinite(seconds) || seconds < 1 || seconds > 120 || !/^[a-zA-Z0-9._:-]{8,160}$/.test(eventId)) return c.json({ error: 'Invalid engagement time' }, 400);
+    const createdAt = new Date().toISOString();
+    const claimed = await claimIdempotencyKey(`engagement:${userId}:${eventId}`, { userId, category, seconds, createdAt, eventId });
+    return c.json({ success: true, duplicate: !claimed });
+  } catch (error: any) {
+    return c.json({ error: error.message || 'Failed to track engagement' }, 500);
+  }
+});
+
+app.get('/make-server-6d579fee/engagement/summary', async (c) => {
+  try {
+    const userId = await getUserFromToken(c.req.header('Authorization'));
+    if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+    const profile: any = await kv.get(`user:${userId}`);
+    return c.json({ summary: await getEngagementSummary([userId, profile?.partnerId].filter(Boolean)) });
+  } catch (error: any) {
+    return c.json({ error: error.message || 'Failed to load engagement summary' }, 500);
+  }
+});
+
 // AI Mood Analysis - Analyze mood patterns using OpenAI
 app.post('/make-server-6d579fee/moods/analyze', async (c) => {
   try {
@@ -1766,21 +1842,16 @@ app.post('/make-server-6d579fee/moods/analyze', async (c) => {
     
     console.log('Making OpenAI API call for mood analysis...');
 
-    const prompt = `You are a Christian relationship counselor analyzing mood patterns for a couple using the TwoBeOne app.
+    const reportLanguage = resolveReportLanguage(profile.language);
+    const prompt = `Write a warm relationship reflection for a Christian couple using the TwoBeOne app.
+
+${reportLanguageInstruction(reportLanguage)}
 
 Mood Data (Last 7 Days):
 ${profile.name}'s Moods: ${JSON.stringify(moodSummary.userMoods, null, 2)}
 ${moodSummary.partnerName}'s Moods: ${JSON.stringify(moodSummary.partnerMoods, null, 2)}
 
-Provide a compassionate, faith-based analysis including:
-1. Overall emotional trends for each partner
-2. Patterns or correlations between their moods
-3. Positive observations and celebrations
-4. Gentle suggestions for spiritual and emotional growth
-5. Bible verse or principle that relates to their journey
-6. Specific prayer points for the couple
-
-Keep the tone warm, encouraging, and Christ-centered. Limit response to 300 words.`;
+Write 3 to 5 short, connected paragraphs in the voice of a thoughtful human counselor. Weave in their emotional pattern, sincere encouragement, one gentle next step, and a fitting Bible verse or prayer thought. Do not mention AI, analysis, data, scores, or algorithms. Do not use Markdown, headings, lists, asterisks, hash symbols, or bold text. Keep it personal, natural, Christ-centered, and under 260 words.`;
 
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -1838,7 +1909,7 @@ Keep the tone warm, encouraging, and Christ-centered. Limit response to 300 word
     }
 
     const aiData = await openaiResponse.json();
-    const analysis = aiData.choices[0].message.content;
+    const analysis = cleanGeneratedReport(aiData.choices[0].message.content);
 
     // Calculate simple statistics
     const moodValues: Record<string, number> = { great: 4, good: 3, okay: 2, sad: 1 };
@@ -1853,6 +1924,7 @@ Keep the tone warm, encouraging, and Christ-centered. Limit response to 300 word
       id: generateId(),
       userId,
       analysis,
+      language: reportLanguage,
       period: {
         start: sevenDaysAgo.toISOString(),
         end: new Date().toISOString()
@@ -1887,8 +1959,8 @@ Keep the tone warm, encouraging, and Christ-centered. Limit response to 300 word
       recipientId: userId,
       userId,
       type: 'mood_analysis',
-      title: '🧠 AI Mood Analysis Ready',
-      message: 'Your relationship analysis is ready to review.',
+      title: reportLanguage === 'am' ? '💝 የግንኙነት ነጸብራቅዎ ዝግጁ ነው' : reportLanguage === 'om' ? '💝 Calaqqeen walqunnamtii keessanii qophaa’eera' : '💝 Your relationship reflection is ready',
+      message: reportLanguage === 'am' ? 'ሞቅ ያለ የስሜት ጉዞ ነጸብራቅዎን ያንብቡ።' : reportLanguage === 'om' ? 'Calaqqee imala miiraa keessanii dubbisaa.' : 'Read your warm reflection on this week together.',
       data: {
         analysisId: analysisResult.id,
         summary: analysis.slice(0, 160),
@@ -1902,8 +1974,8 @@ Keep the tone warm, encouraging, and Christ-centered. Limit response to 300 word
 
     try {
       await sendWebPushToUser(userId, {
-        title: '🧠 AI Mood Analysis Ready',
-        body: 'Your mood analysis is ready to review.',
+        title: analysisNotification.title,
+        body: analysisNotification.message,
         data: { type: 'mood_analysis', analysisId: analysisResult.id, url: '/' },
         tag: 'mood-analysis'
       });
@@ -2004,6 +2076,8 @@ app.get('/make-server-6d579fee/moods/analysis', async (c) => {
 
 // Generate and send weekly mood report to both partners
 app.post('/make-server-6d579fee/moods/weekly-report', async (c) => {
+  let generationClaimKey: string | null = null;
+  let generationCompleted = false;
   try {
     const userId = await getUserFromToken(c.req.header('Authorization'));
     if (!userId) {
@@ -2037,7 +2111,26 @@ app.post('/make-server-6d579fee/moods/weekly-report', async (c) => {
     }
     // ─────────────────────────────────────────────────────────────────────
 
+    // Both partners (and multiple devices) may call this endpoint together.
+    // Reserve one couple-level slot for the UTC day before doing AI work or
+    // sending notifications. This is atomic at the database primary key.
+    const dayKey = now.toISOString().slice(0, 10);
+    const coupleKey = [userId, profile.partnerId].sort().join(':');
+    generationClaimKey = `notification-dedupe:mood_report:${coupleKey}:${dayKey}`;
+    const claimed = await claimIdempotencyKey(generationClaimKey, {
+      type: 'mood_report',
+      coupleKey,
+      dayKey,
+      claimedBy: userId,
+      claimedAt: now.toISOString(),
+    });
+
+    if (!claimed) {
+      return c.json({ success: true, report: {}, alreadyGenerated: true });
+    }
+
     const partner = await kv.get(`user:${profile.partnerId}`);
+    const reportLanguage = resolveReportLanguage(profile.language);
 
     // Get moods from the last 7 days
     const sevenDaysAgo = new Date();
@@ -2054,6 +2147,8 @@ app.post('/make-server-6d579fee/moods/weekly-report', async (c) => {
     );
 
     if (recentUserMoods.length === 0 && recentPartnerMoods.length === 0) {
+      await kv.del(generationClaimKey);
+      generationClaimKey = null;
       return c.json({ 
         error: 'Not enough mood data for a weekly report. Keep tracking your moods!' 
       }, 400);
@@ -2070,7 +2165,11 @@ app.post('/make-server-6d579fee/moods/weekly-report', async (c) => {
 
     // Generate AI analysis
     const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
-    let aiAnalysis = 'AI analysis unavailable. Please track moods and check back next week!';
+    let aiAnalysis = reportLanguage === 'am'
+      ? 'ስሜታችሁን በታማኝነት መጋራታችሁ እርስ በርሳችሁ ለመግባባት የሚረዳ ውብ ልማድ ነው። በዚህ ሳምንት አንዳችሁ ሌላውን በጸጥታ ለማዳመጥ ጥቂት ጊዜ ውሰዱ።'
+      : reportLanguage === 'om'
+        ? 'Miira keessan amanamummaadhaan waliif qooduun wal hubachuuf amala bareedaa dha. Torban kana yeroo gabaabaa fudhadhaatii walii dhaggeeffadhaa.'
+        : 'Naming how you feel is a caring way to understand one another. This week, make a little unhurried space to listen without trying to fix everything.';
 
     if (openaiApiKey) {
       const moodSummary = {
@@ -2088,7 +2187,9 @@ app.post('/make-server-6d579fee/moods/weekly-report', async (c) => {
         }))
       };
 
-      const prompt = `Create a brief weekly mood report for a Christian couple:
+      const prompt = `Write a warm weekly relationship reflection for a Christian couple.
+
+${reportLanguageInstruction(reportLanguage)}
 
 ${profile.name}: ${recentUserMoods.length} mood entries, average ${userAvg.toFixed(1)}/4
 ${partner?.name}: ${recentPartnerMoods.length} mood entries, average ${partnerAvg.toFixed(1)}/4
@@ -2097,13 +2198,7 @@ Recent moods:
 ${profile.name}: ${moodSummary.userMoods.map(m => `${m.mood} (${m.date})`).join(', ')}
 ${partner?.name}: ${moodSummary.partnerMoods.map(m => `${m.mood} (${m.date})`).join(', ')}
 
-Provide:
-1. A warm, encouraging summary (2-3 sentences)
-2. One specific observation about their emotional journey
-3. A relevant Bible verse or spiritual encouragement
-4. One actionable suggestion for the week ahead
-
-Keep it under 150 words, loving and Christ-centered.`;
+Write 3 or 4 short, flowing paragraphs as a caring human counselor. Include one emotional observation, sincere encouragement, a fitting Bible verse or faith thought, and one realistic invitation for the week. Do not mention AI, analysis, data, scores, algorithms, or report generation. Do not use Markdown, headings, lists, asterisks, hash symbols, or bold text. Keep it personal, natural, Christ-centered, and under 180 words.`;
 
       try {
         const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -2131,7 +2226,7 @@ Keep it under 150 words, loving and Christ-centered.`;
 
         if (openaiResponse.ok) {
           const aiData = await openaiResponse.json();
-          aiAnalysis = aiData.choices[0].message.content;
+          aiAnalysis = cleanGeneratedReport(aiData.choices[0].message.content);
         } else {
           const error = await openaiResponse.text();
           
@@ -2182,43 +2277,53 @@ Your mood data is tracked! AI insights will be available when the service is res
     }
 
     // Create notifications for both partners
-    const reportSummary = `Weekly Mood Report: ${profile.name} (${userAvg.toFixed(1)}/4) & ${partner?.name || 'Partner'} (${partnerAvg.toFixed(1)}/4)`;
+    const reportTitle = reportLanguage === 'am' ? '💝 ሳምንታዊ የስሜት ነጸብራቅ' : reportLanguage === 'om' ? '💝 Calaqqee Miiraa Torbanii' : '💝 Weekly Mood Reflection';
+    const reportSummary = reportLanguage === 'am'
+      ? `የዚህ ሳምንት የስሜት ነጸብራቅ፦ ${profile.name} (${userAvg.toFixed(1)}/4) እና ${partner?.name || 'Partner'} (${partnerAvg.toFixed(1)}/4)`
+      : reportLanguage === 'om'
+        ? `Calaqqee miiraa torban kanaa: ${profile.name} (${userAvg.toFixed(1)}/4) fi ${partner?.name || 'Partner'} (${partnerAvg.toFixed(1)}/4)`
+        : `This week's mood reflection: ${profile.name} (${userAvg.toFixed(1)}/4) and ${partner?.name || 'Partner'} (${partnerAvg.toFixed(1)}/4)`;
 
     // Notification for user
-    const userNotificationId = generateId();
+    const dailyReportId = `mood-report:${dayKey}:${coupleKey}`;
+    const userNotificationId = dailyReportId;
     const userNotification = {
       id: userNotificationId,
       recipientId: userId,
       userId,
       type: 'mood_report',
-      title: '💝 Weekly Mood Report',
+      title: reportTitle,
       message: reportSummary,
       data: {
-        analysis: aiAnalysis,
+        analysis: cleanGeneratedReport(aiAnalysis),
+        language: reportLanguage,
         userAverage: userAvg.toFixed(1),
         partnerAverage: partnerAvg.toFixed(1),
         period: `${sevenDaysAgo.toLocaleDateString()} - ${new Date().toLocaleDateString()}`
       },
       read: false,
+      isRead: false,
       createdAt: new Date().toISOString()
     };
 
     // Notification for partner
-    const partnerNotificationId = generateId();
+    const partnerNotificationId = dailyReportId;
     const partnerNotification = {
       id: partnerNotificationId,
       recipientId: profile.partnerId,
       userId: profile.partnerId,
       type: 'mood_report',
-      title: '💝 Weekly Mood Report',
+      title: reportTitle,
       message: reportSummary,
       data: {
-        analysis: aiAnalysis,
+        analysis: cleanGeneratedReport(aiAnalysis),
+        language: reportLanguage,
         userAverage: partnerAvg.toFixed(1),
         partnerAverage: userAvg.toFixed(1),
         period: `${sevenDaysAgo.toLocaleDateString()} - ${new Date().toLocaleDateString()}`
       },
       read: false,
+      isRead: false,
       createdAt: new Date().toISOString()
     };
 
@@ -2230,7 +2335,7 @@ Your mood data is tracked! AI insights will be available when the service is res
         title: '💝 Weekly Mood Report',
         body: reportSummary,
         data: { type: 'mood_report', url: '/' },
-        tag: 'weekly-report'
+        tag: dailyReportId
       });
     } catch (pushError: any) {
       console.warn('[Weekly Report] Push notification for user failed:', pushError?.message || pushError);
@@ -2241,13 +2346,14 @@ Your mood data is tracked! AI insights will be available when the service is res
         title: '💝 Weekly Mood Report',
         body: reportSummary,
         data: { type: 'mood_report', url: '/' },
-        tag: 'weekly-report'
+        tag: dailyReportId
       });
     } catch (pushError: any) {
       console.warn('[Weekly Report] Push notification for partner failed:', pushError?.message || pushError);
     }
 
     console.log(`[Weekly Report] Generated for ${profile.name} & ${partner?.name}`);
+    generationCompleted = true;
 
     return c.json({ 
       success: true, 
@@ -2260,6 +2366,13 @@ Your mood data is tracked! AI insights will be available when the service is res
       }
     });
   } catch (error: any) {
+    // A failed generation should be retryable later the same day. Only the
+    // request that acquired this key reaches this cleanup path.
+    if (generationClaimKey && !generationCompleted) {
+      await kv.del(generationClaimKey).catch((cleanupError: any) => {
+        console.warn('[Weekly Report] Failed to release idempotency key:', cleanupError?.message || cleanupError);
+      });
+    }
     console.error('Weekly report error:', error);
     return c.json({ error: error.message }, 500);
   }
@@ -2290,7 +2403,33 @@ app.get('/make-server-6d579fee/notifications', async (c) => {
       return dateB - dateA;
     });
 
-    return c.json({ notifications: sortedNotifications });
+    // Clean up duplicates produced by older clients. Keep the newest mood
+    // report for each UTC day and remove the extras from persistent storage.
+    const seenDailyMoodReports = new Set<string>();
+    const duplicateIds: string[] = [];
+    const deduplicatedNotifications = sortedNotifications.filter((notification: any) => {
+      if (notification.type !== 'mood_report') return true;
+      const timestamp = new Date(notification.createdAt);
+      const dayKey = Number.isNaN(timestamp.getTime())
+        ? String(notification.createdAt || 'unknown')
+        : timestamp.toISOString().slice(0, 10);
+      if (seenDailyMoodReports.has(dayKey)) {
+        if (notification.id) duplicateIds.push(notification.id);
+        return false;
+      }
+      seenDailyMoodReports.add(dayKey);
+      return true;
+    }).map((notification: any) => ({
+      ...notification,
+      read: Boolean(notification.read ?? notification.isRead),
+      isRead: Boolean(notification.isRead ?? notification.read),
+    }));
+
+    await Promise.allSettled(
+      duplicateIds.map((id) => kv.del(`notification:${userId}:${id}`)),
+    );
+
+    return c.json({ notifications: deduplicatedNotifications });
   } catch (error: any) {
     console.error('Notifications fetch error:', error);
     return c.json({ error: error.message || 'Failed to fetch notifications' }, 500);
@@ -2349,6 +2488,7 @@ app.patch('/make-server-6d579fee/notifications/:id/read', async (c) => {
 
     const updatedNotification = {
       ...notification,
+      read: true,
       isRead: true,
       readAt: new Date().toISOString()
     };
@@ -2373,9 +2513,10 @@ app.post('/make-server-6d579fee/notifications/read-all', async (c) => {
     const notifications = await kv.getByPrefix(`notification:${userId}:`);
     
     for (const notification of notifications) {
-      if (!notification.isRead) {
+      if (!(notification.isRead ?? notification.read)) {
         const updated = {
           ...notification,
+          read: true,
           isRead: true,
           readAt: new Date().toISOString()
         };

@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DistanceConnector } from '../DistanceConnector';
+import { LanguageProvider } from '../../contexts/LanguageContext';
 
 describe('embedded distance connector', () => {
   afterEach(() => vi.unstubAllGlobals());
@@ -15,16 +16,18 @@ describe('embedded distance connector', () => {
     }));
 
     render(
-      <DistanceConnector
-        embedded
-        userId="one"
-        userName="Partner One"
-        userAvatar="one.jpg"
-        partnerId="two"
-        partnerName="Partner Two"
-        partnerAvatar="two.jpg"
-        accessToken="token"
-      />,
+      <LanguageProvider>
+        <DistanceConnector
+          embedded
+          userId="one"
+          userName="Partner One"
+          userAvatar="one.jpg"
+          partnerId="two"
+          partnerName="Partner Two"
+          partnerAvatar="two.jpg"
+          accessToken="token"
+        />
+      </LanguageProvider>,
     );
 
     expect(await screen.findByText('Abu Dhabi')).toBeInTheDocument();

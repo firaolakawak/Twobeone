@@ -33,6 +33,7 @@ import {
   BookOpen,
   Star,
   Lightbulb,
+  Share2,
 } from "lucide-react";
 import { moods as moodsApi } from "../utils/api";
 import { toast } from "sonner";
@@ -69,12 +70,50 @@ interface MoodAnalyticsProps {
   onClose?: () => void;
 }
 
+export function cleanReportFormatting(text: string): string {
+  return String(text || '')
+    .replace(/^[ \t]*#{1,6}[ \t]*/gm, '')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/__([^_]+)__/g, '$1')
+    .replace(/`{1,3}/g, '')
+    .replace(/^[ \t]*[-*][ \t]+/gm, '')
+    .replace(/^[ \t]*\d+[.)][ \t]+/gm, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+export function buildWhatsAppReportUrl(title: string, report: string, period?: string, engagement?: any, language: 'en' | 'am' | 'om' = 'en'): string {
+  const activity = engagement?.week?.byCategory;
+  const total = engagement?.week?.totalSeconds;
+  const words = language === 'am'
+    ? { time: 'የዚህ ሳምንት የዓላማ ጊዜ', min: 'ደቂቃ', reading: 'ንባብ', answering: 'መመለስ', journaling: 'ማስታወሻ', praying: 'ጸሎት', shared: 'ከTwoBeOne የተጋራ' }
+    : language === 'om'
+      ? { time: 'Yeroo kaayyoo torban kanaa', min: 'daqiiqaa', reading: 'Dubbisuu', answering: 'Deebisuu', journaling: 'Yaadannoo', praying: 'Kadhachuu', shared: 'TwoBeOne irraa qoodame' }
+      : { time: 'Intentional time this week', min: 'min', reading: 'Reading', answering: 'Answering', journaling: 'Journaling', praying: 'Praying', shared: 'Shared from TwoBeOne' };
+  const timeLine = total > 0 && activity
+    ? `\n\n${words.time}: ${Math.round(total / 60)} ${words.min} · ${words.reading} ${Math.round((activity.reading || 0) / 60)} · ${words.answering} ${Math.round((activity.answering || 0) / 60)} · ${words.journaling} ${Math.round((activity.journaling || 0) / 60)} · ${words.praying} ${Math.round((activity.praying || 0) / 60)}`
+    : '';
+  const message = `${title}${period ? `\n${period}` : ''}\n\n${cleanReportFormatting(report)}${timeLine}\n\n${words.shared} 💕`;
+  return `https://wa.me/?text=${encodeURIComponent(message)}`;
+}
+
+function EngagementReportSummary({ summary, language }: { summary: any; language: 'en' | 'am' | 'om' }) {
+  if (!summary?.week?.totalSeconds) return null;
+  const words = language === 'am'
+    ? { title: 'የዚህ ሳምንት የጋራ ጊዜ', reading: 'ንባብ', answering: 'መመለስ', journaling: 'ማስታወሻ', praying: 'ጸሎት' }
+    : language === 'om'
+      ? { title: 'Yeroo waliinii torban kanaa', reading: 'Dubbisuu', answering: 'Deebisuu', journaling: 'Yaadannoo', praying: 'Kadhachuu' }
+      : { title: 'Intentional time this week', reading: 'Reading', answering: 'Answering', journaling: 'Journaling', praying: 'Praying' };
+  return <div className="mt-4 rounded-xl bg-rose-50/70 p-3"><p className="mb-2 text-xs font-semibold text-rose-700">{words.title} · {Math.round(summary.week.totalSeconds / 60)} min</p><div className="grid grid-cols-2 gap-2 text-xs text-slate-600">{(['reading', 'answering', 'journaling', 'praying'] as const).map(key => <span key={key}>{words[key]} <strong>{Math.round((summary.week.byCategory[key] || 0) / 60)}m</strong></span>)}</div></div>;
+}
+
 export function MoodAnalytics({
   profile,
   partner,
   onClose,
 }: MoodAnalyticsProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const dateLocale = language === 'am' ? 'am-ET' : language === 'om' ? 'om-ET' : 'en-US';
   const [moods, setMoods] = useState<MoodEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedMood, setSelectedMood] = useState<
@@ -93,10 +132,17 @@ export function MoodAnalytics({
     userMoodCount: number;
     partnerMoodCount: number;
     period?: string;
+    engagement?: any;
   } | null>(null);
   const [testingOpenAI, setTestingOpenAI] = useState(false);
   const [openAIStatus, setOpenAIStatus] = useState<any>(null);
   const [hasQuotaError, setHasQuotaError] = useState(false);
+  const shareLabel = language === 'am' ? 'በWhatsApp አጋራ' : language === 'om' ? 'WhatsApp irratti qoodi' : 'Share on WhatsApp';
+
+  const shareReport = (report: string, period?: string, engagementSummary?: any) => {
+    const url = buildWhatsAppReportUrl(t.mood.weeklyReflection, report, period, engagementSummary, language);
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
 
   useEffect(() => {
     loadMoods();
@@ -144,12 +190,12 @@ export function MoodAnalytics({
     setIsAnalyzing(true);
     try {
       const { analysis: aiAnalysis } = await moodsApi.analyze();
-      setAnalysis(aiAnalysis);
+      setAnalysis({ ...aiAnalysis, analysis: cleanReportFormatting(aiAnalysis.analysis) });
       setHasQuotaError(aiAnalysis.aiPowered === false);
       if (aiAnalysis.aiPowered === false) {
-        toast.warning('Gemini is unavailable. Showing a basic mood summary instead.');
+        toast.warning(t.mood.reportUnavailable);
       } else {
-        toast.success(t.mood.analysisGenerated);
+        toast.success(t.mood.reflectionReady);
       }
     } catch (error: any) {
       console.error("Mood AI analysis failed:", error?.message);
@@ -178,7 +224,8 @@ export function MoodAnalytics({
       weekAgo.setDate(weekAgo.getDate() - 7);
       setWeeklyReport({
         ...report,
-        period: `${weekAgo.toLocaleDateString("en-US", { month: "short", day: "numeric" })} – ${now.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`,
+        analysis: cleanReportFormatting(report.analysis),
+        period: `${weekAgo.toLocaleDateString(dateLocale, { month: "short", day: "numeric" })} – ${now.toLocaleDateString(dateLocale, { month: "short", day: "numeric", year: "numeric" })}`,
       });
     } catch (error: any) {
       console.error("Error generating weekly report:", error);
@@ -374,19 +421,11 @@ export function MoodAnalytics({
           <AlertDescription className="ml-2">
             <div className="space-y-2">
               <p className="font-medium text-warning-700">
-                AI Analysis Temporarily Unavailable
+                {t.mood.basicMoodSummary}
               </p>
               <p className="text-sm text-warning-700">
-                Gemini could not generate this report. A basic statistics-based summary is shown instead.
+                {t.mood.reportUnavailable}
               </p>
-              <p className="text-sm text-warning-700 mt-2">
-                Check the Gemini API key and quota, then try the analysis again.
-              </p>
-              {analysis?.fallbackReason && (
-                <p className="text-xs text-warning-700 mt-2">
-                  Technical detail: {analysis.fallbackReason}
-                </p>
-              )}
             </div>
           </AlertDescription>
         </Alert>
@@ -913,16 +952,16 @@ export function MoodAnalytics({
         </Card>
       )}
 
-      {/* AI Analysis */}
+      {/* Relationship reflection */}
       {partner && (
         <Card className="border-2 border-primary-200 bg-gradient-to-br from-primary-50/50 to-primary-50/50">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Brain className="w-5 h-5 text-primary-600" />
-              AI Mood Analysis
+              {t.mood.relationshipReflection}
             </CardTitle>
             <CardDescription>
-              Get insights from your emotional patterns
+              {t.mood.reflectionDescription}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -959,8 +998,8 @@ export function MoodAnalytics({
                       }}
                     >
                       {analysis.isFallback
-                        ? "Mood Summary"
-                        : "AI Insights"}
+                        ? t.mood.basicMoodSummary
+                        : t.mood.relationshipReflection}
                     </p>
                     <div
                       className="whitespace-pre-wrap leading-relaxed"
@@ -969,8 +1008,9 @@ export function MoodAnalytics({
                         color: "var(--foreground)",
                       }}
                     >
-                      {analysis.analysis}
+                      {cleanReportFormatting(analysis.analysis)}
                     </div>
+                    <EngagementReportSummary summary={analysis.engagement} language={language} />
                   </div>
                 </div>
                 <Separator className="my-3" />
@@ -988,14 +1028,14 @@ export function MoodAnalytics({
                     ? (() => {
                         const d = new Date(analysis.createdAt);
                         return isNaN(d.getTime())
-                          ? "Just now"
-                          : d.toLocaleDateString("en-US", {
+                          ? t.time.justNow
+                          : d.toLocaleDateString(dateLocale, {
                               month: "long",
                               day: "numeric",
                               year: "numeric",
                             });
                       })()
-                    : "Just now"}
+                    : t.time.justNow}
                   {analysis.isFallback && (
                     <span
                       style={{
@@ -1007,6 +1047,15 @@ export function MoodAnalytics({
                     </span>
                   )}
                 </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="mt-4 w-full border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                  onClick={() => shareReport(analysis.analysis, undefined, analysis.engagement)}
+                >
+                  <Share2 className="mr-2 h-4 w-4" />{shareLabel}
+                </Button>
               </div>
             ) : (
               <div className="text-center py-6">
@@ -1021,8 +1070,7 @@ export function MoodAnalytics({
                     fontSize: "var(--text-callout)",
                   }}
                 >
-                  Generate an AI-powered analysis of your mood
-                  patterns
+                  {t.mood.reflectionDescription}
                 </p>
               </div>
             )}
@@ -1034,12 +1082,12 @@ export function MoodAnalytics({
               {isAnalyzing ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Analyzing...
+                  {t.mood.generating}
                 </>
               ) : (
                 <>
                   <Brain className="w-4 h-4 mr-2" />
-                  Generate AI Analysis
+                  {t.mood.generateReflection}
                 </>
               )}
             </Button>
@@ -1148,7 +1196,7 @@ export function MoodAnalytics({
               </div>
               <div>
                 <h2 className="text-base font-semibold" style={{ color: "var(--foreground)" }}>
-                  Weekly Report
+                  {t.mood.weeklyReflection}
                 </h2>
                 {weeklyReport.period && (
                   <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
@@ -1161,7 +1209,7 @@ export function MoodAnalytics({
               onClick={() => setWeeklyReport(null)}
               className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
               style={{ background: "var(--muted)" }}
-              aria-label="Close report"
+              aria-label={t.common.close}
             >
               <X className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
             </button>
@@ -1172,12 +1220,12 @@ export function MoodAnalytics({
             {/* Mood Score Cards */}
             <div className="grid grid-cols-2 gap-3">
               {[
-                { name: profile?.name ?? "You", avg: weeklyReport.userAverage, count: weeklyReport.userMoodCount },
-                { name: partner?.name ?? "Partner", avg: weeklyReport.partnerAverage, count: weeklyReport.partnerMoodCount },
+                { name: profile?.name ?? t.mood.you, avg: weeklyReport.userAverage, count: weeklyReport.userMoodCount },
+                { name: partner?.name ?? t.mood.partner, avg: weeklyReport.partnerAverage, count: weeklyReport.partnerMoodCount },
               ].map((p) => {
                 const score = parseFloat(p.avg);
                 const pct = Math.round((score / 4) * 100);
-                const label = score >= 3.5 ? "Great" : score >= 2.5 ? "Good" : score >= 1.5 ? "Okay" : "Low";
+                const label = score >= 3.5 ? t.mood.great : score >= 2.5 ? t.mood.good : score >= 1.5 ? t.mood.okay : t.mood.low;
                 return (
                   <div
                     key={p.name}
@@ -1201,51 +1249,21 @@ export function MoodAnalytics({
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-medium" style={{ color: "var(--primary)" }}>{label}</span>
-                      <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>{p.count} {p.count === 1 ? "entry" : "entries"}</span>
+                      <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>{p.count} {p.count === 1 ? t.mood.entry : t.mood.entries}</span>
                     </div>
                   </div>
                 );
               })}
             </div>
 
-            {/* AI Narrative — parse into sections */}
-            {(() => {
-              const text = weeklyReport.analysis;
-              // Split on numbered lines or double newlines for paragraph grouping
-              const paragraphs = text
-                .split(/\n{2,}|\d+\.\s+/)
-                .map((p) => p.trim())
-                .filter(Boolean);
-
-              const icons = [Heart, BookOpen, Star, Lightbulb];
-              const sectionTitles = ["This Week", "Spiritual Encouragement", "Bible Verse", "Action for Next Week"];
-
-              return paragraphs.map((para, i) => {
-                const Icon = icons[i % icons.length];
-                return (
-                  <div
-                    key={i}
-                    className="rounded-2xl p-5 border"
-                    style={{ background: "var(--card)", borderColor: "var(--border)" }}
-                  >
-                    <div className="flex items-center gap-2 mb-3">
-                      <div
-                        className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
-                        style={{ background: "color-mix(in srgb, var(--primary) 12%, transparent)" }}
-                      >
-                        <Icon className="w-3.5 h-3.5" style={{ color: "var(--primary)" }} />
-                      </div>
-                      <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
-                        {sectionTitles[i] ?? `Insight ${i + 1}`}
-                      </span>
-                    </div>
-                    <p className="text-sm leading-relaxed" style={{ color: "var(--foreground)" }}>
-                      {para}
-                    </p>
-                  </div>
-                );
-              });
-            })()}
+            <div className="rounded-2xl border p-6" style={{ background: "var(--card)", borderColor: "var(--border)" }}>
+              {cleanReportFormatting(weeklyReport.analysis).split(/\n{2,}/).filter(Boolean).map((paragraph, index) => (
+                <p key={index} className="text-sm leading-7 not-first:mt-4" style={{ color: "var(--foreground)" }}>
+                  {paragraph}
+                </p>
+              ))}
+              <EngagementReportSummary summary={weeklyReport.engagement} language={language} />
+            </div>
 
             {/* Closing encouragement */}
             <div
@@ -1254,19 +1272,24 @@ export function MoodAnalytics({
             >
               <Heart className="w-6 h-6 mx-auto mb-2" style={{ color: "var(--primary)" }} />
               <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>
-                You are growing together in faith. 💕
-              </p>
-              <p className="text-xs mt-1" style={{ color: "var(--muted-foreground)" }}>
-                This report was also sent to {partner?.name ?? "your partner"}.
+                {t.dashboard.growingTogetherInFaith} 💕
               </p>
             </div>
+
+            <Button
+              variant="outline"
+              className="w-full border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+              onClick={() => shareReport(weeklyReport.analysis, weeklyReport.period, weeklyReport.engagement)}
+            >
+              <Share2 className="mr-2 h-4 w-4" />{shareLabel}
+            </Button>
 
             <Button
               className="w-full"
               onClick={() => setWeeklyReport(null)}
               style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
             >
-              Done
+              {t.common.close}
             </Button>
           </div>
         </div>

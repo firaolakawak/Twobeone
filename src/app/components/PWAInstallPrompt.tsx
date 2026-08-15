@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Download, Heart, Plus, Share, Smartphone, X } from 'lucide-react';
 import { Button } from './ui/button';
+import { getTranslations, type Language } from '../utils/i18n';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -34,6 +35,11 @@ function isMobileDevice() {
 }
 
 export function PWAInstallPrompt() {
+  const [language, setLanguage] = useState<Language>(() => {
+    const saved = localStorage.getItem('twobeone_language');
+    return saved === 'am' || saved === 'om' ? saved : 'en';
+  });
+  const t = getTranslations(language);
   const [platform, setPlatform] = useState<InstallPlatform>('browser');
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
@@ -86,6 +92,14 @@ export function PWAInstallPrompt() {
     };
   }, []);
 
+  useEffect(() => {
+    const handleLanguageChange = (event: Event) => {
+      setLanguage((event as CustomEvent<Language>).detail);
+    };
+    window.addEventListener('twobeone:language-change', handleLanguageChange);
+    return () => window.removeEventListener('twobeone:language-change', handleLanguageChange);
+  }, []);
+
   const dismiss = () => {
     setShowPrompt(false);
   };
@@ -112,7 +126,7 @@ export function PWAInstallPrompt() {
           <button
             type="button"
             onClick={dismiss}
-            aria-label="Dismiss install prompt"
+            aria-label={t.install.dismiss}
             className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/15 transition-colors hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
           >
             <X className="h-4 w-4" />
@@ -123,8 +137,8 @@ export function PWAInstallPrompt() {
               <Heart className="h-6 w-6 fill-rose-500 text-rose-500" />
             </div>
             <div>
-              <h2 id="install-twobeone-title" className="text-base font-bold text-white">Download the TwoBeOne App</h2>
-              <p className="mt-0.5 text-xs text-white/85">Add it to your phone for one-tap access.</p>
+              <h2 id="install-twobeone-title" className="text-base font-bold text-white">{t.install.title}</h2>
+              <p className="mt-0.5 text-xs text-white/85">{t.install.subtitle}</p>
             </div>
           </div>
         </div>
@@ -133,35 +147,35 @@ export function PWAInstallPrompt() {
           {platform === 'ios' ? (
             <div className="space-y-3" data-testid="ios-install-steps">
               <div className="grid grid-cols-3 gap-2 text-center">
-                <InstallStep number="1" icon={<Share className="h-4 w-4" />} label="Tap Share" />
-                <InstallStep number="2" icon={<Plus className="h-4 w-4" />} label="Add to Home" />
-                <InstallStep number="3" icon={<Smartphone className="h-4 w-4" />} label="Tap Add" />
+                <InstallStep number="1" icon={<Share className="h-4 w-4" />} label={t.install.iosStep1} />
+                <InstallStep number="2" icon={<Plus className="h-4 w-4" />} label={t.install.iosStep2} />
+                <InstallStep number="3" icon={<Smartphone className="h-4 w-4" />} label={t.install.iosStep3} />
               </div>
               <p className="text-center text-[11px] leading-relaxed text-muted-foreground">
-                In Safari, enable <strong className="text-foreground">Open as Web App</strong> before tapping Add.
+                {t.install.iosInstructions}
               </p>
               <Button type="button" variant="outline" onClick={dismiss} className="h-10 w-full rounded-xl font-semibold">
-                Got it
+                {t.install.gotIt}
               </Button>
             </div>
           ) : platform === 'native' && deferredPrompt ? (
             <div className="space-y-3">
-              <p className="text-sm text-muted-foreground">Install the secure web app for faster access and an app-like full-screen experience.</p>
+              <p className="text-sm text-muted-foreground">{t.install.subtitle}</p>
               <Button type="button" onClick={install} className="h-11 w-full rounded-xl bg-rose-600 font-semibold text-white hover:bg-rose-700">
-                <Download className="mr-2 h-4 w-4" /> Install TwoBeOne
+                <Download className="mr-2 h-4 w-4" /> {t.install.installButton}
               </Button>
             </div>
           ) : platform === 'android' ? (
             <div className="space-y-3" data-testid="android-install-steps">
               <p className="text-sm text-muted-foreground">
-                Open your browser menu <strong className="text-foreground">⋮</strong>, then tap <strong className="text-foreground">Install app</strong> or <strong className="text-foreground">Add to Home screen</strong>.
+                {t.install.androidInstructions}
               </p>
-              <Button type="button" variant="outline" onClick={dismiss} className="h-10 w-full rounded-xl font-semibold">Got it</Button>
+              <Button type="button" variant="outline" onClick={dismiss} className="h-10 w-full rounded-xl font-semibold">{t.install.gotIt}</Button>
             </div>
           ) : (
             <div className="space-y-3 text-sm text-muted-foreground">
-              <p>Open your browser menu and choose <strong className="text-foreground">Install app</strong> or <strong className="text-foreground">Add to Home screen</strong>.</p>
-              <Button type="button" variant="outline" onClick={dismiss} className="h-10 w-full rounded-xl font-semibold">Got it</Button>
+              <p>{t.install.androidInstructions}</p>
+              <Button type="button" variant="outline" onClick={dismiss} className="h-10 w-full rounded-xl font-semibold">{t.install.gotIt}</Button>
             </div>
           )}
         </div>

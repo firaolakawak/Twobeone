@@ -26,6 +26,8 @@ interface Notification {
     | "question"
     | "question_answered"
     | "partner_link"
+    | "mood_report"
+    | "mood_analysis"
     | "general";
   title: string;
   message: string;
@@ -40,6 +42,20 @@ interface NotificationCenterProps {
   projectId: string;
   publicAnonKey: string;
   onNotificationClick?: (notification: Notification) => void;
+}
+
+export function deduplicateDailyMoodReports(notifications: Notification[]): Notification[] {
+  const seenDays = new Set<string>();
+  return notifications.filter((notification) => {
+    if (notification.type !== "mood_report") return true;
+    const timestamp = new Date(notification.createdAt);
+    const dayKey = Number.isNaN(timestamp.getTime())
+      ? notification.createdAt
+      : timestamp.toISOString().slice(0, 10);
+    if (seenDays.has(dayKey)) return false;
+    seenDays.add(dayKey);
+    return true;
+  });
 }
 
 export function NotificationCenter({
@@ -80,7 +96,9 @@ export function NotificationCenter({
       }
 
       const data = await response.json();
-      setNotifications(data.notifications || []);
+      setNotifications(
+        deduplicateDailyMoodReports(data.notifications || []),
+      );
     } catch {
       // Notifications are non-critical — fail silently
       setNotifications([]);
@@ -141,13 +159,13 @@ export function NotificationCenter({
           },
         );
         if (!response.ok) throw new Error("Delete failed");
-        toast.success("Notification removed");
+        toast.success(t.notifications.removed);
       } catch (error) {
         console.error("Error deleting notification:", error);
-        toast.error("Failed to delete notification");
+        toast.error(t.notifications.removeFailed);
       }
     },
-    [accessToken, projectId],
+    [accessToken, projectId, t.notifications.removed, t.notifications.removeFailed],
   );
 
   const markAllAsRead = async () => {
@@ -257,10 +275,10 @@ export function NotificationCenter({
     const diffInMins = Math.floor(diffInMs / 60000);
     const diffInHours = Math.floor(diffInMs / 3600000);
     const diffInDays = Math.floor(diffInMs / 86400000);
-    if (diffInMins < 1) return "Just now";
-    if (diffInMins < 60) return `${diffInMins}m ago`;
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    if (diffInDays < 7) return `${diffInDays}d ago`;
+    if (diffInMins < 1) return t.time.justNow;
+    if (diffInMins < 60) return `${diffInMins} ${t.time.minutes} ${t.time.ago}`;
+    if (diffInHours < 24) return `${diffInHours} ${t.time.hours} ${t.time.ago}`;
+    if (diffInDays < 7) return `${diffInDays} ${t.time.days} ${t.time.ago}`;
     return date.toLocaleDateString(undefined, {
       month: "short",
       day: "numeric",
@@ -301,7 +319,7 @@ export function NotificationCenter({
                 </h3>
                 {unreadCount > 0 && (
                   <p className="text-xs font-semibold text-rose-600 mt-0.5">
-                    {unreadCount} unread items
+                    {unreadCount} {t.notifications.unreadItems}
                   </p>
                 )}
               </div>
@@ -315,7 +333,7 @@ export function NotificationCenter({
                     className="h-8 text-xs text-slate-800 hover:text-slate-950 font-bold px-2.5 hover:bg-slate-200/80 border border-slate-200 bg-white"
                   >
                     <Check className="w-3.5 h-3.5 mr-1 text-slate-900" />
-                    Mark all read
+                    {t.notifications.markAllRead}
                   </Button>
                 )}
                 <button
@@ -335,11 +353,10 @@ export function NotificationCenter({
                     <Bell className="w-8 h-8 text-slate-400" />
                   </div>
                   <p className="text-base font-bold text-slate-900">
-                    All caught up!
+                    {t.notifications.allCaughtUp}
                   </p>
                   <p className="text-xs text-slate-500 max-w-[240px] mt-1.5 leading-relaxed">
-                    You'll be notified here when your partner
-                    updates records or interacts.
+                    {t.notifications.noNewNotifications}
                   </p>
                 </div>
               ) : (
@@ -400,7 +417,7 @@ export function NotificationCenter({
                                 }}
                                 className="text-xs text-rose-700 hover:text-rose-900 font-bold flex items-center gap-0.5 bg-rose-100 border border-rose-200 px-2 py-0.5 rounded shadow-sm"
                               >
-                                Mark read
+                                {t.notifications.markRead}
                               </button>
                             )}
                             <button
@@ -413,7 +430,7 @@ export function NotificationCenter({
                               className="text-xs text-slate-600 hover:text-slate-900 font-bold flex items-center gap-1 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded shadow-sm ml-auto"
                             >
                               <Trash2 className="w-3 h-3 text-slate-500" />
-                              Delete
+                              {t.common.delete}
                             </button>
                           </div>
                         </div>

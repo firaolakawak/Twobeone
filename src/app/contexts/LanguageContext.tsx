@@ -30,6 +30,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
     
     // Set HTML lang attribute for accessibility
     document.documentElement.lang = lang;
+    window.dispatchEvent(new CustomEvent('twobeone:language-change', { detail: lang }));
     
     console.log(`[Language] Changed to: ${lang}`);
   };

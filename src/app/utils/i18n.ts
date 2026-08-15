@@ -88,6 +88,20 @@ export interface Translations {
     addPartner: string;
     connectWithPartner: string;
     noPartnerYet: string;
+    sharedJourney: string;
+    stage: string;
+    stages: { seed: string; growth: string; unity: string; commitment: string; covenant: string };
+    daysLeft: string;
+    nextStage: string;
+    milestoneReached: string;
+    firstMilestoneReached: string;
+    locationSettings: string;
+    locationNotSet: string;
+    shareLocation: string;
+    waitingForPartnerLocation: string;
+    online: string;
+    offline: string;
+    notSharedYet: string;
   };
 
   // Devotionals
@@ -250,6 +264,13 @@ export interface Translations {
     stayConnected: string;
     permissionRequired: string;
     enableInSettings: string;
+    unreadItems: string;
+    markAllRead: string;
+    allCaughtUp: string;
+    noNewNotifications: string;
+    markRead: string;
+    removed: string;
+    removeFailed: string;
   };
 
   // Mood
@@ -275,6 +296,18 @@ export interface Translations {
     failedSave: string;
     failedLoad: string;
     needPartnerForAnalysis: string;
+    relationshipReflection: string;
+    reflectionReady: string;
+    generateReflection: string;
+    reflectionDescription: string;
+    basicMoodSummary: string;
+    reportUnavailable: string;
+    weeklyReflection: string;
+    entry: string;
+    entries: string;
+    you: string;
+    partner: string;
+    low: string;
   };
 
   // Partner setup
@@ -462,6 +495,20 @@ export const translations: Record<Language, Translations> = {
       addPartner: 'Add Partner',
       connectWithPartner: 'Connect with your partner to begin your journey together',
       noPartnerYet: 'No partner connected yet',
+      sharedJourney: 'Your shared journey',
+      stage: 'Stage',
+      stages: { seed: 'Seed', growth: 'Growth', unity: 'Unity', commitment: 'Commitment', covenant: 'Covenant' },
+      daysLeft: 'days left',
+      nextStage: 'Next',
+      milestoneReached: 'Milestone reached! ✨',
+      firstMilestoneReached: 'First milestone reached! ✨',
+      locationSettings: 'Location settings',
+      locationNotSet: 'Location not set',
+      shareLocation: 'Share your location',
+      waitingForPartnerLocation: "Waiting for your partner's location",
+      online: 'online',
+      offline: 'offline',
+      notSharedYet: 'Not shared yet',
     },
 
     devotionals: {
@@ -637,6 +684,13 @@ export const translations: Record<Language, Translations> = {
       stayConnected: 'Stay connected with your partner through instant notifications',
       permissionRequired: 'Permission Required',
       enableInSettings: 'Enable notifications in your browser settings',
+      unreadItems: 'unread items',
+      markAllRead: 'Mark all read',
+      allCaughtUp: 'All caught up!',
+      noNewNotifications: "You'll see new updates from your partner here.",
+      markRead: 'Mark read',
+      removed: 'Notification removed',
+      removeFailed: 'Failed to delete notification',
     },
 
     milestones: {
@@ -668,12 +722,24 @@ export const translations: Record<Language, Translations> = {
       addNote: 'Add a note (optional)',
       notePlaceholder: 'What\'s on your heart today?',
       generating: 'Generating...',
-      analysisGenerated: 'AI analysis ready! 💝',
+      analysisGenerated: 'Your reflection is ready! 💝',
       saveMood: 'Save Mood',
       moodSaved: 'Mood saved! 💝',
       failedSave: 'Failed to save mood',
       failedLoad: 'Failed to load mood data',
-      needPartnerForAnalysis: 'You need a partner to generate AI analysis',
+      needPartnerForAnalysis: 'Connect with your partner to create a reflection',
+      relationshipReflection: 'Relationship Reflection',
+      reflectionReady: 'Your reflection is ready 💝',
+      generateReflection: 'Create Reflection',
+      reflectionDescription: 'A warm reflection on your emotional journey together',
+      basicMoodSummary: 'Mood Summary',
+      reportUnavailable: 'A simple mood summary is shown while the personalized reflection is unavailable.',
+      weeklyReflection: 'Weekly Reflection',
+      entry: 'entry',
+      entries: 'entries',
+      you: 'You',
+      partner: 'Partner',
+      low: 'Low',
     },
 
     partner: {
@@ -854,6 +920,20 @@ export const translations: Record<Language, Translations> = {
       addPartner: 'ባልደረባ ጨምር',
       connectWithPartner: 'ጉዞዎን ለመጀመር ከባልደረባዎ ጋር ይገናኙ',
       noPartnerYet: 'እስካሁን ባልደረባ አልተገናኘም',
+      sharedJourney: 'የጋራ ጉዞዎ',
+      stage: 'ደረጃ',
+      stages: { seed: 'ዘር', growth: 'እድገት', unity: 'አንድነት', commitment: 'ቁርጠኝነት', covenant: 'ቃል ኪዳን' },
+      daysLeft: 'ቀናት ቀርተዋል',
+      nextStage: 'ቀጣይ',
+      milestoneReached: 'የጉዞ ምዕራፍ ደርሷል! ✨',
+      firstMilestoneReached: 'የመጀመሪያው የጉዞ ምዕራፍ ደርሷል! ✨',
+      locationSettings: 'የአካባቢ ቅንብሮች',
+      locationNotSet: 'አካባቢ አልተዘጋጀም',
+      shareLocation: 'አካባቢዎን ያጋሩ',
+      waitingForPartnerLocation: 'የባልደረባዎን አካባቢ በመጠበቅ ላይ',
+      online: 'መስመር ላይ',
+      offline: 'ከመስመር ውጭ',
+      notSharedYet: 'እስካሁን አልተጋራም',
     },
 
     devotionals: {
@@ -1029,6 +1109,13 @@ export const translations: Record<Language, Translations> = {
       stayConnected: 'በፈጣን ማሳወቂያዎች ከባልደረባዎ ጋር ተገናኝተው ይቆዩ',
       permissionRequired: 'ፈቃድ ያስፈልጋል',
       enableInSettings: 'በአሳሽዎ ቅንብሮች ውስጥ ማሳወቂያዎችን አንቃ',
+      unreadItems: 'ያልተነበቡ ማሳወቂያዎች',
+      markAllRead: 'ሁሉንም እንደተነበበ ምልክት ያድርጉ',
+      allCaughtUp: 'ሁሉንም ተመልክተዋል!',
+      noNewNotifications: 'ከባልደረባዎ የሚመጡ አዳዲስ መረጃዎችን እዚህ ያያሉ።',
+      markRead: 'እንደተነበበ ምልክት ያድርጉ',
+      removed: 'ማሳወቂያው ተወግዷል',
+      removeFailed: 'ማሳወቂያውን መሰረዝ አልተሳካም',
     },
 
     milestones: {
@@ -1060,12 +1147,24 @@ export const translations: Record<Language, Translations> = {
       addNote: 'ማስታወሻ ጨምር (ምርጫ)',
       notePlaceholder: 'ዛሬ ልብዎ ምን ይላል?',
       generating: 'በማዘጋጀት ላይ...',
-      analysisGenerated: 'AI ትንታኔ ተዘጋጅቷል! 💝',
+      analysisGenerated: 'ነጸብራቅዎ ዝግጁ ነው! 💝',
       saveMood: 'ስሜት አስቀምጥ',
       moodSaved: 'ስሜት ተቀምጧል! 💝',
       failedSave: 'ስሜት ማስቀመጥ አልተሳካም',
       failedLoad: 'የስሜት ውሂብ መጫን አልተሳካም',
-      needPartnerForAnalysis: 'AI ትንታኔ ለማዘጋጀት ባልደረባ ያስፈልጋል',
+      needPartnerForAnalysis: 'ነጸብራቅ ለመፍጠር ከባልደረባዎ ጋር ይገናኙ',
+      relationshipReflection: 'የግንኙነት ነጸብራቅ',
+      reflectionReady: 'ነጸብራቅዎ ዝግጁ ነው 💝',
+      generateReflection: 'ነጸብራቅ ይፍጠሩ',
+      reflectionDescription: 'በጋራ ስላላችሁ የስሜት ጉዞ ሞቅ ያለ ነጸብራቅ',
+      basicMoodSummary: 'የስሜት ማጠቃለያ',
+      reportUnavailable: 'ግላዊ ነጸብራቁ ባልተገኘበት ጊዜ ቀላል የስሜት ማጠቃለያ ቀርቧል።',
+      weeklyReflection: 'ሳምንታዊ ነጸብራቅ',
+      entry: 'መዝገብ',
+      entries: 'መዝገቦች',
+      you: 'እርስዎ',
+      partner: 'ባልደረባ',
+      low: 'ዝቅተኛ',
     },
 
     partner: {
@@ -1243,6 +1342,20 @@ export const translations: Record<Language, Translations> = {
       addPartner: 'Hiriyaa Dabaluu',
       connectWithPartner: 'Imala waliin jalqabuuf hiriyaa kee waliin quunnamaa',
       noPartnerYet: 'Hiriyaan ammaaf hin quunnamne',
+      sharedJourney: 'Imala keessan waliin',
+      stage: 'Sadarkaa',
+      stages: { seed: 'Sanyii', growth: 'Guddina', unity: 'Tokkummaa', commitment: 'Kutannoo', covenant: 'Kakuu' },
+      daysLeft: 'guyyaa hafe',
+      nextStage: 'Itti aanu',
+      milestoneReached: 'Sadarkaan imalaa gaheera! ✨',
+      firstMilestoneReached: 'Sadarkaan imalaa jalqabaa gaheera! ✨',
+      locationSettings: "Qindaa'ina bakka",
+      locationNotSet: 'Bakki hin qindaa’in',
+      shareLocation: 'Bakka kee qoodi',
+      waitingForPartnerLocation: 'Bakka hiriyaa kee eegaa jira',
+      online: 'sarara irra',
+      offline: 'sararaan ala',
+      notSharedYet: 'Ammaaf hin qoodamne',
     },
     devotionals: {
       title: 'Kaayyoo Amantii Guyyaa Guyyaa',
@@ -1411,6 +1524,13 @@ export const translations: Record<Language, Translations> = {
       stayConnected: 'Beeksisa ariifataan hiriyaa keetiin quunnamaa tulli',
       permissionRequired: 'Hayyama Barbaachisa',
       enableInSettings: "Qindaa'ina browser keessatti beeksisa dandeessisi",
+      unreadItems: 'beeksisa hin dubbifamne',
+      markAllRead: 'Hunda dubbifame godhi',
+      allCaughtUp: 'Hunda ilaaltetta!',
+      noNewNotifications: 'Odeeffannoo haaraa hiriyaa kee irraa asitti argita.',
+      markRead: 'Dubbifame godhi',
+      removed: 'Beeksisni haqameera',
+      removeFailed: 'Beeksisa haquun hin danda’amne',
     },
     milestones: {
       title: 'Balbala',
@@ -1440,12 +1560,24 @@ export const translations: Record<Language, Translations> = {
       addNote: 'Yaadannoo dabaluu (filannoo)',
       notePlaceholder: "Har'aa garaan kee maal jedha?",
       generating: 'Qopheessaa jira...',
-      analysisGenerated: "Xiinxalli AI qophaa'e! 💝",
+      analysisGenerated: "Calaqqeen kee qophaa'e! 💝",
       saveMood: 'Miira Kuuxi',
       moodSaved: 'Miirri kuufame! 💝',
       failedSave: 'Miira kuuxuu dadhabame',
       failedLoad: 'Deetaa miiraa fe\'uu dadhabame',
-      needPartnerForAnalysis: 'Xiinxala AI uumuuf hiriyaa barbaachisa',
+      needPartnerForAnalysis: 'Calaqqee uumuuf hiriyaa kee waliin quunnami',
+      relationshipReflection: 'Calaqqee Walqunnamtii',
+      reflectionReady: 'Calaqqeen kee qophaa’eera 💝',
+      generateReflection: 'Calaqqee Uumi',
+      reflectionDescription: 'Imala miiraa keessan waliinii irratti calaqqee ho’aa',
+      basicMoodSummary: 'Cuunfaa Miiraa',
+      reportUnavailable: 'Calaqqeen dhuunfaa yeroo hin argamnetti cuunfaan miiraa salphaan agarsiifama.',
+      weeklyReflection: 'Calaqqee Torbanii',
+      entry: 'galmee',
+      entries: 'galmeewwan',
+      you: 'Ati',
+      partner: 'Hiriyaa',
+      low: 'Gadi aanaa',
     },
 
     partner: {

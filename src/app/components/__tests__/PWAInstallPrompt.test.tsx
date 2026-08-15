@@ -35,7 +35,7 @@ describe('PWAInstallPrompt', () => {
     expect(screen.getAllByRole('dialog')).toHaveLength(1);
     expect(screen.getByTestId('ios-install-steps')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Dismiss install prompt' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Dismiss' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
@@ -51,7 +51,7 @@ describe('PWAInstallPrompt', () => {
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(screen.getByTestId('android-install-steps')).toBeInTheDocument();
-    expect(screen.getByText('Download the TwoBeOne App')).toBeInTheDocument();
+    expect(screen.getByText('Install TwoBeOne')).toBeInTheDocument();
   });
 
   it('does not open automatically on a large screen but can be opened from settings', async () => {
@@ -68,7 +68,7 @@ describe('PWAInstallPrompt', () => {
 
     await act(async () => window.dispatchEvent(new Event('twobeone:open-install')));
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: /Install TwoBeOne/i }));
+    await user.click(screen.getByRole('button', { name: /Install App/i }));
     expect(installEvent.prompt).toHaveBeenCalledOnce();
   });
 });

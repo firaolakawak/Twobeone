@@ -47,6 +47,7 @@ import type { User, JournalEntry, PrayerRequest, Progress as ProgressType, Quest
 import { moods as moodsApi, milestones as milestonesApi, questions as questionsApi } from '../utils/api';
 import { AddMilestoneDialog } from './AddMilestoneDialog';
 import { fetchAmharicChapter, getAmharicBookName } from '../utils/amharicBibleApi';
+import { ChampionsCard } from './ChampionsCard';
 
 export interface CoupleDashboardProps {
   profile?: User;
@@ -262,6 +263,7 @@ const TimerDisplay = memo(function TimerDisplay({
   coupleData: any;
   partner: any;
 }) {
+  const { t } = useLanguage();
   function calc() {
     let startDate: Date | null = null;
     if (profile?.relationshipStart) startDate = new Date(profile.relationshipStart);
@@ -302,7 +304,7 @@ const TimerDisplay = memo(function TimerDisplay({
           {time.days}
         </p>
         <p style={{ fontSize: 'var(--text-caption-small)', color: 'var(--primary-500)', margin: 0 }}>
-          {time.days === 1 ? 'day' : 'days'}
+          {time.days === 1 ? t.time.day : t.time.days}
         </p>
         <div style={{ height: '1px', background: 'var(--border)', margin: 'var(--spacing-1) 0' }} />
         <p style={{ fontSize: 'var(--text-caption-small)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--primary-600)', margin: 0 }}>
@@ -652,7 +654,7 @@ export function CoupleDashboard({
     setMilestones(current => [milestone, ...current]);
     setCelebratingMilestoneId(milestone.id);
     window.setTimeout(() => setCelebratingMilestoneId(current => current === milestone.id ? null : current), 1800);
-    toast.success('Milestone reached! ✨');
+    toast.success(t.dashboard.milestoneReached);
     
     // Refetch from backend to ensure consistency
     try {
@@ -945,7 +947,7 @@ export function CoupleDashboard({
         )}
 
         <CardContent className="relative px-5 pb-6 pt-6 sm:px-7">
-          <p className="mb-5 text-center text-[10px] font-bold uppercase tracking-[0.22em] text-primary-500/80">Your shared journey</p>
+          <p className="mb-5 text-center text-[10px] font-bold uppercase tracking-[0.22em] text-primary-500/80">{t.dashboard.sharedJourney}</p>
 
           {/* Unconnected profile fallback; connected couples render through the unified distance profile below */}
           {(!partner || !profile?.id || !accessToken) && (
@@ -1039,11 +1041,11 @@ export function CoupleDashboard({
           {/* Readiness Stage Badge — only shown when connected with a partner */}
           {partner && (() => {
             const STAGES = [
-              { label: 'Seed',       emoji: '🌱', minDays: 0   },
-              { label: 'Growth',     emoji: '🌿', minDays: 90  },
-              { label: 'Unity',      emoji: '💞', minDays: 180 },
-              { label: 'Commitment', emoji: '🤝', minDays: 250 },
-              { label: 'Covenant',   emoji: '👑', minDays: 360 },
+              { label: t.dashboard.stages.seed,       emoji: '🌱', minDays: 0   },
+              { label: t.dashboard.stages.growth,     emoji: '🌿', minDays: 90  },
+              { label: t.dashboard.stages.unity,      emoji: '💞', minDays: 180 },
+              { label: t.dashboard.stages.commitment, emoji: '🤝', minDays: 250 },
+              { label: t.dashboard.stages.covenant,   emoji: '👑', minDays: 360 },
             ];
             // Days together — mirrors calculateDaysTogether() logic
             let daysTogether = 0;
@@ -1095,10 +1097,10 @@ export function CoupleDashboard({
                     <span style={{ fontSize: 20, lineHeight: 1 }}>{stage.emoji}</span>
                     <div style={{ textAlign: 'left' }}>
                       <p style={{ margin: 0, fontSize: 'var(--text-caption)', fontWeight: 'var(--font-weight-bold)', color: 'var(--foreground)', lineHeight: 1.2 }}>
-                        {stage.label} Stage
+                        {stage.label} {t.dashboard.stage}
                       </p>
                       <p style={{ margin: 0, fontSize: 'var(--text-label)', color: 'var(--muted-foreground)' }}>
-                        {daysTogether} days together
+                        {daysTogether} {t.dashboard.daysTogether.toLocaleLowerCase()}
                       </p>
                     </div>
                   </div>
@@ -1120,7 +1122,7 @@ export function CoupleDashboard({
                     )}
                     {nextStage && !stageExpanded && (
                       <span style={{ fontSize: 'var(--text-label)', color: 'var(--muted-foreground)' }}>
-                        {nextStage.minDays - daysTogether}d left
+                        {nextStage.minDays - daysTogether} {t.dashboard.daysLeft}
                       </span>
                     )}
                     <ChevronDown
@@ -1148,7 +1150,7 @@ export function CoupleDashboard({
                     {/* Next stage label */}
                     {nextStage && (
                       <p style={{ margin: '0 0 10px', fontSize: 'var(--text-label)', color: 'var(--muted-foreground)', textAlign: 'right' }}>
-                        {nextStage.emoji} Next: <strong style={{ color: accent }}>{nextStage.label}</strong> in {nextStage.minDays - daysTogether} days
+                        {nextStage.emoji} {t.dashboard.nextStage}: <strong style={{ color: accent }}>{nextStage.label}</strong> — {nextStage.minDays - daysTogether} {t.time.days}
                       </p>
                     )}
                     {/* 5 stage nodes */}
@@ -1312,6 +1314,8 @@ export function CoupleDashboard({
           })()}
         </CardContent>
       </Card>
+
+      <ChampionsCard />
 
       {/* Randomized next step — devotion, conversation, or journal */}
       <section className={`relative overflow-hidden rounded-[1.75rem] border bg-gradient-to-br p-5 shadow-[0_16px_46px_rgba(83,45,67,0.09)] ${spotlight.surfaceClass}`} aria-labelledby="home-spotlight-title">
@@ -1662,7 +1666,7 @@ export function CoupleDashboard({
                       <MoodFace mood={partnerMood.mood} size={52} />
                       <div>
                         <p style={{ fontSize: 'var(--text-callout)', fontWeight: 'var(--font-weight-semibold)', color: m.color, margin: 0 }}>{m.label}</p>
-                        <p style={{ fontSize: 'var(--text-caption-small)', color: 'var(--muted-foreground)', margin: 0 }}>Today</p>
+                        <p style={{ fontSize: 'var(--text-caption-small)', color: 'var(--muted-foreground)', margin: 0 }}>{t.common.today}</p>
                       </div>
                     </div>
                   );
@@ -1674,7 +1678,7 @@ export function CoupleDashboard({
                     borderRadius: 'var(--radius-md)',
                     border: '1.5px dashed var(--neutral-300)',
                   }}>
-                    <p style={{ fontSize: 'var(--text-caption-small)', color: 'var(--muted-foreground)', margin: 0 }}>Not shared yet</p>
+                    <p style={{ fontSize: 'var(--text-caption-small)', color: 'var(--muted-foreground)', margin: 0 }}>{t.dashboard.notSharedYet}</p>
                   </div>
                 )}
               </div>
@@ -1788,7 +1792,7 @@ export function CoupleDashboard({
                       setMilestones([createdMilestone]);
                       setCelebratingMilestoneId(createdMilestone.id);
                       window.setTimeout(() => setCelebratingMilestoneId(null), 1800);
-                      toast.success('First milestone reached! ✨');
+                      toast.success(t.dashboard.firstMilestoneReached);
                     } catch (error) {
                       console.error('Error adding first milestone:', error);
                       toast.error('Failed to add milestone');

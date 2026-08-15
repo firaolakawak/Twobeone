@@ -381,6 +381,38 @@ export const moods = {
 };
 
 // ============================================
+// ENGAGEMENT / TWOBEONE CHAMPIONS
+// ============================================
+
+export type EngagementCategory = 'reading' | 'answering' | 'journaling' | 'praying' | 'other';
+
+export interface EngagementPeriod {
+  totalSeconds: number;
+  byCategory: Record<EngagementCategory, number>;
+}
+
+export interface EngagementSummary {
+  today: EngagementPeriod;
+  week: EngagementPeriod;
+  month: EngagementPeriod;
+  champion: {
+    level: 'starting' | 'growing' | 'devoted' | 'champion';
+    progress: number;
+    nextTargetSeconds: number | null;
+  };
+}
+
+export const engagement = {
+  track: (category: EngagementCategory, seconds: number, eventId: string) =>
+    apiCall<{ success: boolean }>('/engagement/time', {
+      method: 'POST',
+      body: JSON.stringify({ category, seconds, eventId }),
+    }, 1, 10000),
+
+  summary: () => apiCall<{ summary: EngagementSummary }>('/engagement/summary', {}, 1, 15000),
+};
+
+// ============================================
 // NOTIFICATIONS
 // ============================================
 
@@ -619,6 +651,7 @@ export const api = {
   devotionals,
   streaks,
   milestones,
+  engagement,
   health,
   partner: partnerApi,
 };
