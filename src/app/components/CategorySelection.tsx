@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Sun, Heart, Scale, Church, Plane, Shield, Handshake, Baby, DollarSign, Users, BookOpen } from 'lucide-react';
+import { Sun, Heart, Scale, Church, Plane, Shield, Handshake, Baby, DollarSign, Users, BookOpen, ArrowUpRight, Check } from 'lucide-react';
+import { motion, useReducedMotion } from 'motion/react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { Card, CardContent } from './ui/card';
 import { questions as questionsApi } from '../utils/api';
 
 interface CategoryQuestion {
@@ -51,6 +51,7 @@ interface CategorySelectionProps {
 
 export function CategorySelection({ onSelectCategory, onBack, responses }: CategorySelectionProps) {
   const { t, language } = useLanguage();
+  const prefersReducedMotion = useReducedMotion();
   const [questions, setQuestions] = useState<CategoryQuestion[]>([]);
   const [isLoadingProgress, setIsLoadingProgress] = useState(true);
 
@@ -83,6 +84,7 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
       bgColor: 'bg-gradient-to-br from-warning-50 to-warning-50',
       borderColor: 'border-warning-500/30',
       textColor: 'text-warning-700',
+      glowColor: 'bg-warning-200/60',
       description: t.questions.categoryDescriptions.dailyLifeHabits,
     },
     { 
@@ -93,6 +95,7 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
       bgColor: 'bg-gradient-to-br from-primary-50 to-primary-100',
       borderColor: 'border-primary-200',
       textColor: 'text-primary-700',
+      glowColor: 'bg-primary-200/60',
       description: t.questions.categoryDescriptions.intimacyLifestyle,
     },
     { 
@@ -103,6 +106,7 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
       bgColor: 'bg-gradient-to-br from-primary-50 to-primary-100',
       borderColor: 'border-primary-200',
       textColor: 'text-primary-700',
+      glowColor: 'bg-primary-200/60',
       description: t.questions.categoryDescriptions.loveBalance,
     },
     { 
@@ -113,6 +117,7 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
       bgColor: 'bg-gradient-to-br from-sky-50 to-primary-50',
       borderColor: 'border-sky-200',
       textColor: 'text-sky-700',
+      glowColor: 'bg-sky-200/60',
       description: t.questions.categoryDescriptions.dreamWeddingHome,
     },
     { 
@@ -123,6 +128,7 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
       bgColor: 'bg-gradient-to-br from-sky-50 to-sky-50',
       borderColor: 'border-sky-200',
       textColor: 'text-sky-700',
+      glowColor: 'bg-sky-200/60',
       description: t.questions.categoryDescriptions.travelAdventure,
     },
     { 
@@ -133,6 +139,7 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
       bgColor: 'bg-gradient-to-br from-success-50 to-sky-50',
       borderColor: 'border-success-500/30',
       textColor: 'text-success-700',
+      glowColor: 'bg-success-200/60',
       description: t.questions.categoryDescriptions.relationshipBoundaries,
     },
     { 
@@ -143,6 +150,7 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
       bgColor: 'bg-gradient-to-br from-sky-50 to-sky-100',
       borderColor: 'border-sky-200',
       textColor: 'text-sky-700',
+      glowColor: 'bg-sky-200/60',
       description: t.questions.categoryDescriptions.trustTruth,
     },
     { 
@@ -153,6 +161,7 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
       bgColor: 'bg-gradient-to-br from-primary-50 to-primary-50',
       borderColor: 'border-primary-200',
       textColor: 'text-primary-700',
+      glowColor: 'bg-primary-200/60',
       description: t.questions.categoryDescriptions.kidsFuture,
     },
     { 
@@ -163,6 +172,7 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
       bgColor: 'bg-gradient-to-br from-success-50 to-success-50',
       borderColor: 'border-success-500/30',
       textColor: 'text-success-700',
+      glowColor: 'bg-success-200/60',
       description: t.questions.categoryDescriptions.financeGoals,
     },
     { 
@@ -173,6 +183,7 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
       bgColor: 'bg-gradient-to-br from-warning-50 to-warning-50',
       borderColor: 'border-warning-500/30',
       textColor: 'text-warning-700',
+      glowColor: 'bg-warning-200/60',
       description: t.questions.categoryDescriptions.familyRelations,
     },
     { 
@@ -183,6 +194,7 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
       bgColor: 'bg-gradient-to-br from-primary-50 to-primary-50',
       borderColor: 'border-primary-200',
       textColor: 'text-primary-700',
+      glowColor: 'bg-primary-200/60',
       description: t.questions.categoryDescriptions.bibleConvictions,
     },
   ];
@@ -206,59 +218,91 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
         </div>
 
         {/* Categories Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {categories.map((category) => {
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {categories.map((category, index) => {
             const IconComponent = category.icon;
             const progress = calculateCategoryProgress(questions, userResponses, category.id);
+            const isComplete = progress.total > 0 && progress.remaining === 0;
             return (
-              <Card
+              <motion.button
                 key={category.id}
-                className={`${category.bgColor} ${category.borderColor} cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.02] border-2`}
+                type="button"
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: prefersReducedMotion ? 0 : index * 0.045, ease: [0.22, 1, 0.36, 1] }}
+                whileHover={prefersReducedMotion ? undefined : { y: -5, scale: 1.012 }}
+                whileTap={prefersReducedMotion ? undefined : { scale: 0.985 }}
+                className={`group relative w-full overflow-hidden rounded-[1.75rem] border ${category.borderColor} ${category.bgColor} text-left shadow-[0_10px_35px_-20px_rgba(88,28,59,0.35)] outline-none transition-[box-shadow,border-color] duration-300 hover:shadow-[0_22px_48px_-24px_rgba(88,28,59,0.5)] focus-visible:ring-4 focus-visible:ring-primary-300/40 focus-visible:ring-offset-2`}
                 onClick={() => onSelectCategory(category.id)}
               >
-                <CardContent className="p-6">
+                <div className={`pointer-events-none absolute -right-12 -top-14 h-36 w-36 rounded-full ${category.glowColor} blur-3xl opacity-50 transition-all duration-500 group-hover:scale-125 group-hover:opacity-80`} />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/75 via-white/20 to-transparent opacity-70" />
+                <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
+
+                <div className="relative p-5 sm:p-6">
                   <div className="flex items-start gap-4">
-                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${category.color} flex items-center justify-center flex-shrink-0 shadow-lg`}>
-                      <IconComponent className="w-7 h-7 text-white" />
+                    <div className="relative flex-shrink-0">
+                      <div className={`absolute inset-1 rounded-2xl bg-gradient-to-br ${category.color} blur-md opacity-35 transition-opacity duration-300 group-hover:opacity-60`} />
+                      <div className={`relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${category.color} shadow-lg ring-1 ring-white/70 transition-transform duration-300 motion-safe:group-hover:-rotate-3 motion-safe:group-hover:scale-110`}>
+                        <IconComponent className="h-7 w-7 text-white drop-shadow-sm transition-transform duration-300 motion-safe:group-hover:rotate-3" />
+                        <span className="absolute inset-x-2 top-1 h-px bg-white/60" />
+                      </div>
                     </div>
-                    <div className="flex-1 space-y-2">
-                      <h3 className={`font-semibold text-lg ${category.textColor}`}>
-                        {category.label}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
+
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-1 flex items-start justify-between gap-3">
+                        <h3 className={`text-lg font-semibold tracking-[-0.01em] ${category.textColor}`}>
+                          {category.label}
+                        </h3>
+                        {!isLoadingProgress && progress.total > 0 && (
+                          <span className={`inline-flex flex-shrink-0 items-center gap-1 rounded-full border border-white/80 bg-white/65 px-2.5 py-1 text-[11px] font-bold shadow-sm backdrop-blur-sm ${category.textColor}`}>
+                            {isComplete && <Check className="h-3 w-3" strokeWidth={3} />}
+                            {progress.percentage}%
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm leading-relaxed text-muted-foreground">
                         {category.description}
                       </p>
-                      <div className="pt-2 space-y-2" aria-label={`${category.label} progress`}>
+
+                      <div className="mt-4 rounded-2xl border border-white/75 bg-white/50 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-sm" aria-label={`${category.label} progress`}>
                         {isLoadingProgress ? (
-                          <div className="h-8 rounded-md bg-white/60 animate-pulse" />
+                          <div className="space-y-2" aria-label="Loading progress">
+                            <div className="h-3 w-2/3 animate-pulse rounded-full bg-white/80" />
+                            <div className="h-2.5 animate-pulse rounded-full bg-white/70" />
+                          </div>
                         ) : progress.total > 0 ? (
                           <>
-                            <div className="flex items-center justify-between gap-3 text-xs font-medium">
+                            <div className="mb-2 flex items-center justify-between gap-3 text-xs font-medium">
                               <span className="text-muted-foreground">
                                 {progress.answered} of {progress.total} answered
                               </span>
-                              <span className={category.textColor}>
+                              <span className={`font-semibold ${category.textColor}`}>
                                 {progress.remaining === 0 ? 'Complete' : `${progress.remaining} remaining`}
                               </span>
                             </div>
-                            <div className="h-2.5 overflow-hidden rounded-full bg-white/80" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress.percentage}>
-                              <div
-                                className={`h-full rounded-full bg-gradient-to-r ${category.color} transition-all duration-500`}
-                                style={{ width: `${progress.percentage}%` }}
+                            <div className="h-2.5 overflow-hidden rounded-full bg-white/90 ring-1 ring-black/[0.04]" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress.percentage}>
+                              <motion.div
+                                initial={prefersReducedMotion ? false : { width: 0 }}
+                                animate={{ width: `${progress.percentage}%` }}
+                                transition={{ duration: prefersReducedMotion ? 0 : 0.75, delay: prefersReducedMotion ? 0 : index * 0.04 + 0.2, ease: 'easeOut' }}
+                                className={`relative h-full rounded-full bg-gradient-to-r ${category.color}`}
                               />
                             </div>
-                            <p className={`text-right text-xs font-semibold ${category.textColor}`}>
-                              {progress.percentage}% complete
-                            </p>
                           </>
                         ) : (
                           <p className="text-xs text-muted-foreground">No questions available</p>
                         )}
                       </div>
+
+                      <div className={`mt-4 flex items-center justify-end gap-1.5 text-xs font-semibold ${category.textColor}`}>
+                        <span>{isComplete ? 'Review together' : progress.answered > 0 ? 'Continue conversation' : 'Start conversation'}</span>
+                        <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:translate-x-0.5" />
+                      </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </motion.button>
             );
           })}
         </div>
