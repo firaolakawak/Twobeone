@@ -64,7 +64,7 @@ function CategoryBar({ label, score, icon: Icon, insight, color }: {
   label: string; score: number; icon: any; insight?: string; color: string;
 }) {
   return (
-    <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--border)' }}>
+    <div className="report-category-row" style={{ padding: '14px 16px', borderBottom: '1px solid var(--border)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: insight ? 8 : 0 }}>
         <div style={{
           width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center',
@@ -153,10 +153,79 @@ export function MarriageReadinessReport({ onBack }: Props) {
   const certDate = new Date(result.generatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--background)' }}>
+    <div className="marriage-report-print-root" style={{ minHeight: '100vh', background: 'var(--background)' }}>
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
-        @media print { .no-print { display: none !important; } .print-page { page-break-before: always; } }
+        @page {
+          size: A4 portrait;
+          margin: 14mm 14mm 16mm;
+        }
+        @media print {
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+          }
+
+          body * {
+            visibility: hidden !important;
+          }
+
+          .marriage-report-print-root,
+          .marriage-report-print-root * {
+            visibility: visible !important;
+          }
+
+          .marriage-report-print-root {
+            --background: #ffffff;
+            --card: #ffffff;
+            --foreground: #111827;
+            --muted: #f8fafc;
+            --muted-foreground: #4b5563;
+            --border: #d7dde5;
+            --primary: #e11d48;
+            position: absolute !important;
+            inset: 0 auto auto 0 !important;
+            width: 100% !important;
+            min-height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: visible !important;
+            background: #ffffff !important;
+            color: #111827 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+
+          .report-print-content {
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+
+          .no-print {
+            display: none !important;
+          }
+
+          .report-section,
+          .report-category-row {
+            break-inside: avoid;
+            page-break-inside: avoid;
+          }
+
+          .report-section {
+            box-shadow: none !important;
+          }
+
+          .print-page {
+            break-before: page;
+            page-break-before: always;
+            break-inside: avoid;
+            page-break-inside: avoid;
+            margin-top: 0 !important;
+          }
+        }
       `}</style>
 
       {/* Sticky header */}
@@ -186,10 +255,10 @@ export function MarriageReadinessReport({ onBack }: Props) {
         </button>
       </div>
 
-      <div style={{ maxWidth: 640, margin: '0 auto', padding: '0 0 56px' }}>
+      <div className="report-print-content" style={{ maxWidth: 640, margin: '0 auto', padding: '0 0 56px' }}>
 
         {/* Hero score card */}
-        <div style={{ margin: '16px 16px 0', borderRadius: 16, border: '1px solid var(--border)', overflow: 'hidden', background: 'var(--card, var(--background))' }}>
+        <div className="report-section" style={{ margin: '16px 16px 0', borderRadius: 16, border: '1px solid var(--border)', overflow: 'hidden', background: 'var(--card, var(--background))' }}>
           <div style={{ padding: '28px 24px 20px', textAlign: 'center' }}>
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 14 }}>
               <ScoreRing score={score} size={140} accent={accent} />
@@ -227,7 +296,7 @@ export function MarriageReadinessReport({ onBack }: Props) {
 
         {/* Narrative */}
         {report?.overallNarrative && (
-          <div style={{ margin: '12px 16px 0', padding: '18px', borderRadius: 14, border: '1px solid var(--border)', background: 'var(--background)' }}>
+          <div className="report-section" style={{ margin: '12px 16px 0', padding: '18px', borderRadius: 14, border: '1px solid var(--border)', background: 'var(--background)' }}>
             <p style={{ margin: 0, fontSize: 14, color: 'var(--foreground)', lineHeight: 1.75 }}>{report.overallNarrative}</p>
           </div>
         )}
@@ -247,7 +316,7 @@ export function MarriageReadinessReport({ onBack }: Props) {
         </div>
 
         {/* Stats grid */}
-        <div style={{ margin: '12px 16px 0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+        <div className="report-section" style={{ margin: '12px 16px 0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
           {[
             { label: 'Avg Streak', value: `${categories.devotional.streak}d`, sub: 'devotional' },
             { label: 'Prayers', value: `${categories.prayer.total}`, sub: `${categories.prayer.answered} answered` },
@@ -266,7 +335,7 @@ export function MarriageReadinessReport({ onBack }: Props) {
 
         {/* Strengths & Growth areas */}
         {(report?.strengths?.length || report?.growthAreas?.length) && (
-          <div style={{ margin: '12px 16px 0', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div className="report-section" style={{ margin: '12px 16px 0', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             {report?.strengths?.length ? (
               <div style={{ padding: '14px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--muted)' }}>
                 <p style={{ margin: '0 0 8px', fontSize: 12, fontWeight: 700, color: 'var(--foreground)' }}>Strengths</p>
@@ -292,14 +361,14 @@ export function MarriageReadinessReport({ onBack }: Props) {
 
         {/* Bible verse */}
         {report?.bibleVerse && (
-          <div style={{ margin: '12px 16px 0', padding: '18px 20px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--muted)', textAlign: 'center' }}>
+          <div className="report-section" style={{ margin: '12px 16px 0', padding: '18px 20px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--muted)', textAlign: 'center' }}>
             <p style={{ margin: 0, fontSize: 14, fontStyle: 'italic', color: 'var(--foreground)', lineHeight: 1.7 }}>"{report.bibleVerse}"</p>
           </div>
         )}
 
         {/* Closing encouragement */}
         {report?.closingEncouragement && (
-          <div style={{ margin: '12px 16px 0', padding: '16px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--background)' }}>
+          <div className="report-section" style={{ margin: '12px 16px 0', padding: '16px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--background)' }}>
             <p style={{ margin: 0, fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.7 }}>{report.closingEncouragement}</p>
           </div>
         )}

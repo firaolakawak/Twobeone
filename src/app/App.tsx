@@ -79,12 +79,8 @@ const MarriageReadinessReport = lazy(() => import("./components/MarriageReadines
 const DailyQuestion        = lazy(() => import("./components/DailyQuestion").then(m => ({ default: m.DailyQuestion })));
 const PWAInstallPrompt     = lazy(() => import("./components/PWAInstallPrompt").then(m => ({ default: m.PWAInstallPrompt })));
 const PWAUpdateNotification= lazy(() => import("./components/PWAUpdateNotification").then(m => ({ default: m.PWAUpdateNotification })));
-const IOSInstallPrompt     = lazy(() => import("./components/IOSInstallPrompt").then(m => ({ default: m.IOSInstallPrompt })));
 const PWADebugInfo         = lazy(() => import("./components/PWADebugInfo").then(m => ({ default: m.PWADebugInfo })));
 const IconsMissingNotice   = lazy(() => import("./components/IconsMissingNotice").then(m => ({ default: m.IconsMissingNotice })));
-const InstallBanner        = lazy(() => import("./components/InstallBanner").then(m => ({ default: m.InstallBanner })));
-const InstallPrompt        = lazy(() => import("./components/InstallPrompt").then(m => ({ default: m.InstallPrompt })));
-const PWAWelcome           = lazy(() => import("./components/PWAWelcome").then(m => ({ default: m.PWAWelcome })));
 const PWAUpdateAvailable   = lazy(() => import("./components/PWAUpdateAvailable").then(m => ({ default: m.PWAUpdateAvailable })));
 const LegalFooter          = lazy(() => import("./components/LegalFooter").then(m => ({ default: m.LegalFooter })));
 
@@ -1306,13 +1302,9 @@ export default function App() {
           <div className="max-w-6xl mx-auto px-4">
             <Toaster />
             <Suspense fallback={null}>
-              <PWAWelcome />
-              <InstallBanner />
-              <InstallPrompt />
               <PWAUpdateAvailable />
               <IconsMissingNotice />
               <PWAInstallPrompt />
-              <IOSInstallPrompt />
               <PWAUpdateNotification />
               <PWADebugInfo />
             </Suspense>

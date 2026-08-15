@@ -300,8 +300,28 @@ export function DistanceConnector({
           88%  { opacity: 0.7; }
           100% { right: 100%; opacity: 0; transform: translate3d(100%, 7px, 0) scale(0.5) rotate(-14deg); }
         }
+        .love-flow-heart {
+          position: absolute;
+          display: block;
+          line-height: 0;
+          transform-origin: center;
+          will-change: left, right, transform, opacity;
+          -webkit-transform-origin: center;
+          -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+        }
         @media (prefers-reduced-motion: reduce) {
-          .love-flow-heart { display: none; }
+          .love-flow-heart {
+            animation: none !important;
+            right: auto !important;
+            opacity: 0.42;
+            transform: none;
+          }
+          .love-flow-heart:nth-child(1) { left: 12%; }
+          .love-flow-heart:nth-child(2) { left: 31%; }
+          .love-flow-heart:nth-child(3) { left: 50%; }
+          .love-flow-heart:nth-child(4) { left: 69%; }
+          .love-flow-heart:nth-child(5) { left: 86%; }
         }
       `}</style>
 
@@ -329,16 +349,21 @@ export function DistanceConnector({
               { direction: 'left', top: 7, size: 6, duration: 5.1, delay: 3.3 },
               { direction: 'right', top: 21, size: 6, duration: 5.8, delay: 4.2 },
             ].map((heart, index) => (
-              <Heart
+              <span
                 key={`${heart.direction}-${index}`}
-                className="love-flow-heart absolute fill-rose-400 text-rose-400 drop-shadow-[0_2px_3px_rgba(244,63,94,0.25)]"
+                className="love-flow-heart"
                 style={{
                   top: heart.top,
                   width: heart.size,
                   height: heart.size,
                   animation: `loveFlow${heart.direction === 'right' ? 'Right' : 'Left'} ${heart.duration}s ${heart.delay}s ease-in-out infinite`,
+                  WebkitAnimation: `loveFlow${heart.direction === 'right' ? 'Right' : 'Left'} ${heart.duration}s ${heart.delay}s ease-in-out infinite`,
                 }}
-              />
+              >
+                <Heart
+                  className="h-full w-full fill-rose-400 text-rose-400 drop-shadow-[0_2px_3px_rgba(244,63,94,0.25)]"
+                />
+              </span>
             ))}
           </div>
 

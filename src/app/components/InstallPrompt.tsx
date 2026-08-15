@@ -274,7 +274,6 @@ export function InstallBanner() {
   const { t } = useLanguage();
   const [isInstalled, setIsInstalled] = useState(false);
   const [deviceType, setDeviceType] = useState<'ios' | 'android' | 'desktop' | 'unknown'>('unknown');
-  const [showInstructions, setShowInstructions] = useState(false);
 
   useEffect(() => {
     setIsInstalled(isInstalledPWA());
@@ -314,19 +313,16 @@ export function InstallBanner() {
                 : 'Install for a better experience'}
             </p>
             <Button
-              onClick={() => setShowInstructions(true)}
+              onClick={() => window.dispatchEvent(new Event('twobeone:open-install'))}
               size="sm"
               className="bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white"
             >
-              {deviceType === 'ios' ? 'Show Instructions' : 'Install Now'}
+              {deviceType === 'ios' ? 'Show Me How' : 'Install App'}
             </Button>
           </div>
         </div>
       </div>
 
-      {showInstructions && (
-        <InstallPrompt />
-      )}
     </>
   );
 }
