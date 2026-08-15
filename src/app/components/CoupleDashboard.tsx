@@ -1315,8 +1315,6 @@ export function CoupleDashboard({
         </CardContent>
       </Card>
 
-      <ChampionsCard />
-
       {/* Randomized next step — devotion, conversation, or journal */}
       <section className={`relative overflow-hidden rounded-[1.75rem] border bg-gradient-to-br p-5 shadow-[0_16px_46px_rgba(83,45,67,0.09)] ${spotlight.surfaceClass}`} aria-labelledby="home-spotlight-title">
         <div className="pointer-events-none absolute -right-10 -top-12 h-36 w-36 rounded-full bg-white/70 blur-3xl" />
@@ -1964,6 +1962,9 @@ export function CoupleDashboard({
           </Button>
         </CardContent>
       </Card>
+
+      {/* Engagement summary closes the dashboard after Scripture Memory. */}
+      <ChampionsCard />
     </div>
   );
 }
