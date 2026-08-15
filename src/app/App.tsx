@@ -77,7 +77,6 @@ const MoodTracker          = lazy(() => import("./components/MoodTracker").then(
 const MoodAnalytics        = lazy(() => import("./components/MoodAnalytics").then(m => ({ default: m.MoodAnalytics })));
 const MarriageReadinessReport = lazy(() => import("./components/MarriageReadinessReport").then(m => ({ default: m.MarriageReadinessReport })));
 const DailyQuestion        = lazy(() => import("./components/DailyQuestion").then(m => ({ default: m.DailyQuestion })));
-const PWAInstallPrompt     = lazy(() => import("./components/PWAInstallPrompt").then(m => ({ default: m.PWAInstallPrompt })));
 const PWAUpdateNotification= lazy(() => import("./components/PWAUpdateNotification").then(m => ({ default: m.PWAUpdateNotification })));
 const PWADebugInfo         = lazy(() => import("./components/PWADebugInfo").then(m => ({ default: m.PWADebugInfo })));
 const IconsMissingNotice   = lazy(() => import("./components/IconsMissingNotice").then(m => ({ default: m.IconsMissingNotice })));
@@ -1304,7 +1303,6 @@ export default function App() {
             <Suspense fallback={null}>
               <PWAUpdateAvailable />
               <IconsMissingNotice />
-              <PWAInstallPrompt />
               <PWAUpdateNotification />
               <PWADebugInfo />
             </Suspense>

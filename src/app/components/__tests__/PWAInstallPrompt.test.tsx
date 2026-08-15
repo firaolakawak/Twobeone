@@ -30,7 +30,7 @@ describe('PWAInstallPrompt', () => {
     localStorage.setItem('ios-install-prompt-seen', 'true');
 
     render(<PWAInstallPrompt />);
-    await act(async () => vi.advanceTimersByTime(4000));
+    await act(async () => vi.advanceTimersByTime(1500));
 
     expect(screen.getAllByRole('dialog')).toHaveLength(1);
     expect(screen.getByTestId('ios-install-steps')).toBeInTheDocument();
@@ -38,6 +38,21 @@ describe('PWAInstallPrompt', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Dismiss install prompt' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(localStorage.getItem('twobeone-install-dismissed-at-v2')).toBeTruthy();
+  });
+
+  it('shows install instructions on Android even without a native install event', async () => {
+    vi.useFakeTimers();
+    Object.defineProperty(navigator, 'userAgent', {
+      configurable: true,
+      value: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 Chrome/140.0.0.0 Mobile Safari/537.36',
+    });
+
+    render(<PWAInstallPrompt />);
+    await act(async () => vi.advanceTimersByTime(1500));
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByTestId('android-install-steps')).toBeInTheDocument();
+    expect(screen.getByText('Download the TwoBeOne App')).toBeInTheDocument();
   });
 
   it('does not open automatically on a large screen but can be opened from settings', async () => {

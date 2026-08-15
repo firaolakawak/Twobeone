@@ -7,7 +7,7 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
-type InstallPlatform = 'ios' | 'native' | 'browser';
+type InstallPlatform = 'ios' | 'native' | 'android' | 'browser';
 
 // Versioned so dismissal flags from the old, duplicated prompt system cannot
 // accidentally suppress this consolidated installer.
@@ -25,6 +25,18 @@ function isIOSDevice() {
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
 
+function isAndroidDevice() {
+  return /Android/i.test(navigator.userAgent);
+}
+
+function isMobileDevice() {
+  const mobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(
+    navigator.userAgent,
+  );
+  const narrowTouchScreen = window.matchMedia('(max-width: 767px) and (pointer: coarse)').matches;
+  return mobileUserAgent || narrowTouchScreen;
+}
+
 function canAutoShow() {
   const dismissedAt = Number(localStorage.getItem(DISMISSED_AT_KEY) || 0);
   return !dismissedAt || Date.now() - dismissedAt >= REMIND_AFTER_MS;
@@ -39,13 +51,14 @@ export function PWAInstallPrompt() {
   useEffect(() => {
     const alreadyInstalled = isInstalled();
     const ios = isIOSDevice();
-    const mobileDevice = ios || /Android|Mobile/i.test(navigator.userAgent);
+    const android = isAndroidDevice();
+    const mobileDevice = isMobileDevice();
     setInstalled(alreadyInstalled);
-    setPlatform(ios ? 'ios' : 'browser');
+    setPlatform(ios ? 'ios' : android ? 'android' : 'browser');
 
     let autoTimer: ReturnType<typeof setTimeout> | undefined;
-    if (!alreadyInstalled && ios && canAutoShow()) {
-      autoTimer = setTimeout(() => setShowPrompt(true), 4000);
+    if (!alreadyInstalled && mobileDevice && canAutoShow()) {
+      autoTimer = setTimeout(() => setShowPrompt(true), 1500);
     }
 
     const handleBeforeInstall = (event: Event) => {
@@ -53,10 +66,11 @@ export function PWAInstallPrompt() {
       setDeferredPrompt(event as BeforeInstallPromptEvent);
       setPlatform('native');
 
-      // Desktop never opens an unsolicited prompt. Its installer remains
-      // available intentionally from Profile > App settings.
+      // Mobile browsers can now replace the instructional fallback with their
+      // native one-tap installer. Desktop remains manual-only.
       if (mobileDevice && canAutoShow()) {
-        autoTimer = setTimeout(() => setShowPrompt(true), 2000);
+        if (autoTimer) clearTimeout(autoTimer);
+        autoTimer = setTimeout(() => setShowPrompt(true), 250);
       }
     };
 
@@ -123,8 +137,8 @@ export function PWAInstallPrompt() {
               <Heart className="h-6 w-6 fill-rose-500 text-rose-500" />
             </div>
             <div>
-              <h2 id="install-twobeone-title" className="text-base font-bold text-white">Add TwoBeOne to your Home Screen</h2>
-              <p className="mt-0.5 text-xs text-white/85">Open your couple space in one tap.</p>
+              <h2 id="install-twobeone-title" className="text-base font-bold text-white">Download the TwoBeOne App</h2>
+              <p className="mt-0.5 text-xs text-white/85">Add it to your phone for one-tap access.</p>
             </div>
           </div>
         </div>
@@ -151,9 +165,16 @@ export function PWAInstallPrompt() {
                 <Download className="mr-2 h-4 w-4" /> Install TwoBeOne
               </Button>
             </div>
+          ) : platform === 'android' ? (
+            <div className="space-y-3" data-testid="android-install-steps">
+              <p className="text-sm text-muted-foreground">
+                Open your browser menu <strong className="text-foreground">⋮</strong>, then tap <strong className="text-foreground">Install app</strong> or <strong className="text-foreground">Add to Home screen</strong>.
+              </p>
+              <Button type="button" variant="outline" onClick={dismiss} className="h-10 w-full rounded-xl font-semibold">Got it</Button>
+            </div>
           ) : (
             <div className="space-y-3 text-sm text-muted-foreground">
-              <p>Open this page in Safari on iPhone, then use Share → Add to Home Screen.</p>
+              <p>Open your browser menu and choose <strong className="text-foreground">Install app</strong> or <strong className="text-foreground">Add to Home screen</strong>.</p>
               <Button type="button" variant="outline" onClick={dismiss} className="h-10 w-full rounded-xl font-semibold">Got it</Button>
             </div>
           )}
