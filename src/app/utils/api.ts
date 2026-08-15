@@ -359,9 +359,10 @@ export const moods = {
     return apiCall<{ moods: any[] }>(`/moods?days=${days}`, {}, 1, 10000);
   },
 
-  analyze: async () => {
+  analyze: async (language: 'en' | 'am' | 'om' = 'en') => {
     return apiCall<{ analysis: any }>('/moods/analyze', {
       method: 'POST',
+      body: JSON.stringify({ language }),
     });
   },
 
@@ -369,9 +370,10 @@ export const moods = {
     return apiCall<{ analyses: any[] }>('/moods/analysis');
   },
 
-  generateWeeklyReport: async () => {
+  generateWeeklyReport: async (language: 'en' | 'am' | 'om' = 'en') => {
     return apiCall<{ success: boolean; report: any }>('/moods/weekly-report', {
       method: 'POST',
+      body: JSON.stringify({ language }),
     });
   },
 

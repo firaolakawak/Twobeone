@@ -189,7 +189,7 @@ export function MoodAnalytics({
 
     setIsAnalyzing(true);
     try {
-      const { analysis: aiAnalysis } = await moodsApi.analyze();
+      const { analysis: aiAnalysis } = await moodsApi.analyze(language);
       setAnalysis({ ...aiAnalysis, analysis: cleanReportFormatting(aiAnalysis.analysis) });
       setHasQuotaError(aiAnalysis.aiPowered === false);
       if (aiAnalysis.aiPowered === false) {
@@ -218,7 +218,7 @@ export function MoodAnalytics({
 
     setWeeklyReportLoading(true);
     try {
-      const { report } = await moodsApi.generateWeeklyReport();
+      const { report } = await moodsApi.generateWeeklyReport(language);
       const now = new Date();
       const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);

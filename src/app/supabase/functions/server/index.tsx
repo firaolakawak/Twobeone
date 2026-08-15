@@ -1791,6 +1791,11 @@ app.post('/make-server-6d579fee/moods/analyze', async (c) => {
       return c.json({ error: 'Partner required for mood analysis' }, 400);
     }
 
+    const requestBody = await c.req.json().catch(() => ({}));
+    const requestedReportLanguage = requestBody?.language === 'en' || requestBody?.language === 'am' || requestBody?.language === 'om'
+      ? resolveReportLanguage(requestBody.language)
+      : resolveReportLanguage(profile.language);
+
     // Get moods from the last 7 days for both partners
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -1842,7 +1847,7 @@ app.post('/make-server-6d579fee/moods/analyze', async (c) => {
     
     console.log('Making OpenAI API call for mood analysis...');
 
-    const reportLanguage = resolveReportLanguage(profile.language);
+    const reportLanguage = requestedReportLanguage;
     const prompt = `Write a warm relationship reflection for a Christian couple using the TwoBeOne app.
 
 ${reportLanguageInstruction(reportLanguage)}
@@ -2089,6 +2094,11 @@ app.post('/make-server-6d579fee/moods/weekly-report', async (c) => {
       return c.json({ error: 'Partner required for weekly reports' }, 400);
     }
 
+    const requestBody = await c.req.json().catch(() => ({}));
+    const requestedReportLanguage = requestBody?.language === 'en' || requestBody?.language === 'am' || requestBody?.language === 'om'
+      ? resolveReportLanguage(requestBody.language)
+      : resolveReportLanguage(profile.language);
+
     // ── Server-side weekly deduplication ─────────────────────────────────
     // Compute the start of the current ISO week (Monday 00:00:00 UTC).
     const now = new Date();
@@ -2130,7 +2140,7 @@ app.post('/make-server-6d579fee/moods/weekly-report', async (c) => {
     }
 
     const partner = await kv.get(`user:${profile.partnerId}`);
-    const reportLanguage = resolveReportLanguage(profile.language);
+    const reportLanguage = requestedReportLanguage;
 
     // Get moods from the last 7 days
     const sevenDaysAgo = new Date();

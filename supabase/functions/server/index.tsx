@@ -2064,9 +2064,15 @@ app.post('/make-server-6d579fee/moods/analyze', async (c) => {
       return c.json({ error: 'Partner required for mood analysis' }, 400);
     }
 
+    // The UI language is intentionally sent with every request. The language
+    // switcher is local-first, so profile.language may be stale or unset.
+    const requestBody = await c.req.json().catch(() => ({}));
+    const reportLanguage = requestBody?.language === 'en' || requestBody?.language === 'am' || requestBody?.language === 'om'
+      ? resolveReportLanguage(requestBody.language)
+      : resolveReportLanguage(profile.language);
+
     // Return cached analysis if it was generated within the last 6 hours
     // This prevents repeated Gemini calls when the user clicks Analyze multiple times.
-    const reportLanguage = resolveReportLanguage(profile.language);
     const cacheKey = `mood-analysis-cache:${userId}:${reportLanguage}`;
     const cached = await kv.get(cacheKey);
     if (cached && cached.generatedAt && cached.aiPowered !== false) {
@@ -2260,6 +2266,11 @@ app.post('/make-server-6d579fee/moods/weekly-report', async (c) => {
       return c.json({ error: 'Partner required for weekly reports' }, 400);
     }
 
+    const requestBody = await c.req.json().catch(() => ({}));
+    const requestedUserLanguage = requestBody?.language === 'en' || requestBody?.language === 'am' || requestBody?.language === 'om'
+      ? resolveReportLanguage(requestBody.language)
+      : resolveReportLanguage(profile.language);
+
     const partner = await kv.get(`user:${profile.partnerId}`);
 
     // Get moods from the last 7 days
@@ -2307,7 +2318,7 @@ app.post('/make-server-6d579fee/moods/weekly-report', async (c) => {
 
     // Create a natural reflection in each partner's own saved language. Most
     // couples need one generation; bilingual couples need at most two.
-    const userLanguage = resolveReportLanguage(profile.language);
+    const userLanguage = requestedUserLanguage;
     const partnerLanguage = resolveReportLanguage(partner?.language);
     const reflections = new Map<ReportLanguage, string>();
 
