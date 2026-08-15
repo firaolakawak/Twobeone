@@ -1003,7 +1003,6 @@ app.post('/make-server-6d579fee/partner/cancel-disconnect', async (c) => {
     
     // Notify both partners
     const partner = await kv.get(`user:${profile.partnerId}`);
-    const engagementSummary = await getEngagementSummary([userId, profile.partnerId]);
     const notificationIds = [generateId(), generateId()];
     
     const notification1 = {
@@ -2272,6 +2271,7 @@ app.post('/make-server-6d579fee/moods/weekly-report', async (c) => {
       : resolveReportLanguage(profile.language);
 
     const partner = await kv.get(`user:${profile.partnerId}`);
+    const engagementSummary = await getEngagementSummary([userId, profile.partnerId]);
 
     // Get moods from the last 7 days
     const sevenDaysAgo = new Date();
