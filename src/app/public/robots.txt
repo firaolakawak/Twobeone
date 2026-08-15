@@ -30,4 +30,4 @@ Allow: /
 User-agent: Applebot
 Allow: /
 
-Sitemap: https://twobeone.app/sitemap.xml
+Sitemap: https://www.twobeone.app/sitemap.xml

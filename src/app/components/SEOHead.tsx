@@ -53,17 +53,17 @@ export function SEOHead() {
       'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
 
     // Canonical
-    setLink('canonical', 'https://twobeone.app/');
+    setLink('canonical', 'https://www.twobeone.app/');
 
     // ── Open Graph ─────────────────────────────────────────────────────────
     setMeta('meta[property="og:type"]', 'content', 'website');
-    setMeta('meta[property="og:url"]', 'content', 'https://twobeone.app/');
+    setMeta('meta[property="og:url"]', 'content', 'https://www.twobeone.app/');
     setMeta('meta[property="og:site_name"]', 'content', 'TwoBeOne');
     setMeta('meta[property="og:title"]', 'content', 'TwoBeOne — Christian Couples App');
     setMeta('meta[property="og:description"]', 'content',
       'Free app for Christian couples — daily devotionals, shared prayer, journaling, and 1,000+ faith-based conversation questions. Supports English, Amharic & Afan Oromo.');
     // Fix: use PNG not SVG — Facebook/WhatsApp do not render SVGs
-    setMeta('meta[property="og:image"]', 'content', 'https://twobeone.app/og-image.png');
+    setMeta('meta[property="og:image"]', 'content', 'https://www.twobeone.app/og-image.png');
     setMeta('meta[property="og:image:width"]', 'content', '1200');
     setMeta('meta[property="og:image:height"]', 'content', '630');
     setMeta('meta[property="og:image:alt"]', 'content', 'TwoBeOne — Grow Together in Faith');
@@ -71,11 +71,11 @@ export function SEOHead() {
 
     // ── Twitter / X Card ──────────────────────────────────────────────────
     setMeta('meta[name="twitter:card"]', 'content', 'summary_large_image');
-    setMeta('meta[property="twitter:url"]', 'content', 'https://twobeone.app/');
+    setMeta('meta[property="twitter:url"]', 'content', 'https://www.twobeone.app/');
     setMeta('meta[property="twitter:title"]', 'content', 'TwoBeOne — Christian Couples App');
     setMeta('meta[property="twitter:description"]', 'content',
       'Free app for Christian couples — daily devotionals, shared prayer, journaling, and faith-based conversation questions.');
-    setMeta('meta[property="twitter:image"]', 'content', 'https://twobeone.app/og-image.png');
+    setMeta('meta[property="twitter:image"]', 'content', 'https://www.twobeone.app/og-image.png');
     setMeta('meta[property="twitter:image:alt"]', 'content', 'TwoBeOne — Grow Together in Faith');
 
     // ── Structured Data: WebApplication ────────────────────────────────────
@@ -85,7 +85,7 @@ export function SEOHead() {
       name: 'TwoBeOne',
       alternateName: ['TwoBeOne Couples App', '2B1'],
       description: 'A free faith-based app helping Christian couples grow together through daily devotionals, shared prayer, journaling, and meaningful faith-based conversations.',
-      url: 'https://twobeone.app',
+      url: 'https://www.twobeone.app',
       applicationCategory: 'LifestyleApplication',
       applicationSubCategory: 'Religion & Spirituality',
       operatingSystem: 'Web, iOS, Android',
@@ -106,8 +106,8 @@ export function SEOHead() {
       ],
       audience: { '@type': 'Audience', audienceType: 'Christian Couples' },
       inLanguage: ['en', 'am', 'om'],
-      creator: { '@type': 'Organization', name: 'TwoBeOne', url: 'https://twobeone.app' },
-      screenshot: 'https://twobeone.app/og-image.png',
+      creator: { '@type': 'Organization', name: 'TwoBeOne', url: 'https://www.twobeone.app' },
+      screenshot: 'https://www.twobeone.app/og-image.png',
     });
 
     // ── Structured Data: FAQPage (GEO — AI engines cite FAQ answers) ───────
@@ -153,8 +153,8 @@ export function SEOHead() {
       '@context': 'https://schema.org',
       '@type': 'Organization',
       name: 'TwoBeOne',
-      url: 'https://twobeone.app',
-      logo: 'https://twobeone.app/icons/icon-512x512.png',
+      url: 'https://www.twobeone.app',
+      logo: 'https://www.twobeone.app/icons/icon-512x512.png',
       description: 'Creators of TwoBeOne — the free Christian couples app for daily devotionals, prayer, journaling, and meaningful faith conversations.',
       knowsAbout: ['Christian marriage', 'couples devotionals', 'faith-based relationships', 'pre-marriage preparation', 'Ethiopian Christian community'],
     });
