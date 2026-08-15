@@ -380,8 +380,13 @@ export function MoodAnalytics({
                 Gemini could not generate this report. A basic statistics-based summary is shown instead.
               </p>
               <p className="text-sm text-warning-700 mt-2">
-                Check the Gemini API key and quota, then try again after the six-hour analysis cache expires.
+                Check the Gemini API key and quota, then try the analysis again.
               </p>
+              {analysis?.fallbackReason && (
+                <p className="text-xs text-warning-700 mt-2">
+                  Technical detail: {analysis.fallbackReason}
+                </p>
+              )}
             </div>
           </AlertDescription>
         </Alert>

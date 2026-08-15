@@ -1,12 +1,11 @@
-const CACHE_NAME = 'twobeone-v1.0.0';
-const RUNTIME_CACHE = 'twobeone-runtime';
+const CACHE_NAME = 'twobeone-shell-v3';
+const RUNTIME_CACHE = 'twobeone-runtime-v3';
 const OFFLINE_URL = '/offline.html';
 
 // Files to cache immediately on install
 const PRECACHE_URLS = [
-  '/',
   '/offline.html',
-  '/icons/icon-192x192.p  GET https://<projectId>.supabase.co/functions/v1/make-server-6d579fee/newsletter/subscribers  GET https://<projectId>.supabase.co/functions/v1/make-server-6d579fee/newsletter/subscribersng',
+  '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
 ];
 
@@ -41,7 +40,48 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch event - network first, then cache, with offline fallback
+async function navigationNetworkFirst(request) {
+  try {
+    const response = await fetch(request, { cache: 'no-store' });
+    if (response.ok && response.headers.get('content-type')?.includes('text/html')) {
+      const cache = await caches.open(CACHE_NAME);
+      await cache.put(request, response.clone());
+    }
+    return response;
+  } catch {
+    return (await caches.match(request)) || (await caches.match(OFFLINE_URL)) || new Response('Offline', { status: 503 });
+  }
+}
+
+function isCodeAsset(request) {
+  const pathname = new URL(request.url).pathname;
+  return request.destination === 'script' || request.destination === 'style' || /\/assets\/.*\.(js|css)$/.test(pathname);
+}
+
+async function codeAssetNetworkFirst(request) {
+  try {
+    const response = await fetch(request);
+    const contentType = response.headers.get('content-type') || '';
+    const expectedType = request.destination === 'style' || request.url.endsWith('.css') ? 'text/css' : 'javascript';
+
+    // Vercel's SPA fallback can return index.html for an obsolete chunk URL.
+    // Never cache or serve that HTML as JavaScript/CSS.
+    if (!response.ok || !contentType.includes(expectedType)) {
+      return new Response('Asset version is no longer available', {
+        status: 404,
+        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      });
+    }
+
+    const cache = await caches.open(RUNTIME_CACHE);
+    await cache.put(request, response.clone());
+    return response;
+  } catch {
+    return (await caches.match(request)) || new Response('Offline', { status: 503 });
+  }
+}
+
+// Fetch event - fresh HTML and code, cached static assets, offline fallback
 self.addEventListener('fetch', (event) => {
   // Skip cross-origin requests
   if (!event.request.url.startsWith(self.location.origin)) {
@@ -53,58 +93,29 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request)
-      .then((cachedResponse) => {
-        // Network first strategy for API calls
-        if (event.request.url.includes('/functions/v1/')) {
-          return fetch(event.request)
-            .then((response) => {
-              // Clone the response before caching
-              const responseToCache = response.clone();
-              caches.open(RUNTIME_CACHE).then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-              return response;
-            })
-            .catch(() => {
-              // Return cached version if network fails
-              return cachedResponse || new Response(
-                JSON.stringify({ error: 'Offline - please check your connection' }),
-                { headers: { 'Content-Type': 'application/json' } }
-              );
-            });
-        }
+  if (event.request.mode === 'navigate') {
+    event.respondWith(navigationNetworkFirst(event.request));
+    return;
+  }
 
-        // Cache first strategy for static assets
-        if (cachedResponse) {
-          return cachedResponse;
-        }
+  if (isCodeAsset(event.request)) {
+    event.respondWith(codeAssetNetworkFirst(event.request));
+    return;
+  }
 
-        // Fetch from network and cache for future
-        return fetch(event.request)
-          .then((response) => {
-            // Don't cache non-successful responses
-            if (!response || response.status !== 200 || response.type === 'error') {
-              return response;
-            }
-
-            const responseToCache = response.clone();
-            caches.open(RUNTIME_CACHE).then((cache) => {
-              cache.put(event.request, responseToCache);
-            });
-
-            return response;
-          })
-          .catch(() => {
-            // Show offline page for navigation requests
-            if (event.request.mode === 'navigate') {
-              return caches.match(OFFLINE_URL);
-            }
-            return new Response('Offline');
-          });
-      })
-  );
+  event.respondWith(caches.match(event.request).then(async (cachedResponse) => {
+    if (cachedResponse) return cachedResponse;
+    try {
+      const response = await fetch(event.request);
+      if (response.ok && response.type !== 'error') {
+        const cache = await caches.open(RUNTIME_CACHE);
+        await cache.put(event.request, response.clone());
+      }
+      return response;
+    } catch {
+      return new Response('Offline', { status: 503 });
+    }
+  }));
 });
 
 // Handle background sync for prayer requests

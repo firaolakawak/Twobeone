@@ -23,7 +23,7 @@ const app = new Hono();
 // not cookie-based, so Access-Control-Allow-Credentials is not needed.
 app.use('*', cors({
   origin: '*',
-  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Authorization', 'Content-Type'],
 }));
 app.use('*', logger(console.log));
@@ -1920,7 +1920,7 @@ app.post('/make-server-6d579fee/moods/analyze', async (c) => {
     // This prevents repeated Gemini calls when the user clicks Analyze multiple times.
     const cacheKey = `mood-analysis-cache:${userId}`;
     const cached = await kv.get(cacheKey);
-    if (cached && cached.generatedAt) {
+    if (cached && cached.generatedAt && cached.aiPowered !== false) {
       const ageHours = (Date.now() - new Date(cached.generatedAt).getTime()) / 3600000;
       if (ageHours < 6) {
         return c.json({ analysis: cached });
@@ -5530,11 +5530,10 @@ async function callGemini(prompt: string): Promise<string> {
   // Models tried in order. 429 = rate limit — move to next model immediately.
   // Ordered by free-tier quota generosity (most permissive first).
   const MODELS = [
-    'gemini-2.0-flash-lite',   // highest free RPM — try first
-    'gemini-2.0-flash',        // solid free tier, fast
-    'gemini-2.5-flash',        // latest, good free quota
-    'gemini-1.5-flash',        // fallback
-    'gemini-1.5-flash-8b',     // smallest/fastest, own quota bucket
+    'gemini-3.1-flash-lite',   // stable, efficient default
+    'gemini-3.5-flash-lite',   // stable, high-throughput fallback
+    'gemini-3.6-flash',        // stable, higher-capability fallback
+    'gemini-3.5-flash',        // stable final fallback
   ];
   const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
   let lastError: Error | null = null;
@@ -5551,12 +5550,15 @@ async function callGemini(prompt: string): Promise<string> {
             headers: { 'Content-Type': 'application/json', 'X-goog-api-key': apiKey },
             body: JSON.stringify({
               contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: { maxOutputTokens: 2048, temperature: 0.7 },
+              generationConfig: { maxOutputTokens: 2048 },
             }),
           }
         );
 
-        if (response.status === 404) break;           // model doesn't exist — skip
+        if (response.status === 404) {
+          lastError = new Error(`Gemini model unavailable: ${model}`);
+          break;
+        }
 
         if (response.status === 429) {
           // Rate limited on this model — move to next immediately, no retry
@@ -5567,7 +5569,14 @@ async function callGemini(prompt: string): Promise<string> {
         if (!response.ok) {
           const errTxt = await response.text().catch(() => '');
           console.error(`[Gemini] ${model} status ${response.status}`);
-          lastError = new Error(`Gemini API error ${response.status}`);
+          let apiMessage = '';
+          try {
+            apiMessage = JSON.parse(errTxt)?.error?.message || '';
+          } catch {
+            apiMessage = errTxt;
+          }
+          const safeMessage = apiMessage.replace(/AIza[\w-]+/g, '[redacted]').slice(0, 180);
+          lastError = new Error(`Gemini API error ${response.status}${safeMessage ? `: ${safeMessage}` : ''}`);
           // 5xx transient — retry once then move to next model
           if (response.status >= 500) continue;
           break;
