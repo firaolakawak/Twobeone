@@ -1,15 +1,79 @@
-import { Sun, Heart, Scale, Church, Plane, Shield, Handshake, Baby, DollarSign, Users, BookOpen, ArrowLeft } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Sun, Heart, Scale, Church, Plane, Shield, Handshake, Baby, DollarSign, Users, BookOpen } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Card, CardContent } from './ui/card';
-import { Button } from './ui/button';
+import { questions as questionsApi } from '../utils/api';
+
+interface CategoryQuestion {
+  id: string;
+  category: string;
+}
+
+interface CategoryProgress {
+  total: number;
+  answered: number;
+  remaining: number;
+  percentage: number;
+}
+
+export function calculateCategoryProgress(
+  questions: CategoryQuestion[],
+  responses: unknown[],
+  categoryId: string,
+): CategoryProgress {
+  const categoryQuestions = questions.filter(question => question.category === categoryId);
+  const answeredIds = new Set(
+    responses
+      .map(response => {
+        if (!response || typeof response !== 'object') return '';
+        const record = response as Record<string, unknown>;
+        const questionId = record.questionId ?? record.question_id;
+        return typeof questionId === 'string' ? questionId.split(':prompt:')[0] : '';
+      })
+      .filter(Boolean),
+  );
+  const answered = categoryQuestions.filter(question => answeredIds.has(question.id)).length;
+  const total = categoryQuestions.length;
+  const remaining = Math.max(total - answered, 0);
+  const percentage = total > 0 ? Math.round((answered / total) * 100) : 0;
+
+  return { total, answered, remaining, percentage };
+}
 
 interface CategorySelectionProps {
   onSelectCategory: (categoryId: string) => void;
   onBack?: () => void;
+  responses?: {
+    user: unknown[];
+    partner: unknown[];
+  };
 }
 
-export function CategorySelection({ onSelectCategory, onBack }: CategorySelectionProps) {
-  const { t } = useLanguage();
+export function CategorySelection({ onSelectCategory, onBack, responses }: CategorySelectionProps) {
+  const { t, language } = useLanguage();
+  const [questions, setQuestions] = useState<CategoryQuestion[]>([]);
+  const [isLoadingProgress, setIsLoadingProgress] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setIsLoadingProgress(true);
+
+    questionsApi.list(undefined, language)
+      .then(data => {
+        if (!cancelled) setQuestions(data.questions || []);
+      })
+      .catch(error => {
+        console.warn('[CategorySelection] Could not load question progress:', error);
+        if (!cancelled) setQuestions([]);
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoadingProgress(false);
+      });
+
+    return () => { cancelled = true; };
+  }, [language]);
+
+  const userResponses = responses?.user || [];
   const categories = [
     { 
       id: 'daily-life', 
@@ -145,6 +209,7 @@ export function CategorySelection({ onSelectCategory, onBack }: CategorySelectio
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {categories.map((category) => {
             const IconComponent = category.icon;
+            const progress = calculateCategoryProgress(questions, userResponses, category.id);
             return (
               <Card
                 key={category.id}
@@ -156,13 +221,40 @@ export function CategorySelection({ onSelectCategory, onBack }: CategorySelectio
                     <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${category.color} flex items-center justify-center flex-shrink-0 shadow-lg`}>
                       <IconComponent className="w-7 h-7 text-white" />
                     </div>
-                    <div className="flex-1 space-y-1">
+                    <div className="flex-1 space-y-2">
                       <h3 className={`font-semibold text-lg ${category.textColor}`}>
                         {category.label}
                       </h3>
                       <p className="text-sm text-muted-foreground">
                         {category.description}
                       </p>
+                      <div className="pt-2 space-y-2" aria-label={`${category.label} progress`}>
+                        {isLoadingProgress ? (
+                          <div className="h-8 rounded-md bg-white/60 animate-pulse" />
+                        ) : progress.total > 0 ? (
+                          <>
+                            <div className="flex items-center justify-between gap-3 text-xs font-medium">
+                              <span className="text-muted-foreground">
+                                {progress.answered} of {progress.total} answered
+                              </span>
+                              <span className={category.textColor}>
+                                {progress.remaining === 0 ? 'Complete' : `${progress.remaining} remaining`}
+                              </span>
+                            </div>
+                            <div className="h-2.5 overflow-hidden rounded-full bg-white/80" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress.percentage}>
+                              <div
+                                className={`h-full rounded-full bg-gradient-to-r ${category.color} transition-all duration-500`}
+                                style={{ width: `${progress.percentage}%` }}
+                              />
+                            </div>
+                            <p className={`text-right text-xs font-semibold ${category.textColor}`}>
+                              {progress.percentage}% complete
+                            </p>
+                          </>
+                        ) : (
+                          <p className="text-xs text-muted-foreground">No questions available</p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </CardContent>

@@ -1487,6 +1487,7 @@ export default function App() {
               {activeTab === "home" &&
                 selectedScreen === "category-selection" && (
                   <CategorySelection
+                    responses={responses}
                     onSelectCategory={(categoryId) => {
                       setSelectedQACategory(categoryId);
                       setSelectedScreen("qa-discussion");

@@ -424,8 +424,11 @@ export const questions = {
     return apiCall<{ count: number }>('/questions/count', {}, 0, 8000);
   },
 
-  list: async (category?: string) => {
-    const query = category ? `?category=${category}` : '';
+  list: async (category?: string, language?: string) => {
+    const params = new URLSearchParams();
+    if (category) params.set('category', category);
+    if (language) params.set('language', language);
+    const query = params.size > 0 ? `?${params.toString()}` : '';
     return apiCall<{ questions: any[] }>(`/questions${query}`, {}, 2, 15000);
   },
 
