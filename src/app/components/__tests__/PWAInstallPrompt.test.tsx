@@ -19,7 +19,7 @@ describe('PWAInstallPrompt', () => {
     Object.defineProperty(window, 'innerWidth', { configurable: true, value: originalInnerWidth });
   });
 
-  it('shows one compact iOS guide and remembers dismissal', async () => {
+  it('shows one compact iOS guide and allows dismissal', async () => {
     vi.useFakeTimers();
     Object.defineProperty(navigator, 'userAgent', {
       configurable: true,
@@ -30,14 +30,13 @@ describe('PWAInstallPrompt', () => {
     localStorage.setItem('ios-install-prompt-seen', 'true');
 
     render(<PWAInstallPrompt />);
-    await act(async () => vi.advanceTimersByTime(1500));
+    await act(async () => vi.advanceTimersByTime(500));
 
     expect(screen.getAllByRole('dialog')).toHaveLength(1);
     expect(screen.getByTestId('ios-install-steps')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Dismiss install prompt' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    expect(localStorage.getItem('twobeone-install-dismissed-at-v2')).toBeTruthy();
   });
 
   it('shows install instructions on Android even without a native install event', async () => {
@@ -48,7 +47,7 @@ describe('PWAInstallPrompt', () => {
     });
 
     render(<PWAInstallPrompt />);
-    await act(async () => vi.advanceTimersByTime(1500));
+    await act(async () => vi.advanceTimersByTime(500));
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(screen.getByTestId('android-install-steps')).toBeInTheDocument();

@@ -9,11 +9,6 @@ interface BeforeInstallPromptEvent extends Event {
 
 type InstallPlatform = 'ios' | 'native' | 'android' | 'browser';
 
-// Versioned so dismissal flags from the old, duplicated prompt system cannot
-// accidentally suppress this consolidated installer.
-const DISMISSED_AT_KEY = 'twobeone-install-dismissed-at-v2';
-const REMIND_AFTER_MS = 7 * 24 * 60 * 60 * 1000;
-
 function isInstalled() {
   return window.matchMedia('(display-mode: standalone)').matches ||
     Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone) ||
@@ -34,12 +29,8 @@ function isMobileDevice() {
     navigator.userAgent,
   );
   const narrowTouchScreen = window.matchMedia('(max-width: 767px) and (pointer: coarse)').matches;
-  return mobileUserAgent || narrowTouchScreen;
-}
-
-function canAutoShow() {
-  const dismissedAt = Number(localStorage.getItem(DISMISSED_AT_KEY) || 0);
-  return !dismissedAt || Date.now() - dismissedAt >= REMIND_AFTER_MS;
+  const mobileWidth = window.innerWidth <= 767;
+  return mobileUserAgent || narrowTouchScreen || mobileWidth;
 }
 
 export function PWAInstallPrompt() {
@@ -57,8 +48,8 @@ export function PWAInstallPrompt() {
     setPlatform(ios ? 'ios' : android ? 'android' : 'browser');
 
     let autoTimer: ReturnType<typeof setTimeout> | undefined;
-    if (!alreadyInstalled && mobileDevice && canAutoShow()) {
-      autoTimer = setTimeout(() => setShowPrompt(true), 1500);
+    if (!alreadyInstalled && mobileDevice) {
+      autoTimer = setTimeout(() => setShowPrompt(true), 500);
     }
 
     const handleBeforeInstall = (event: Event) => {
@@ -68,7 +59,7 @@ export function PWAInstallPrompt() {
 
       // Mobile browsers can now replace the instructional fallback with their
       // native one-tap installer. Desktop remains manual-only.
-      if (mobileDevice && canAutoShow()) {
+      if (mobileDevice) {
         if (autoTimer) clearTimeout(autoTimer);
         autoTimer = setTimeout(() => setShowPrompt(true), 250);
       }
@@ -77,7 +68,6 @@ export function PWAInstallPrompt() {
     const handleInstalled = () => {
       setInstalled(true);
       setShowPrompt(false);
-      localStorage.removeItem(DISMISSED_AT_KEY);
     };
 
     const handleManualOpen = () => {
@@ -98,7 +88,6 @@ export function PWAInstallPrompt() {
 
   const dismiss = () => {
     setShowPrompt(false);
-    localStorage.setItem(DISMISSED_AT_KEY, Date.now().toString());
   };
 
   const install = async () => {
@@ -107,9 +96,6 @@ export function PWAInstallPrompt() {
     const { outcome } = await deferredPrompt.userChoice;
     setDeferredPrompt(null);
     setShowPrompt(false);
-    if (outcome === 'dismissed') {
-      localStorage.setItem(DISMISSED_AT_KEY, Date.now().toString());
-    }
   };
 
   if (installed || !showPrompt) return null;
