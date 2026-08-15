@@ -2004,17 +2004,23 @@ Keep the tone warm, encouraging, and Christ-centered. Limit response to 300 word
     };
 
     let analysis: string;
+    let aiPowered = true;
+    let fallbackReason: string | undefined;
     try {
       analysis = await callGemini(moodPrompt);
     } catch (aiError: any) {
       console.warn('[Mood Analysis] Gemini failed - Using fallback message:', aiError.message);
       analysis = buildFallbackAnalysis();
+      aiPowered = false;
+      fallbackReason = aiError.message || 'Gemini unavailable';
     }
 
     const analysisResult = {
       id: generateId(),
       userId,
       analysis,
+      aiPowered,
+      ...(fallbackReason ? { fallbackReason } : {}),
       createdAt: new Date().toISOString(),
       period: {
         start: sevenDaysAgo.toISOString(),
@@ -5613,13 +5619,32 @@ Format each question as:
 Return only the 3 questions, no preamble.`;
 
     } else if (feature === 'summarize') {
-      const answered = (questions || []).filter((q: any) => q.userAnswer && q.partnerAnswer);
+      const hasAnswers = (answers: any) => answers && typeof answers === 'object' && Object.values(answers).some((value: any) => {
+        const answer = value && typeof value === 'object' && 'response' in value ? value.response : value;
+        return Array.isArray(answer) ? answer.length > 0 : answer !== undefined && answer !== null && answer !== '';
+      });
+      const answered = (questions || []).filter((q: any) =>
+        (q.userAnswer && q.partnerAnswer) || (hasAnswers(q.userAnswers) && hasAnswers(q.partnerAnswers))
+      );
       if (answered.length === 0) {
-        return c.json({ result: 'No discussions to summarize yet. Start answering questions together!' });
+        return c.json({ result: 'No discussions to summarize yet. Start answering questions together!', aiPowered: false });
       }
-      const summaryData = answered.slice(0, 10).map((q: any) =>
-        `Topic: ${q.title}\nYour answer: ${q.userAnswer}\nPartner's answer: ${q.partnerAnswer}`
-      ).join('\n\n');
+      const formatAnswer = (value: any) => {
+        const answer = value && typeof value === 'object' && 'response' in value ? value.response : value;
+        if (Array.isArray(answer)) return answer.join(', ');
+        return String(answer ?? 'No answer');
+      };
+      const summaryData = answered.slice(0, 10).map((q: any) => {
+        if (q.userAnswer && q.partnerAnswer) {
+          return `Topic: ${q.title}\nYour answer: ${q.userAnswer}\nPartner's answer: ${q.partnerAnswer}`;
+        }
+        const promptLines = (q.prompts || []).map((questionPrompt: any, index: number) => {
+          const promptId = typeof questionPrompt === 'string' ? String(index) : questionPrompt.id;
+          const promptText = typeof questionPrompt === 'string' ? questionPrompt : questionPrompt.text;
+          return `Prompt: ${promptText}\nYour answer: ${formatAnswer(q.userAnswers?.[promptId] ?? q.userAnswers?.[index])}\nPartner's answer: ${formatAnswer(q.partnerAnswers?.[promptId] ?? q.partnerAnswers?.[index])}`;
+        }).join('\n');
+        return `Topic: ${q.title}\n${promptLines}`;
+      }).join('\n\n');
 
       prompt = `You are a compassionate Christian relationship counselor for the TwoBeOne app.
 Analyze these couple discussion answers and provide an encouraging summary.
@@ -5679,7 +5704,7 @@ Provide a thoughtful, faith-centered response that:
     }
 
     const result = await callGemini(prompt);
-    return c.json({ result });
+    return c.json({ result, aiPowered: true });
 
   } catch (error: any) {
     console.error('[AI Analyze] Error:', error.message);

@@ -145,8 +145,12 @@ export function MoodAnalytics({
     try {
       const { analysis: aiAnalysis } = await moodsApi.analyze();
       setAnalysis(aiAnalysis);
-      setHasQuotaError(false);
-      toast.success(t.mood.analysisGenerated);
+      setHasQuotaError(aiAnalysis.aiPowered === false);
+      if (aiAnalysis.aiPowered === false) {
+        toast.warning('Gemini is unavailable. Showing a basic mood summary instead.');
+      } else {
+        toast.success(t.mood.analysisGenerated);
+      }
     } catch (error: any) {
       console.error("Mood AI analysis failed:", error?.message);
       const msg = error?.message || "Failed to generate AI analysis";
@@ -363,7 +367,7 @@ export function MoodAnalytics({
 
   return (
     <div className="space-y-6">
-      {/* OpenAI Quota Error Alert */}
+      {/* Gemini availability alert */}
       {hasQuotaError && (
         <Alert className="border-2 border-warning-500 bg-gradient-to-r from-warning-50 to-warning-50">
           <AlertCircle className="h-5 w-5 text-warning-500" />
@@ -373,31 +377,10 @@ export function MoodAnalytics({
                 AI Analysis Temporarily Unavailable
               </p>
               <p className="text-sm text-warning-700">
-                The OpenAI API quota has been exceeded. To
-                restore AI-powered mood analysis and weekly
-                reports:
+                Gemini could not generate this report. A basic statistics-based summary is shown instead.
               </p>
-              <ul className="text-sm text-warning-700 list-disc list-inside space-y-1 ml-2">
-                <li>
-                  Add credits to your OpenAI account at{" "}
-                  <a
-                    href="https://platform.openai.com/account/billing"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline font-medium hover:text-warning-700"
-                  >
-                    platform.openai.com/account/billing
-                  </a>
-                </li>
-                <li>
-                  Or upgrade to a paid plan with higher quota
-                  limits
-                </li>
-              </ul>
               <p className="text-sm text-warning-700 mt-2">
-                Don't worry - all your mood tracking data is
-                safe! Basic statistics and charts continue to
-                work normally.
+                Check the Gemini API key and quota, then try again after the six-hour analysis cache expires.
               </p>
             </div>
           </AlertDescription>

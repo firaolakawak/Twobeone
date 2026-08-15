@@ -14,9 +14,9 @@ interface Question {
   title: string;
   verse: string;
   verseReference: string;
-  prompts: string[];
-  userAnswer?: string;
-  partnerAnswer?: string;
+  prompts: Array<{ id: string; text: string } | string>;
+  userAnswers?: Record<string, unknown>;
+  partnerAnswers?: Record<string, unknown>;
 }
 
 interface AIAssistantProps {
@@ -30,8 +30,24 @@ async function getAccessToken(): Promise<string> {
   return session?.access_token || '';
 }
 
-async function callAI(feature: string, questions: Question[], customPrompt?: string): Promise<string> {
+interface AIResponse {
+  result: string;
+  aiPowered: boolean;
+}
+
+export function hasAnswers(answers?: Record<string, unknown>): boolean {
+  if (!answers) return false;
+  return Object.values(answers).some(value => {
+    const answer = value && typeof value === 'object' && 'response' in value
+      ? (value as { response?: unknown }).response
+      : value;
+    return Array.isArray(answer) ? answer.length > 0 : answer !== undefined && answer !== null && answer !== '';
+  });
+}
+
+async function callAI(feature: string, questions: Question[], customPrompt?: string): Promise<AIResponse> {
   const token = await getAccessToken();
+  if (!token) throw new Error('Please sign in again to use AI analysis.');
   const response = await fetch(
     `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/ai/analyze`,
     {
@@ -46,7 +62,7 @@ async function callAI(feature: string, questions: Question[], customPrompt?: str
 
   const data = await response.json();
   if (!response.ok || data.error) throw new Error(data.error || 'AI request failed');
-  return data.result;
+  return { result: data.result, aiPowered: data.aiPowered !== false };
 }
 
 export function AIAssistant({ questions, onClose }: AIAssistantProps) {
@@ -54,9 +70,10 @@ export function AIAssistant({ questions, onClose }: AIAssistantProps) {
   const [activeFeature, setActiveFeature] = useState<'generate' | 'summarize' | 'verse' | 'custom' | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
+  const [isAIPowered, setIsAIPowered] = useState(false);
   const [customPrompt, setCustomPrompt] = useState('');
 
-  const answeredQuestions = questions.filter(q => q.userAnswer && q.partnerAnswer);
+  const answeredQuestions = questions.filter(q => hasAnswers(q.userAnswers) && hasAnswers(q.partnerAnswers));
 
   async function handleFeature(feature: 'generate' | 'summarize' | 'verse') {
     setActiveFeature(feature);
@@ -64,8 +81,9 @@ export function AIAssistant({ questions, onClose }: AIAssistantProps) {
     setResult(null);
 
     try {
-      const text = await callAI(feature, questions);
-      setResult(text);
+      const response = await callAI(feature, questions);
+      setResult(response.result);
+      setIsAIPowered(response.aiPowered);
       const labels: Record<string, string> = {
         generate: 'New questions generated!',
         summarize: 'Discussion summary ready!',
@@ -86,8 +104,9 @@ export function AIAssistant({ questions, onClose }: AIAssistantProps) {
     setResult(null);
 
     try {
-      const text = await callAI('custom', questions, customPrompt);
-      setResult(text);
+      const response = await callAI('custom', questions, customPrompt);
+      setResult(response.result);
+      setIsAIPowered(response.aiPowered);
       toast.success(t.messages.savedSuccessfully);
     } catch (error: any) {
       toast.error(error.message || t.messages.tryAgainLater);
@@ -254,7 +273,7 @@ export function AIAssistant({ questions, onClose }: AIAssistantProps) {
             }}
           >
             <Sparkles className="w-3 h-3" />
-            Gemini AI Response
+            {isAIPowered ? 'Gemini AI Response' : 'Basic Summary (AI unavailable)'}
           </div>
           <ScrollArea className="h-96">
             <div

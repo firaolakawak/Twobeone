@@ -28,6 +28,7 @@ import { toast } from 'sonner@2.0.3';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { createClient } from '../utils/supabase/client';
 import { DynamicQuestionPrompt } from './DynamicQuestionPrompt';
+import { AIAssistant } from './AIAssistant';
 
 const supabase = createClient();
 
@@ -998,9 +999,11 @@ function QuestionCard({
           }),
         });
 
-        if (!cancelled && res.ok) {
-          setAiCompatibility(await res.json());
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(errorData.error || `Compatibility analysis failed (${res.status})`);
         }
+        if (!cancelled) setAiCompatibility(await res.json());
       } catch {
         if (!cancelled) {
           // Offline fallback — not saved, will retry next session
@@ -1501,80 +1504,6 @@ function QuestionCard({
                 </div>
               </div>
             )}
-          </>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-// AI Assistant Component
-interface AIAssistantProps {
-  questions: Question[];
-  onClose: () => void;
-}
-
-function AIAssistant({ questions, onClose }: AIAssistantProps) {
-  const answeredQuestions = questions.filter(q => q.userAnswers && Object.keys(q.userAnswers).length > 0);
-  const bothAnswered = questions.filter(q => q.userAnswers && Object.keys(q.userAnswers).length > 0 && q.partnerAnswers && Object.keys(q.partnerAnswers).length > 0);
-
-  return (
-    <Card className="border-2 border-primary-200">
-      <CardHeader className="bg-gradient-to-r from-primary-50 to-sky-50">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-6 h-6 text-primary-600" />
-            <CardTitle>AI Insights</CardTitle>
-          </div>
-          <Button variant="ghost" size="sm" onClick={onClose}>
-            ✕
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="p-6 space-y-4">
-        <div className="space-y-3">
-          <h4 className="font-semibold">Your Progress</h4>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Questions Answered:</span>
-              <span className="font-semibold">{answeredQuestions.length} / {questions.length}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Discussed Together:</span>
-              <span className="font-semibold">{bothAnswered.length}</span>
-            </div>
-          </div>
-        </div>
-
-        <Separator />
-
-        <div className="bg-primary-50 p-4 rounded-lg space-y-2">
-          <h4 className="font-semibold text-primary-900">💡 AI Suggestion</h4>
-          <p className="text-sm text-primary-800">
-            {bothAnswered.length === 0 
-              ? "Start by answering questions in categories that interest you most. Your partner can see and respond to your answers!"
-              : bothAnswered.length < 5
-              ? "Great start! Try exploring different categories to discover new conversation topics together."
-              : "Excellent progress! Consider revisiting your earlier discussions to see how your thoughts have evolved."}
-          </p>
-        </div>
-
-        {answeredQuestions.length > 0 && (
-          <>
-            <Separator />
-            <div className="space-y-2">
-              <h4 className="font-semibold">Most Active Categories</h4>
-              <div className="space-y-1 text-sm">
-                {Array.from(new Set(answeredQuestions.map(q => q.category)))
-                  .slice(0, 3)
-                  .map(category => (
-                    <div key={category} className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-primary-600" />
-                      <span className="text-foreground capitalize">{category.replace(/-/g, ' ')}</span>
-                    </div>
-                  ))}
-              </div>
-            </div>
           </>
         )}
       </CardContent>
