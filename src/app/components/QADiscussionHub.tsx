@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Textarea } from './ui/textarea';
 import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
-import { ScrollArea } from './ui/scroll-area';
 import { Progress } from './ui/progress';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible';
 import {
   ChevronLeft,
   MessageSquare,
@@ -17,6 +18,7 @@ import {
   Sparkles,
   Users,
   ChevronRight,
+  ChevronDown,
   Globe,
   Lock,
   RefreshCw,
@@ -72,6 +74,7 @@ export function QADiscussionHub({
   onBack
 }: QADiscussionHubProps) {
   const { t, language: appLanguage } = useLanguage();
+  const prefersReducedMotion = useReducedMotion();
   const [activeCategory, setActiveCategory] = useState(selectedCategory || 'all');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
@@ -344,117 +347,89 @@ export function QADiscussionHub({
     }
   };
 
+  const answeredQuestions = filteredQuestions.filter(
+    question => question.userAnswers && Object.keys(question.userAnswers).length > 0,
+  ).length;
+  const discussedQuestions = filteredQuestions.filter(
+    question => question.userAnswers && Object.keys(question.userAnswers).length > 0
+      && question.partnerAnswers && Object.keys(question.partnerAnswers).length > 0,
+  ).length;
+  const completionPercentage = filteredQuestions.length > 0
+    ? Math.round((answeredQuestions / filteredQuestions.length) * 100)
+    : 0;
+  const remainingQuestions = Math.max(filteredQuestions.length - answeredQuestions, 0);
+  const activeCategoryDetails = categories.find(category => category.id === activeCategory) || categories[0];
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="text-center space-y-2">
-        <div className="flex items-center justify-center gap-2 mb-2 relative">
-          {onBack && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onBack}
-              className="absolute left-0"
-            >
-              <ChevronLeft className="w-4 h-4 mr-1" />
-              Back
-            </Button>
-          )}
-          <MessageSquare className="w-8 h-8 text-primary-600" />
-        </div>
-        {selectedCategory && selectedCategory !== 'all' && (
-          <div className="flex items-center justify-center gap-2">
-            <Badge variant="secondary" className="text-sm">
-              {categories.find(c => c.id === selectedCategory)?.icon} {categories.find(c => c.id === selectedCategory)?.label}
-            </Badge>
-          </div>
-        )}
-        <p style={{ color: 'var(--muted-foreground)', fontSize: 'var(--text-body)' }}>Meaningful conversations for growing together</p>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <Card className="p-4 text-center" style={{ background: 'var(--card)', borderColor: 'var(--border)' }}>
-          <p style={{ fontSize: 'var(--text-title)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--primary)' }}>{questions.length}</p>
-          <p style={{ fontSize: 'var(--text-label)', color: 'var(--muted-foreground)', marginTop: 'var(--spacing-1)' }}>Total</p>
-        </Card>
-        <Card className="p-4 text-center" style={{ background: 'var(--card)', borderColor: 'var(--border)' }}>
-          <p style={{ fontSize: 'var(--text-title)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--success-700)' }}>
-            {questions.filter(q => q.userAnswers && Object.keys(q.userAnswers).length > 0).length}
-          </p>
-          <p style={{ fontSize: 'var(--text-label)', color: 'var(--muted-foreground)', marginTop: 'var(--spacing-1)' }}>Answered</p>
-        </Card>
-        <Card className="p-4 text-center" style={{ background: 'var(--card)', borderColor: 'var(--border)' }}>
-          <p style={{ fontSize: 'var(--text-title)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--primary-500)' }}>
-            {questions.filter(q => q.userAnswers && Object.keys(q.userAnswers).length > 0 && q.partnerAnswers && Object.keys(q.partnerAnswers).length > 0).length}
-          </p>
-          <p style={{ fontSize: 'var(--text-label)', color: 'var(--muted-foreground)', marginTop: 'var(--spacing-1)' }}>Discussed</p>
-        </Card>
-      </div>
-
-
-      {/* Language Filter */}
-      <div className="flex justify-center gap-2 flex-wrap">
-        {([
-          { code: 'en' as const, label: 'English', flag: '🇺🇸' },
-          { code: 'am' as const, label: 'አማርኛ', flag: '🇪🇹' },
-          { code: 'om' as const, label: 'Oromiffa', flag: '🇪🇹' },
-        ]).map(lang => (
-          <Button
-            key={lang.code}
-            variant={selectedLanguage === lang.code ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setSelectedLanguage(lang.code)}
-            className={`flex items-center gap-1.5 text-xs px-3 ${selectedLanguage === lang.code ? 'bg-primary-600 hover:bg-primary-700' : ''}`}
-          >
-            <span>{lang.flag}</span>
-            <span>{lang.label}</span>
-          </Button>
-        ))}
-      </div>
-
-      {/* AI Assistant Button */}
-      <Button
-        onClick={() => setShowAIAssistant(!showAIAssistant)}
-        className="w-full"
-        size="lg"
-        style={{ background: 'var(--primary)', color: 'var(--primary-foreground)', height: 'var(--button-lg)', fontSize: 'var(--text-body)', fontWeight: 'var(--font-weight-semibold)', borderRadius: 'var(--radius-md)' }}
+    <div className="space-y-5 pb-8">
+      <motion.section
+        initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative overflow-hidden rounded-[2rem] border border-primary-100 bg-gradient-to-br from-primary-50 via-white to-sky-50/80 p-5 shadow-[0_20px_60px_rgba(83,45,67,0.10)] sm:p-7"
       >
-        <Sparkles className="w-5 h-5 mr-2" />
-        AI Assistant
-      </Button>
+        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary-200/25 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-20 -left-10 h-44 w-44 rounded-full bg-sky-200/25 blur-3xl" />
 
-      {/* AI Assistant Panel */}
-      {showAIAssistant && (
-        <AIAssistant
-          questions={questions}
-          onClose={() => setShowAIAssistant(false)}
-        />
-      )}
-
-      {/* Categories */}
-      <Card className="p-4">
-        <h3 className="font-semibold mb-3">Categories</h3>
-        <ScrollArea className="w-full">
-          <div className="flex gap-2 pb-2">
-            {categories.map((category) => (
-              <Button
-                key={category.id}
-                variant={activeCategory === category.id ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => {
-                  setActiveCategory(category.id);
-                  setCurrentQuestionIndex(0);
-                }}
-                className="whitespace-nowrap"
-              >
-                <span className="mr-2">{category.icon}</span>
-                {category.label}
-              </Button>
-            ))}
+        <div className="relative">
+          <div className="mb-6 flex items-center justify-between gap-3">
+            {onBack ? (
+              <button type="button" onClick={onBack} className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-white/80 bg-white/75 px-3.5 text-sm font-semibold text-foreground shadow-sm backdrop-blur transition-all hover:-translate-y-0.5 hover:bg-white hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 motion-reduce:transform-none">
+                <ChevronLeft className="h-4 w-4" /> Back
+              </button>
+            ) : <span />}
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary-100 bg-white/70 px-3 py-2 text-xs font-semibold text-primary-700 shadow-sm backdrop-blur">
+              <span aria-hidden="true">{activeCategoryDetails.icon}</span>
+              {activeCategoryDetails.label}
+            </div>
           </div>
-        </ScrollArea>
-      </Card>
+
+          <div className="max-w-xl">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/80 text-primary-600 shadow-[0_10px_25px_rgba(190,68,112,0.14)]">
+              <MessageSquare className="h-6 w-6" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">A conversation worth having</h1>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">Answer honestly, discover each other gently, and grow closer one question at a time.</p>
+          </div>
+
+          <div className="mt-6 rounded-3xl border border-white/80 bg-white/65 p-4 shadow-sm backdrop-blur-sm">
+            <div className="mb-2 flex items-end justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary-600">Your progress</p>
+                <p className="mt-1 text-sm font-medium text-foreground">{remainingQuestions === 0 && filteredQuestions.length > 0 ? 'Beautiful — this category is complete' : `${remainingQuestions} question${remainingQuestions === 1 ? '' : 's'} remaining`}</p>
+              </div>
+              <span className="text-2xl font-bold text-primary-700">{completionPercentage}%</span>
+            </div>
+            <div className="h-2.5 overflow-hidden rounded-full bg-primary-100/80" role="progressbar" aria-label="Category completion" aria-valuemin={0} aria-valuemax={100} aria-valuenow={completionPercentage}>
+              <motion.div className="h-full rounded-full bg-gradient-to-r from-primary-500 to-primary-700" initial={prefersReducedMotion ? false : { width: 0 }} animate={{ width: `${completionPercentage}%` }} transition={{ duration: prefersReducedMotion ? 0 : 0.65, ease: 'easeOut' }} />
+            </div>
+            <div className="mt-4 grid grid-cols-3 divide-x divide-primary-100 text-center">
+              {[
+                { value: filteredQuestions.length, label: 'Questions' },
+                { value: answeredQuestions, label: 'Answered' },
+                { value: discussedQuestions, label: 'Together' },
+              ].map(stat => (
+                <div key={stat.label} className="px-2">
+                  <p className="text-lg font-bold text-foreground">{stat.value}</p>
+                  <p className="text-[11px] font-medium text-muted-foreground sm:text-xs">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </motion.section>
+
+      <button type="button" aria-expanded={showAIAssistant} onClick={() => setShowAIAssistant(!showAIAssistant)} className="group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary-600 to-primary-700 px-5 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(190,68,112,0.22)] transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(190,68,112,0.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 motion-reduce:transform-none">
+        <Sparkles className="h-4 w-4 transition-transform group-hover:rotate-12" />
+        {showAIAssistant ? 'Close AI companion' : 'Open AI companion'}
+      </button>
+
+      <AnimatePresence initial={false}>
+        {showAIAssistant && (
+          <motion.div initial={prefersReducedMotion ? false : { opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, height: 0 }}>
+            <AIAssistant questions={questions} onClose={() => setShowAIAssistant(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Loading State */}
       {isLoadingQuestions && (
@@ -491,30 +466,26 @@ export function QADiscussionHub({
       {/* Question Carousel */}
       {!isLoadingQuestions && filteredQuestions.length > 0 && (
         <div className="space-y-4">
-          {/* Navigation */}
-          <div className="flex items-center justify-between">
-            <Button variant="outline" size="sm" onClick={handlePrevious} className="gap-2">
-              <ChevronLeft className="w-4 h-4" />
-              Previous
-            </Button>
-            <div style={{ fontSize: 'var(--text-caption)', color: 'var(--muted-foreground)', fontWeight: 'var(--font-weight-medium)' }}>
-              {currentQuestionIndex + 1} / {filteredQuestions.length}
+          <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-white/80 p-2 shadow-sm">
+            <button type="button" onClick={handlePrevious} aria-label="Previous question" className="inline-flex min-h-10 items-center gap-1 rounded-xl px-3 text-sm font-semibold text-muted-foreground transition-colors hover:bg-primary-50 hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+              <ChevronLeft className="h-4 w-4" /><span className="hidden sm:inline">Previous</span>
+            </button>
+            <div className="min-w-32 text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-primary-600">Question {currentQuestionIndex + 1}</p>
+              <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-primary-100">
+                <div className="h-full rounded-full bg-primary-600 transition-[width] duration-300" style={{ width: `${((currentQuestionIndex + 1) / filteredQuestions.length) * 100}%` }} />
+              </div>
             </div>
-            <Button variant="outline" size="sm" onClick={handleNext} className="gap-2">
-              Next
-              <ChevronRight className="w-4 h-4" />
-            </Button>
+            <button type="button" onClick={handleNext} aria-label="Next question" className="inline-flex min-h-10 items-center gap-1 rounded-xl px-3 text-sm font-semibold text-muted-foreground transition-colors hover:bg-primary-50 hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+              <span className="hidden sm:inline">Next</span><ChevronRight className="h-4 w-4" />
+            </button>
           </div>
 
-          {/* Question Card */}
-          <QuestionCard
-            question={currentQuestion}
-            onSaveAnswer={(questionId, answers) => handleSaveAnswer(questionId, answers)}
-            onPrayTogether={() => onPrayTogether(currentQuestion)}
-            onNextQuestion={handleNext}
-            userName={userName}
-            partnerName={partnerName}
-          />
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div key={currentQuestion.id} initial={prefersReducedMotion ? false : { opacity: 0, x: 18 }} animate={{ opacity: 1, x: 0 }} exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: -18 }} transition={{ duration: prefersReducedMotion ? 0 : 0.22 }}>
+              <QuestionCard question={currentQuestion} onSaveAnswer={(questionId, answers) => handleSaveAnswer(questionId, answers)} onPrayTogether={() => onPrayTogether(currentQuestion)} onNextQuestion={handleNext} userName={userName} partnerName={partnerName} />
+            </motion.div>
+          </AnimatePresence>
         </div>
       )}
 
@@ -1078,12 +1049,13 @@ function QuestionCard({
   };
 
   return (
-    <Card className="overflow-hidden" style={{ borderColor: 'var(--border)', background: 'var(--card)' }}>
-      <CardHeader style={{ background: 'linear-gradient(to right, var(--primary-50), var(--secondary-50))' }}>
+    <Card className="overflow-hidden rounded-[2rem] border-primary-100/80 bg-white/90 shadow-[0_22px_70px_rgba(83,45,67,0.11)]">
+      <CardHeader className="relative overflow-hidden border-b border-primary-100/70 bg-gradient-to-br from-primary-50 via-white to-secondary-50/70 p-5 sm:p-7">
+        <div className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-primary-200/25 blur-3xl" />
         <div className="flex items-start justify-between gap-4">
-          <div className="flex-1">
+          <div className="relative flex-1">
             <div className="flex items-center gap-2 mb-2 flex-wrap">
-              <Badge variant="secondary" style={{ fontSize: 'var(--text-caption)', fontWeight: 'var(--font-weight-medium)' }}>
+              <Badge variant="secondary" className="rounded-full border border-primary-100 bg-white/70 px-3 py-1 text-xs font-semibold capitalize text-primary-700 shadow-sm">
                 {question.category}
               </Badge>
               {/* Green "Done" badge — shown whenever this question has a saved answer */}
@@ -1106,7 +1078,7 @@ function QuestionCard({
                 </span>
               )}
             </div>
-            <CardTitle style={{ fontSize: 'var(--text-title)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--foreground)' }}>
+            <CardTitle className="max-w-2xl text-xl font-bold leading-snug tracking-tight text-foreground sm:text-2xl">
               {question.title}
             </CardTitle>
           </div>
@@ -1114,30 +1086,28 @@ function QuestionCard({
             variant="ghost"
             size="icon"
             onClick={onPrayTogether}
-            style={{ color: 'var(--primary-500)' }}
+            aria-label="Pray together about this question"
+            title="Pray together"
+            className="relative shrink-0 rounded-full border border-primary-100 bg-white/75 text-primary-600 shadow-sm transition-all hover:-translate-y-0.5 hover:bg-primary-50 hover:text-primary-700 hover:shadow-md motion-reduce:transform-none"
           >
             <Heart className="w-5 h-5" />
           </Button>
         </div>
       </CardHeader>
 
-      <CardContent className="p-6 space-y-6">
+      <CardContent className="space-y-6 p-4 sm:p-7">
         {/* Scripture */}
         <div
-          className="p-4 rounded-r"
-          style={{
-            background: 'var(--warning-50)',
-            borderLeft: '4px solid var(--warning-500)',
-            borderRadius: '0 var(--radius-md) var(--radius-md) 0',
-          }}
+          className="relative overflow-hidden rounded-3xl border border-amber-100 bg-gradient-to-br from-amber-50/90 to-orange-50/55 p-4 shadow-sm sm:p-5"
         >
+          <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-amber-200/25 blur-2xl" />
           <div className="flex items-start gap-3">
-            <BookOpen className="w-5 h-5 mt-1 flex-shrink-0" style={{ color: 'var(--warning-700)' }} />
-            <div>
-              <p className="italic mb-2 leading-relaxed" style={{ color: 'var(--foreground)', fontSize: 'var(--text-body)' }}>
+            <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/75 text-amber-700 shadow-sm"><BookOpen className="h-5 w-5" /></span>
+            <div className="relative">
+              <p className="mb-2 italic leading-relaxed text-foreground">
                 {question.verse}
               </p>
-              <p style={{ fontSize: 'var(--text-caption)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--neutral-700)' }}>
+              <p className="text-xs font-semibold text-amber-800">
                 {question.verseReference}
               </p>
             </div>
@@ -1147,14 +1117,13 @@ function QuestionCard({
         <Separator />
 
         {/* My Answers */}
-        <div className="space-y-3">
+        <div className="space-y-4">
           {/* Section header with status indicator */}
           <div className="flex items-center justify-between">
             <h4
-              className="flex items-center gap-2"
-              style={{ fontWeight: 'var(--font-weight-semibold)', fontSize: 'var(--text-body)', color: 'var(--foreground)' }}
+              className="flex items-center gap-2 text-base font-semibold text-foreground"
             >
-              <Users className="w-5 h-5" style={{ color: 'var(--secondary-500)' }} />
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-secondary-50 text-secondary-600"><Users className="h-4.5 w-4.5" /></span>
               {userName ? `${userName}'s Answers` : t.questions.yourAnswer}
             </h4>
             <div className="flex items-center gap-2">
@@ -1168,8 +1137,8 @@ function QuestionCard({
               {isReadOnly && (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="flex items-center gap-1 underline"
-                  style={{ fontSize: 'var(--text-caption)', color: 'var(--primary-600)', fontWeight: 'var(--font-weight-medium)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                  type="button"
+                  className="flex min-h-9 items-center gap-1 rounded-full bg-primary-50 px-3 text-xs font-semibold text-primary-700 transition-colors hover:bg-primary-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
                 >
                   Edit
                 </button>
@@ -1179,37 +1148,30 @@ function QuestionCard({
 
           {/* READ-ONLY view: static answer display */}
           {isReadOnly ? (
-            <div className="space-y-4">
-              {question.prompts.map((prompt) => (
-                <div key={prompt.id} className="space-y-1">
-                  <p style={{ fontSize: 'var(--text-callout)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--foreground)' }}>
-                    {prompt.text}
-                  </p>
-                  <div
-                    className="px-4 py-3"
-                    style={{
-                      background: 'var(--success-50)',
-                      borderLeft: '3px solid var(--success-500)',
-                      borderRadius: '0 var(--radius-sm) var(--radius-sm) 0',
-                    }}
-                  >
-                    <p style={{ fontSize: 'var(--text-body)', color: 'var(--foreground)', fontWeight: 'var(--font-weight-normal)' }}>
-                      {formatAnswerForDisplay(myAnswers[prompt.id])}
-                    </p>
-                  </div>
+            <Collapsible defaultOpen={false} className="rounded-2xl border border-emerald-100 bg-emerald-50/45">
+              <CollapsibleTrigger className="group flex min-h-14 w-full items-center justify-between gap-3 rounded-2xl px-4 py-3 text-left transition-colors hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 [&[data-state=open]_.answer-chevron]:rotate-180">
+                <span>
+                  <span className="block text-sm font-semibold text-emerald-900">Your saved answers</span>
+                  <span className="mt-0.5 block text-xs text-emerald-800/70">Tap to review {question.prompts.length} response{question.prompts.length === 1 ? '' : 's'}</span>
+                </span>
+                <ChevronDown className="answer-chevron h-5 w-5 shrink-0 text-emerald-700 transition-transform duration-200" aria-hidden="true" />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+                <div className="space-y-4 border-t border-emerald-100 px-4 pb-4 pt-4">
+                  {question.prompts.map((prompt) => (
+                    <div key={prompt.id} className="space-y-1.5">
+                      <p className="text-sm font-semibold text-foreground">{prompt.text}</p>
+                      <div className="rounded-2xl border border-emerald-100 bg-white/80 px-4 py-3 shadow-sm">
+                        <p className="text-sm leading-relaxed text-foreground">{formatAnswerForDisplay(myAnswers[prompt.id])}</p>
+                      </div>
+                    </div>
+                  ))}
+                  <Button onClick={onNextQuestion} className="h-12 w-full rounded-2xl bg-gradient-to-r from-primary-600 to-primary-700 text-base font-semibold text-white shadow-[0_10px_25px_rgba(190,68,112,0.22)] transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(190,68,112,0.28)] motion-reduce:transform-none">
+                    <ChevronRight className="mr-2 h-4 w-4" /> Next Question
+                  </Button>
                 </div>
-              ))}
-
-              {/* Continue button — read-only mode */}
-              <Button
-                onClick={onNextQuestion}
-                className="w-full"
-                style={{ height: 'var(--button-md)', fontWeight: 'var(--font-weight-semibold)', fontSize: 'var(--text-body)', background: 'var(--primary)', color: 'var(--primary-foreground)', borderRadius: 'var(--radius-md)' }}
-              >
-                <ChevronRight className="w-4 h-4 mr-2" />
-                Next Question
-              </Button>
-            </div>
+              </CollapsibleContent>
+            </Collapsible>
           ) : (
             /* EDITABLE view: interactive prompts */
             <>
@@ -1224,27 +1186,18 @@ function QuestionCard({
               ))}
 
               {!canContinue && Object.keys(myAnswers).length > 0 && (
-                <div
-                  className="p-3"
-                  style={{ background: 'var(--muted)', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', fontSize: 'var(--text-caption)', color: 'var(--muted-foreground)' }}
-                >
-                  💡 Answer all prompts above to unlock the Save button
+                <div className="flex items-start gap-2 rounded-2xl border border-amber-100 bg-amber-50/70 px-4 py-3 text-xs text-amber-900">
+                  <span aria-hidden="true">💡</span><span>Answer all prompts above to unlock the Save button.</span>
                 </div>
               )}
 
               <Button
                 onClick={handleSaveAndContinue}
                 disabled={isSaving || !canContinue}
-                className="w-full"
+                className="h-12 w-full rounded-2xl text-base transition-all enabled:bg-gradient-to-r enabled:from-primary-600 enabled:to-primary-700 enabled:text-white enabled:shadow-[0_10px_25px_rgba(190,68,112,0.22)] enabled:hover:-translate-y-0.5 enabled:hover:shadow-[0_14px_30px_rgba(190,68,112,0.28)] disabled:bg-neutral-100 disabled:text-muted-foreground motion-reduce:transform-none"
                 style={{
-                  height: 'var(--button-md)',
                   fontWeight: 'var(--font-weight-semibold)',
-                  fontSize: 'var(--text-body)',
-                  background: canContinue ? 'var(--primary)' : 'var(--muted)',
-                  color: canContinue ? 'var(--primary-foreground)' : 'var(--muted-foreground)',
-                  borderRadius: 'var(--radius-md)',
                   cursor: (isSaving || !canContinue) ? 'not-allowed' : 'pointer',
-                  transition: 'background 200ms, color 200ms',
                 }}
               >
                 {isSaving ? (
@@ -1268,53 +1221,35 @@ function QuestionCard({
 
         {bothAnswered ? (
           /* ✅ Both answered → reveal partner's response */
-          <div
-            style={{
-              background: 'var(--primary-50)',
-              border: '1.5px solid var(--primary-200)',
-              borderRadius: 'var(--radius-lg)',
-              padding: 'var(--spacing-5)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 'var(--spacing-4)',
-            }}
-          >
-            <h4
-              className="flex items-center gap-2"
-              style={{ fontWeight: 'var(--font-weight-semibold)', fontSize: 'var(--text-body)', color: 'var(--primary-700)', margin: 0 }}
-            >
-              <Heart className="w-5 h-5" style={{ color: 'var(--primary-500)', fill: 'var(--primary-500)' }} />
-              {partnerName ? `${partnerName}'s Answer` : t.questions.partnersAnswer}
-            </h4>
-
-            {question.prompts.map((prompt) => {
-              // Use normalised map — handles both numeric-index and prompt-id keys
-              // and correctly extracts the answer string from raw response objects.
-              const answer = normalisedPartnerAnswers[prompt.id];
-              if (answer === undefined || answer === null || answer === '') return null;
-              const displayValue = Array.isArray(answer) ? answer.join(', ') : String(answer);
-              return (
-                <div key={prompt.id} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-1)' }}>
-                  <p style={{ fontSize: 'var(--text-caption)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--muted-foreground)', margin: 0 }}>
-                    {prompt.text}
-                  </p>
-                  <div
-                    style={{
-                      padding: 'var(--spacing-3) var(--spacing-4)',
-                      background: 'var(--card)',
-                      borderLeft: '3px solid var(--primary-400)',
-                      borderRadius: `0 var(--radius-sm) var(--radius-sm) 0`,
-                      boxShadow: 'var(--shadow-sm)',
-                    }}
-                  >
-                    <p style={{ fontSize: 'var(--text-body)', color: 'var(--foreground)', fontWeight: 'var(--font-weight-medium)', margin: 0 }}>
-                      {displayValue}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <Collapsible defaultOpen={false} className="rounded-2xl border border-primary-200 bg-primary-50/55">
+            <CollapsibleTrigger className="group flex min-h-16 w-full items-center justify-between gap-3 rounded-2xl px-4 py-3 text-left transition-colors hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 [&[data-state=open]_.partner-chevron]:rotate-180">
+              <span className="flex min-w-0 items-center gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/80 text-primary-600 shadow-sm"><Heart className="h-5 w-5 fill-current" /></span>
+                <span className="min-w-0">
+                  <span className="block truncate text-sm font-semibold text-primary-800">{partnerName ? `${partnerName}'s Answer` : t.questions.partnersAnswer}</span>
+                  <span className="mt-0.5 block text-xs text-primary-700/70">Ready to reveal</span>
+                </span>
+              </span>
+              <ChevronDown className="partner-chevron h-5 w-5 shrink-0 text-primary-700 transition-transform duration-200" aria-hidden="true" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+              <div className="space-y-4 border-t border-primary-100 px-4 pb-4 pt-4">
+                {question.prompts.map((prompt) => {
+                  const answer = normalisedPartnerAnswers[prompt.id];
+                  if (answer === undefined || answer === null || answer === '') return null;
+                  const displayValue = Array.isArray(answer) ? answer.join(', ') : String(answer);
+                  return (
+                    <div key={prompt.id} className="space-y-1.5">
+                      <p className="text-xs font-semibold text-muted-foreground">{prompt.text}</p>
+                      <div className="rounded-2xl border border-primary-100 bg-white/85 px-4 py-3 shadow-sm">
+                        <p className="text-sm font-medium leading-relaxed text-foreground">{displayValue}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
 
         ) : userHasSaved ? (
           /* ⏳ You answered, partner hasn't yet → waiting state */
@@ -1360,8 +1295,22 @@ function QuestionCard({
 
         {/* AI-Powered Compatibility Match */}
         {bothAnswered && (
-          <>
-            <Separator />
+          <Collapsible defaultOpen={false} className="rounded-2xl border border-violet-200 bg-gradient-to-br from-violet-50/80 to-primary-50/60">
+            <CollapsibleTrigger className="group flex min-h-16 w-full items-center justify-between gap-3 rounded-2xl px-4 py-3 text-left transition-colors hover:bg-violet-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 [&[data-state=open]_.compatibility-chevron]:rotate-180">
+              <span className="flex min-w-0 items-center gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/80 text-violet-600 shadow-sm"><Sparkles className={`h-5 w-5 ${isLoadingAI ? 'animate-pulse' : ''}`} /></span>
+                <span className="min-w-0">
+                  <span className="flex items-center gap-2 text-sm font-semibold text-violet-950">Compatibility Match <span className="rounded-full bg-white/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-violet-700">AI</span></span>
+                  <span className="mt-0.5 block truncate text-xs text-violet-800/70">{isLoadingAI ? 'Analysing your answers…' : aiCompatibility ? `${aiCompatibility.label} · Tap for insight` : 'Tap to view your insight'}</span>
+                </span>
+              </span>
+              <span className="flex shrink-0 items-center gap-2">
+                {aiCompatibility && <span className="text-lg font-bold" style={{ color: getMatchColor(aiCompatibility.score) }}>{aiCompatibility.score}%</span>}
+                <ChevronDown className="compatibility-chevron h-5 w-5 text-violet-700 transition-transform duration-200" aria-hidden="true" />
+              </span>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+              <div className="border-t border-violet-100 p-4 sm:p-5">
 
             {/* Loading skeleton */}
             {isLoadingAI && (
@@ -1504,7 +1453,9 @@ function QuestionCard({
                 </div>
               </div>
             )}
-          </>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
         )}
       </CardContent>
     </Card>

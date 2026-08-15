@@ -1358,6 +1358,21 @@ export default function App() {
                     onScreenNavigate={setSelectedScreen}
                     accessToken={accessToken || undefined}
                     devotionalStreak={devotionalStreak}
+                    devotionals={devotionals}
+                    onOpenDevotional={(id) => {
+                      setSelectedDevotionalId(id);
+                      setActiveTab("devotions");
+                      setIsDevotionalOpen(true);
+                    }}
+                    onStartQuestion={(category) => {
+                      setActiveTab("home");
+                      if (category) {
+                        setSelectedQACategory(category);
+                        setSelectedScreen("qa-discussion");
+                      } else {
+                        setSelectedScreen("category-selection");
+                      }
+                    }}
                     user={user}
                   />
                 )}

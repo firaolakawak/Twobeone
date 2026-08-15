@@ -1,5 +1,5 @@
 import { useLanguage } from '../contexts/LanguageContext';
-import { useState, useEffect, memo } from 'react';
+import { useState, useEffect, useMemo, memo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -33,6 +33,7 @@ import {
   Brain,
   Trash2,
   ChevronDown,
+  RefreshCw,
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { ComprehensiveBibleReader } from './ComprehensiveBibleReader';
@@ -58,6 +59,43 @@ export interface CoupleDashboardProps {
   onScreenNavigate?: (screen: string) => void;
   accessToken?: string;
   devotionalStreak?: number;
+  devotionals?: DashboardDevotional[];
+  onOpenDevotional?: (id: string) => void;
+  onStartQuestion?: (category?: string) => void;
+}
+
+interface DashboardDevotional {
+  id: string;
+  title?: string;
+  reflection?: string;
+  body?: string;
+  verse?: string;
+  verseText?: string;
+  language?: string;
+}
+
+interface DashboardQuestion {
+  id: string;
+  title?: string;
+  question?: string;
+  category?: string;
+  prompts?: Array<{ text?: string }>;
+}
+
+export type HomeSpotlightKind = 'devotion' | 'question' | 'journal';
+
+const QA_CATEGORY_IDS = new Set([
+  'daily-life', 'intimacy', 'love-balance', 'dream-wedding', 'travel',
+  'boundaries', 'trust', 'kids-future', 'finance', 'family', 'bible',
+]);
+
+export function pickRandomHomeSpotlight(
+  previous?: HomeSpotlightKind,
+  random: () => number = Math.random,
+): HomeSpotlightKind {
+  const allKinds: HomeSpotlightKind[] = ['devotion', 'question', 'journal'];
+  const choices = previous ? allKinds.filter(kind => kind !== previous) : allKinds;
+  return choices[Math.floor(random() * choices.length)] || 'devotion';
 }
 
 interface CoupleData {
@@ -276,7 +314,10 @@ export function CoupleDashboard({
   onNavigate,
   onScreenNavigate,
   accessToken,
-  devotionalStreak
+  devotionalStreak,
+  devotionals = [],
+  onOpenDevotional,
+  onStartQuestion,
 }: CoupleDashboardProps) {
   const { t, language } = useLanguage();
   // timeTogether state moved into TimerDisplay to prevent 60 re-renders/min on this component
@@ -303,6 +344,9 @@ export function CoupleDashboard({
   const [totalQuestionsCount, setTotalQuestionsCount] = useState(0);
   const [stageExpanded, setStageExpanded] = useState(false);
   const [countdownExpanded, setCountdownExpanded] = useState(false);
+  const [spotlightQuestions, setSpotlightQuestions] = useState<DashboardQuestion[]>([]);
+  const [spotlightKind, setSpotlightKind] = useState<HomeSpotlightKind>(() => pickRandomHomeSpotlight());
+  const [spotlightShuffle, setSpotlightShuffle] = useState(0);
 
   // Keep verse language in sync with the app language switcher
   useEffect(() => {
@@ -354,6 +398,18 @@ export function CoupleDashboard({
         setTotalQuestionsCount(1000);
       });
   }, [profile?.id]);
+
+  useEffect(() => {
+    let cancelled = false;
+    questionsApi.list(undefined, language)
+      .then(data => {
+        if (!cancelled) setSpotlightQuestions(data.questions || []);
+      })
+      .catch(() => {
+        if (!cancelled) setSpotlightQuestions([]);
+      });
+    return () => { cancelled = true; };
+  }, [language]);
 
   useEffect(() => {
     // Fetch daily Bible verse from Bible API
@@ -737,6 +793,86 @@ export function CoupleDashboard({
     isPartner: entry.userId === partner?.id
   }));
 
+  const spotlight = useMemo(() => {
+    const choose = <T,>(items: T[]): T | undefined => items.length
+      ? items[Math.floor(Math.random() * items.length)]
+      : undefined;
+
+    if (spotlightKind === 'devotion') {
+      const languageDevotionals = devotionals.filter(devotional =>
+        language === 'en'
+          ? !devotional.language || devotional.language === 'en'
+          : devotional.language === language,
+      );
+      const devotional = choose(languageDevotionals.length ? languageDevotionals : devotionals);
+      return {
+        kind: 'devotion' as const,
+        itemId: devotional?.id,
+        category: undefined,
+        eyebrow: 'A quiet moment',
+        title: devotional?.title || 'A devotion for the two of you',
+        description: devotional?.reflection || devotional?.body || devotional?.verse || devotional?.verseText || 'Pause together, reflect on Scripture, and carry one truth into your day.',
+        actionLabel: 'Read devotion',
+        icon: BookOpen,
+        iconClass: 'bg-amber-100 text-amber-700',
+        surfaceClass: 'from-amber-50 via-white to-orange-50/80 border-amber-100',
+        accentClass: 'text-amber-800',
+      };
+    }
+
+    if (spotlightKind === 'question') {
+      const question = choose(spotlightQuestions);
+      return {
+        kind: 'question' as const,
+        itemId: question?.id,
+        category: question?.category && QA_CATEGORY_IDS.has(question.category) ? question.category : undefined,
+        eyebrow: 'Talk about this',
+        title: question?.title || question?.question || question?.prompts?.[0]?.text || 'What would help you feel more loved this week?',
+        description: 'Take a few honest minutes to answer separately, then discover where your hearts meet.',
+        actionLabel: 'Start Q&A',
+        icon: MessageCircleHeart,
+        iconClass: 'bg-primary-100 text-primary-700',
+        surfaceClass: 'from-primary-50 via-white to-rose-50/80 border-primary-100',
+        accentClass: 'text-primary-700',
+      };
+    }
+
+    const entry = choose(journalEntries);
+    return {
+      kind: 'journal' as const,
+      itemId: entry?.id,
+      category: undefined,
+      eyebrow: entry ? 'From your story' : 'Make space for your story',
+      title: entry?.title || (entry ? 'A journal memory worth revisiting' : 'Capture a moment you want to remember'),
+      description: entry?.content || 'Write down what is happening in your relationship today—small moments become a shared story.',
+      actionLabel: entry ? 'Read journal' : 'Open journal',
+      icon: PenLine,
+      iconClass: 'bg-sky-100 text-sky-700',
+      surfaceClass: 'from-sky-50 via-white to-cyan-50/80 border-sky-100',
+      accentClass: 'text-sky-800',
+    };
+  }, [devotionals, journalEntries, language, spotlightKind, spotlightQuestions, spotlightShuffle]);
+
+  const openSpotlight = () => {
+    if (spotlight.kind === 'devotion') {
+      if (spotlight.itemId && onOpenDevotional) onOpenDevotional(spotlight.itemId);
+      else onNavigate?.('devotions');
+      return;
+    }
+    if (spotlight.kind === 'question') {
+      if (onStartQuestion) onStartQuestion(spotlight.category);
+      else onScreenNavigate?.('category-selection');
+      return;
+    }
+    onNavigate?.('journal');
+  };
+
+  const shuffleSpotlight = () => {
+    setSpotlightKind(current => pickRandomHomeSpotlight(current));
+    setSpotlightShuffle(current => current + 1);
+  };
+  const SpotlightIcon = spotlight.icon;
+
   return (
     <div className="space-y-6 relative">
       {/* Page-level ambient radial glow */}
@@ -765,7 +901,8 @@ export function CoupleDashboard({
 
         <CardContent className="relative pt-8 pb-6">
 
-          {/* Avatars */}
+          {/* Unconnected profile fallback; connected couples render through the unified distance profile below */}
+          {(!partner || !profile?.id || !accessToken) && (
           <div className="flex items-center justify-center gap-6 mb-4">
             {/* User Avatar */}
             <div className="flex flex-col items-center">
@@ -805,10 +942,31 @@ export function CoupleDashboard({
               <p className="text-sm font-medium mt-2">{partner?.name || 'Partner'}</p>
             </div>
           </div>
+          )}
+
+          {/* Location and distance now live inside the couple profile card */}
+          {partner && profile?.id && accessToken && (
+            <DistanceConnector
+              embedded
+              userId={profile.id}
+              userName={profile.name || 'You'}
+              userAvatar={profile.profilePicture}
+              partnerId={partner.id}
+              partnerName={partner.name || 'Partner'}
+              partnerAvatar={partner.profilePicture}
+              accessToken={accessToken}
+              centerContent={(
+                <div className="flex flex-col items-center">
+                  <Heart className="mb-2 h-10 w-10 animate-pulse fill-primary-500 text-primary-500" />
+                  <TimerDisplay profile={profile} coupleData={coupleData} partner={partner} />
+                </div>
+              )}
+            />
+          )}
 
           {/* Status Message */}
           {partner ? (
-            <div className="text-center space-y-1">
+            <div className="mt-4 text-center space-y-1">
               <h2 className="text-xl font-semibold bg-gradient-to-r from-primary-600 to-primary-600 bg-clip-text text-transparent">
                 {profile?.name} & {partner.name}
               </h2>
@@ -1109,18 +1267,34 @@ export function CoupleDashboard({
         </CardContent>
       </Card>
 
-      {/* Distance Between Partners */}
-      {partner && profile?.id && accessToken && (
-        <DistanceConnector
-          userId={profile.id}
-          userName={profile.name || 'You'}
-          userAvatar={profile.profilePicture}
-          partnerId={partner.id}
-          partnerName={partner.name || 'Partner'}
-          partnerAvatar={partner.profilePicture}
-          accessToken={accessToken}
-        />
-      )}
+      {/* Randomized next step — devotion, conversation, or journal */}
+      <section className={`relative overflow-hidden rounded-[1.75rem] border bg-gradient-to-br p-5 shadow-[0_16px_46px_rgba(83,45,67,0.09)] ${spotlight.surfaceClass}`} aria-labelledby="home-spotlight-title">
+        <div className="pointer-events-none absolute -right-10 -top-12 h-36 w-36 rounded-full bg-white/70 blur-3xl" />
+        <div className="relative">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl shadow-sm ${spotlight.iconClass}`}>
+                <SpotlightIcon className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <div>
+                <p className={`text-[11px] font-bold uppercase tracking-[0.16em] ${spotlight.accentClass}`}>For you today</p>
+                <p className="mt-0.5 text-xs font-medium text-muted-foreground">{spotlight.eyebrow}</p>
+              </div>
+            </div>
+            <button type="button" onClick={shuffleSpotlight} aria-label="Show another suggestion" title="Show another" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/90 bg-white/70 text-muted-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:bg-white hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 active:scale-95">
+              <RefreshCw className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
+
+          <h2 id="home-spotlight-title" className="mt-5 text-xl font-bold leading-snug tracking-tight text-foreground sm:text-2xl">{spotlight.title}</h2>
+          <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{spotlight.description}</p>
+
+          <button type="button" onClick={openSpotlight} className="group mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl bg-foreground px-5 text-sm font-semibold text-background shadow-[0_10px_24px_rgba(30,25,28,0.16)] transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(30,25,28,0.20)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 active:scale-[0.985] motion-reduce:transform-none sm:w-auto">
+            {spotlight.actionLabel}
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+          </button>
+        </div>
+      </section>
 
       {/* Quick Stats Grid — neumorphic soft-shadow cards */}
       <div className="grid grid-cols-2 gap-3">
