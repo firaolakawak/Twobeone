@@ -23,6 +23,8 @@ import {
   Check,
   X,
   Heart,
+  Wifi,
+  WifiOff,
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
@@ -35,6 +37,7 @@ import {
   type Location,
 } from "../utils/location";
 import { projectId } from "../utils/supabase/info";
+import { createClient } from "../utils/supabase/client";
 
 interface DistanceConnectorProps {
   userId: string;
@@ -75,6 +78,10 @@ export function DistanceConnector({
   const [showSettings, setShowSettings] = useState(false);
   const [manualCity, setManualCity] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userOnline, setUserOnline] = useState(
+    () => navigator.onLine && document.visibilityState === "visible",
+  );
+  const [partnerOnline, setPartnerOnline] = useState(false);
 
   const userInitials =
     userName
@@ -89,6 +96,63 @@ export function DistanceConnector({
 
   useEffect(() => {
     loadLocations();
+  }, [userId, partnerId]);
+
+  useEffect(() => {
+    if (!partnerId) return;
+
+    const supabase = createClient();
+    const roomId = [userId, partnerId].sort().join(":");
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
+    const syncPresence = () => {
+      if (!channel) return;
+      const state = channel.presenceState<Record<string, unknown>>();
+      setPartnerOnline(Boolean(state[partnerId]?.length));
+    };
+
+    const syncOwnPresence = () => {
+      const active = navigator.onLine && document.visibilityState === "visible";
+      setUserOnline(active);
+      if (!channel) return;
+      const request = active
+        ? channel.track({ userId, activeAt: new Date().toISOString() })
+        : channel.untrack();
+      void request.catch(() => {
+        // Presence is an enhancement. Connectivity or browser restrictions
+        // must never interrupt the couple dashboard.
+      });
+    };
+
+    try {
+      channel = supabase.channel(`couple-presence:${roomId}`, {
+        config: { presence: { key: userId } },
+      });
+      channel
+        .on("presence", { event: "sync" }, syncPresence)
+        .on("presence", { event: "join" }, syncPresence)
+        .on("presence", { event: "leave" }, syncPresence)
+        .subscribe((status) => {
+          if (status === "SUBSCRIBED") syncOwnPresence();
+        });
+    } catch (error) {
+      console.warn("[DistanceConnector] Presence unavailable:", error);
+      setPartnerOnline(false);
+    }
+
+    window.addEventListener("online", syncOwnPresence);
+    window.addEventListener("offline", syncOwnPresence);
+    document.addEventListener("visibilitychange", syncOwnPresence);
+
+    return () => {
+      window.removeEventListener("online", syncOwnPresence);
+      window.removeEventListener("offline", syncOwnPresence);
+      document.removeEventListener("visibilitychange", syncOwnPresence);
+      if (channel) {
+        void channel.untrack().catch(() => undefined);
+        void supabase.removeChannel(channel).catch(() => undefined);
+      }
+    };
   }, [userId, partnerId]);
 
   useEffect(() => {
@@ -375,7 +439,7 @@ export function DistanceConnector({
                   <AvatarImage src={userAvatar} alt={userName} />
                   <AvatarFallback className="bg-gradient-to-br from-primary-400 to-primary-600 text-lg font-semibold text-white">{userInitials}</AvatarFallback>
                 </Avatar>
-                {userLocation?.location && <span className="absolute -bottom-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white bg-emerald-500"><MapPin className="h-2.5 w-2.5 text-white" /></span>}
+                <PresenceBadge online={userOnline} label={`${userName} is ${userOnline ? "online" : "offline"}`} />
               </div>
               <p className="mt-2 max-w-full truncate text-sm font-semibold text-foreground">{userName}</p>
               <p className="mt-0.5 flex max-w-full items-center justify-center gap-1 truncate text-[11px] font-medium text-muted-foreground">
@@ -408,7 +472,7 @@ export function DistanceConnector({
                   <AvatarImage src={partnerAvatar} alt={partnerName} />
                   <AvatarFallback className="bg-gradient-to-br from-sky-400 to-sky-600 text-lg font-semibold text-white">{partnerInitials}</AvatarFallback>
                 </Avatar>
-                {partnerLocation?.location && <span className="absolute -bottom-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white bg-emerald-500"><MapPin className="h-2.5 w-2.5 text-white" /></span>}
+                <PresenceBadge online={partnerOnline} label={`${partnerName} is ${partnerOnline ? "online" : "offline"}`} />
               </div>
               <p className="mt-2 max-w-full truncate text-sm font-semibold text-foreground">{partnerName}</p>
               <p className="mt-0.5 flex max-w-full items-center justify-center gap-1 truncate text-[11px] font-medium text-muted-foreground">
@@ -489,12 +553,7 @@ export function DistanceConnector({
                     {userInitials}
                   </AvatarFallback>
                 </Avatar>
-                {userLocation?.location && (
-                  <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 flex items-center justify-center z-20"
-                    style={{ background: 'var(--success-500)', borderColor: 'var(--card)' }}>
-                    <MapPin className="w-2.5 h-2.5" style={{ color: '#fff' }} />
-                  </div>
-                )}
+                <PresenceBadge online={userOnline} label={`${userName} is ${userOnline ? "online" : "offline"}`} />
               </div>
 
               {/* Bezier arc SVG canvas */}
@@ -572,12 +631,7 @@ export function DistanceConnector({
                     {partnerInitials}
                   </AvatarFallback>
                 </Avatar>
-                {partnerLocation?.location && (
-                  <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 flex items-center justify-center z-20"
-                    style={{ background: 'var(--success-500)', borderColor: 'var(--card)' }}>
-                    <MapPin className="w-2.5 h-2.5" style={{ color: '#fff' }} />
-                  </div>
-                )}
+                <PresenceBadge online={partnerOnline} label={`${partnerName} is ${partnerOnline ? "online" : "offline"}`} />
               </div>
             </div>
 
@@ -742,5 +796,19 @@ export function DistanceConnector({
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+function PresenceBadge({ online, label }: { online: boolean; label: string }) {
+  const Icon = online ? Wifi : WifiOff;
+  return (
+    <span
+      role="status"
+      aria-label={label}
+      title={label}
+      className={`absolute -bottom-0.5 -right-0.5 z-20 flex h-6 w-6 items-center justify-center rounded-full border-[3px] border-white shadow-sm transition-colors duration-300 ${online ? "bg-emerald-500" : "bg-slate-400"}`}
+    >
+      <Icon className="h-2.5 w-2.5 text-white" strokeWidth={3} />
+    </span>
   );
 }

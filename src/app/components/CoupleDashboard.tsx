@@ -287,9 +287,18 @@ const TimerDisplay = memo(function TimerDisplay({
   if (!partner || time.days === 0) return null;
 
   return (
-    <div style={{ background: 'var(--card)', padding: 'var(--spacing-2) var(--spacing-3)', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-md)', border: '1px solid var(--primary-200)' }}>
+    <div className="day-counter" style={{ background: 'rgba(255,255,255,0.92)', padding: 'var(--spacing-2) var(--spacing-3)', borderRadius: 'var(--radius-lg)', boxShadow: '0 10px 30px -12px rgba(190,24,93,0.3)', border: '1px solid var(--primary-200)', backdropFilter: 'blur(12px)' }}>
+      <style>{`
+        @keyframes dayCounterRise {
+          0% { transform: translateY(5px) scale(.92); opacity: .35; }
+          55% { transform: translateY(-2px) scale(1.08); opacity: 1; text-shadow: 0 0 18px rgba(244,63,94,.3); }
+          100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        .day-counter-value { animation: dayCounterRise .65s cubic-bezier(.2,.8,.2,1); }
+        @media (prefers-reduced-motion: reduce) { .day-counter-value { animation: none; } }
+      `}</style>
       <div style={{ textAlign: 'center' }}>
-        <p style={{ fontSize: 'var(--text-body)', fontWeight: 'var(--font-weight-bold)', color: 'var(--primary-600)', margin: 0 }}>
+        <p key={time.days} className="day-counter-value" style={{ fontSize: 'var(--text-xl)', lineHeight: 1, fontWeight: 'var(--font-weight-bold)', color: 'var(--primary-600)', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
           {time.days}
         </p>
         <p style={{ fontSize: 'var(--text-caption-small)', color: 'var(--primary-500)', margin: 0 }}>
@@ -303,6 +312,37 @@ const TimerDisplay = memo(function TimerDisplay({
     </div>
   );
 });
+
+function MilestoneSparkles() {
+  const particles = [
+    { left: '4%', top: '8%', delay: '0s' },
+    { left: '18%', top: '72%', delay: '.12s' },
+    { left: '38%', top: '-8%', delay: '.2s' },
+    { left: '60%', top: '78%', delay: '.08s' },
+    { left: '78%', top: '4%', delay: '.28s' },
+    { left: '94%', top: '56%', delay: '.16s' },
+  ];
+  return (
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 overflow-visible">
+      <style>{`
+        @keyframes milestoneSparkle {
+          0% { transform: translateY(8px) scale(.2) rotate(0deg); opacity: 0; }
+          30% { opacity: 1; }
+          100% { transform: translateY(-22px) scale(1.15) rotate(100deg); opacity: 0; }
+        }
+        .milestone-sparkle { animation: milestoneSparkle 1.25s ease-out both; }
+        @media (prefers-reduced-motion: reduce) { .milestone-sparkle { animation: none; display: none; } }
+      `}</style>
+      {particles.map((particle, index) => (
+        <Sparkles
+          key={index}
+          className="milestone-sparkle absolute h-4 w-4 text-amber-400 drop-shadow-[0_2px_5px_rgba(251,191,36,.45)]"
+          style={{ left: particle.left, top: particle.top, animationDelay: particle.delay }}
+        />
+      ))}
+    </div>
+  );
+}
 
 export function CoupleDashboard({
   profile,
@@ -324,6 +364,7 @@ export function CoupleDashboard({
   const [showMoodDialog, setShowMoodDialog] = useState(false);
   const [todayMood, setTodayMood] = useState<string | null>(null);
   const [showMilestoneDialog, setShowMilestoneDialog] = useState(false);
+  const [celebratingMilestoneId, setCelebratingMilestoneId] = useState<string | null>(null);
 
   const [showPushNotificationSetup, setShowPushNotificationSetup] = useState(false);
   const [showLocationSettings, setShowLocationSettings] = useState(false);
@@ -608,8 +649,10 @@ export function CoupleDashboard({
   // Helper function to handle milestone addition and refetch
   const handleMilestoneAdd = async (milestone: Milestone) => {
     // Add to local state for immediate UI feedback
-    setMilestones([milestone, ...milestones]);
-    toast.success('Milestone added!');
+    setMilestones(current => [milestone, ...current]);
+    setCelebratingMilestoneId(milestone.id);
+    window.setTimeout(() => setCelebratingMilestoneId(current => current === milestone.id ? null : current), 1800);
+    toast.success('Milestone reached! ✨');
     
     // Refetch from backend to ensure consistency
     try {
@@ -886,9 +929,11 @@ export function CoupleDashboard({
       </div>
 
       {/* Couple Header */}
-      <Card className="overflow-hidden relative" style={{ zIndex: 1 }}>
+      <Card className="overflow-hidden relative border-primary-100/80 bg-white/95 shadow-[0_24px_70px_-32px_rgba(190,24,93,0.42),0_8px_24px_-16px_rgba(15,23,42,0.2)]" style={{ zIndex: 1, borderRadius: '1.75rem' }}>
         {/* Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-100 via-primary-50 to-primary-100 opacity-50" />
+        <div className="absolute inset-0 bg-gradient-to-br from-rose-50 via-white to-violet-50 opacity-90" />
+        <div className="pointer-events-none absolute -left-20 -top-28 h-64 w-64 rounded-full bg-rose-200/25 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-32 -right-20 h-64 w-64 rounded-full bg-violet-200/25 blur-3xl" />
         {coupleData.couplePicture && (
           <div className="absolute inset-0 overflow-hidden">
             <img 
@@ -899,7 +944,8 @@ export function CoupleDashboard({
           </div>
         )}
 
-        <CardContent className="relative pt-8 pb-6">
+        <CardContent className="relative px-5 pb-6 pt-6 sm:px-7">
+          <p className="mb-5 text-center text-[10px] font-bold uppercase tracking-[0.22em] text-primary-500/80">Your shared journey</p>
 
           {/* Unconnected profile fallback; connected couples render through the unified distance profile below */}
           {(!partner || !profile?.id || !accessToken) && (
@@ -966,8 +1012,8 @@ export function CoupleDashboard({
 
           {/* Status Message */}
           {partner ? (
-            <div className="mt-4 text-center space-y-1">
-              <h2 className="text-xl font-semibold bg-gradient-to-r from-primary-600 to-primary-600 bg-clip-text text-transparent">
+            <div className="mt-5 text-center space-y-1.5">
+              <h2 className="text-[1.35rem] font-bold tracking-[-0.025em] bg-gradient-to-r from-rose-700 via-primary-600 to-violet-700 bg-clip-text text-transparent">
                 {profile?.name} & {partner.name}
               </h2>
               <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
@@ -1658,6 +1704,7 @@ export function CoupleDashboard({
                 {milestones.slice(0, 3).map((milestone) => (
                   <div
                     key={milestone.id}
+                    className={celebratingMilestoneId === milestone.id ? 'ring-2 ring-amber-300/60 shadow-[0_10px_30px_-15px_rgba(245,158,11,.55)]' : ''}
                     style={{
                       display: 'flex', alignItems: 'flex-start', gap: 'var(--spacing-3)',
                       padding: 'var(--spacing-3)',
@@ -1665,8 +1712,10 @@ export function CoupleDashboard({
                       borderRadius: 'var(--radius-md)',
                       border: '1px solid var(--primary-200, #ffc7d7)',
                       position: 'relative',
+                      transition: 'box-shadow .35s ease, transform .35s ease',
                     }}
                   >
+                    {celebratingMilestoneId === milestone.id && <MilestoneSparkles />}
                     <div style={{
                       width: 40, height: 40, borderRadius: 'var(--radius-full)',
                       backgroundColor: 'var(--primary-100, #ffe0e8)',
@@ -1729,14 +1778,17 @@ export function CoupleDashboard({
                       });
                       
                       // Add to local state
-                      setMilestones([{
+                      const createdMilestone = {
                         id: milestone.id,
                         title: milestone.title,
                         date: milestone.date,
                         description: milestone.description || '',
                         icon: 'heart'
-                      }]);
-                      toast.success('First milestone added!');
+                      };
+                      setMilestones([createdMilestone]);
+                      setCelebratingMilestoneId(createdMilestone.id);
+                      window.setTimeout(() => setCelebratingMilestoneId(null), 1800);
+                      toast.success('First milestone reached! ✨');
                     } catch (error) {
                       console.error('Error adding first milestone:', error);
                       toast.error('Failed to add milestone');
