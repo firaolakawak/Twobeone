@@ -48,6 +48,8 @@ interface DistanceConnectorProps {
   partnerName: string;
   partnerAvatar?: string;
   accessToken: string;
+  userOnline?: boolean;
+  partnerOnline?: boolean;
   embedded?: boolean;
   centerContent?: ReactNode;
 }
@@ -67,6 +69,8 @@ export function DistanceConnector({
   partnerName,
   partnerAvatar,
   accessToken,
+  userOnline: userOnlineOverride,
+  partnerOnline: partnerOnlineOverride,
   embedded = false,
   centerContent,
 }: DistanceConnectorProps) {
@@ -80,10 +84,12 @@ export function DistanceConnector({
   const [showSettings, setShowSettings] = useState(false);
   const [manualCity, setManualCity] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [userOnline, setUserOnline] = useState(
+  const [detectedUserOnline, setDetectedUserOnline] = useState(
     () => navigator.onLine && document.visibilityState === "visible",
   );
-  const [partnerOnline, setPartnerOnline] = useState(false);
+  const [detectedPartnerOnline, setDetectedPartnerOnline] = useState(false);
+  const userOnline = userOnlineOverride ?? detectedUserOnline;
+  const partnerOnline = partnerOnlineOverride ?? detectedPartnerOnline;
 
   const userInitials =
     userName
@@ -101,7 +107,9 @@ export function DistanceConnector({
   }, [userId, partnerId]);
 
   useEffect(() => {
-    if (!partnerId) return;
+    // App.tsx owns the single app-wide presence subscription when overrides
+    // are supplied. Avoid subscribing twice to the same Realtime topic.
+    if (!partnerId || userOnlineOverride !== undefined || partnerOnlineOverride !== undefined) return;
 
     const supabase = createClient();
     const roomId = [userId, partnerId].sort().join(":");
@@ -110,12 +118,12 @@ export function DistanceConnector({
     const syncPresence = () => {
       if (!channel) return;
       const state = channel.presenceState<Record<string, unknown>>();
-      setPartnerOnline(Boolean(state[partnerId]?.length));
+      setDetectedPartnerOnline(Boolean(state[partnerId]?.length));
     };
 
     const syncOwnPresence = () => {
       const active = navigator.onLine && document.visibilityState === "visible";
-      setUserOnline(active);
+      setDetectedUserOnline(active);
       if (!channel) return;
       const request = active
         ? channel.track({ userId, activeAt: new Date().toISOString() })
@@ -139,7 +147,7 @@ export function DistanceConnector({
         });
     } catch (error) {
       console.warn("[DistanceConnector] Presence unavailable:", error);
-      setPartnerOnline(false);
+      setDetectedPartnerOnline(false);
     }
 
     window.addEventListener("online", syncOwnPresence);
@@ -155,7 +163,7 @@ export function DistanceConnector({
         void supabase.removeChannel(channel).catch(() => undefined);
       }
     };
-  }, [userId, partnerId]);
+  }, [userId, partnerId, userOnlineOverride, partnerOnlineOverride]);
 
   useEffect(() => {
     if (userLocation?.location && partnerLocation?.location) {

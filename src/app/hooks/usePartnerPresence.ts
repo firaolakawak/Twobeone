@@ -68,6 +68,7 @@ export function usePartnerPresence({
   notifyOnPartnerOnline = true,
   sendPartnerNotification = true,
 }: PartnerPresenceOptions) {
+  const [userOnline, setUserOnline] = useState(false);
   const [partnerOnline, setPartnerOnline] = useState(false);
   const partnerOnlineRef = useRef(false);
   const hasInitialSyncRef = useRef(false);
@@ -76,6 +77,7 @@ export function usePartnerPresence({
     if (!userId || !partnerId || !accessToken) {
       partnerOnlineRef.current = false;
       hasInitialSyncRef.current = false;
+      setUserOnline(false);
       setPartnerOnline(false);
       return;
     }
@@ -150,6 +152,7 @@ export function usePartnerPresence({
     const syncOwnPresence = () => {
       if (!channel) return;
       const active = shareOnlineStatus && navigator.onLine && document.visibilityState === 'visible';
+      setUserOnline(active);
       const request = active
         ? channel.track({ userId, userName: resolvedUserName, onlineAt: new Date().toISOString() })
         : channel.untrack();
@@ -191,6 +194,7 @@ export function usePartnerPresence({
       document.removeEventListener('visibilitychange', syncOwnPresence);
       partnerOnlineRef.current = false;
       hasInitialSyncRef.current = false;
+      setUserOnline(false);
       setPartnerOnline(false);
       if (channel) {
         void channel.untrack().catch(() => undefined);
@@ -208,5 +212,5 @@ export function usePartnerPresence({
     userName,
   ]);
 
-  return { partnerOnline };
+  return { userOnline, partnerOnline };
 }

@@ -268,7 +268,7 @@ export default function App() {
 
   const profilePreferences = profile as any;
   const partnerPreferences = partner as any;
-  usePartnerPresence({
+  const { userOnline, partnerOnline } = usePartnerPresence({
     userId: profile?.id,
     userName: profilePreferences?.name,
     partnerId: partner?.id,
@@ -1264,6 +1264,22 @@ export default function App() {
 
             {/* Consolidated Switcher Operations Header End Block */}
             <div className="flex items-center gap-2">
+              {partner && (
+                <div
+                  className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-1"
+                  role="status"
+                  aria-label={`${partnerPreferences?.name || "Partner"} is ${partnerOnline ? "online" : "offline"}`}
+                  title={`${partnerPreferences?.name || "Partner"} is ${partnerOnline ? "online" : "offline"}`}
+                >
+                  <span
+                    className={`h-2.5 w-2.5 rounded-full ${partnerOnline ? "bg-emerald-500 shadow-[0_0_0_3px_rgba(16,185,129,0.16)]" : "bg-slate-300"}`}
+                    aria-hidden="true"
+                  />
+                  <span className="hidden text-xs font-semibold text-slate-700 sm:inline">
+                    {partnerOnline ? "Online" : "Offline"}
+                  </span>
+                </div>
+              )}
               <LanguageSelector
                 accessToken={accessToken || undefined}
                 userId={profile?.id}
@@ -1371,6 +1387,8 @@ export default function App() {
                     onScreenNavigate={setSelectedScreen}
                     accessToken={accessToken || undefined}
                     devotionalStreak={devotionalStreak}
+                    userOnline={userOnline}
+                    partnerOnline={partnerOnline}
                     devotionals={devotionals}
                     onOpenDevotional={(id) => {
                       setSelectedDevotionalId(id);

@@ -60,6 +60,8 @@ export interface CoupleDashboardProps {
   onScreenNavigate?: (screen: string) => void;
   accessToken?: string;
   devotionalStreak?: number;
+  userOnline?: boolean;
+  partnerOnline?: boolean;
   devotionals?: DashboardDevotional[];
   onOpenDevotional?: (id: string) => void;
   onStartQuestion?: (category?: string) => void;
@@ -357,6 +359,8 @@ export function CoupleDashboard({
   onScreenNavigate,
   accessToken,
   devotionalStreak,
+  userOnline,
+  partnerOnline,
   devotionals = [],
   onOpenDevotional,
   onStartQuestion,
@@ -1003,6 +1007,8 @@ export function CoupleDashboard({
               partnerName={partner.name || 'Partner'}
               partnerAvatar={partner.profilePicture}
               accessToken={accessToken}
+              userOnline={userOnline}
+              partnerOnline={partnerOnline}
               centerContent={(
                 <div className="flex flex-col items-center">
                   <Heart className="mb-2 h-10 w-10 animate-pulse fill-primary-500 text-primary-500" />

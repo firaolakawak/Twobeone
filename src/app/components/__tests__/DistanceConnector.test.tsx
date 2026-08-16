@@ -26,6 +26,8 @@ describe('embedded distance connector', () => {
           partnerName="Partner Two"
           partnerAvatar="two.jpg"
           accessToken="token"
+          userOnline
+          partnerOnline
         />
       </LanguageProvider>,
     );
@@ -35,6 +37,7 @@ describe('embedded distance connector', () => {
     expect(await screen.findByText(/km$/i)).toBeInTheDocument();
     expect(screen.getByText('Partner One')).toBeInTheDocument();
     expect(screen.getByText('Partner Two')).toBeInTheDocument();
+    expect(screen.getByLabelText('Partner Two: online')).toBeInTheDocument();
     expect(screen.getByTestId('love-flow')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Location settings' })).toBeInTheDocument();
   });
