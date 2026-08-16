@@ -96,6 +96,7 @@ import api, {
 } from "./utils/api";
 import { registerServiceWorker } from "./utils/pwa";
 import { useEngagementTracking } from "./hooks/useEngagementTracking";
+import { usePartnerPresence } from "./hooks/usePartnerPresence";
 import type {
   JournalEntry,
   PrayerRequest,
@@ -263,6 +264,21 @@ export default function App() {
     activeTab,
     selectedScreen,
     enabled: Boolean(user && accessToken && profile && !showLanding),
+  });
+
+  const profilePreferences = profile as any;
+  const partnerPreferences = partner as any;
+  usePartnerPresence({
+    userId: profile?.id,
+    userName: profilePreferences?.name,
+    partnerId: partner?.id,
+    partnerName: partnerPreferences?.name,
+    accessToken,
+    shareOnlineStatus: profilePreferences?.privacySettings?.showOnlineStatus !== false,
+    notifyOnPartnerOnline: profilePreferences?.notificationSettings?.partnerActivity !== false,
+    sendPartnerNotification:
+      partnerPreferences?.notificationSettings?.partnerActivity !== false &&
+      partnerPreferences?.notificationSettings?.pushNotifications !== false,
   });
 
   const currentLangCode =

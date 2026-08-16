@@ -90,6 +90,19 @@ export function SettingsScreen({
       setPhone(profile.phone ?? '');
       setLocation(profile.location ?? '');
       setRelationshipStart(profile.relationshipStart ?? '');
+      const privacy = profile.privacySettings;
+      const notifications = profile.notificationSettings;
+      setShareJournal(privacy?.shareJournal !== false);
+      setSharePrayers(privacy?.sharePrayers !== false);
+      setShareProgress(privacy?.shareProgress !== false);
+      setShareMilestones(privacy?.shareMilestones !== false);
+      setShowOnlineStatus(privacy?.showOnlineStatus !== false);
+      setDailyDevotional(notifications?.dailyDevotional !== false);
+      setPrayerReminders(notifications?.prayerReminders !== false);
+      setPartnerActivity(notifications?.partnerActivity !== false);
+      setCommunityUpdates(notifications?.communityUpdates === true);
+      setEmailNotifications(notifications?.emailNotifications !== false);
+      setPushNotifications(notifications?.pushNotifications !== false);
     }
   }, [profile]);
 
