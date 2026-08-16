@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { BookOpen, Play, Headphones, Bookmark, CheckCircle2, ArrowLeft, Home, Trash2, Pause } from 'lucide-react';
+import { BookOpen, Play, Headphones, Bookmark, CheckCircle2, Trash2, Pause, ArrowRight, Clock3 } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
@@ -394,78 +394,112 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto w-full max-w-3xl space-y-8 pb-4">
       {/* Header */}
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl">{t.devotionals.title}</h1>
-        <p className="text-muted-foreground">{t.dashboard.growingTogetherInFaith}</p>
+      <div className="space-y-3 px-2 pt-3 text-center">
+        <div className="flex items-center justify-center gap-3">
+          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 ring-1 ring-primary-100">
+            <BookOpen className="h-7 w-7" aria-hidden="true" />
+          </span>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">{t.devotionals.title}</h1>
+        </div>
+        <p className="text-base leading-relaxed text-slate-600">{t.dashboard.growingTogetherInFaith}</p>
       </div>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="w-full grid grid-cols-3 mb-6">
-          <TabsTrigger value="devotionals">
-            <BookOpen className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">{t.devotionals.title}</span>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full gap-6">
+        <TabsList className="grid h-14 w-full grid-cols-3 rounded-2xl border border-slate-200 bg-slate-100/90 p-1.5 shadow-inner" aria-label="Devotional sections">
+          <TabsTrigger value="devotionals" className="h-full rounded-xl px-1 text-xs font-semibold text-slate-600 transition-all duration-200 hover:text-primary-700 data-[state=active]:bg-white data-[state=active]:text-primary-700 data-[state=active]:shadow-sm sm:text-sm">
+            <BookOpen className="h-4 w-4" aria-hidden="true" />
+            <span>{t.devotionals.title}</span>
           </TabsTrigger>
-          <TabsTrigger value="audio">
-            <Headphones className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">{t.devotionals.audioTab}</span>
+          <TabsTrigger value="audio" className="h-full rounded-xl px-1 text-xs font-semibold text-slate-600 transition-all duration-200 hover:text-primary-700 data-[state=active]:bg-white data-[state=active]:text-primary-700 data-[state=active]:shadow-sm sm:text-sm">
+            <Headphones className="h-4 w-4" aria-hidden="true" />
+            <span>{t.devotionals.audioTab}</span>
           </TabsTrigger>
-          <TabsTrigger value="verses">
-            <Bookmark className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">{t.devotionals.versesTab}</span>
+          <TabsTrigger value="verses" className="h-full rounded-xl px-1 text-xs font-semibold text-slate-600 transition-all duration-200 hover:text-primary-700 data-[state=active]:bg-white data-[state=active]:text-primary-700 data-[state=active]:shadow-sm sm:text-sm">
+            <Bookmark className="h-4 w-4" aria-hidden="true" />
+            <span>{t.devotionals.versesTab}</span>
           </TabsTrigger>
         </TabsList>
 
         {/* Devotionals Tab */}
-        <TabsContent value="devotionals" className="space-y-4">
+        <TabsContent value="devotionals" className="space-y-6">
+          <div className="flex items-end justify-between gap-4 px-1">
+            <div>
+              <h2 className="text-xl font-bold tracking-tight text-slate-950">Daily readings</h2>
+              <p className="mt-1 text-sm text-slate-500">Pause, reflect, and grow together in Scripture.</p>
+            </div>
+            {!isLoadingDevotionals && (
+              <span className="shrink-0 text-sm font-medium text-slate-500">{filteredDevotionals.length} {filteredDevotionals.length === 1 ? 'reading' : 'readings'}</span>
+            )}
+          </div>
           {isLoadingDevotionals ? (
-            <div className="text-center py-8">
-              <div className="animate-pulse space-y-3">
-                <div className="h-32 bg-neutral-200 rounded-lg"></div>
-                <div className="h-32 bg-neutral-200 rounded-lg"></div>
-                <div className="h-32 bg-neutral-200 rounded-lg"></div>
+            <div className="py-2 text-center" role="status" aria-label={t.devotionals.loading}>
+              <div className="animate-pulse space-y-5">
+                <div className="h-52 rounded-2xl bg-slate-100"></div>
+                <div className="h-52 rounded-2xl bg-slate-100"></div>
+                <div className="h-52 rounded-2xl bg-slate-100"></div>
               </div>
-              <p className="text-sm text-muted-foreground mt-4">{t.devotionals.loading}</p>
+              <p className="mt-4 text-sm text-slate-500">{t.devotionals.loading}</p>
             </div>
           ) : filteredDevotionals.length > 0 ? (
-            filteredDevotionals.map((devotional) => {
-              const isCompleted = completedDevotionals.has(devotional.id);
-              return (
-                <Card
-                  key={devotional.id}
-                  lang={devotional.language === 'am' || devotional.language === 'om' ? devotional.language : undefined}
-                  className="p-5 cursor-pointer hover:shadow-lg transition-shadow"
-                  onClick={() => onDevotionalClick(devotional.id)}
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-xs text-muted-foreground">5 min read</span>
-                        {isCompleted && (
-                          <div className="flex items-center gap-1 text-success-700">
-                            <CheckCircle2 className="w-4 h-4" />
-                            <span className="text-xs">{t.devotionals.completed}</span>
-                          </div>
-                        )}
+            <div className="grid gap-5">
+              {filteredDevotionals.map((devotional) => {
+                const isCompleted = completedDevotionals.has(devotional.id);
+                return (
+                  <Card
+                    key={devotional.id}
+                    lang={devotional.language === 'am' || devotional.language === 'om' ? devotional.language : undefined}
+                    className="group overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-0 shadow-sm transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-md focus-within:border-primary-300 focus-within:ring-4 focus-within:ring-primary-100/70"
+                  >
+                    <button
+                      type="button"
+                      className="w-full p-5 text-left outline-none sm:p-6"
+                      onClick={() => onDevotionalClick(devotional.id)}
+                      aria-label={`Read ${devotional.title}`}
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex flex-wrap items-center gap-2.5">
+                          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            <Clock3 className="h-3.5 w-3.5" aria-hidden="true" />
+                            {devotional.duration || '5 min read'}
+                          </span>
+                          {isCompleted && (
+                            <Badge className="h-6 gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 text-xs font-semibold text-emerald-700 shadow-none hover:bg-emerald-50">
+                              <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
+                              {t.devotionals.completed}
+                            </Badge>
+                          )}
+                        </div>
+                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary-600 ring-1 ring-primary-100 transition-transform duration-200 group-hover:scale-105">
+                          <BookOpen className="h-5 w-5" aria-hidden="true" />
+                        </span>
                       </div>
-                      <h3 className="font-semibold text-lg mb-2">{devotional.title}</h3>
-                      <p className="text-sm text-muted-foreground italic mb-2">
-                        "{devotional.verse}"
-                      </p>
-                      <p className="text-xs text-muted-foreground">{devotional.reference}</p>
-                    </div>
-                    <BookOpen className="w-6 h-6 text-primary-500 flex-shrink-0 ml-4" />
-                  </div>
-                </Card>
-              );
-            })
+
+                      <h3 className="mt-4 text-xl font-bold leading-tight tracking-tight text-slate-950 sm:text-2xl">{devotional.title}</h3>
+                      <blockquote className="mt-4 border-l-2 border-primary-300 pl-4">
+                        <p className="text-[15px] italic leading-7 text-slate-600 sm:text-base">“{devotional.verse}”</p>
+                      </blockquote>
+                      <div className="mt-4 flex items-center justify-between gap-4 border-t border-slate-100 pt-4">
+                        <cite className="text-sm font-semibold not-italic text-slate-600">{devotional.reference}</cite>
+                        <span className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-primary-700">
+                          Read devotional
+                          <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
+                        </span>
+                      </div>
+                    </button>
+                  </Card>
+                );
+              })}
+            </div>
           ) : (
-            <Card className="p-8 text-center">
-              <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="font-semibold mb-2">{t.devotionals.noDevotionals}</h3>
-              <p className="text-sm text-muted-foreground">
+            <Card className="rounded-2xl border-slate-200 p-10 text-center shadow-sm">
+              <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+                <BookOpen className="h-7 w-7" aria-hidden="true" />
+              </span>
+              <h3 className="mb-2 text-lg font-bold text-slate-900">{t.devotionals.noDevotionals}</h3>
+              <p className="text-sm leading-6 text-slate-500">
                 Daily devotionals created by admin will appear here.
               </p>
             </Card>
@@ -473,12 +507,19 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
         </TabsContent>
 
         {/* Audio Lessons Tab */}
-        <TabsContent value="audio" className="space-y-4">
+        <TabsContent value="audio" className="space-y-6">
+          <div className="flex items-end justify-between gap-4 px-1">
+            <div>
+              <h2 className="text-xl font-bold tracking-tight text-slate-950">Audio devotionals</h2>
+              <p className="mt-1 text-sm text-slate-500">Listen and reflect wherever your day takes you.</p>
+            </div>
+            {!isLoadingAudio && <span className="shrink-0 text-sm font-medium text-slate-500">{filteredAudioDevotionals.length} available</span>}
+          </div>
           {isLoadingAudio ? (
             <div className="text-center py-8">
               <div className="animate-pulse space-y-3">
-                <div className="h-32 bg-neutral-200 rounded-lg"></div>
-                <div className="h-32 bg-neutral-200 rounded-lg"></div>
+                <div className="h-44 rounded-2xl bg-slate-100"></div>
+                <div className="h-44 rounded-2xl bg-slate-100"></div>
               </div>
               <p className="text-sm text-muted-foreground mt-4">Loading audio devotionals...</p>
             </div>
@@ -486,12 +527,13 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
             filteredAudioDevotionals.map((devotional) => {
               const isPlaying = currentlyPlayingId === devotional.id;
               return (
-                <Card key={devotional.id} className="p-5">
-                  <div className="flex items-start gap-4">
+                <Card key={devotional.id} className="rounded-2xl border-slate-200/90 p-5 shadow-sm transition-all duration-200 hover:border-primary-200 hover:shadow-md sm:p-6">
+                  <div className="flex items-start gap-5">
                     <Button
                       size="lg"
-                      className="w-14 h-14 rounded-full bg-primary-600 hover:bg-primary-700 flex-shrink-0"
+                      className="h-14 w-14 flex-shrink-0 rounded-2xl bg-primary-600 shadow-sm transition-all hover:scale-105 hover:bg-primary-700 hover:shadow-md focus-visible:ring-4 focus-visible:ring-primary-200"
                       onClick={() => handlePlayAudio(devotional.id)}
+                      aria-label={`${isPlaying ? 'Pause' : 'Play'} ${devotional.title}`}
                     >
                       {isPlaying ? (
                         <Pause className="w-6 h-6 text-white" />
@@ -509,11 +551,11 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
                           })}
                         </Badge>
                       )}
-                      <h3 className="font-semibold mb-1">{devotional.title}</h3>
-                      <p className="text-sm text-muted-foreground italic mb-2">
+                      <h3 className="mb-1.5 text-lg font-bold tracking-tight text-slate-950 sm:text-xl">{devotional.title}</h3>
+                      <p className="mb-2 text-sm italic leading-6 text-slate-600">
                         "{devotional.verse.substring(0, 100)}{devotional.verse.length > 100 ? '...' : ''}"
                       </p>
-                      <p className="text-xs text-muted-foreground">{devotional.reference}</p>
+                      <p className="text-sm font-semibold text-slate-500">{devotional.reference}</p>
                       {devotional.audioFileName && (
                         <div className="flex items-center gap-2 mt-2">
                           <Headphones className="w-3 h-3 text-primary-500" />
@@ -526,25 +568,25 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
                   </div>
                   
                   {/* Show devotional content when clicked */}
-                  <div className="mt-4 pt-4 border-t">
+                  <div className="mt-5 border-t border-slate-100 pt-4">
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
-                      className="w-full"
+                      className="w-full rounded-xl font-semibold text-primary-700 hover:bg-primary-50 hover:text-primary-800"
                       onClick={() => onDevotionalClick(devotional.id)}
                     >
                       <BookOpen className="w-4 h-4 mr-2" />
-                      Read Full Devotional
+                      Read Full Devotional <ArrowRight className="ml-1 h-4 w-4" aria-hidden="true" />
                     </Button>
                   </div>
                 </Card>
               );
             })
           ) : (
-            <Card className="p-8 text-center">
-              <Headphones className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-              <h3 className="font-medium mb-2">No audio devotionals yet</h3>
-              <p className="text-sm text-muted-foreground mb-4">
+            <Card className="rounded-2xl border-slate-200 p-10 text-center shadow-sm">
+              <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400"><Headphones className="h-7 w-7" aria-hidden="true" /></span>
+              <h3 className="mb-2 text-lg font-bold text-slate-900">No audio devotionals yet</h3>
+              <p className="text-sm leading-6 text-slate-500">
                 Audio devotionals uploaded by admins will appear here
               </p>
             </Card>
@@ -552,7 +594,14 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
         </TabsContent>
 
         {/* Memory Verses Tab - Now shows saved highlights */}
-        <TabsContent value="verses" className="space-y-4">
+        <TabsContent value="verses" className="space-y-6">
+          <div className="flex items-end justify-between gap-4 px-1">
+            <div>
+              <h2 className="text-xl font-bold tracking-tight text-slate-950">Saved verses</h2>
+              <p className="mt-1 text-sm text-slate-500">Return to the words you want to carry with you.</p>
+            </div>
+            {!isLoadingHighlights && <span className="shrink-0 text-sm font-medium text-slate-500">{savedHighlights.length} saved</span>}
+          </div>
           {isLoadingHighlights ? (
             <div className="text-center py-8">
               <div className="animate-pulse space-y-3">
@@ -564,13 +613,13 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
             savedHighlights
               .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
               .map((highlight) => (
-                <Card key={highlight.id} className="p-5 relative">
+                <Card key={highlight.id} className="relative rounded-2xl border-slate-200/90 p-5 shadow-sm transition-all duration-200 hover:border-primary-200 hover:shadow-md sm:p-6">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1 pr-8">
-                      <p className="text-foreground italic mb-3 leading-relaxed">
-                        "{highlight.text}"
+                      <p className="mb-3 border-l-2 border-warning-300 pl-4 text-base italic leading-7 text-slate-700">
+                        “{highlight.text}”
                       </p>
-                      <p className="text-sm text-muted-foreground font-medium mb-2">{highlight.reference}</p>
+                      <p className="mb-2 text-sm font-bold text-slate-600">{highlight.reference}</p>
                       {highlight.note && (
                         <p className="text-xs text-muted-foreground mt-2">
                           📝 {highlight.note}
@@ -596,8 +645,9 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="w-full text-error-500 hover:text-error-700 hover:bg-error-50"
+                    className="w-full rounded-xl text-error-600 hover:bg-error-50 hover:text-error-700"
                     onClick={() => handleDeleteHighlight(highlight.id)}
+                    aria-label={`Remove saved verse ${highlight.reference}`}
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
                     Remove
@@ -605,10 +655,10 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
                 </Card>
               ))
           ) : (
-            <Card className="p-8 text-center">
-              <Bookmark className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-              <h3 className="font-medium mb-2">No saved verses yet</h3>
-              <p className="text-sm text-muted-foreground mb-4">
+            <Card className="rounded-2xl border-slate-200 p-10 text-center shadow-sm">
+              <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400"><Bookmark className="h-7 w-7" aria-hidden="true" /></span>
+              <h3 className="mb-2 text-lg font-bold text-slate-900">No saved verses yet</h3>
+              <p className="text-sm leading-6 text-slate-500">
                 Save verses from the Daily Verse section to see them here
               </p>
             </Card>
