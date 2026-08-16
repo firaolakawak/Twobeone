@@ -28,7 +28,7 @@ export interface Devotional {
   status: 'published' | 'draft';
   audioUrl?: string;
   audioFileName?: string;
-  language?: 'en' | 'am';
+  language?: 'en' | 'am' | 'om';
 }
 
 interface DevotionalsManagerProps {
@@ -125,11 +125,13 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
   const handleEdit = (devotional: Devotional) => {
     setEditingDevotional(devotional);
     setFormData(devotional);
+    contentLanguage.setContentLanguage(devotional.language ?? 'en');
     setIsDialogOpen(true);
   };
 
   const handleDuplicate = (devotional: Devotional) => {
     setEditingDevotional(null); // treat as new
+    contentLanguage.setContentLanguage(devotional.language ?? 'en');
     setFormData({
       title: `Copy of ${devotional.title}`,
       verse: devotional.verse,

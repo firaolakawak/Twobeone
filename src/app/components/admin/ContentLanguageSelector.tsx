@@ -3,6 +3,12 @@ import { Label } from '../ui/label';
 import { Button } from '../ui/button';
 import { useContentLanguage } from '../../contexts/ContentLanguageContext';
 
+const languages = [
+  { code: 'en', label: 'English' },
+  { code: 'am', label: 'Amharic (አማርኛ)' },
+  { code: 'om', label: 'Afan Oromo (Oromiffa)' },
+] as const;
+
 export function ContentLanguageSelector() {
   const { contentLanguage, setContentLanguage } = useContentLanguage();
 
@@ -17,28 +23,23 @@ export function ContentLanguageSelector() {
       <p className="text-xs text-sky-700 mb-3">
         Select the language for the content you're creating. This doesn't change the admin panel interface.
       </p>
-      <div className="flex gap-2">
-        <Button
-          type="button"
-          size="sm"
-          variant={contentLanguage === 'en' ? 'default' : 'outline'}
-          onClick={() => setContentLanguage('en')}
-          className={contentLanguage === 'en' ? 'bg-sky-600 hover:bg-sky-700' : ''}
-        >
-          English
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant={contentLanguage === 'am' ? 'default' : 'outline'}
-          onClick={() => setContentLanguage('am')}
-          className={contentLanguage === 'am' ? 'bg-sky-600 hover:bg-sky-700' : ''}
-        >
-          Amharic (አማርኛ)
-        </Button>
+      <div className="flex flex-wrap gap-2">
+        {languages.map(({ code, label }) => (
+          <Button
+            key={code}
+            type="button"
+            size="sm"
+            variant={contentLanguage === code ? 'default' : 'outline'}
+            onClick={() => setContentLanguage(code)}
+            className={contentLanguage === code ? 'bg-sky-600 hover:bg-sky-700' : ''}
+            aria-pressed={contentLanguage === code}
+          >
+            {label}
+          </Button>
+        ))}
       </div>
       <div className="mt-2 text-xs text-sky-600 font-medium">
-        Creating content in: {contentLanguage === 'en' ? 'English' : 'Amharic (አማርኛ)'}
+        Creating content in: {languages.find(({ code }) => code === contentLanguage)?.label}
       </div>
     </div>
   );
