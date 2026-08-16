@@ -26,7 +26,10 @@ import {
   HelpCircle,
   Eye,
   Radio,
-  Bell
+  Bell,
+  ArrowRight,
+  Globe2,
+  LockKeyhole
 } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
@@ -298,14 +301,16 @@ export function CommunityGroups() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto w-full max-w-3xl space-y-8 pb-4">
       {/* Header */}
-      <div className="text-center space-y-2">
-        <div className="flex items-center justify-center gap-2">
-          <Users className="w-8 h-8 text-primary-600" />
-          <h1 className="text-3xl">{t.community.title}</h1>
+      <div className="space-y-3 px-2 pt-3 text-center">
+        <div className="flex items-center justify-center gap-3">
+          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 ring-1 ring-primary-100">
+            <Users className="h-7 w-7" aria-hidden="true" />
+          </span>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">{t.community.title}</h1>
         </div>
-        <p className="text-muted-foreground">{t.dashboard.growingTogetherInFaith}</p>
+        <p className="text-base leading-relaxed text-slate-600">{t.dashboard.growingTogetherInFaith}</p>
       </div>
 
       {/* Live Sessions Banner */}
@@ -339,7 +344,7 @@ export function CommunityGroups() {
       {/* Create Group Button */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogTrigger asChild>
-          <Button className="w-full bg-gradient-to-r from-primary-600 to-sky-600 hover:from-primary-700 hover:to-sky-700">
+          <Button className="h-12 w-full rounded-xl bg-gradient-to-r from-primary-600 to-sky-600 text-base font-semibold shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:from-primary-700 hover:to-sky-700 hover:shadow-md focus-visible:ring-4 focus-visible:ring-primary-200">
             <Plus className="w-4 h-4 mr-2" />
             Create New Group
           </Button>
@@ -356,66 +361,45 @@ export function CommunityGroups() {
       </Dialog>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="discover">{t.community.joinGroup}</TabsTrigger>
-          <TabsTrigger value="my-groups">{t.community.myGroups}</TabsTrigger>
-          <TabsTrigger value="live">Live</TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="gap-6">
+        <TabsList className="grid h-14 w-full grid-cols-3 rounded-2xl border border-slate-200 bg-slate-100/90 p-1.5 shadow-inner" aria-label="Community sections">
+          <TabsTrigger value="discover" className="h-full rounded-xl text-sm font-semibold text-slate-600 transition-all duration-200 hover:text-primary-700 data-[state=active]:bg-white data-[state=active]:text-primary-700 data-[state=active]:shadow-sm sm:text-base">{t.community.joinGroup}</TabsTrigger>
+          <TabsTrigger value="my-groups" className="h-full rounded-xl text-sm font-semibold text-slate-600 transition-all duration-200 hover:text-primary-700 data-[state=active]:bg-white data-[state=active]:text-primary-700 data-[state=active]:shadow-sm sm:text-base">{t.community.myGroups}</TabsTrigger>
+          <TabsTrigger value="live" className="h-full rounded-xl text-sm font-semibold text-slate-600 transition-all duration-200 hover:text-primary-700 data-[state=active]:bg-white data-[state=active]:text-primary-700 data-[state=active]:shadow-sm sm:text-base">Live</TabsTrigger>
         </TabsList>
 
         {/* Discover Tab */}
-        <TabsContent value="discover" className="space-y-4">
+        <TabsContent value="discover" className="space-y-6">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" aria-hidden="true" />
             <Input
               placeholder="Search groups..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="h-12 rounded-xl border-slate-200 bg-white pl-12 text-base shadow-sm transition-shadow focus-visible:ring-4 focus-visible:ring-primary-100"
+              aria-label="Search community groups"
             />
           </div>
 
+          <div className="flex items-end justify-between gap-4 px-1">
+            <div>
+              <h2 className="text-xl font-bold tracking-tight text-slate-950">Discover communities</h2>
+              <p className="mt-1 text-sm text-slate-500">Find a group where you can grow together.</p>
+            </div>
+            <span className="shrink-0 text-sm font-medium text-slate-500">{filteredGroups.length} {filteredGroups.length === 1 ? 'group' : 'groups'}</span>
+          </div>
+
           {/* Groups Grid */}
-          <div className="grid gap-4">
+          <div className="grid gap-5">
             {filteredGroups.map((group) => (
-              <Card key={group.id} className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="flex gap-4">
-                    <div className="w-16 h-16 bg-gradient-to-br from-primary-100 to-sky-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Users className="w-8 h-8 text-primary-600" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold mb-1">{group.name}</h3>
-                      <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{group.description}</p>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Users className="w-3 h-3" />
-                        <span>{group.memberCount} members</span>
-                        {group.isPublic && <Badge variant="secondary" className="text-xs">Public</Badge>}
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      {isMember(group.id) ? (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setSelectedGroup(group)}
-                        >
-                          Open
-                        </Button>
-                      ) : (
-                        <Button
-                          size="sm"
-                          onClick={() => joinGroup(group.id)}
-                        >
-                          <UserPlus className="w-4 h-4 mr-1" />
-                          Join
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <CommunityGroupCard
+                key={group.id}
+                group={group}
+                member={isMember(group.id)}
+                onView={() => setSelectedGroup(group)}
+                onJoin={() => joinGroup(group.id)}
+              />
             ))}
 
             {filteredGroups.length === 0 && (
@@ -431,26 +415,17 @@ export function CommunityGroups() {
         </TabsContent>
 
         {/* My Groups Tab */}
-        <TabsContent value="my-groups" className="space-y-4">
-          <div className="grid gap-4">
+        <TabsContent value="my-groups" className="space-y-6">
+          <div className="flex items-end justify-between gap-4 px-1">
+            <div>
+              <h2 className="text-xl font-bold tracking-tight text-slate-950">My communities</h2>
+              <p className="mt-1 text-sm text-slate-500">Continue connecting with your groups.</p>
+            </div>
+            <span className="shrink-0 text-sm font-medium text-slate-500">{myGroups.length} {myGroups.length === 1 ? 'group' : 'groups'}</span>
+          </div>
+          <div className="grid gap-5">
             {myGroups.map((group) => (
-              <Card key={group.id} className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setSelectedGroup(group)}>
-                <CardContent className="p-4">
-                  <div className="flex gap-4">
-                    <div className="w-16 h-16 bg-gradient-to-br from-primary-100 to-sky-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Users className="w-8 h-8 text-primary-600" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold mb-1">{group.name}</h3>
-                      <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{group.description}</p>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Users className="w-3 h-3" />
-                        <span>{group.memberCount} members</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <CommunityGroupCard key={group.id} group={group} member onView={() => setSelectedGroup(group)} />
             ))}
 
             {myGroups.length === 0 && (
@@ -467,8 +442,12 @@ export function CommunityGroups() {
         </TabsContent>
 
         {/* Live Tab */}
-        <TabsContent value="live" className="space-y-4">
-          <div className="grid gap-4">
+        <TabsContent value="live" className="space-y-6">
+          <div className="px-1">
+            <h2 className="text-xl font-bold tracking-tight text-slate-950">Live now</h2>
+            <p className="mt-1 text-sm text-slate-500">Join real-time conversations from your communities.</p>
+          </div>
+          <div className="grid gap-5">
             {liveSessions.map((session) => (
               <LiveSessionCard key={session.id} session={session} />
             ))}
@@ -484,6 +463,77 @@ export function CommunityGroups() {
         </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+interface CommunityGroupCardProps {
+  group: Group;
+  member: boolean;
+  onView: () => void;
+  onJoin?: () => void;
+}
+
+function CommunityGroupCard({ group, member, onView, onJoin }: CommunityGroupCardProps) {
+  return (
+    <Card className="group overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-sm transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-md focus-within:border-primary-300 focus-within:ring-4 focus-within:ring-primary-100/70">
+      <CardContent className="p-5 sm:p-6">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+          <div className="flex min-w-0 flex-1 gap-4 sm:gap-5">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-primary-100 via-violet-50 to-sky-100 text-primary-600 ring-1 ring-primary-100 transition-transform duration-200 group-hover:scale-[1.03] sm:h-18 sm:w-18">
+              {group.imageUrl ? (
+                <img src={group.imageUrl} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <Users className="h-8 w-8" aria-hidden="true" />
+              )}
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <h3 className="truncate text-lg font-bold leading-tight tracking-tight text-slate-950 sm:text-xl">
+                {group.name}
+              </h3>
+              <p className="mt-1.5 line-clamp-2 text-sm leading-6 text-slate-600">
+                {group.description || 'A welcoming space for couples to connect and grow together.'}
+              </p>
+              <div className="mt-3 flex flex-wrap items-center gap-2.5 text-sm text-slate-500">
+                <span className="inline-flex items-center gap-1.5 font-medium">
+                  <Users className="h-4 w-4 text-slate-400" aria-hidden="true" />
+                  {group.memberCount} {group.memberCount === 1 ? 'member' : 'members'}
+                </span>
+                <span className="h-4 w-px bg-slate-200" aria-hidden="true" />
+                <Badge variant="secondary" className="h-6 gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 text-xs font-semibold text-slate-600 shadow-none">
+                  {group.isPublic ? <Globe2 className="h-3 w-3" aria-hidden="true" /> : <LockKeyhole className="h-3 w-3" aria-hidden="true" />}
+                  {group.isPublic ? 'Public' : 'Private'}
+                </Badge>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex shrink-0 sm:justify-end">
+            {member ? (
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={onView}
+                className="h-10 w-full justify-center rounded-xl px-4 font-semibold text-primary-700 transition-all duration-200 hover:bg-primary-50 hover:text-primary-800 sm:w-auto"
+                aria-label={`View ${group.name}`}
+              >
+                View Group <ArrowRight className="ml-1 h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true" />
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                onClick={onJoin}
+                className="h-10 w-full rounded-xl bg-primary-600 px-4 font-semibold shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary-700 hover:shadow-md sm:w-auto"
+                aria-label={`Join ${group.name}`}
+              >
+                <UserPlus className="mr-1.5 h-4 w-4" aria-hidden="true" />
+                Join Group
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
