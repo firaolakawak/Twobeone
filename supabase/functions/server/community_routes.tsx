@@ -71,15 +71,25 @@ app.post('/groups', async (c) => {
 app.get('/groups', async (c) => {
   try {
     const allGroupIds = await kv.get('groups:all') || [];
-    const groups = await Promise.all(
+    const indexedGroups = await Promise.all(
       allGroupIds.map(async (groupId: string) => {
         const group = await kv.get(`group:${groupId}`);
         return group;
       })
     );
 
-    // Filter out null groups and only return public ones
-    const publicGroups = groups.filter(g => g && g.isPublic);
+    // Admin-created and legacy groups may predate the global directory index.
+    // Merge actual group records so those communities remain discoverable.
+    const storedRecords = await kv.getByPrefix('group:');
+    const storedGroups = storedRecords.filter((record: any) => record?.id && record?.name);
+    const groups = Array.from(
+      new Map([...indexedGroups, ...storedGroups]
+        .filter(Boolean)
+        .map((group: any) => [group.id, group])).values()
+    );
+
+    // Missing visibility is treated as public for legacy records.
+    const publicGroups = groups.filter((group: any) => group.isPublic !== false);
 
     return c.json({ groups: publicGroups });
   } catch (error) {

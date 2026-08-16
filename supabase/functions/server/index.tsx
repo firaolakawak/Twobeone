@@ -5129,6 +5129,10 @@ app.post('/make-server-6d579fee/admin/groups', async (c) => {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     });
+    const allGroups = await kv.get('groups:all') || [];
+    if (!allGroups.includes(groupId)) {
+      await kv.set('groups:all', [...allGroups, groupId]);
+    }
     await logAudit('admin.group_created', userId, { groupId, name: group.name });
 
     return c.json({ success: true, groupId });
@@ -5185,6 +5189,8 @@ app.delete('/make-server-6d579fee/admin/groups/:id', async (c) => {
 
     const groupId = c.req.param('id');
     await kv.del(`group:${groupId}`);
+    const allGroups = await kv.get('groups:all') || [];
+    await kv.set('groups:all', allGroups.filter((id: string) => id !== groupId));
     await logAudit('admin.group_deleted', userId, { groupId });
 
     return c.json({ success: true });
