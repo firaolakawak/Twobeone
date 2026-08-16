@@ -197,13 +197,23 @@ export function CommunityGroups() {
         }
       );
 
+      const result = await response.json().catch(() => ({}));
+
       if (response.ok) {
+        const createdGroup = result.group as Group | undefined;
+        if (createdGroup) {
+          setGroups((current) => current.some((group) => group.id === createdGroup.id)
+            ? current
+            : [createdGroup, ...current]);
+          setMyGroups((current) => current.some((group) => group.id === createdGroup.id)
+            ? current
+            : [createdGroup, ...current]);
+        }
         toast.success('Group created successfully!');
         setIsCreateDialogOpen(false);
-        loadGroups();
-        loadMyGroups();
+        await Promise.all([loadGroups(), loadMyGroups()]);
       } else {
-        toast.error('Failed to create group');
+        toast.error(result.error || `Failed to create group (${response.status})`);
       }
     } catch (error) {
       console.error('Failed to create group:', error);
@@ -478,7 +488,8 @@ export function CommunityGroups() {
 }
 
 // Create Group Form Component
-function CreateGroupForm({ onSubmit, isLoading }: { onSubmit: (data: any) => void; isLoading: boolean }) {
+function CreateGroupForm({ onSubmit, isLoading }: { onSubmit: (data: any) => Promise<void>; isLoading: boolean }) {
+  const { t } = useLanguage();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
@@ -488,7 +499,7 @@ function CreateGroupForm({ onSubmit, isLoading }: { onSubmit: (data: any) => voi
       toast.error('Please enter a group name');
       return;
     }
-    onSubmit({ name, description });
+    void onSubmit({ name: name.trim(), description: description.trim() });
   };
 
   return (
