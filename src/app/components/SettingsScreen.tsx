@@ -665,12 +665,12 @@ export function SettingsScreen({
       <div className="mx-auto w-full max-w-3xl space-y-7 pb-28">
         <Card className="relative isolate overflow-hidden rounded-[2rem] border-rose-100 bg-gradient-to-br from-rose-50 via-white to-amber-50 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)]">
           <input type="file" id="cover-picture-upload" className="hidden" accept="image/*" onChange={handleUploadCoverPicture} disabled={isUploadingCover} />
-          <div className="relative h-40 overflow-hidden bg-gradient-to-br from-rose-100 via-rose-50 to-amber-100 sm:h-44">
+          <div className="relative h-40 overflow-hidden bg-[linear-gradient(135deg,#FF3366_0%,#ff6b8f_52%,#fff0d6_100%)] sm:h-44">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button type="button" disabled={isUploadingCover} className="group absolute inset-0 h-full w-full overflow-hidden text-left outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-rose-300 disabled:cursor-wait" aria-label="Cover picture options">
                   {profile?.coverPicture && <img src={profile.coverPicture} alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]" />}
-                  <span className={`absolute inset-0 transition-colors ${profile?.coverPicture ? 'bg-gradient-to-t from-slate-950/30 via-transparent to-white/10 group-hover:bg-slate-950/10' : 'bg-[radial-gradient(circle_at_80%_10%,rgba(251,113,133,0.16),transparent_45%)]'}`} aria-hidden="true" />
+                  <span className={`absolute inset-0 transition-colors ${profile?.coverPicture ? 'bg-gradient-to-t from-slate-950/30 via-transparent to-white/10 group-hover:bg-slate-950/10' : 'bg-[radial-gradient(circle_at_82%_8%,rgba(255,255,255,0.38),transparent_42%)] group-hover:bg-white/5'}`} aria-hidden="true" />
                   {isUploadingCover && <span className="absolute inset-0 flex items-center justify-center bg-white/70"><Loader2 className="h-6 w-6 animate-spin text-rose-600" /></span>}
                 </button>
               </DropdownMenuTrigger>
