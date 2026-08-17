@@ -2,7 +2,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useLanguage } from '../contexts/LanguageContext';
 import { Button } from './ui/button';
 import { BookOpen, Heart, CheckCircle2, Music, Play, Pause } from 'lucide-react';
-import { ScrollArea } from './ui/scroll-area';
 import { PrayerTogetherChat } from './PrayerTogetherChat';
 import { useState, useRef, useEffect } from 'react';
 
@@ -43,14 +42,6 @@ export function DevotionalDialog({
   partnerName
 }: DevotionalDialogProps) {
   const { t } = useLanguage();
-  console.log('[DevotionalDialog] Render with:', { 
-    isCompleted, 
-    hasOnComplete: !!onComplete,
-    showButton: !isCompleted && !!onComplete,
-    devotionalTitle: devotional.title,
-    hasAudio: !!devotional.audioUrl
-  });
-
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -131,77 +122,81 @@ export function DevotionalDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className="max-w-2xl h-[90vh] flex flex-col p-0 gap-0"
-        aria-describedby="devotional-description"
+        className="flex h-[92dvh] flex-col gap-0 overflow-hidden rounded-[1.75rem] border-rose-100 bg-white p-0 shadow-[0_32px_90px_-36px_rgba(15,23,42,0.55)] sm:h-[90vh] sm:max-w-2xl sm:rounded-[2rem]"
         lang={devotional.language === 'am' || devotional.language === 'om' ? devotional.language : undefined}
       >
-        {/* Fixed Header - 8dp spacing system */}
-        <DialogHeader className="px-4 pt-4 pb-4 border-b flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'var(--primary-100)' }}>
-                <BookOpen className="w-6 h-6" style={{ color: 'var(--primary-600)' }} />
-              </div>
-              <div>
-                <DialogTitle className="text-xl text-foreground">{devotional.title}</DialogTitle>
-                <DialogDescription id="devotional-description" className="text-sm text-muted-foreground mt-1">
-                  {t.devotionals.description}, reflection, and prayer guidance
-                </DialogDescription>
-              </div>
+        <DialogDescription className="sr-only">
+          Scripture, reflection, and prayer for your shared walk.
+        </DialogDescription>
+        <DialogHeader className="relative flex-shrink-0 border-b border-rose-100/80 bg-gradient-to-br from-rose-50 via-white to-amber-50 px-5 py-5 pr-14 text-left sm:px-8 sm:py-6 sm:pr-16">
+          <div className="pointer-events-none absolute -right-10 -top-16 h-36 w-36 rounded-full bg-rose-200/25 blur-3xl" aria-hidden="true" />
+          <div className="relative">
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-rose-700 shadow-sm ring-1 ring-rose-100">
+                <Heart className="h-3 w-3 fill-rose-500 text-rose-500" aria-hidden="true" />
+                Devotional reading
+              </span>
+              {isCompleted && (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100">
+                  <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
+                  {t.devotionals.completed}
+                </span>
+              )}
             </div>
-            {isCompleted && (
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ color: 'var(--success-700)', background: 'var(--success-50)' }}>
-                <CheckCircle2 className="w-4 h-4" />
-                <span className="text-sm">{t.devotionals.completed}</span>
-              </div>
-            )}
+            <DialogTitle className="max-w-xl text-2xl font-bold leading-tight tracking-[-0.025em] text-slate-950 sm:text-3xl">{devotional.title}</DialogTitle>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">
+              Scripture, reflection, and prayer for your shared walk.
+            </p>
           </div>
         </DialogHeader>
 
-        {/* Scrollable Content Area - flexible height */}
-        <div className="flex-1 overflow-y-auto px-4 py-6 min-h-0">
-          <div className="space-y-6 max-w-2xl mx-auto">{/* 24dp spacing between sections */}
+        <div className="min-h-0 flex-1 overflow-y-auto bg-slate-50/55 px-4 py-5 sm:px-8 sm:py-8">
+          <div className="mx-auto max-w-2xl space-y-8">
             {/* Scripture */}
-            <section>
-              <div className="flex items-center gap-2 mb-3" style={{ color: 'var(--primary-700)' }}>
-                <BookOpen className="w-5 h-5" />
-                <h3 className="font-semibold">{t.devotionals.todaysScripture}</h3>
-              </div>
-              <div className="rounded-2xl p-6" style={{ background: 'var(--primary-50)' }}>
-                <p className="text-lg italic leading-relaxed mb-4 text-foreground">
-                  "{devotional.verse}"
-                </p>
-                <p className="text-sm font-medium text-muted-foreground">
-                  — {devotional.reference}
-                </p>
+            <section className="relative overflow-hidden rounded-[1.75rem] bg-slate-950 p-6 text-white shadow-[0_22px_55px_-34px_rgba(15,23,42,0.85)] sm:p-8">
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(244,114,182,0.24),transparent_42%),radial-gradient(circle_at_bottom_left,rgba(251,191,36,0.12),transparent_36%)]" aria-hidden="true" />
+              <div className="relative">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-rose-200">
+                  <BookOpen className="h-4 w-4" aria-hidden="true" />
+                  <h3>{t.devotionals.scriptureReading}</h3>
+                </div>
+                <blockquote className="mt-6">
+                  <p className="text-lg italic leading-8 text-slate-100 sm:text-xl sm:leading-9">
+                    “{devotional.verse}”
+                  </p>
+                  <cite className="mt-5 block text-sm font-bold not-italic text-rose-200">
+                    {devotional.reference}
+                  </cite>
+                </blockquote>
               </div>
             </section>
 
             {/* Reflection */}
-            <section>
-              <div className="flex items-center gap-2 mb-3" style={{ color: 'var(--secondary-700)' }}>
-                <Heart className="w-5 h-5" />
-                <h3 className="font-semibold">{t.devotionals.reflection}</h3>
+            <section className="rounded-[1.5rem] bg-white p-6 shadow-[0_14px_45px_-34px_rgba(15,23,42,0.55)] ring-1 ring-slate-200/70 sm:p-7">
+              <div className="mb-5 flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-50 text-rose-600">
+                  <Heart className="h-4.5 w-4.5" aria-hidden="true" />
+                </span>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.17em] text-rose-500">Pause and consider</p>
+                  <h3 className="mt-0.5 font-bold text-slate-900">{t.devotionals.dailyReflection}</h3>
+                </div>
               </div>
-              <div className="prose max-w-none">
-                <p className="leading-relaxed whitespace-pre-line text-foreground">
-                  {devotional.reflection}
-                </p>
-              </div>
+              <p className="whitespace-pre-line text-[15px] leading-8 text-slate-700 sm:text-base">
+                {devotional.reflection}
+              </p>
             </section>
 
             {/* Prayer */}
             {devotional.prayer && (
-              <section>
-                <div className="flex items-center gap-2 mb-3" style={{ color: 'var(--primary-700)' }}>
-                  <Heart className="w-5 h-5" style={{ fill: 'var(--primary-700)' }} />
-                  <h3 className="font-semibold">Prayer</h3>
+              <section className="relative overflow-hidden rounded-[1.5rem] bg-gradient-to-br from-rose-50 to-amber-50 p-6 ring-1 ring-rose-100 sm:p-7">
+                <div className="mb-4 flex items-center gap-2 text-rose-700">
+                  <Heart className="h-4.5 w-4.5 fill-rose-500 text-rose-500" aria-hidden="true" />
+                  <h3 className="text-xs font-bold uppercase tracking-[0.16em]">{t.devotionals.prayerPrompt}</h3>
                 </div>
-                <div className="rounded-2xl p-6" style={{ background: 'var(--secondary-50)' }}>
-                  <p className="leading-relaxed whitespace-pre-line italic text-foreground">
-                    {devotional.prayer}
-                  </p>
-                </div>
+                <p className="whitespace-pre-line text-[15px] italic leading-8 text-slate-700 sm:text-base">
+                  {devotional.prayer}
+                </p>
               </section>
             )}
 
@@ -209,9 +204,14 @@ export function DevotionalDialog({
             <section>
               {accessToken && projectId && currentUserId && currentUserName && devotional.id && (
                 <>
-                  <div className="flex items-center gap-2 mb-3 mt-6" style={{ color: 'var(--primary-700)' }}>
-                    <Heart className="w-5 h-5" style={{ fill: 'var(--primary-700)' }} />
-                    <h3 className="font-semibold">{t.devotionals.prayerTogetherChat}</h3>
+                  <div className="mb-4 flex items-center gap-3">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-50 text-rose-600">
+                      <Heart className="h-4.5 w-4.5 fill-rose-500 text-rose-500" aria-hidden="true" />
+                    </span>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.17em] text-rose-500">Share the moment</p>
+                      <h3 className="font-bold text-slate-900">Reflect together</h3>
+                    </div>
                   </div>
                   <PrayerTogetherChat
                     devotionId={devotional.id}
@@ -227,17 +227,22 @@ export function DevotionalDialog({
 
             {/* Audio Player Section */}
             {devotional.audioUrl && (
-              <section className="space-y-3">
-                <div className="flex items-center gap-2 mb-3 mt-6" style={{ color: 'var(--primary-700)' }}>
-                  <Music className="w-5 h-5" style={{ fill: 'var(--primary-700)' }} />
-                  <h3 className="font-semibold">{t.devotionals.audioReading}</h3>
+              <section className="rounded-[1.5rem] bg-white p-6 shadow-[0_14px_45px_-34px_rgba(15,23,42,0.55)] ring-1 ring-slate-200/70 sm:p-7">
+                <div className="mb-5 flex items-center gap-3">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-50 text-rose-600">
+                    <Music className="h-4.5 w-4.5" aria-hidden="true" />
+                  </span>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.17em] text-rose-500">Listen and reflect</p>
+                    <h3 className="font-bold text-slate-900">{t.devotionals.audioTab}</h3>
+                  </div>
                 </div>
-                <div className="rounded-2xl p-6" style={{ background: 'var(--secondary-50)' }}>
+                <div>
                   {audioError ? (
                     <div className="text-center py-8">
-                      <Music className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
-                      <p className="text-sm text-muted-foreground mb-2">{t.devotionals.unableToLoadAudio}</p>
-                      <p className="text-xs text-muted-foreground">The audio format may not be supported by your browser</p>
+                      <Music className="mx-auto mb-3 h-10 w-10 text-slate-300" aria-hidden="true" />
+                      <p className="mb-1 text-sm font-semibold text-slate-700">Audio unavailable</p>
+                      <p className="text-xs text-slate-500">The audio format may not be supported by your browser.</p>
                     </div>
                   ) : (
                     <>
@@ -247,9 +252,6 @@ export function DevotionalDialog({
                         onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
                         onDurationChange={(e) => setDuration(e.currentTarget.duration)}
                         onEnded={() => setIsPlaying(false)}
-                        onLoadedMetadata={() => {
-                          console.log('Audio loaded successfully:', devotional.audioUrl);
-                        }}
                         onError={() => {
                           setAudioError(true);
                           setIsPlaying(false);
@@ -260,9 +262,10 @@ export function DevotionalDialog({
                       <div className="flex items-center gap-4">
                         {/* Play/Pause Button */}
                         <button
+                          type="button"
                           onClick={togglePlay}
-                          className="w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-105"
-                          style={{ background: 'var(--primary-600)', color: 'var(--primary-foreground)' }}
+                          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-rose-600 text-white shadow-lg shadow-rose-200 transition-all duration-200 hover:scale-105 hover:bg-rose-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-rose-200 motion-reduce:transform-none"
+                          aria-label={isPlaying ? 'Pause devotional audio' : 'Play devotional audio'}
                         >
                           {isPlaying ? (
                             <Pause className="w-5 h-5" />
@@ -273,7 +276,7 @@ export function DevotionalDialog({
 
                         {/* Progress Bar */}
                         <div className="flex-1">
-                          <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+                          <div className="mb-2 flex items-center justify-between text-xs font-medium text-slate-400">
                             <span>{formatTime(currentTime)}</span>
                             <span>{formatTime(duration)}</span>
                           </div>
@@ -288,16 +291,17 @@ export function DevotionalDialog({
                                 setCurrentTime(parseFloat(e.target.value));
                               }
                             }}
-                            className="w-full h-2 rounded-lg appearance-none cursor-pointer"
+                            aria-label="Devotional audio progress"
+                            className="h-1.5 w-full cursor-pointer appearance-none rounded-full"
                             style={{
-                              background: `linear-gradient(to right, var(--primary-600) ${(currentTime / duration) * 100}%, var(--primary-200) ${(currentTime / duration) * 100}%)`
+                              background: `linear-gradient(to right, rgb(225 29 72) ${duration > 0 ? (currentTime / duration) * 100 : 0}%, rgb(255 228 230) ${duration > 0 ? (currentTime / duration) * 100 : 0}%)`
                             }}
                           />
                         </div>
                       </div>
 
-                      <p className="text-xs text-muted-foreground mt-3 text-center">
-                        🎧 {t.devotionals.audioReading}
+                      <p className="mt-3 text-center text-xs text-slate-400">
+                        Listen together at your own pace
                       </p>
                     </>
                   )}
@@ -307,59 +311,29 @@ export function DevotionalDialog({
           </div>
         </div>
 
-        <div
-          style={{
-            padding: 'var(--spacing-4) var(--spacing-6)',
-            borderTop: '1px solid var(--border)',
-            background: 'var(--neutral-50)',
-            display: 'flex',
-            gap: 'var(--spacing-3)',
-          }}
-        >
+        <div className={`grid flex-shrink-0 gap-3 border-t border-slate-200 bg-white/95 p-4 shadow-[0_-12px_35px_-28px_rgba(15,23,42,0.35)] backdrop-blur sm:p-5 ${onComplete ? 'grid-cols-[0.8fr_1.2fr]' : 'grid-cols-1'}`}>
           <Button
             variant="outline"
             onClick={onClose}
-            style={{ flex: 1 }}
+            className="h-12 rounded-full border-slate-200 bg-white font-semibold text-slate-700 shadow-sm hover:border-slate-300 hover:bg-slate-50"
           >
             Close
           </Button>
 
           {/* Always visible — changes to completed state after marking */}
           {onComplete && (
-            <button
+            <Button
               disabled={!!isCompleted}
               onClick={async () => {
                 if (isCompleted) return;
                 await onComplete();
                 onClose();
               }}
-              style={{
-                flex: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 'var(--spacing-2)',
-                padding: 'var(--spacing-3) var(--spacing-4)',
-                borderRadius: 'var(--radius-md)',
-                border: 'none',
-                fontSize: 'var(--text-callout)',
-                fontWeight: 'var(--font-weight-semibold)',
-                cursor: isCompleted ? 'not-allowed' : 'pointer',
-                transition: 'background 200ms, color 200ms',
-                background: isCompleted ? 'var(--neutral-200)' : 'var(--primary-600)',
-                color: isCompleted ? 'var(--neutral-500)' : 'var(--primary-foreground)',
-              }}
+              className="h-12 rounded-full bg-rose-600 px-2 text-xs font-bold text-white shadow-lg shadow-rose-200 transition-all duration-200 hover:bg-rose-700 hover:shadow-xl disabled:bg-emerald-50 disabled:text-emerald-700 disabled:opacity-100 disabled:shadow-none sm:text-sm"
             >
-              <CheckCircle2
-                style={{
-                  width: 'var(--icon-xs)',
-                  height: 'var(--icon-xs)',
-                  flexShrink: 0,
-                  color: isCompleted ? 'var(--success-700)' : 'inherit',
-                }}
-              />
+              <CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden="true" />
               {isCompleted ? 'Completed' : 'Mark as Complete'}
-            </button>
+            </Button>
           )}
         </div>
       </DialogContent>

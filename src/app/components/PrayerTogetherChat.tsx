@@ -171,14 +171,14 @@ export function PrayerTogetherChat({
   }, {} as Record<string, PrayerMessage[]>);
 
   return (
-    <div className="bg-gradient-to-br from-primary-50 to-sky-50 dark:from-primary-900/20 dark:to-sky-900/20 rounded-2xl overflow-hidden flex flex-col border border-primary-100 dark:border-primary-800">
+    <div className="flex flex-col overflow-hidden rounded-[1.5rem] border border-rose-100 bg-gradient-to-br from-white to-rose-50/45 shadow-[0_14px_45px_-34px_rgba(190,24,93,0.45)]">
       {/* Chat Header - Fixed height with 16dp padding */}
-      <div className="bg-gradient-to-r from-primary-600 to-sky-600 text-white px-4 py-3 flex-shrink-0">
+      <div className="flex-shrink-0 bg-gradient-to-r from-rose-600 to-pink-600 px-4 py-3.5 text-white">
         <div className="flex items-center gap-2">
-          <Heart className="w-5 h-5 fill-white" />
+          <Heart className="h-5 w-5 fill-white" aria-hidden="true" />
           <div>
-            <h4 className="font-semibold">What Do Think!</h4>
-            <p className="text-xs opacity-90">Share your Idea and reflections</p>
+            <h4 className="font-semibold">Your shared reflection</h4>
+            <p className="text-xs text-rose-50">Share what this reading stirred in you</p>
           </div>
         </div>
       </div>
@@ -188,15 +188,15 @@ export function PrayerTogetherChat({
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {isLoading ? (
             <div className="flex items-center justify-center h-full">
-              <Loader2 className="w-6 h-6 animate-spin text-primary-600" />
+              <Loader2 className="h-6 w-6 animate-spin text-rose-600" />
             </div>
           ) : messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-4">
-              <div className="w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center mb-3">
-                <Heart className="w-8 h-8 text-primary-600 dark:text-primary-400 fill-primary-600 dark:fill-primary-400" />
+              <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100">
+                <Heart className="h-8 w-8 fill-rose-500 text-rose-500" aria-hidden="true" />
               </div>
-              <p className="text-sm text-muted-foreground  mb-1">Start praying together</p>
-              <p className="text-xs text-muted-foreground dark:text-muted-foreground">
+              <p className="mb-1 text-sm font-semibold text-slate-700">Begin the conversation</p>
+              <p className="text-xs text-slate-500">
                 Share your thoughts, prayers, and reflections about this devotional
               </p>
             </div>
@@ -206,9 +206,9 @@ export function PrayerTogetherChat({
                 <div key={date}>
                   {/* Date Divider - 8dp spacing */}
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="flex-1 h-px bg-primary-200 dark:bg-primary-700" />
-                    <span className="text-xs text-primary-700 dark:text-primary-300 font-medium px-2">{date}</span>
-                    <div className="flex-1 h-px bg-primary-200 dark:bg-primary-700" />
+                    <div className="h-px flex-1 bg-rose-100" />
+                    <span className="px-2 text-xs font-medium text-rose-600">{date}</span>
+                    <div className="h-px flex-1 bg-rose-100" />
                   </div>
 
                   {/* Messages for this date - 12dp spacing */}
@@ -226,12 +226,12 @@ export function PrayerTogetherChat({
                             <div 
                               className={`rounded-2xl px-4 py-3 ${
                                 isCurrentUser 
-                                  ? 'bg-primary-600 text-white rounded-br-sm' 
-                                  : 'bg-card  text-foreground dark:text-neutral-100 rounded-bl-sm shadow-sm'
+                                  ? 'rounded-br-sm bg-rose-600 text-white'
+                                  : 'rounded-bl-sm bg-white text-slate-800 shadow-sm ring-1 ring-slate-100'
                               }`}
                             >
                               {!isCurrentUser && (
-                                <p className="text-xs font-semibold text-primary-600 dark:text-primary-400 mb-1">
+                                <p className="mb-1 text-xs font-semibold text-rose-600">
                                   {message.userName}
                                 </p>
                               )}
@@ -241,7 +241,7 @@ export function PrayerTogetherChat({
                             </div>
                             
                             {/* Timestamp - 4dp margin */}
-                            <p className={`text-xs text-muted-foreground dark:text-muted-foreground mt-1 px-2 ${
+                            <p className={`mt-1 px-2 text-xs text-slate-400 ${
                               isCurrentUser ? 'text-right' : 'text-left'
                             }`}>
                               {formatTime(message.createdAt)}
@@ -259,14 +259,15 @@ export function PrayerTogetherChat({
       </div>
 
       {/* Input Area - Fixed at bottom with 12dp padding */}
-      <div className="border-t border-primary-200 dark:border-primary-700 bg-card  p-3 flex-shrink-0">
+      <div className="flex-shrink-0 border-t border-rose-100 bg-white p-3">
         <div className="flex gap-2 items-end">
           <textarea
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Share your prayer or reflection..."
-            className="flex-1 resize-none rounded-xl border border-primary-200 dark:border-primary-700  dark:text-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent min-h-[44px] max-h-[120px]"
+            aria-label="Shared devotional reflection"
+            className="min-h-[44px] max-h-[120px] flex-1 resize-none rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3 text-sm text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-rose-300 focus:bg-white focus:ring-4 focus:ring-rose-100"
             rows={1}
             disabled={isSending}
           />
@@ -274,7 +275,8 @@ export function PrayerTogetherChat({
             onClick={sendMessage}
             disabled={!newMessage.trim() || isSending}
             size="icon"
-            className="bg-primary-600 hover:bg-primary-700 text-white w-11 h-11 flex-shrink-0 rounded-xl"
+            className="h-11 w-11 flex-shrink-0 rounded-xl bg-rose-600 text-white shadow-sm hover:bg-rose-700"
+            aria-label="Send shared reflection"
           >
             {isSending ? (
               <Loader2 className="w-5 h-5 animate-spin" />
@@ -283,8 +285,8 @@ export function PrayerTogetherChat({
             )}
           </Button>
         </div>
-        <p className="text-xs text-muted-foreground dark:text-muted-foreground mt-2 text-center">
-          Your prayers are saved and shared with {partnerName}
+        <p className="mt-2 text-center text-xs text-slate-400">
+          Shared privately with {partnerName}
         </p>
       </div>
     </div>

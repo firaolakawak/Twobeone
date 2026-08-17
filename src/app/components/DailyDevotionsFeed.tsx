@@ -418,17 +418,24 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full gap-7">
-        <TabsList className="grid h-12 w-full grid-cols-3 border-b border-slate-200 bg-transparent p-0" aria-label="Devotional sections">
-          <TabsTrigger value="devotionals" className="relative h-full rounded-none border-b-2 border-transparent bg-transparent px-1 text-xs font-semibold text-slate-500 shadow-none transition-colors duration-200 hover:text-rose-700 data-[state=active]:border-rose-500 data-[state=active]:bg-transparent data-[state=active]:text-rose-700 data-[state=active]:shadow-none sm:text-sm">
-            <BookOpen className="h-4 w-4" aria-hidden="true" />
-            <span>{t.devotionals.title}</span>
+        <TabsList className="grid h-14 w-full grid-cols-3 gap-1 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-[inset_0_1px_2px_rgba(15,23,42,0.04),0_10px_30px_-24px_rgba(15,23,42,0.45)]" aria-label="Devotional sections">
+          <TabsTrigger value="devotionals" className="group h-full rounded-[0.9rem] border-0 bg-transparent px-2 text-xs font-semibold text-slate-500 shadow-none transition-all duration-200 hover:bg-white/65 hover:text-slate-800 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-[0_4px_14px_-8px_rgba(190,24,93,0.45)] data-[state=active]:ring-1 data-[state=active]:ring-rose-100 sm:text-sm">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-transparent transition-colors group-data-[state=active]:bg-rose-50">
+              <BookOpen className="h-4 w-4" aria-hidden="true" />
+            </span>
+            <span className="hidden sm:inline">{t.devotionals.title}</span>
+            <span className="sm:hidden">Readings</span>
           </TabsTrigger>
-          <TabsTrigger value="audio" className="relative h-full rounded-none border-b-2 border-transparent bg-transparent px-1 text-xs font-semibold text-slate-500 shadow-none transition-colors duration-200 hover:text-rose-700 data-[state=active]:border-rose-500 data-[state=active]:bg-transparent data-[state=active]:text-rose-700 data-[state=active]:shadow-none sm:text-sm">
-            <Headphones className="h-4 w-4" aria-hidden="true" />
+          <TabsTrigger value="audio" className="group h-full rounded-[0.9rem] border-0 bg-transparent px-2 text-xs font-semibold text-slate-500 shadow-none transition-all duration-200 hover:bg-white/65 hover:text-slate-800 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-[0_4px_14px_-8px_rgba(190,24,93,0.45)] data-[state=active]:ring-1 data-[state=active]:ring-rose-100 sm:text-sm">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-transparent transition-colors group-data-[state=active]:bg-rose-50">
+              <Headphones className="h-4 w-4" aria-hidden="true" />
+            </span>
             <span>{t.devotionals.audioTab}</span>
           </TabsTrigger>
-          <TabsTrigger value="verses" className="relative h-full rounded-none border-b-2 border-transparent bg-transparent px-1 text-xs font-semibold text-slate-500 shadow-none transition-colors duration-200 hover:text-rose-700 data-[state=active]:border-rose-500 data-[state=active]:bg-transparent data-[state=active]:text-rose-700 data-[state=active]:shadow-none sm:text-sm">
-            <Bookmark className="h-4 w-4" aria-hidden="true" />
+          <TabsTrigger value="verses" className="group h-full rounded-[0.9rem] border-0 bg-transparent px-2 text-xs font-semibold text-slate-500 shadow-none transition-all duration-200 hover:bg-white/65 hover:text-slate-800 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-[0_4px_14px_-8px_rgba(190,24,93,0.45)] data-[state=active]:ring-1 data-[state=active]:ring-rose-100 sm:text-sm">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-transparent transition-colors group-data-[state=active]:bg-rose-50">
+              <Bookmark className="h-4 w-4" aria-hidden="true" />
+            </span>
             <span>{t.devotionals.versesTab}</span>
           </TabsTrigger>
         </TabsList>
