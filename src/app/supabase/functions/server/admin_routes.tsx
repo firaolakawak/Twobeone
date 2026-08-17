@@ -44,6 +44,24 @@ const APPRECIATION_PUSH = {
 
 export function setupAdminRoutes(app: Hono, supabase: any) {
 
+  app.get('/make-server-6d579fee/admin/push/subscribers', async (c) => {
+    try {
+      const userId = await getUserFromToken(c.req.header('Authorization'), supabase);
+      if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+      if (!(await isAdmin(userId))) return c.json({ error: 'Forbidden - Admin access required' }, 403);
+      const users: any[] = await kv.getByPrefix('user:');
+      const subscribers = (await Promise.all(users.map(async (user: any) => {
+        if (!user?.id) return null;
+        const subscription: any = await kv.get(`push_subscription:${user.id}`).catch(() => null);
+        if (!subscription?.endpoint) return null;
+        return { userId: user.id, name: user.name || user.full_name || 'Unknown user', email: user.email || '', status: 'enabled' };
+      }))).filter(Boolean).sort((first: any, second: any) => first.name.localeCompare(second.name));
+      return c.json({ subscribers, total: subscribers.length });
+    } catch (error: any) {
+      return c.json({ error: error?.message || 'Failed to load push subscribers' }, 500);
+    }
+  });
+
   app.post('/make-server-6d579fee/admin/push/appreciation', async (c) => {
     try {
       const userId = await getUserFromToken(c.req.header('Authorization'), supabase);
@@ -108,6 +126,7 @@ export function setupAdminRoutes(app: Hono, supabase: any) {
       if (!vapidPublicKey || !vapidPrivateKey) throw new Error('VAPID secrets are not configured');
       webpush.setVapidDetails('mailto:support@twobeone.app', vapidPublicKey, vapidPrivateKey);
       let totalSubscribers = 0, sent = 0, failed = 0, invalidSubscriptions = 0;
+      const failureReasons = new Map<string, number>();
       for (let index = 0; index < users.length; index += 20) {
         await Promise.all(users.slice(index, index + 20).map(async (user: any) => {
           if (!user?.id) return;
@@ -119,11 +138,24 @@ export function setupAdminRoutes(app: Hono, supabase: any) {
             sent++;
           } catch (error: any) {
             if (error?.statusCode === 404 || error?.statusCode === 410) { await kv.del(`push_subscription:${user.id}`); invalidSubscriptions++; }
-            else { failed++; }
+            else {
+              failed++;
+              const statusCode = Number(error?.statusCode) || 0;
+              const reason = statusCode === 403
+                ? 'The push service rejected the VAPID key (403). Open TwoBeOne on the device, then disable and re-enable notifications.'
+                : statusCode === 401
+                  ? 'The push service rejected the server authorization (401).'
+                  : statusCode === 429
+                    ? 'The push service is rate limiting requests (429). Try again shortly.'
+                    : statusCode >= 500
+                      ? `The push service is temporarily unavailable (${statusCode}).`
+                      : error?.message || 'The push service rejected the notification.';
+              failureReasons.set(reason, (failureReasons.get(reason) || 0) + 1);
+            }
           }
         }));
       }
-      return c.json({ success: true, message: { title, body, url, templateId }, totalUsers: users.length, totalSubscribers, sent, failed, invalidSubscriptions });
+      return c.json({ success: true, message: { title, body, url, templateId }, totalUsers: users.length, totalSubscribers, sent, failed, invalidSubscriptions, failureReasons: Array.from(failureReasons, ([reason, count]) => ({ reason, count })) });
     } catch (error: any) {
       return c.json({ error: error?.message || 'Failed to send push notification' }, 500);
     }

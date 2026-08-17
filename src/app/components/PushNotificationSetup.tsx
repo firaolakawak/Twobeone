@@ -41,7 +41,26 @@ export function PushNotificationSetup({ userId, accessToken, onComplete }: PushN
         let subscription = await registration.pushManager.getSubscription();
         if (subscription && !pushSubscriptionMatchesCurrentKey(subscription)) {
           await subscription.unsubscribe();
-          subscription = null;
+          // Permission is already granted, so repair a subscription created
+          // before a VAPID rotation without requiring another user prompt.
+          subscription = await subscribeToPushNotifications();
+        }
+
+        // Re-sync the browser's current subscription on every signed-in app
+        // load. This repairs a missing or stale server-side KV record.
+        if (subscription) {
+          const response = await fetch(
+            `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/push-subscription`,
+            {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ subscription: subscription.toJSON() })
+            }
+          );
+          if (!response.ok) throw new Error('Failed to synchronize push subscription');
         }
         setIsSubscribed(!!subscription);
       } catch (error) {

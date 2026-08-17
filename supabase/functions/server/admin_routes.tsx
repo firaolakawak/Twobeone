@@ -71,7 +71,7 @@ const APPRECIATION_PUSH = {
   body: 'We truly appreciate you using the TwoBeOne app. Share it with your friends, loved ones, and family.',
 };
 
-async function logPushAudit(actorId: string, title: string, delivery: Record<string, number>): Promise<void> {
+async function logPushAudit(actorId: string, title: string, delivery: Record<string, unknown>): Promise<void> {
   try {
     const actor = await kv.get(`user:${actorId}`);
     const id = generateId();
@@ -110,6 +110,7 @@ async function deliverPushBroadcast(message: AdminPushMessage) {
     vapidPrivateKey,
   );
   let totalSubscribers = 0, sent = 0, failed = 0, invalidSubscriptions = 0;
+  const failureReasons = new Map<string, number>();
 
   for (let index = 0; index < users.length; index += 20) {
     await Promise.all(users.slice(index, index + 20).map(async (user: any) => {
@@ -134,15 +135,66 @@ async function deliverPushBroadcast(message: AdminPushMessage) {
           invalidSubscriptions++;
         } else {
           failed++;
-          console.error(`[Admin Push] Delivery failed for ${user.id}:`, error?.message || error);
+          const statusCode = Number(error?.statusCode) || 0;
+          const providerBody = typeof error?.body === 'string' ? error.body.slice(0, 500) : '';
+          const reason = statusCode === 403
+            ? 'The push service rejected the VAPID key (403). Open TwoBeOne on the device, then disable and re-enable notifications.'
+            : statusCode === 401
+              ? 'The push service rejected the server authorization (401).'
+              : statusCode === 429
+                ? 'The push service is rate limiting requests (429). Try again shortly.'
+                : statusCode >= 500
+                  ? `The push service is temporarily unavailable (${statusCode}).`
+                  : error?.message || 'The push service rejected the notification.';
+          failureReasons.set(reason, (failureReasons.get(reason) || 0) + 1);
+          console.error(`[Admin Push] Delivery failed for ${user.id}:`, {
+            statusCode: statusCode || null,
+            message: error?.message || String(error),
+            providerBody,
+          });
         }
       }
     }));
   }
-  return { totalUsers: users.length, totalSubscribers, sent, failed, invalidSubscriptions };
+  return {
+    totalUsers: users.length,
+    totalSubscribers,
+    sent,
+    failed,
+    invalidSubscriptions,
+    failureReasons: Array.from(failureReasons, ([reason, count]) => ({ reason, count })),
+  };
 }
 
 export function setupAdminRoutes(app: Hono, supabase: any) {
+
+  app.get('/make-server-6d579fee/admin/push/subscribers', async (c) => {
+    try {
+      const userId = await getUserFromToken(c.req.header('Authorization'), supabase);
+      if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+      if (!(await isAdmin(userId))) return c.json({ error: 'Forbidden - Admin access required' }, 403);
+
+      const users: any[] = await kv.getByPrefix('user:');
+      const subscribers = (await Promise.all(users.map(async (user: any) => {
+        if (!user?.id) return null;
+        const subscription: any = await kv.get(`push_subscription:${user.id}`).catch(() => null);
+        if (!subscription?.endpoint) return null;
+        return {
+          userId: user.id,
+          name: user.name || user.full_name || 'Unknown user',
+          email: user.email || '',
+          status: 'enabled',
+        };
+      })))
+        .filter(Boolean)
+        .sort((first: any, second: any) => first.name.localeCompare(second.name));
+
+      return c.json({ subscribers, total: subscribers.length });
+    } catch (error: any) {
+      console.error('[Admin Push] Failed to load subscribers:', error);
+      return c.json({ error: error?.message || 'Failed to load push subscribers' }, 500);
+    }
+  });
 
   app.post('/make-server-6d579fee/admin/push/appreciation', async (c) => {
     try {

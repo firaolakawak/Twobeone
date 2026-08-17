@@ -3,15 +3,32 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { PushNotificationsManager } from '../PushNotificationsManager';
 
+const subscribers = [{ userId: 'ff89619f-a5cd-41fa-a28b-04f93908afc5', name: 'Firaol Akawak', email: 'fireksf@gmail.com', status: 'enabled' }];
+
+function mockPushApi(delivery = { totalSubscribers: 3, sent: 2, failed: 1, invalidSubscriptions: 0 }) {
+  const fetchMock = vi.fn().mockImplementation((input: string, options?: RequestInit) => {
+    if (input.includes('/admin/push/subscribers') && !options?.method) {
+      return Promise.resolve({ ok: true, json: async () => ({ subscribers, total: subscribers.length }) });
+    }
+    return Promise.resolve({ ok: true, json: async () => delivery });
+  });
+  vi.stubGlobal('fetch', fetchMock);
+  return fetchMock;
+}
+
 describe('PushNotificationsManager', () => {
   afterEach(() => {
     cleanup();
     vi.unstubAllGlobals();
   });
 
-  it('shows the template library and requires audience confirmation', () => {
+  it('shows subscribed users, the template library, and requires audience confirmation', async () => {
+    mockPushApi();
     render(<PushNotificationsManager accessToken="admin-token" />);
 
+    expect(await screen.findByText('Firaol Akawak')).toBeInTheDocument();
+    expect(screen.getByText('fireksf@gmail.com')).toBeInTheDocument();
+    expect(screen.getByText('1 enabled')).toBeInTheDocument();
     expect(screen.getByText('12 templates')).toBeInTheDocument();
     expect(screen.getByRole('combobox', { name: 'Choose a message template' })).toHaveValue('morning-devotional');
     expect(screen.getByRole('option', { name: /Prayer reminder/ })).toBeInTheDocument();
@@ -20,11 +37,7 @@ describe('PushNotificationsManager', () => {
   });
 
   it('sends the admin broadcast and reports its delivery result', async () => {
-    const fetchMock = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ totalSubscribers: 3, sent: 2, failed: 1, invalidSubscriptions: 0 }),
-    });
-    vi.stubGlobal('fetch', fetchMock);
+    const fetchMock = mockPushApi();
     const user = userEvent.setup();
     render(<PushNotificationsManager accessToken="admin-token" />);
 
@@ -44,6 +57,7 @@ describe('PushNotificationsManager', () => {
   });
 
   it('lets an admin create a custom notification', async () => {
+    mockPushApi();
     const user = userEvent.setup();
     render(<PushNotificationsManager accessToken="admin-token" />);
 

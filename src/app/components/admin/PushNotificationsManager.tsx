@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { AlertTriangle, BellRing, CheckCircle2, FilePlus2, Send, Users } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { AlertTriangle, BellRing, CheckCircle2, FilePlus2, RefreshCw, Send, Users } from 'lucide-react';
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
 import '../../styles/push-console.css';
 
@@ -28,7 +28,8 @@ const DESTINATIONS = [
 ];
 
 interface PushNotificationsManagerProps { accessToken?: string; }
-interface DeliveryResult { totalSubscribers: number; sent: number; failed: number; invalidSubscriptions: number; }
+interface DeliveryResult { totalSubscribers: number; sent: number; failed: number; invalidSubscriptions: number; failureReasons: Array<{ reason: string; count: number }>; }
+interface PushSubscriber { userId: string; name: string; email: string; status: 'enabled'; }
 
 export function PushNotificationsManager({ accessToken }: PushNotificationsManagerProps) {
   const initial = PUSH_TEMPLATES[0];
@@ -40,6 +41,9 @@ export function PushNotificationsManager({ accessToken }: PushNotificationsManag
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<DeliveryResult | null>(null);
   const [error, setError] = useState('');
+  const [subscribers, setSubscribers] = useState<PushSubscriber[]>([]);
+  const [subscribersLoading, setSubscribersLoading] = useState(true);
+  const [subscribersError, setSubscribersError] = useState('');
   const categories = useMemo(() => Array.from(new Set(PUSH_TEMPLATES.map((template) => template.category))), []);
   const hasPlaceholder = body.includes('[Add a short verse]');
   const canSend = Boolean(title.trim() && body.trim() && confirmed && !sending && !hasPlaceholder);
@@ -47,6 +51,25 @@ export function PushNotificationsManager({ accessToken }: PushNotificationsManag
   const resetFeedback = () => { setConfirmed(false); setResult(null); setError(''); };
   const chooseTemplate = (template: PushTemplate) => { setSelectedId(template.id); setTitle(template.title); setBody(template.body); setUrl(template.url); resetFeedback(); };
   const createNew = () => { setSelectedId('custom'); setTitle(''); setBody(''); setUrl('/'); resetFeedback(); };
+
+  const loadSubscribers = useCallback(async () => {
+    setSubscribersLoading(true);
+    setSubscribersError('');
+    try {
+      const response = await fetch(`https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/admin/push/subscribers`, {
+        headers: { Authorization: `Bearer ${accessToken || publicAnonKey}` },
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || 'Subscribed users could not be loaded.');
+      setSubscribers(Array.isArray(data.subscribers) ? data.subscribers : []);
+    } catch (loadError) {
+      setSubscribersError(loadError instanceof Error ? loadError.message : 'Subscribed users could not be loaded.');
+    } finally {
+      setSubscribersLoading(false);
+    }
+  }, [accessToken]);
+
+  useEffect(() => { void loadSubscribers(); }, [loadSubscribers]);
 
   const sendNotification = async () => {
     if (!canSend) return;
@@ -59,8 +82,15 @@ export function PushNotificationsManager({ accessToken }: PushNotificationsManag
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || 'The notification could not be sent.');
-      setResult({ totalSubscribers: Number(data.totalSubscribers) || 0, sent: Number(data.sent) || 0, failed: Number(data.failed) || 0, invalidSubscriptions: Number(data.invalidSubscriptions) || 0 });
+      setResult({
+        totalSubscribers: Number(data.totalSubscribers) || 0,
+        sent: Number(data.sent) || 0,
+        failed: Number(data.failed) || 0,
+        invalidSubscriptions: Number(data.invalidSubscriptions) || 0,
+        failureReasons: Array.isArray(data.failureReasons) ? data.failureReasons : [],
+      });
       setConfirmed(false);
+      void loadSubscribers();
     } catch (sendError) { setError(sendError instanceof Error ? sendError.message : 'The notification could not be sent.'); }
     finally { setSending(false); }
   };
@@ -71,6 +101,43 @@ export function PushNotificationsManager({ accessToken }: PushNotificationsManag
         <div><p className="admin-eyebrow">Member communication</p><h1>Push notifications</h1><p>Start with a thoughtful template or create a new message for subscribed members.</p></div>
         <button type="button" className="admin-secondary-button" onClick={createNew}><FilePlus2 aria-hidden="true" />Create new</button>
       </header>
+
+      <section className="push-console__subscribers" aria-labelledby="subscribers-heading">
+        <div className="push-console__subscribers-heading">
+          <div>
+            <p className="admin-eyebrow">Push audience</p>
+            <h2 id="subscribers-heading">Subscribed users</h2>
+            <p>Members with an active browser notification subscription.</p>
+          </div>
+          <div className="push-console__subscribers-actions">
+            <span className="push-console__subscriber-count"><span aria-hidden="true" />{subscribers.length} enabled</span>
+            <button type="button" className="push-console__refresh" onClick={() => void loadSubscribers()} disabled={subscribersLoading} aria-label="Refresh subscribed users">
+              <RefreshCw aria-hidden="true" className={subscribersLoading ? 'is-spinning' : ''} />
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        {subscribersError && <div className="push-console__subscriber-error" role="alert"><AlertTriangle aria-hidden="true" /><span>{subscribersError}</span></div>}
+        {subscribersLoading && subscribers.length === 0 ? (
+          <div className="push-console__subscriber-state" role="status">Loading subscribed users…</div>
+        ) : subscribers.length === 0 ? (
+          <div className="push-console__subscriber-state"><BellRing aria-hidden="true" /><strong>No subscribed users yet</strong><span>Enabled members will appear here after their browser subscription is saved.</span></div>
+        ) : (
+          <div className="push-console__subscriber-table-wrap">
+            <table className="push-console__subscriber-table">
+              <thead><tr><th scope="col">User</th><th scope="col">Email</th><th scope="col">Notification status</th></tr></thead>
+              <tbody>{subscribers.map((subscriber) => (
+                <tr key={subscriber.userId}>
+                  <td><strong>{subscriber.name}</strong><small title={subscriber.userId}>{subscriber.userId}</small></td>
+                  <td>{subscriber.email || 'No email available'}</td>
+                  <td><span className="push-console__status"><span aria-hidden="true" />Enabled</span></td>
+                </tr>
+              ))}</tbody>
+            </table>
+          </div>
+        )}
+      </section>
 
       <section className="push-console__templates" aria-labelledby="template-heading">
         <div className="push-console__templates-heading"><div><h2 id="template-heading">Message templates</h2><p>Select a template, then personalize it before sending.</p></div><span>{PUSH_TEMPLATES.length} templates</span></div>
@@ -107,7 +174,7 @@ export function PushNotificationsManager({ accessToken }: PushNotificationsManag
           <div className="push-console__audience"><Users aria-hidden="true" /><div><strong>All subscribed users</strong><span>Only devices that granted push permission will receive it.</span></div></div>
           <label className="push-console__confirmation"><input type="checkbox" checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} /><span>I have reviewed the message, destination, and audience.</span></label>
           <button className="push-console__send" type="button" disabled={!canSend} onClick={sendNotification}><Send aria-hidden="true" />{sending ? 'Sending notification…' : 'Send push notification'}</button>
-          <div className="push-console__feedback" aria-live="polite">{result && <div className="push-console__result"><CheckCircle2 aria-hidden="true" /><div><strong>Broadcast complete</strong><span>{result.sent} of {result.totalSubscribers} subscribed device{result.totalSubscribers === 1 ? '' : 's'} reached.</span>{(result.failed > 0 || result.invalidSubscriptions > 0) && <small>{result.failed} failed · {result.invalidSubscriptions} expired subscription{result.invalidSubscriptions === 1 ? '' : 's'} removed</small>}</div></div>}{error && <div className="push-console__error" role="alert"><AlertTriangle aria-hidden="true" /><span>{error}</span></div>}</div>
+          <div className="push-console__feedback" aria-live="polite">{result && <div className={result.sent === 0 && result.totalSubscribers > 0 ? 'push-console__error' : 'push-console__result'}>{result.sent === 0 && result.totalSubscribers > 0 ? <AlertTriangle aria-hidden="true" /> : <CheckCircle2 aria-hidden="true" />}<div><strong>{result.sent === 0 && result.totalSubscribers > 0 ? 'Broadcast failed' : 'Broadcast complete'}</strong><span>{result.sent} of {result.totalSubscribers} subscribed device{result.totalSubscribers === 1 ? '' : 's'} reached.</span>{(result.failed > 0 || result.invalidSubscriptions > 0) && <small>{result.failed} failed · {result.invalidSubscriptions} expired subscription{result.invalidSubscriptions === 1 ? '' : 's'} removed</small>}{result.failureReasons.map((failure) => <small key={failure.reason}>{failure.reason}{failure.count > 1 ? ` (${failure.count} devices)` : ''}</small>)}</div></div>}{error && <div className="push-console__error" role="alert"><AlertTriangle aria-hidden="true" /><span>{error}</span></div>}</div>
         </section>
         <aside className="push-console__guidance"><span className="push-console__guidance-icon"><BellRing aria-hidden="true" /></span><h2>Before you send</h2><p>This is a real broadcast and may appear immediately on members’ devices.</p><ul><li>Use a clear title and one focused action.</li><li>Admin authorization is verified by the server.</li><li>Expired subscriptions are removed automatically.</li><li>Every delivery is recorded in the audit log.</li></ul></aside>
       </div>
