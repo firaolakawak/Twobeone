@@ -55,8 +55,6 @@ interface SettingsScreenProps {
   onRefresh?: () => Promise<void>;
   onNavigateToAdmin?: () => void;
   onNavigateToDebug?: () => void;
-  onNavigateToDebugResponses?: () => void;
-  onNavigateToTesting?: () => void;
 }
 
 export function SettingsScreen({ 
@@ -68,9 +66,7 @@ export function SettingsScreen({
   accessToken,
   onRefresh,
   onNavigateToAdmin,
-  onNavigateToDebug,
-  onNavigateToDebugResponses,
-  onNavigateToTesting
+  onNavigateToDebug
 }: SettingsScreenProps) {
   // Language context
   const { language, setLanguage, t } = useLanguage();
@@ -600,21 +596,20 @@ export function SettingsScreen({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary-50/30 to-primary-50/30">
-      {/* Header */}
-      <div className="sticky top-0 z-20 bg-card border-b">
-      </div>
-
-      <div className="max-w-2xl mx-auto px-[0px] py-[10px] pb-[10px] pt-[10px] pr-[2px] pl-[0px]">
-        {/* Profile Header */}
-        <Card className="mb-6 overflow-hidden">
-          <div className="h-24 bg-gradient-to-r from-primary-400 via-primary-500 to-primary-400"></div>
-          <CardContent className="relative pb-6">
-            <div className="flex items-start gap-4 -mt-12">
+    <div className="min-h-screen bg-slate-50/50 text-slate-900">
+      <div className="mx-auto w-full max-w-3xl space-y-7 pb-28">
+        <Card className="relative isolate overflow-hidden rounded-[2rem] border-rose-100 bg-gradient-to-br from-rose-50 via-white to-amber-50 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)]">
+          <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-rose-200/30 blur-3xl" aria-hidden="true" />
+          <CardContent className="relative p-6 sm:p-9">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-xs font-semibold tracking-wide text-rose-700 shadow-sm ring-1 ring-rose-100">
+              <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" aria-hidden="true" />
+              Your shared journey
+            </div>
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
               <div className="relative">
-                <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
+                <Avatar className="h-24 w-24 border-4 border-white shadow-lg ring-1 ring-rose-100">
                   <AvatarImage src={profile?.profilePicture || ""} alt={profile?.name} />
-                  <AvatarFallback className="bg-gradient-to-br from-primary-500 to-primary-600 text-white text-2xl">
+                  <AvatarFallback className="bg-gradient-to-br from-rose-500 to-rose-600 text-2xl text-white">
                     {userInitials}
                   </AvatarFallback>
                 </Avatar>
@@ -628,9 +623,10 @@ export function SettingsScreen({
                 />
                 <Button
                   size="sm"
-                  className="absolute bottom-0 right-0 rounded-full w-8 h-8 p-0 shadow-md bg-card hover:bg-muted text-foreground"
+                  className="absolute bottom-0 right-0 h-8 w-8 rounded-full bg-white p-0 text-slate-700 shadow-md hover:bg-rose-50 hover:text-rose-700"
                   onClick={() => document.getElementById('profile-picture-upload')?.click()}
                   disabled={isUploadingPicture}
+                  aria-label="Change profile picture"
                 >
                   {isUploadingPicture ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -642,20 +638,21 @@ export function SettingsScreen({
                   <Button
                     size="sm"
                     variant="destructive"
-                    className="absolute -top-2 -right-2 rounded-full w-6 h-6 p-0 shadow-md"
+                    className="absolute -right-2 -top-2 h-6 w-6 rounded-full p-0 shadow-md"
                     onClick={handleDeleteProfilePicture}
                     title="Delete profile picture"
+                    aria-label="Delete profile picture"
                   >
                     <Trash2 className="w-3 h-3" />
                   </Button>
                 )}
               </div>
-              <div className="flex-1 mt-12">
-                <h2 className="text-xl font-semibold">{profile?.name || 'Your Name'}</h2>
-                <p className="text-sm text-muted-foreground">{profile?.email}</p>
+              <div className="min-w-0 flex-1">
+                <h1 className="text-3xl font-bold tracking-[-0.035em] text-slate-950">{profile?.name || 'Your Profile'}</h1>
+                <p className="mt-1 truncate text-sm text-slate-500">{profile?.email}</p>
                 {partner && (
-                  <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-                    <Heart className="w-4 h-4 text-primary-500 fill-primary-500" />
+                  <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-sm font-medium text-rose-700 ring-1 ring-rose-100">
+                    <Heart className="h-4 w-4 fill-rose-500 text-rose-500" />
                     <span>Connected with {partner.name}</span>
                   </div>
                 )}
@@ -665,25 +662,25 @@ export function SettingsScreen({
         </Card>
 
         {/* Settings Tabs */}
-        <Tabs defaultValue="personal" className="w-full">
-          <TabsList className="w-full grid grid-cols-5 mb-6">
-            <TabsTrigger value="personal" className="flex items-center gap-2">
+        <Tabs defaultValue="personal" className="w-full gap-6">
+          <TabsList className="mb-6 grid h-14 w-full grid-cols-5 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-inner" aria-label="Profile settings sections">
+            <TabsTrigger value="personal" aria-label="Personal" className="h-full gap-2 rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
               <User className="w-4 h-4" />
               <span className="hidden sm:inline">Personal</span>
             </TabsTrigger>
-            <TabsTrigger value="couple" className="flex items-center gap-2">
+            <TabsTrigger value="couple" aria-label="Couple" className="h-full gap-2 rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
               <Heart className="w-4 h-4" />
               <span className="hidden sm:inline">Couple</span>
             </TabsTrigger>
-            <TabsTrigger value="privacy" className="flex items-center gap-2">
+            <TabsTrigger value="privacy" aria-label="Privacy" className="h-full gap-2 rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
               <Shield className="w-4 h-4" />
               <span className="hidden sm:inline">Privacy</span>
             </TabsTrigger>
-            <TabsTrigger value="notifications" className="flex items-center gap-2">
+            <TabsTrigger value="notifications" aria-label="Alerts" className="h-full gap-2 rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
               <Bell className="w-4 h-4" />
               <span className="hidden sm:inline">Alerts</span>
             </TabsTrigger>
-            <TabsTrigger value="app" className="flex items-center gap-2">
+            <TabsTrigger value="app" aria-label="App settings" className="h-full gap-2 rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
               <Settings className="w-4 h-4" />
               <span className="hidden sm:inline">App</span>
             </TabsTrigger>
@@ -691,7 +688,7 @@ export function SettingsScreen({
 
           {/* Personal Information Tab */}
           <TabsContent value="personal" className="space-y-6">
-            <Card>
+            <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <User className="w-5 h-5" />
@@ -764,7 +761,7 @@ export function SettingsScreen({
                 <Button 
                   onClick={handleSavePersonalInfo} 
                   disabled={isSaving}
-                  className="w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
+                  className="h-11 w-full rounded-full bg-rose-600 font-bold text-white shadow-sm hover:bg-rose-700"
                 >
                   {isSaving ? 'Saving...' : 'Save Changes'}
                 </Button>
@@ -772,7 +769,7 @@ export function SettingsScreen({
             </Card>
 
             {/* Account Actions */}
-            <Card>
+            <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Settings className="w-5 h-5" />
@@ -805,28 +802,6 @@ export function SettingsScreen({
                   </>
                 )}
                 
-                {/* Debug Responses - Available for all users */}
-                {onNavigateToDebugResponses && (
-                  <Button 
-                    variant="outline" 
-                    className="w-full justify-start bg-gradient-to-r from-success-50 to-success-50 border-success-500/50 hover:bg-success-50"
-                    onClick={onNavigateToDebugResponses}
-                  >
-                    <Bug className="w-4 h-4 mr-2 text-success-700" />
-                    <span className="text-success-700">Debug Responses</span>
-                  </Button>
-                )}
-                {/* Testing Dashboard - Available for all users */}
-                {onNavigateToTesting && (
-                  <Button 
-                    variant="outline" 
-                    className="w-full justify-start bg-gradient-to-r from-warning-50 to-error-50 border-warning-500/50 hover:bg-warning-50"
-                    onClick={onNavigateToTesting}
-                  >
-                    <CheckCircle className="w-4 h-4 mr-2 text-warning-700" />
-                    <span className="text-warning-700">🧪 Testing Dashboard</span>
-                  </Button>
-                )}
                 <Button 
                   variant="outline" 
                   className="w-full justify-start"
@@ -858,7 +833,7 @@ export function SettingsScreen({
 
           {/* Couple Settings Tab */}
           <TabsContent value="couple" className="space-y-6">
-            <Card>
+            <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Heart className="w-5 h-5 text-primary-500" />
@@ -886,7 +861,7 @@ export function SettingsScreen({
 
                 {/* Link by Code Section */}
                 {!partner && (
-                  <div className="space-y-3 p-4 bg-gradient-to-r from-primary-50 to-primary-100 rounded-lg border border-primary-200">
+                  <div className="space-y-3 rounded-2xl border border-rose-100 bg-gradient-to-r from-rose-50 to-amber-50 p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Key className="w-5 h-5 text-primary-600" />
                       <h4 className="font-semibold text-primary-900">Link by Code</h4>
@@ -904,7 +879,7 @@ export function SettingsScreen({
                       <Button
                         onClick={handleLinkByCode}
                         disabled={isLinking || !partnerCode}
-                        className="bg-primary-600 hover:bg-primary-700"
+                        className="rounded-full bg-rose-600 hover:bg-rose-700"
                       >
                         {isLinking ? (
                           <><Loader2 className="w-4 h-4 animate-spin" /></>
@@ -1013,7 +988,7 @@ export function SettingsScreen({
                 <Button 
                   onClick={handleSavePersonalInfo}
                   disabled={isSaving}
-                  className="w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
+                  className="h-11 w-full rounded-full bg-rose-600 font-bold text-white shadow-sm hover:bg-rose-700"
                 >
                   {isSaving ? 'Saving...' : 'Save Changes'}
                 </Button>
@@ -1021,7 +996,7 @@ export function SettingsScreen({
             </Card>
 
             {/* Danger Zone */}
-            <Card className="border-error-500/30 bg-error-50/50">
+            <Card className="rounded-[1.5rem] border-error-500/30 bg-error-50/50 shadow-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-error-500">
                   <AlertTriangle className="w-5 h-5" />
@@ -1066,7 +1041,7 @@ export function SettingsScreen({
 
           {/* Privacy Settings Tab */}
           <TabsContent value="privacy" className="space-y-6">
-            <Card>
+            <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="w-5 h-5" />
@@ -1137,14 +1112,14 @@ export function SettingsScreen({
                 <Button 
                   onClick={handleSavePrivacySettings}
                   disabled={isSaving}
-                  className="w-full mt-4 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
+                  className="mt-4 h-11 w-full rounded-full bg-rose-600 font-bold text-white shadow-sm hover:bg-rose-700"
                 >
                   {isSaving ? 'Saving...' : 'Save Privacy Settings'}
                 </Button>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Lock className="w-5 h-5" />
@@ -1175,7 +1150,7 @@ export function SettingsScreen({
 
           {/* Notification Settings Tab */}
           <TabsContent value="notifications" className="space-y-6">
-            <Card>
+            <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Bell className="w-5 h-5" />
@@ -1234,14 +1209,14 @@ export function SettingsScreen({
                 <Button 
                   onClick={handleSaveNotificationSettings}
                   disabled={isSaving}
-                  className="w-full mt-4 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
+                  className="mt-4 h-11 w-full rounded-full bg-rose-600 font-bold text-white shadow-sm hover:bg-rose-700"
                 >
                   {isSaving ? 'Saving...' : 'Save Notification Settings'}
                 </Button>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
               <CardHeader>
                 <CardTitle>Notification Channels</CardTitle>
                 <CardDescription>Choose how you want to receive notifications</CardDescription>
@@ -1276,7 +1251,7 @@ export function SettingsScreen({
           {/* App & PWA Settings Tab */}
           <TabsContent value="app" className="space-y-6">
             {/* Language Selection */}
-            <Card>
+            <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Globe className="w-5 h-5" />
@@ -1330,7 +1305,7 @@ export function SettingsScreen({
             </Card>
 
             {/* Daily Reminders */}
-            <Card>
+            <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Bell className="w-5 h-5" />
@@ -1406,7 +1381,7 @@ export function SettingsScreen({
             <InstallBanner />
 
             {/* Legal Documents Section */}
-            <Card>
+            <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Scale className="w-5 h-5" />

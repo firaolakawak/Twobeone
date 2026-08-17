@@ -64,8 +64,6 @@ const AdminPanel           = lazy(() => import("./components/AdminPanel").then(m
 const CategorySelection    = lazy(() => import("./components/CategorySelection").then(m => ({ default: m.CategorySelection })));
 const QADiscussionHub      = lazy(() => import("./components/QADiscussionHub").then(m => ({ default: m.QADiscussionHub })));
 const DebugQuestions       = lazy(() => import("./components/DebugQuestions").then(m => ({ default: m.DebugQuestions })));
-const DebugResponses       = lazy(() => import("./components/DebugResponses").then(m => ({ default: m.DebugResponses })));
-const TestingDashboard     = lazy(() => import("./components/TestingDashboard").then(m => ({ default: m.TestingDashboard })));
 const ScriptureMemory      = lazy(() => import("./components/ScriptureMemory").then(m => ({ default: m.ScriptureMemory })));
 const CoupleProfile        = lazy(() => import("./components/CoupleProfile").then(m => ({ default: m.CoupleProfile })));
 const CoupleHeader         = lazy(() => import("./components/CoupleHeader").then(m => ({ default: m.CoupleHeader })));
@@ -1178,18 +1176,6 @@ export default function App() {
       new Date().getDate() % REFLECTION_PROMPTS.length
     ];
 
-  if (selectedScreen === "testing") {
-    return (
-      <LanguageProvider>
-        <Suspense fallback={<ScreenLoader />}>
-          <TestingDashboard
-            onBack={() => setSelectedScreen("dashboard")}
-          />
-        </Suspense>
-      </LanguageProvider>
-    );
-  }
-
   if (isAdmin && selectedScreen === "admin") {
     return (
       <LanguageProvider>
@@ -1219,29 +1205,6 @@ export default function App() {
                   ← Back to Dashboard
                 </Button>
                 <DebugQuestions />
-              </div>
-            </div>
-          </div>
-        </Suspense>
-      </LanguageProvider>
-    );
-  }
-
-  if (selectedScreen === "debug-responses") {
-    return (
-      <LanguageProvider>
-        <Suspense fallback={<ScreenLoader />}>
-          <div className="min-h-screen bg-background">
-            <div className="pt-11 pb-28">
-              <div className="max-w-6xl mx-auto px-4">
-                <Button
-                  onClick={() => setSelectedScreen("dashboard")}
-                  variant="outline"
-                  className="mb-4"
-                >
-                  ← Back to Dashboard
-                </Button>
-                <DebugResponses />
               </div>
             </div>
           </div>
@@ -1677,12 +1640,6 @@ export default function App() {
                   }
                   onNavigateToDebug={() =>
                     setSelectedScreen("debug-questions")
-                  }
-                  onNavigateToDebugResponses={() =>
-                    setSelectedScreen("debug-responses")
-                  }
-                  onNavigateToTesting={() =>
-                    setSelectedScreen("testing")
                   }
                 />
               )}
