@@ -13,8 +13,8 @@ describe('PushNotificationsManager', () => {
     render(<PushNotificationsManager accessToken="admin-token" />);
 
     expect(screen.getByText('12 templates')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Morning devotional/ })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: /Prayer reminder/ })).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'Choose a message template' })).toHaveValue('morning-devotional');
+    expect(screen.getByRole('option', { name: /Prayer reminder/ })).toBeInTheDocument();
     expect(screen.getByDisplayValue('Good morning 🌅')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Send push notification' })).toBeDisabled();
   });

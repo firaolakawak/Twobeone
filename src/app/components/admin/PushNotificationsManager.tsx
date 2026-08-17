@@ -74,9 +74,24 @@ export function PushNotificationsManager({ accessToken }: PushNotificationsManag
 
       <section className="push-console__templates" aria-labelledby="template-heading">
         <div className="push-console__templates-heading"><div><h2 id="template-heading">Message templates</h2><p>Select a template, then personalize it before sending.</p></div><span>{PUSH_TEMPLATES.length} templates</span></div>
-        {categories.map((category) => <div className="push-console__template-group" key={category}><h3>{category}</h3><div className="push-console__template-grid">
-          {PUSH_TEMPLATES.filter((template) => template.category === category).map((template) => <button type="button" key={template.id} className="push-console__template" data-selected={selectedId === template.id || undefined} onClick={() => chooseTemplate(template)} aria-pressed={selectedId === template.id}><strong>{template.name}</strong><span>{template.title}</span></button>)}
-        </div></div>)}
+        <label className="push-console__template-select">
+          <span>Choose a message template</span>
+          <select
+            value={selectedId}
+            onChange={(event) => {
+              if (event.target.value === 'custom') return createNew();
+              const template = PUSH_TEMPLATES.find((item) => item.id === event.target.value);
+              if (template) chooseTemplate(template);
+            }}
+          >
+            <option value="custom">Custom notification</option>
+            {categories.map((category) => (
+              <optgroup label={category} key={category}>
+                {PUSH_TEMPLATES.filter((template) => template.category === category).map((template) => <option value={template.id} key={template.id}>{template.name} — {template.title}</option>)}
+              </optgroup>
+            ))}
+          </select>
+        </label>
       </section>
 
       <div className="push-console__layout">
