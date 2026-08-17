@@ -94,9 +94,9 @@ async function sendConfirmationEmail(email: string, token: string): Promise<void
   await resendRequest('/emails', {
     from: fromAddress(),
     to: [email],
-    subject: 'Confirm your TwoBeOne Saturday email',
-    text: `Confirm your subscription to weekly TwoBeOne encouragement, relationship guidance, and app updates:\n\n${confirmationUrl}\n\nIf you did not request this, you can ignore this email.`,
-    html: `<!doctype html><html><body style="background:#fff7f8;font-family:Arial,sans-serif;color:#292524;padding:24px"><div style="max-width:560px;margin:auto;background:#fff;border:1px solid #ffe4e6;border-radius:18px;padding:30px"><div style="color:#be123c;font-weight:bold">TwoBeOne</div><h1 style="font-size:25px">One more step</h1><p style="line-height:1.7">Confirm that you want a short Saturday email with encouragement, practical relationship guidance, appreciation, and TwoBeOne updates.</p><a href="${confirmationUrl}" style="display:inline-block;background:#e11d48;color:#fff;text-decoration:none;padding:12px 20px;border-radius:999px;font-weight:bold">Confirm subscription</a><p style="margin-top:24px;color:#78716c;font-size:12px">If you did not request this, you can ignore this email.</p></div></body></html>`,
+    subject: 'Confirm your TwoBeOne Shabbat Shalom email',
+    text: `Confirm your subscription to Shabbat Shalom—weekly TwoBeOne encouragement, relationship guidance, and app updates:\n\n${confirmationUrl}\n\nIf you did not request this, you can ignore this email.`,
+    html: `<!doctype html><html><body style="background:#fff7f8;font-family:Arial,sans-serif;color:#292524;padding:24px"><div style="max-width:560px;margin:auto;background:#fff;border:1px solid #ffe4e6;border-radius:18px;padding:30px"><div style="color:#be123c;font-weight:bold">TwoBeOne · Shabbat Shalom</div><h1 style="font-size:25px">One more step</h1><p style="line-height:1.7">Confirm that you want Shabbat Shalom: a short Saturday email with encouragement, practical relationship guidance, appreciation, and TwoBeOne updates.</p><a href="${confirmationUrl}" style="display:inline-block;background:#e11d48;color:#fff;text-decoration:none;padding:12px 20px;border-radius:999px;font-weight:bold">Confirm subscription</a><p style="margin-top:24px;color:#78716c;font-size:12px">If you did not request this, you can ignore this email.</p></div></body></html>`,
     headers: { 'X-Entity-Ref-ID': `newsletter-confirm-${digest}` },
   }, `newsletter-confirm-${digest}`);
 }
@@ -232,8 +232,8 @@ newsletter.post('/preference', async c => {
       enabled: payload.enabled,
       email: user.email,
       message: payload.enabled
-        ? 'Saturday emails are enabled.'
-        : 'Saturday emails are paused. Essential account emails are unaffected.',
+        ? 'Shabbat Shalom emails are enabled.'
+        : 'Shabbat Shalom emails are paused. Essential account emails are unaffected.',
     });
   } catch (error: any) {
     console.error('[Newsletter] Preference update error:', error?.message || error);

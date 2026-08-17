@@ -192,7 +192,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
         console.error('[Newsletter] subscribe failed:', err);
         toast.error(err?.error || 'Failed to subscribe to newsletter');
       } else {
-        toast.success("Check your inbox to confirm your Saturday email.");
+        toast.success("Check your inbox to confirm Shabbat Shalom.");
         setEmail("");
       }
     } catch {
@@ -935,7 +935,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
                   Newsletter Subscription
                 </label>
                 <p className="mb-2 text-xs leading-5" style={{ color: "var(--neutral-400)" }}>
-                  One Saturday email with encouragement, relationship guidance, and TwoBeOne updates. Unsubscribe anytime.
+                  Shabbat Shalom: one Saturday email with encouragement, relationship guidance, and TwoBeOne updates. Unsubscribe anytime.
                 </p>
                 <Input
                   id="cta-email"

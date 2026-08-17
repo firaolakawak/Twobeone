@@ -1,9 +1,9 @@
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { WeeklyEmailCard } from '../WeeklyEmailCard';
+import { ShabbatShalomConsole } from '../WeeklyEmailCard';
 
-describe('WeeklyEmailCard', () => {
+describe('ShabbatShalomConsole', () => {
   afterEach(() => {
     cleanup();
     vi.unstubAllGlobals();
@@ -16,10 +16,11 @@ describe('WeeklyEmailCard', () => {
     });
     vi.stubGlobal('fetch', fetchMock);
 
-    render(<WeeklyEmailCard accessToken="user-token" />);
+    render(<ShabbatShalomConsole accessToken="user-token" />);
 
+    expect(screen.getByText('Shabbat Shalom')).toBeInTheDocument();
     expect(await screen.findByText('Active')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Pause Saturday email' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Pause Shabbat Shalom' })).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith(
       expect.stringContaining('/newsletter/preference'),
       expect.objectContaining({ headers: expect.objectContaining({ Authorization: 'Bearer user-token' }) }),
@@ -29,11 +30,11 @@ describe('WeeklyEmailCard', () => {
   it('lets the signed-in user pause the email', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce({ ok: true, json: async () => ({ enabled: true }) })
-      .mockResolvedValueOnce({ ok: true, json: async () => ({ enabled: false, message: 'Saturday emails are paused.' }) });
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ enabled: false, message: 'Shabbat Shalom emails are paused.' }) });
     vi.stubGlobal('fetch', fetchMock);
-    render(<WeeklyEmailCard accessToken="user-token" />);
+    render(<ShabbatShalomConsole accessToken="user-token" />);
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Pause Saturday email' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Pause Shabbat Shalom' }));
 
     expect(await screen.findByText('Paused')).toBeInTheDocument();
     await waitFor(() => expect(fetchMock).toHaveBeenLastCalledWith(

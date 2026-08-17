@@ -4,7 +4,7 @@ import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 
-interface WeeklyEmailCardProps {
+interface ShabbatShalomConsoleProps {
   accessToken?: string;
 }
 
@@ -18,7 +18,7 @@ function requestHeaders(accessToken: string) {
   };
 }
 
-export function WeeklyEmailCard({ accessToken }: WeeklyEmailCardProps) {
+export function ShabbatShalomConsole({ accessToken }: ShabbatShalomConsoleProps) {
   const [enabled, setEnabled] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -61,7 +61,7 @@ export function WeeklyEmailCard({ accessToken }: WeeklyEmailCardProps) {
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || 'Unable to update email preference.');
       setEnabled(Boolean(data.enabled));
-      setMessage(data.message || 'Your Saturday email preference was updated.');
+      setMessage(data.message || 'Your Shabbat Shalom preference was updated.');
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Unable to update email preference.');
     } finally {
@@ -79,8 +79,8 @@ export function WeeklyEmailCard({ accessToken }: WeeklyEmailCardProps) {
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-rose-600">Weekly encouragement</p>
-                <h2 className="mt-1 text-lg font-bold text-foreground">TwoBeOne Saturday Email</h2>
+                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-rose-600">TwoBeOne Saturday console</p>
+                <h2 className="mt-1 text-lg font-bold text-foreground">Shabbat Shalom</h2>
               </div>
               <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${enabled === false ? 'bg-neutral-100 text-neutral-600' : 'bg-emerald-100 text-emerald-700'}`}>
                 {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : enabled === false ? <PauseCircle className="h-3.5 w-3.5" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
@@ -104,7 +104,7 @@ export function WeeklyEmailCard({ accessToken }: WeeklyEmailCardProps) {
               className="mt-4 rounded-full"
             >
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {saving ? 'Updating…' : enabled === false ? 'Resume Saturday email' : 'Pause Saturday email'}
+              {saving ? 'Updating…' : enabled === false ? 'Resume Shabbat Shalom' : 'Pause Shabbat Shalom'}
             </Button>
           </div>
         </div>

@@ -1,4 +1,4 @@
-# TwoBeOne Weekly Newsletter
+# TwoBeOne Shabbat Shalom Weekly Email
 
 The newsletter sends one email each Saturday at 09:00 Africa/Addis_Ababa (06:00 UTC) to registered users and confirmed standalone subscribers.
 

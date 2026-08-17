@@ -47,7 +47,7 @@ export function NewsletterPreferencePage({ action, onComplete }: { action: Newsl
       <section className="mx-auto w-full max-w-md overflow-hidden rounded-[2rem] border border-rose-100 bg-white shadow-[0_24px_70px_-28px_rgba(136,19,55,.35)]">
         <header className="bg-gradient-to-br from-rose-500 to-pink-600 px-7 py-7 text-white">
           <div className="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-white shadow-lg"><Heart className="h-6 w-6 fill-rose-500 text-rose-500" /></div>
-          <h1 className="text-2xl font-bold text-white">TwoBeOne Saturday Email</h1>
+          <h1 className="text-2xl font-bold text-white">Shabbat Shalom</h1>
           <p className="mt-1 text-sm text-white/85">Encouragement and practical guidance for the week ahead.</p>
         </header>
         <div className="space-y-5 p-7 text-center">

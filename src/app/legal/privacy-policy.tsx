@@ -118,7 +118,7 @@ export function PrivacyPolicy({ language = 'en' }: PrivacyPolicyProps) {
               <li><strong>Facilitate Communication:</strong> Share journal entries, prayer requests, and question responses with your partner</li>
               <li><strong>Personalization:</strong> Deliver content in your preferred language, customize devotionals based on progress</li>
               <li><strong>Notifications:</strong> Send daily devotionals, prayer reminders, partner activity updates, milestone celebrations</li>
-              <li><strong>Saturday Email:</strong> Send registered users and standalone subscribers weekly encouragement, relationship guidance, and product updates; every edition includes an unsubscribe option</li>
+              <li><strong>Shabbat Shalom Saturday Email:</strong> Send registered users and standalone subscribers weekly encouragement, relationship guidance, and product updates; every edition includes an unsubscribe option</li>
               <li><strong>Distance Tracking:</strong> Calculate and display physical distance between connected partners (opt-in)</li>
               <li><strong>Service Improvement:</strong> Analyze usage patterns (anonymized) to improve features and user experience</li>
               <li><strong>Security & Safety:</strong> Prevent fraud, ensure account security, enforce Terms of Service</li>

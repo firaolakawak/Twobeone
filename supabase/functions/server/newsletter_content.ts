@@ -132,7 +132,7 @@ export function generateWeeklyNewsletter(date = new Date()): WeeklyNewsletterEdi
   const theme = THEMES[(weekNumber - 1) % THEMES.length];
   return {
     weekKey,
-    subject: `${theme.title} — your Saturday encouragement`,
+    subject: `Shabbat Shalom — ${theme.title}`,
     preheader: 'A short blessing, practical relationship guidance, and one simple step for the week ahead.',
     ...theme,
     appreciation: 'Thank you for making TwoBeOne part of your relationship journey. It is a privilege to support couples who are choosing faith, honesty, and intentional love.',
@@ -158,7 +158,7 @@ export function renderWeeklyNewsletter(
 <div style="display:none;max-height:0;overflow:hidden;opacity:0">${safe.preheader}</div>
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#fff7f8"><tr><td align="center" style="padding:24px 12px">
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:620px;background:#ffffff;border:1px solid #ffe4e6;border-radius:20px;overflow:hidden">
-<tr><td style="padding:30px;background:#be123c;color:#ffffff;text-align:center"><div style="font-size:13px;letter-spacing:2px;text-transform:uppercase">TwoBeOne Saturday Note</div><h1 style="margin:10px 0 0;font-size:28px;line-height:1.2">${safe.title}</h1></td></tr>
+<tr><td style="padding:30px;background:#be123c;color:#ffffff;text-align:center"><div style="font-size:13px;letter-spacing:2px;text-transform:uppercase">TwoBeOne · Shabbat Shalom</div><h1 style="margin:10px 0 0;font-size:28px;line-height:1.2">${safe.title}</h1></td></tr>
 <tr><td style="padding:30px">
 <p style="margin:0 0 22px;font-size:16px;line-height:1.7">${safe.encouragement}</p>
 <div style="margin:0 0 24px;padding:20px;background:#fff1f2;border-left:4px solid #e11d48;border-radius:10px"><p style="margin:0 0 8px;font-size:17px;line-height:1.6;font-style:italic">“${safe.scripture}”</p><p style="margin:0;color:#9f1239;font-weight:bold">${safe.scriptureReference}</p></div>
@@ -167,9 +167,9 @@ export function renderWeeklyNewsletter(
 <div style="padding:20px;background:#f8fafc;border-radius:12px"><div style="font-size:12px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:#64748b">Inside TwoBeOne</div><h2 style="margin:7px 0;font-size:19px">${safe.appFeature}</h2><p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#475569">${safe.appFeatureDescription}</p><a href="${escapeHtml(appUrl)}" style="display:inline-block;padding:11px 18px;background:#e11d48;color:#fff;text-decoration:none;border-radius:999px;font-weight:bold">Open TwoBeOne</a></div>
 <p style="margin:24px 0 0;font-size:14px;line-height:1.7;color:#57534e">${safe.appreciation}</p>
 </td></tr>
-<tr><td style="padding:22px 30px;background:#1c1917;color:#d6d3d1;text-align:center;font-size:12px;line-height:1.6">You received this because you subscribed to TwoBeOne weekly encouragement.<br><a href="${escapeHtml(unsubscribeUrl)}" style="color:#fda4af">Unsubscribe</a> anytime. · <a href="https://www.twobeone.app" style="color:#fda4af">twobeone.app</a></td></tr>
+<tr><td style="padding:22px 30px;background:#1c1917;color:#d6d3d1;text-align:center;font-size:12px;line-height:1.6">You received Shabbat Shalom because you have a TwoBeOne account or subscribed to weekly encouragement.<br><a href="${escapeHtml(unsubscribeUrl)}" style="color:#fda4af">Unsubscribe</a> anytime. · <a href="https://www.twobeone.app" style="color:#fda4af">twobeone.app</a></td></tr>
 </table></td></tr></table></body></html>`;
 
-  const text = `TWO BE ONE — SATURDAY NOTE\n\n${edition.title}\n\n${edition.encouragement}\n\n“${edition.scripture}” — ${edition.scriptureReference}\n\nGUIDANCE FOR THIS WEEK\n${edition.guidance}\n\nTRY THIS TOGETHER\n${edition.weeklyPractice}\n\nINSIDE TWOBEONE: ${edition.appFeature}\n${edition.appFeatureDescription}\nOpen TwoBeOne: ${appUrl}\n\n${edition.appreciation}\n\nYou received this because you subscribed to TwoBeOne weekly encouragement.\nUnsubscribe: ${unsubscribeUrl}`;
+  const text = `TWOBEONE — SHABBAT SHALOM\n\n${edition.title}\n\n${edition.encouragement}\n\n“${edition.scripture}” — ${edition.scriptureReference}\n\nGUIDANCE FOR THIS WEEK\n${edition.guidance}\n\nTRY THIS TOGETHER\n${edition.weeklyPractice}\n\nINSIDE TWOBEONE: ${edition.appFeature}\n${edition.appFeatureDescription}\nOpen TwoBeOne: ${appUrl}\n\n${edition.appreciation}\n\nYou received Shabbat Shalom because you have a TwoBeOne account or subscribed to weekly encouragement.\nUnsubscribe: ${unsubscribeUrl}`;
   return { html, text };
 }

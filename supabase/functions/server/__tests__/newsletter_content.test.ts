@@ -8,7 +8,7 @@ describe('weekly newsletter content', () => {
     const first = generateWeeklyNewsletter(date);
     const second = generateWeeklyNewsletter(new Date('2026-08-23T23:59:00.000Z'));
     expect(first).toEqual(second);
-    expect(first.subject).toContain('Saturday encouragement');
+    expect(first.subject).toContain('Shabbat Shalom');
   });
 
   it('renders accessible HTML and plain text with unsubscribe links', () => {
@@ -20,6 +20,7 @@ describe('weekly newsletter content', () => {
     expect(rendered.html).toContain(unsubscribeUrl.replace('&', '&amp;'));
     expect(rendered.text).toContain(`Unsubscribe: ${unsubscribeUrl}`);
     expect(rendered.text).toContain(edition.scriptureReference);
+    expect(rendered.html).toContain('TwoBeOne · Shabbat Shalom');
   });
 
   it('escapes generated content before inserting it into HTML', () => {
