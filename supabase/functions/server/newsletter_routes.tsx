@@ -332,6 +332,45 @@ newsletter.post('/unsubscribe-one-click', async c => {
   return c.body(null, 200);
 });
 
+newsletter.get('/admin-overview', async c => {
+  try {
+    const admin = await requireAdmin(c);
+    if (admin instanceof Response) return admin;
+    const [storedValues, registeredUsers, campaigns] = await Promise.all([
+      kv.getByPrefix(SUBSCRIBER_PREFIX),
+      getRegisteredEmails(),
+      kv.getByPrefix(CAMPAIGN_PREFIX),
+    ]);
+    const subscribers = storedValues
+      .filter((value: any) => normalizeEmail(value?.email))
+      .map((value: any) => ({ ...value, email: normalizeEmail(value.email) })) as NewsletterSubscriber[];
+    const audience = buildNewsletterAudience(subscribers, registeredUsers).recipients;
+    const registeredEmails = new Set(registeredUsers.map(user => user.email));
+    const optedOutEmails = new Set(
+      subscribers.filter(subscriber => subscriber.status === 'unsubscribed').map(subscriber => subscriber.email),
+    );
+    const lastCampaign = campaigns
+      .filter((campaign: any) => campaign?.weekKey)
+      .sort((first: any, second: any) => String(second.completedAt || second.startedAt || '').localeCompare(String(first.completedAt || first.startedAt || '')))[0] || null;
+
+    return c.json({
+      audience: {
+        total: audience.length,
+        registeredUsers: registeredUsers.length,
+        registeredRecipients: [...registeredEmails].filter(email => !optedOutEmails.has(email)).length,
+        standaloneSubscribers: subscribers.filter(subscriber => subscriber.status === 'active' && subscriber.source !== 'registered_user' && !registeredEmails.has(subscriber.email)).length,
+        pendingConfirmation: subscribers.filter(subscriber => subscriber.status === 'pending' && !registeredEmails.has(subscriber.email)).length,
+        optedOut: optedOutEmails.size,
+      },
+      schedule: { enabled: true, label: 'Saturday at 09:00 Africa/Addis_Ababa', cron: '0 6 * * 6' },
+      lastCampaign,
+    });
+  } catch (error: any) {
+    console.error('[Newsletter] Admin overview error:', error?.message || error);
+    return c.json({ error: 'Unable to load Shabbat Shalom overview.' }, 500);
+  }
+});
+
 newsletter.get('/subscribers', async c => {
   try {
     const admin = await requireAdmin(c);

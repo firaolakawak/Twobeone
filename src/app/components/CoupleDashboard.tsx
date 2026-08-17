@@ -48,7 +48,6 @@ import { moods as moodsApi, milestones as milestonesApi, questions as questionsA
 import { AddMilestoneDialog } from './AddMilestoneDialog';
 import { fetchAmharicChapter, getAmharicBookName } from '../utils/amharicBibleApi';
 import { ChampionsCard } from './ChampionsCard';
-import { ShabbatShalomConsole } from './WeeklyEmailCard';
 
 export interface CoupleDashboardProps {
   profile?: User;
@@ -1349,8 +1348,6 @@ export function CoupleDashboard({
           </button>
         </div>
       </section>
-
-      <ShabbatShalomConsole accessToken={accessToken} />
 
       {/* Quick Stats Grid — neumorphic soft-shadow cards */}
       <div className="grid grid-cols-2 gap-3">

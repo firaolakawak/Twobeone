@@ -6,6 +6,7 @@ import { admin as adminApi } from "../../utils/api";
 import { ActionBar } from "./dashboard/ActionBar";
 import { KPICard } from "./dashboard/KPICard";
 import { Timeline, type TimelineEvent } from "./dashboard/Timeline";
+import { ShabbatShalomConsole } from "./ShabbatShalomConsole";
 import type { KanbanColumn, KanbanStatePayload } from "./dashboard/MiniKanban";
 import "../../styles/dashboard.css";
 
@@ -170,6 +171,8 @@ export function AdminDashboard({ accessToken, onNavigate }: AdminDashboardProps)
       <section className="admin-grid admin-kpi-grid" aria-label="Platform metrics">
         {kpis.map((kpi) => <KPICard key={kpi.label} {...kpi} />)}
       </section>
+
+      <ShabbatShalomConsole accessToken={accessToken} />
 
       <section className="admin-grid admin-dashboard__content">
         <div className="admin-panel admin-dashboard__timeline">
