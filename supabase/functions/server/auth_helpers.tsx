@@ -23,7 +23,7 @@ export async function getUserFromToken(authHeader: string | null): Promise<strin
         { kty: 'oct', k: btoa(String.fromCharCode(...new TextEncoder().encode(secret))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '') },
         'HS256'
       ).catch(() => new TextEncoder().encode(secret));
-      const { payload } = await jose.jwtVerify(token, key as Parameters<typeof jose.jwtVerify>[1]);
+      const { payload } = await jose.jwtVerify(token, key as unknown as Parameters<typeof jose.jwtVerify>[1]);
       if (payload.sub) return payload.sub;
     }
   } catch { /* fall through */ }

@@ -18,7 +18,7 @@ export function PrivacyPolicy({ language = 'en' }: PrivacyPolicyProps) {
             <Shield className="w-16 h-16 text-primary-600" />
           </div>
           <h1 className="text-primary-900">Privacy Policy</h1>
-          <p className="text-muted-foreground">Last Updated: November 22, 2024</p>
+          <p className="text-muted-foreground">Last Updated: August 17, 2026</p>
         </div>
 
         <Card>
@@ -118,6 +118,7 @@ export function PrivacyPolicy({ language = 'en' }: PrivacyPolicyProps) {
               <li><strong>Facilitate Communication:</strong> Share journal entries, prayer requests, and question responses with your partner</li>
               <li><strong>Personalization:</strong> Deliver content in your preferred language, customize devotionals based on progress</li>
               <li><strong>Notifications:</strong> Send daily devotionals, prayer reminders, partner activity updates, milestone celebrations</li>
+              <li><strong>Saturday Email:</strong> Send registered users and standalone subscribers weekly encouragement, relationship guidance, and product updates; every edition includes an unsubscribe option</li>
               <li><strong>Distance Tracking:</strong> Calculate and display physical distance between connected partners (opt-in)</li>
               <li><strong>Service Improvement:</strong> Analyze usage patterns (anonymized) to improve features and user experience</li>
               <li><strong>Security & Safety:</strong> Prevent fraud, ensure account security, enforce Terms of Service</li>
@@ -195,10 +196,13 @@ export function PrivacyPolicy({ language = 'en' }: PrivacyPolicyProps) {
               </div>
 
               <div>
-                <h4 className="font-semibold">Email Service Providers</h4>
+                <h4 className="font-semibold">Resend (Email Delivery)</h4>
                 <p className="text-sm text-muted-foreground">
-                  We may use email services to send important notifications (e.g., disconnection requests). 
-                  Your email is only used for essential service communications.
+                  We use Resend to deliver essential account messages and the weekly Saturday email. Messages are
+                  sent to registered users and confirmed standalone subscribers. You can opt out at any time through
+                  the unsubscribe link included in each edition.
+                  <br />
+                  Privacy Policy: <a href="https://resend.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:underline">https://resend.com/legal/privacy-policy</a>
                 </p>
               </div>
 

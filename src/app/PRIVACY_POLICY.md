@@ -249,7 +249,8 @@ We retain your information for as long as your account is active or as needed to
 ### 5.5 Opt-Out Rights
 You can:
 - Disable push notifications in your device settings
-- Opt out of marketing emails (we don't send them currently)
+- Receive the Saturday email as a registered user or subscribe through the dedicated newsletter form
+- Unsubscribe from weekly encouragement and product-update emails at any time using the link in every edition
 - Disconnect from your partner at any time
 - Pause or disable specific features
 

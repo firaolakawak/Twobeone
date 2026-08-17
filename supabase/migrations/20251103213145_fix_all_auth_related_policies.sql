@@ -1,0 +1,13 @@
+/*\n  # Fix All Auth-Related RLS Policies\n\n  1. Updates\n    - Ensure exchange_rates allows authenticated user submissions\n    - Ensure room_listings allows authenticated user posts\n    - Fix any restrictive policies blocking normal user operations\n    \n  2. Security\n    - Users must be authenticated to submit content\n    - Users can only modify their own content\n    - Public can view all content\n    - Admins have full access\n*/\n\n-- Exchange Rates: Ensure users can insert their own rates\nDROP POLICY IF EXISTS "Authenticated users can submit rates" ON exchange_rates;
+\n\nCREATE POLICY "Authenticated users can submit rates"\n  ON exchange_rates\n  FOR INSERT\n  TO authenticated\n  WITH CHECK (true);
+\n\n-- Users can update their own rates\nDROP POLICY IF EXISTS "Users can update own rates" ON exchange_rates;
+\n\nCREATE POLICY "Users can update own rates"\n  ON exchange_rates\n  FOR UPDATE\n  TO authenticated\n  USING (auth.uid() = user_id OR is_admin(auth.uid()))\n  WITH CHECK (auth.uid() = user_id OR is_admin(auth.uid()));
+\n\n-- Users can delete their own rates\nDROP POLICY IF EXISTS "Users can delete own rates" ON exchange_rates;
+\n\nCREATE POLICY "Users can delete own rates"\n  ON exchange_rates\n  FOR DELETE\n  TO authenticated\n  USING (auth.uid() = user_id OR is_admin(auth.uid()));
+\n\n-- Room Listings: Ensure users can post rooms\nDROP POLICY IF EXISTS "Authenticated users can post rooms" ON room_listings;
+\n\nCREATE POLICY "Authenticated users can post rooms"\n  ON room_listings\n  FOR INSERT\n  TO authenticated\n  WITH CHECK (true);
+\n\n-- Worship Places: Allow authenticated users to suggest places\nDROP POLICY IF EXISTS "Users can suggest worship places" ON worship_places;
+\n\nCREATE POLICY "Users can suggest worship places"\n  ON worship_places\n  FOR INSERT\n  TO authenticated\n  WITH CHECK (true);
+\n\n-- Also update worship places to allow user updates before admin verification\nDROP POLICY IF EXISTS "Users can update own worship places" ON worship_places;
+\n\nCREATE POLICY "Users can update own worship places"\n  ON worship_places\n  FOR UPDATE\n  TO authenticated\n  USING (is_admin(auth.uid()))\n  WITH CHECK (is_admin(auth.uid()));
+\n;

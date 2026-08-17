@@ -1,0 +1,12 @@
+/*\n  # Ensure User Signup Trigger Works Properly\n\n  1. Fix\n    - Recreate the trigger to ensure it fires correctly\n    - Make the function handle duplicates gracefully\n    - Ensure proper permissions\n    \n  2. Security\n    - Function runs as SECURITY DEFINER (bypasses RLS)\n    - Only fires on auth.users INSERT (controlled by Supabase Auth)\n*/\n\n-- Drop and recreate the function with better error handling\nCREATE OR REPLACE FUNCTION public.handle_new_user()\nRETURNS trigger \nSECURITY DEFINER\nSET search_path = public\nAS $$\nBEGIN\n  -- Insert profile only if it doesn't exist\n  INSERT INTO public.user_profiles (id, full_name, preferred_language, created_at)\n  VALUES (\n    NEW.id,\n    COALESCE(NEW.raw_user_meta_data->>'full_name', 'User'),\n    COALESCE(NEW.raw_user_meta_data->>'preferred_language', 'en'),\n    NOW()\n  )\n  ON CONFLICT (id) DO NOTHING;
+\n  \n  RETURN NEW;
+\nEXCEPTION\n  WHEN OTHERS THEN\n    -- Log error but don't fail the user creation\n    RAISE WARNING 'Failed to create user profile: %', SQLERRM;
+\n    RETURN NEW;
+\nEND;
+\n$$ LANGUAGE plpgsql;
+\n\n-- Grant execute permission to service role\nGRANT EXECUTE ON FUNCTION public.handle_new_user() TO service_role;
+\n\n-- Drop existing trigger if it exists\nDROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+\n\n-- Create the trigger\nCREATE TRIGGER on_auth_user_created\n  AFTER INSERT ON auth.users\n  FOR EACH ROW\n  EXECUTE FUNCTION public.handle_new_user();
+\n\n-- Grant necessary permissions\nGRANT INSERT ON public.user_profiles TO service_role;
+\nGRANT USAGE ON SCHEMA public TO service_role;
+\n;

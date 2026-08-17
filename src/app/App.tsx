@@ -16,6 +16,7 @@ import { LanguageSelector } from "./components/LanguageSelector";
 import { SplashScreen } from "./components/SplashScreen";
 import { AuthPage } from "./components/AuthPage";
 import { ResetPasswordPage } from "./components/ResetPasswordPage";
+import { NewsletterPreferencePage } from "./components/NewsletterPreferencePage";
 import { LandingPage } from "./components/LandingPage";
 import { BottomNavigation } from "./components/BottomNavigation";
 import { OfflineIndicator } from "./components/OfflineIndicator";
@@ -208,6 +209,13 @@ export default function App() {
   const [isPasswordRecovery, setIsPasswordRecovery] = useState(
     () => typeof window !== 'undefined' && window.location.pathname === '/reset-password',
   );
+  const newsletterAction = typeof window === 'undefined'
+    ? null
+    : window.location.pathname === '/newsletter/confirm'
+      ? 'confirm' as const
+      : window.location.pathname === '/newsletter/unsubscribe'
+        ? 'unsubscribe' as const
+        : null;
   const [activeTab, setActiveTabRaw] = useState(initialTabFromNotification);
   const [selectedScreen, setSelectedScreenRaw] = useState<
     string | null
@@ -1151,6 +1159,19 @@ export default function App() {
           setAccessToken(null);
           setShowLanding(false);
         }} />
+      </LanguageProvider>
+    );
+  }
+
+  if (newsletterAction) {
+    return (
+      <LanguageProvider>
+        <SEOHead />
+        <Toaster />
+        <NewsletterPreferencePage
+          action={newsletterAction}
+          onComplete={() => { window.location.href = '/'; }}
+        />
       </LanguageProvider>
     );
   }

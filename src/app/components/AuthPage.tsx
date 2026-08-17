@@ -651,6 +651,11 @@ export function AuthPage({ onAuthSuccess }: AuthPageProps) {
 
                   {error && <ErrorBanner message={error} />}
 
+                  <p style={{ margin: 0, fontSize: 'var(--text-label)', lineHeight: 1.5, color: 'var(--muted-foreground)' }}>
+                    Registered accounts receive one Saturday email with encouragement, relationship guidance,
+                    and TwoBeOne updates. Every email includes an unsubscribe link.
+                  </p>
+
                   <button type="submit" disabled={isLoading} style={primaryBtn}>
                     {isLoading && <Loader2 style={{ width: 16, height: 16, animation: 'spin 1s linear infinite' }} />}
                     Create Account
