@@ -51,10 +51,13 @@ export function setupAdminRoutes(app: Hono, supabase: any) {
       if (!(await isAdmin(userId))) return c.json({ error: 'Forbidden - Admin access required' }, 403);
       const users: any[] = await kv.getByPrefix('user:');
       const webpush = await import('npm:web-push@3.6.7');
+      const vapidPublicKey = Deno.env.get('VAPID_PUBLIC_KEY');
+      const vapidPrivateKey = Deno.env.get('VAPID_PRIVATE_KEY');
+      if (!vapidPublicKey || !vapidPrivateKey) throw new Error('VAPID secrets are not configured');
       webpush.setVapidDetails(
         'mailto:support@twobeone.app',
-        Deno.env.get('VAPID_PUBLIC_KEY') || 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDCoXjbK3s9gE8ZCXzp8zQJZs8qI67y_NvZy7p3kk0z0',
-        Deno.env.get('VAPID_PRIVATE_KEY') || 'sMIyJcgzS-OKkMHmQkfO9V5rNkVGXrQvZOJGm3I2QFk',
+        vapidPublicKey,
+        vapidPrivateKey,
       );
       let totalSubscribers = 0, sent = 0, failed = 0, invalidSubscriptions = 0;
       for (let index = 0; index < users.length; index += 20) {
@@ -100,7 +103,10 @@ export function setupAdminRoutes(app: Hono, supabase: any) {
 
       const users: any[] = await kv.getByPrefix('user:');
       const webpush = await import('npm:web-push@3.6.7');
-      webpush.setVapidDetails('mailto:support@twobeone.app', Deno.env.get('VAPID_PUBLIC_KEY') || 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDCoXjbK3s9gE8ZCXzp8zQJZs8qI67y_NvZy7p3kk0z0', Deno.env.get('VAPID_PRIVATE_KEY') || 'sMIyJcgzS-OKkMHmQkfO9V5rNkVGXrQvZOJGm3I2QFk');
+      const vapidPublicKey = Deno.env.get('VAPID_PUBLIC_KEY');
+      const vapidPrivateKey = Deno.env.get('VAPID_PRIVATE_KEY');
+      if (!vapidPublicKey || !vapidPrivateKey) throw new Error('VAPID secrets are not configured');
+      webpush.setVapidDetails('mailto:support@twobeone.app', vapidPublicKey, vapidPrivateKey);
       let totalSubscribers = 0, sent = 0, failed = 0, invalidSubscriptions = 0;
       for (let index = 0; index < users.length; index += 20) {
         await Promise.all(users.slice(index, index + 20).map(async (user: any) => {

@@ -3453,11 +3453,13 @@ app.post('/make-server-6d579fee/share-verse', async (c) => {
       const partnerSubscription = await kv.get(`push_subscription:${profile.partnerId}`);
       if (partnerSubscription) {
         const webpush = await import('npm:web-push@3.6.7');
-        
+        const vapidPublicKey = Deno.env.get('VAPID_PUBLIC_KEY');
+        const vapidPrivateKey = Deno.env.get('VAPID_PRIVATE_KEY');
+        if (!vapidPublicKey || !vapidPrivateKey) throw new Error('VAPID secrets are not configured');
         webpush.setVapidDetails(
           'mailto:support@twobeone.app',
-          'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDCoXjbK3s9gE8ZCXzp8zQJZs8qI67y_NvZy7p3kk0z0',
-          'sMIyJcgzS-OKkMHmQkfO9V5rNkVGXrQvZOJGm3I2QFk'
+          vapidPublicKey,
+          vapidPrivateKey,
         );
 
         const payload = JSON.stringify({

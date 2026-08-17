@@ -5,7 +5,7 @@ import { Card, CardContent } from './ui/card';
 import { Bell, BellOff, Check, X, Smartphone } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { toast } from 'sonner@2.0.3';
-import { requestNotificationPermission, subscribeToPushNotifications } from '../utils/pwa';
+import { requestNotificationPermission, subscribeToPushNotifications, VAPID_PUBLIC_KEY } from '../utils/pwa';
 import { projectId } from '../utils/supabase/info';
 
 interface PushNotificationSetupProps {
@@ -115,7 +115,6 @@ export function PushNotificationSetup({ userId, accessToken, onComplete }: PushN
       setNotificationStatus('granted');
 
       // Subscribe to push notifications using the resolved registration directly
-      const vapidPublicKey = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDCoXjbK3s9gE8ZCXzp8zQJZs8qI67y_NvZy7p3kk0z0';
       const urlBase64ToUint8Array = (base64String: string) => {
         const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
         const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
@@ -128,10 +127,19 @@ export function PushNotificationSetup({ userId, accessToken, onComplete }: PushN
       let subscription: PushSubscription | null = null;
       try {
         subscription = await swRegistration.pushManager.getSubscription();
+        if (subscription?.options.applicationServerKey) {
+          const currentKey = new Uint8Array(subscription.options.applicationServerKey);
+          const expectedKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+          const keysMatch = currentKey.length === expectedKey.length && currentKey.every((value, index) => value === expectedKey[index]);
+          if (!keysMatch) {
+            await subscription.unsubscribe();
+            subscription = null;
+          }
+        }
         if (!subscription) {
           subscription = await swRegistration.pushManager.subscribe({
             userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+            applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
           });
         }
       } catch (subErr: any) {

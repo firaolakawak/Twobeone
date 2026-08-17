@@ -3,10 +3,12 @@ import * as kv from './kv_store.tsx';
 
 const pushRoutes = new Hono();
 
-// VAPID keys (these should match the public key in pwa.ts)
-// Generated using: npx web-push generate-vapid-keys
-const VAPID_PUBLIC_KEY = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDCoXjbK3s9gE8ZCXzp8zQJZs8qI67y_NvZy7p3kk0z0';
-const VAPID_PRIVATE_KEY = 'sMIyJcgzS-OKkMHmQkfO9V5rNkVGXrQvZOJGm3I2QFk';
+function getVapidKeys() {
+  const publicKey = Deno.env.get('VAPID_PUBLIC_KEY');
+  const privateKey = Deno.env.get('VAPID_PRIVATE_KEY');
+  if (!publicKey || !privateKey) throw new Error('VAPID secrets are not configured');
+  return { publicKey, privateKey };
+}
 
 // Helper function to get user ID from auth header
 async function getUserFromToken(authHeader: string | null, supabase: any): Promise<string | null> {
@@ -128,10 +130,11 @@ pushRoutes.post('/send-push', async (c) => {
     try {
       const webpush = await import('npm:web-push@3.6.7');
       
+      const vapid = getVapidKeys();
       webpush.setVapidDetails(
         'mailto:support@twobeone.app',
-        VAPID_PUBLIC_KEY,
-        VAPID_PRIVATE_KEY
+        vapid.publicKey,
+        vapid.privateKey
       );
 
       const payload = JSON.stringify({
@@ -211,10 +214,11 @@ pushRoutes.post('/send-push-to-partner', async (c) => {
     try {
       const webpush = await import('npm:web-push@3.6.7');
       
+      const vapid = getVapidKeys();
       webpush.setVapidDetails(
         'mailto:support@twobeone.app',
-        VAPID_PUBLIC_KEY,
-        VAPID_PRIVATE_KEY
+        vapid.publicKey,
+        vapid.privateKey
       );
 
       const payload = JSON.stringify({

@@ -139,6 +139,7 @@
     "@vitejs/plugin-react": "4.7.0",
     "jsdom": "^30.0.1",
     "sharp": "^0.34.5",
+    "supabase": "^2.114.0",
     "tailwindcss": "4.1.12",
     "vite": "6.3.5",
     "vitest": "^4.1.10"

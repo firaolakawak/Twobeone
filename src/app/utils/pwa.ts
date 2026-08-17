@@ -1,3 +1,5 @@
+export const VAPID_PUBLIC_KEY = 'BHQl6N84eW31B9Hsfx8w5JdSI8XeSpjv79qLxVgBEZS3CDrnVJN3a3QiYDiozdyr0qmPD-R7iK49X6OCF_s7dsg';
+
 /**
  * Register the service worker and ensure it activates immediately.
  */
@@ -86,14 +88,23 @@ export async function subscribeToPushNotifications(): Promise<PushSubscription |
     
     // Check if already subscribed
     let subscription = await registration.pushManager.getSubscription();
+
+    // A subscription is tied to the public key used to create it. Recreate it
+    // automatically after an intentional VAPID key rotation.
+    if (subscription?.options.applicationServerKey) {
+      const currentKey = new Uint8Array(subscription.options.applicationServerKey);
+      const expectedKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+      const keysMatch = currentKey.length === expectedKey.length && currentKey.every((value, index) => value === expectedKey[index]);
+      if (!keysMatch) {
+        await subscription.unsubscribe();
+        subscription = null;
+      }
+    }
     
     if (!subscription) {
-      // VAPID public key for push notifications
-      const vapidPublicKey = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDCoXjbK3s9gE8ZCXzp8zQJZs8qI67y_NvZy7p3kk0z0';
-      
       subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
       });
       
       console.log('[PWA] Push subscription created:', subscription);
