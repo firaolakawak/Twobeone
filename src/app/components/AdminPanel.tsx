@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   BookOpen,
+  BellRing,
   ClipboardList,
   GraduationCap,
   Home,
@@ -22,6 +23,7 @@ import { GroupsManager } from "./admin/GroupsManager";
 import { LandingPageManager } from "./admin/LandingPageManager";
 import { ModulesManager } from "./admin/ModulesManager";
 import { PrivilegeManager } from "./admin/PrivilegeManager";
+import { PushNotificationsManager } from "./admin/PushNotificationsManager";
 import { QuestionsManager } from "./admin/QuestionsManager";
 import { UsersManager } from "./admin/UsersManager";
 import { Sidebar, type SidebarItem } from "./admin/dashboard/Sidebar";
@@ -41,6 +43,7 @@ const sections: SidebarItem[] = [
   { id: "modules", label: "Learning Modules", icon: GraduationCap },
   { id: "groups", label: "Community Groups", icon: Users },
   { id: "users", label: "User Management", icon: TrendingUp },
+  { id: "pushNotifications", label: "Push Notifications", icon: BellRing },
   { id: "landingPage", label: "Landing Page", icon: Home },
   { id: "privileges", label: "Privileges", icon: ShieldCheck },
   { id: "auditLog", label: "Audit Log", icon: ClipboardList },
@@ -73,6 +76,7 @@ export function AdminPanel({ onSignOut, accessToken, onBackToHome }: AdminPanelP
             {activeSection === "modules" && <ModulesManager accessToken={accessToken} />}
             {activeSection === "groups" && <GroupsManager accessToken={accessToken} />}
             {activeSection === "users" && <UsersManager accessToken={accessToken} />}
+            {activeSection === "pushNotifications" && <PushNotificationsManager accessToken={accessToken} />}
             {activeSection === "landingPage" && <LandingPageManager accessToken={accessToken} />}
             {activeSection === "privileges" && <PrivilegeManager accessToken={accessToken} />}
             {activeSection === "auditLog" && <AuditLog accessToken={accessToken || ""} />}

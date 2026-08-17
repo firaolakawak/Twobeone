@@ -66,7 +66,89 @@ async function logPrivilegeAudit(
   }
 }
 
+const APPRECIATION_PUSH = {
+  title: 'Thank you for being part of TwoBeOne 💕',
+  body: 'We truly appreciate you using the TwoBeOne app. Share it with your friends, loved ones, and family.',
+};
+
+async function logPushAudit(actorId: string, delivery: Record<string, number>): Promise<void> {
+  try {
+    const actor = await kv.get(`user:${actorId}`);
+    const id = generateId();
+    const timestamp = new Date().toISOString();
+    await kv.set(`auditlog:${Date.now()}:${id}`, {
+      id,
+      event: 'admin.push_broadcast_sent',
+      category: 'admin',
+      userId: actorId,
+      userName: actor?.name || actor?.full_name || 'Admin',
+      userEmail: actor?.email || '',
+      metadata: { ...delivery, title: APPRECIATION_PUSH.title },
+      timestamp,
+    });
+  } catch (error) {
+    console.error('[Audit] Failed to record push broadcast:', error);
+  }
+}
+
 export function setupAdminRoutes(app: Hono, supabase: any) {
+
+  app.post('/make-server-6d579fee/admin/push/appreciation', async (c) => {
+    try {
+      const userId = await getUserFromToken(c.req.header('Authorization'), supabase);
+      if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+      if (!(await isAdmin(userId))) return c.json({ error: 'Forbidden - Admin access required' }, 403);
+
+      const users: any[] = await kv.getByPrefix('user:');
+      const webpush = await import('npm:web-push@3.6.7');
+      webpush.setVapidDetails(
+        'mailto:support@twobeone.app',
+        Deno.env.get('VAPID_PUBLIC_KEY') || 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDCoXjbK3s9gE8ZCXzp8zQJZs8qI67y_NvZy7p3kk0z0',
+        Deno.env.get('VAPID_PRIVATE_KEY') || 'sMIyJcgzS-OKkMHmQkfO9V5rNkVGXrQvZOJGm3I2QFk',
+      );
+
+      let totalSubscribers = 0;
+      let sent = 0;
+      let failed = 0;
+      let invalidSubscriptions = 0;
+
+      for (let index = 0; index < users.length; index += 20) {
+        await Promise.all(users.slice(index, index + 20).map(async (user: any) => {
+          if (!user?.id) return;
+          const subscription: any = await kv.get(`push_subscription:${user.id}`).catch(() => null);
+          if (!subscription?.endpoint) return;
+          totalSubscribers++;
+
+          try {
+            await webpush.sendNotification(subscription, JSON.stringify({
+              ...APPRECIATION_PUSH,
+              icon: '/icons/icon-192x192.png',
+              badge: '/icons/icon-72x72.png',
+              tag: 'twobeone-appreciation',
+              url: '/',
+              data: { type: 'admin_appreciation', url: '/' },
+            }));
+            sent++;
+          } catch (error: any) {
+            if (error?.statusCode === 404 || error?.statusCode === 410) {
+              await kv.del(`push_subscription:${user.id}`);
+              invalidSubscriptions++;
+            } else {
+              failed++;
+              console.error(`[Admin Push] Delivery failed for ${user.id}:`, error?.message || error);
+            }
+          }
+        }));
+      }
+
+      const delivery = { totalUsers: users.length, totalSubscribers, sent, failed, invalidSubscriptions };
+      await logPushAudit(userId, delivery);
+      return c.json({ success: true, message: APPRECIATION_PUSH, ...delivery });
+    } catch (error: any) {
+      console.error('[Admin Push] Broadcast failed:', error);
+      return c.json({ error: error?.message || 'Failed to send appreciation notification' }, 500);
+    }
+  });
 
   // Persist the editorial MiniKanban order. The whole board is stored as one
   // versioned document so cross-column moves remain atomic.
