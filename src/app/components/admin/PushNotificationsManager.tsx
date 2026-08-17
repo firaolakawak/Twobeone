@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, BellRing, CheckCircle2, FilePlus2, RefreshCw, Send, Users } from 'lucide-react';
+import { AlertTriangle, BellRing, CheckCircle2, FilePlus2, RefreshCw, Send, Sparkles, Users } from 'lucide-react';
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
 import '../../styles/push-console.css';
 
@@ -98,8 +98,11 @@ export function PushNotificationsManager({ accessToken }: PushNotificationsManag
   return (
     <main className="push-console">
       <header className="push-console__hero">
-        <div><p className="admin-eyebrow">Member communication</p><h1>Push notifications</h1><p>Start with a thoughtful template or create a new message for subscribed members.</p></div>
-        <button type="button" className="admin-secondary-button" onClick={createNew}><FilePlus2 aria-hidden="true" />Create new</button>
+        <div><span className="push-console__eyebrow"><Sparkles aria-hidden="true" />Member communication</span><h1>Push Notifications</h1><p>Start with a thoughtful template or create a new message for subscribed members.</p></div>
+        <div className="push-console__hero-actions">
+          <span><i className={subscribersLoading ? 'is-pulsing' : ''} />{subscribersLoading ? 'Syncing subscribers' : 'Delivery service connected'}</span>
+          <button type="button" className="admin-secondary-button" onClick={createNew}><FilePlus2 aria-hidden="true" />Create new</button>
+        </div>
       </header>
 
       <section className="push-console__subscribers" aria-labelledby="subscribers-heading">
@@ -126,12 +129,11 @@ export function PushNotificationsManager({ accessToken }: PushNotificationsManag
         ) : (
           <div className="push-console__subscriber-table-wrap">
             <table className="push-console__subscriber-table">
-              <thead><tr><th scope="col">User</th><th scope="col">Email</th><th scope="col">Notification status</th></tr></thead>
+              <thead><tr><th scope="col">Name</th><th scope="col">Email</th></tr></thead>
               <tbody>{subscribers.map((subscriber) => (
                 <tr key={subscriber.userId}>
-                  <td><strong>{subscriber.name}</strong><small title={subscriber.userId}>{subscriber.userId}</small></td>
+                  <td><strong>{subscriber.name}</strong></td>
                   <td>{subscriber.email || 'No email available'}</td>
-                  <td><span className="push-console__status"><span aria-hidden="true" />Enabled</span></td>
                 </tr>
               ))}</tbody>
             </table>
