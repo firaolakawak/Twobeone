@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { BookOpen, Play, Headphones, Bookmark, CheckCircle2, Trash2, Pause, ArrowRight, Clock3, Heart } from 'lucide-react';
+import { BookOpen, Play, Headphones, Bookmark, CheckCircle2, Trash2, Pause, ArrowRight, Clock3, Heart, Search, X } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
@@ -46,6 +46,7 @@ interface DailyDevotionsFeedProps {
 export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, onBackToHome }: DailyDevotionsFeedProps) {
   const { t, language } = useLanguage();
   const [activeTab, setActiveTab] = useState('devotionals');
+  const [searchQuery, setSearchQuery] = useState('');
   const [devotionals, setDevotionals] = useState<Devotional[]>([]);
   const [isLoadingDevotionals, setIsLoadingDevotionals] = useState(false);
   const [completedDevotionals, setCompletedDevotionals] = useState<Set<string>>(new Set());
@@ -348,8 +349,26 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
     }
   };
 
-  const featuredDevotional = filteredDevotionals[0];
-  const earlierDevotionals = filteredDevotionals.slice(1);
+  const normalizedSearchQuery = searchQuery.trim().toLocaleLowerCase();
+  const matchingDevotionals = normalizedSearchQuery
+    ? filteredDevotionals.filter((devotional) =>
+        [
+          devotional.title,
+          devotional.verse,
+          devotional.reference,
+          devotional.reflection,
+          devotional.prayerPrompt,
+        ].some((value) =>
+          value?.toLocaleLowerCase().includes(normalizedSearchQuery),
+        ),
+      )
+    : filteredDevotionals;
+  const orderedDevotionals = [...matchingDevotionals].sort((first, second) =>
+    Number(completedDevotionals.has(first.id)) -
+    Number(completedDevotionals.has(second.id)),
+  );
+  const featuredDevotional = orderedDevotionals[0];
+  const earlierDevotionals = orderedDevotionals.slice(1);
   const completedVisibleCount = filteredDevotionals.filter((devotional) =>
     completedDevotionals.has(devotional.id),
   ).length;
@@ -422,7 +441,32 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
               <h2 className="mt-1 text-xl font-bold tracking-tight text-slate-950">Daily readings</h2>
             </div>
             {!isLoadingDevotionals && (
-              <span className="shrink-0 text-xs font-medium text-slate-400">{filteredDevotionals.length} {filteredDevotionals.length === 1 ? 'reading' : 'readings'}</span>
+              <span className="shrink-0 text-xs font-medium text-slate-400">{matchingDevotionals.length} {matchingDevotionals.length === 1 ? 'reading' : 'readings'}</span>
+            )}
+          </div>
+          <div className="relative" role="search">
+            <label htmlFor="devotional-search" className="sr-only">Search devotionals</label>
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+            <input
+              id="devotional-search"
+              type="search"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Escape') setSearchQuery('');
+              }}
+              placeholder="Search by title, verse, or topic…"
+              className="h-12 w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-11 text-sm text-slate-900 shadow-[0_8px_25px_-22px_rgba(15,23,42,0.55)] outline-none transition-all placeholder:text-slate-400 hover:border-slate-300 focus:border-rose-300 focus:ring-4 focus:ring-rose-100"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
+                aria-label="Clear devotional search"
+              >
+                <X className="h-4 w-4" aria-hidden="true" />
+              </button>
             )}
           </div>
           {isLoadingDevotionals ? (
@@ -522,6 +566,24 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
                 </div>
               )}
             </div>
+          ) : normalizedSearchQuery ? (
+            <Card className="rounded-[2rem] border-rose-100 bg-gradient-to-br from-white to-rose-50/50 p-10 text-center shadow-sm">
+              <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-rose-100/70 text-rose-500">
+                <Search className="h-6 w-6" aria-hidden="true" />
+              </span>
+              <h3 className="mb-2 text-lg font-bold text-slate-900">No matching devotionals</h3>
+              <p className="mx-auto max-w-sm text-sm leading-6 text-slate-500">
+                Try a different title, Scripture reference, or topic.
+              </p>
+              <Button
+                type="button"
+                variant="ghost"
+                className="mt-4 rounded-full text-rose-700 hover:bg-rose-100/70 hover:text-rose-800"
+                onClick={() => setSearchQuery('')}
+              >
+                Clear search
+              </Button>
+            </Card>
           ) : (
             <Card className="rounded-[2rem] border-rose-100 bg-gradient-to-br from-white to-rose-50/50 p-10 text-center shadow-sm">
               <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-rose-100/70 text-rose-500">
