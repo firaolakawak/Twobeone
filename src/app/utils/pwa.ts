@@ -1,4 +1,11 @@
-export const VAPID_PUBLIC_KEY = 'BHQl6N84eW31B9Hsfx8w5JdSI8XeSpjv79qLxVgBEZS3CDrnVJN3a3QiYDiozdyr0qmPD-R7iK49X6OCF_s7dsg';
+export const VAPID_PUBLIC_KEY = 'BAdWiIHDCd4oOdO9eejIk8YSBR50keH7YQACTNEBlVBJvgQrqBd9OIJ6DdSAJ-wJQ5iSXKzVkDOx8qSfDr0uNos';
+
+export function pushSubscriptionMatchesCurrentKey(subscription: PushSubscription): boolean {
+  if (!subscription.options.applicationServerKey) return false;
+  const currentKey = new Uint8Array(subscription.options.applicationServerKey);
+  const expectedKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+  return currentKey.length === expectedKey.length && currentKey.every((value, index) => value === expectedKey[index]);
+}
 
 /**
  * Register the service worker and ensure it activates immediately.
@@ -91,14 +98,9 @@ export async function subscribeToPushNotifications(): Promise<PushSubscription |
 
     // A subscription is tied to the public key used to create it. Recreate it
     // automatically after an intentional VAPID key rotation.
-    if (subscription?.options.applicationServerKey) {
-      const currentKey = new Uint8Array(subscription.options.applicationServerKey);
-      const expectedKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
-      const keysMatch = currentKey.length === expectedKey.length && currentKey.every((value, index) => value === expectedKey[index]);
-      if (!keysMatch) {
-        await subscription.unsubscribe();
-        subscription = null;
-      }
+    if (subscription && !pushSubscriptionMatchesCurrentKey(subscription)) {
+      await subscription.unsubscribe();
+      subscription = null;
     }
     
     if (!subscription) {

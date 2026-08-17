@@ -5,7 +5,7 @@ import { Card, CardContent } from './ui/card';
 import { Bell, BellOff, Check, X, Smartphone } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { toast } from 'sonner@2.0.3';
-import { requestNotificationPermission, subscribeToPushNotifications, VAPID_PUBLIC_KEY } from '../utils/pwa';
+import { pushSubscriptionMatchesCurrentKey, requestNotificationPermission, subscribeToPushNotifications, VAPID_PUBLIC_KEY } from '../utils/pwa';
 import { projectId } from '../utils/supabase/info';
 
 interface PushNotificationSetupProps {
@@ -38,7 +38,11 @@ export function PushNotificationSetup({ userId, accessToken, onComplete }: PushN
     if (permission === 'granted' && 'serviceWorker' in navigator) {
       try {
         const registration = await navigator.serviceWorker.ready;
-        const subscription = await registration.pushManager.getSubscription();
+        let subscription = await registration.pushManager.getSubscription();
+        if (subscription && !pushSubscriptionMatchesCurrentKey(subscription)) {
+          await subscription.unsubscribe();
+          subscription = null;
+        }
         setIsSubscribed(!!subscription);
       } catch (error) {
         console.error('[PushNotification] Error checking subscription:', error);
@@ -127,14 +131,9 @@ export function PushNotificationSetup({ userId, accessToken, onComplete }: PushN
       let subscription: PushSubscription | null = null;
       try {
         subscription = await swRegistration.pushManager.getSubscription();
-        if (subscription?.options.applicationServerKey) {
-          const currentKey = new Uint8Array(subscription.options.applicationServerKey);
-          const expectedKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
-          const keysMatch = currentKey.length === expectedKey.length && currentKey.every((value, index) => value === expectedKey[index]);
-          if (!keysMatch) {
-            await subscription.unsubscribe();
-            subscription = null;
-          }
+        if (subscription && !pushSubscriptionMatchesCurrentKey(subscription)) {
+          await subscription.unsubscribe();
+          subscription = null;
         }
         if (!subscription) {
           subscription = await swRegistration.pushManager.subscribe({
