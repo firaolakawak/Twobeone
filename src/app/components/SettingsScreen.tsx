@@ -6,7 +6,6 @@ import {
   Bell, 
   Settings, 
   LogOut, 
-  Camera, 
   Phone, 
   MapPin, 
   Calendar, 
@@ -35,6 +34,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Textarea } from './ui/textarea';
 import { PartnerDisconnectDialog } from './PartnerDisconnectDialog';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -169,6 +169,7 @@ export function SettingsScreen({
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUploadingPicture, setIsUploadingPicture] = useState(false);
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
   const [showHelpDialog, setShowHelpDialog] = useState(false);
   const [showContactDialog, setShowContactDialog] = useState(false);
   const [showDisconnectDialog, setShowDisconnectDialog] = useState(false);
@@ -276,6 +277,70 @@ export function SettingsScreen({
     } catch (error) {
       console.error('Failed to delete profile picture:', error);
       toast.error('Failed to delete profile picture');
+    }
+  };
+
+  const handleUploadCoverPicture = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Cover image must be smaller than 10MB');
+      return;
+    }
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+
+    setIsUploadingCover(true);
+    try {
+      const imageData = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error('Failed to read image file'));
+        reader.readAsDataURL(file);
+      });
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/profile/upload-cover`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ imageData, fileName: file.name, contentType: file.type })
+        }
+      );
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'Failed to upload cover picture');
+      toast.success('Cover picture updated!');
+      await onRefresh?.();
+    } catch (error) {
+      console.error('Failed to upload cover picture:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to upload cover picture');
+    } finally {
+      setIsUploadingCover(false);
+    }
+  };
+
+  const handleDeleteCoverPicture = async () => {
+    setIsUploadingCover(true);
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/profile/delete-cover`,
+        { method: 'DELETE', headers: { 'Authorization': `Bearer ${accessToken}` } }
+      );
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'Failed to delete cover picture');
+      toast.success('Cover picture deleted!');
+      await onRefresh?.();
+    } catch (error) {
+      console.error('Failed to delete cover picture:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to delete cover picture');
+    } finally {
+      setIsUploadingCover(false);
     }
   };
 
@@ -599,20 +664,29 @@ export function SettingsScreen({
     <div className="min-h-screen bg-slate-50/50 text-slate-900">
       <div className="mx-auto w-full max-w-3xl space-y-7 pb-28">
         <Card className="relative isolate overflow-hidden rounded-[2rem] border-rose-100 bg-gradient-to-br from-rose-50 via-white to-amber-50 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)]">
-          <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-rose-200/30 blur-3xl" aria-hidden="true" />
-          <CardContent className="relative p-6 sm:p-9">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-xs font-semibold tracking-wide text-rose-700 shadow-sm ring-1 ring-rose-100">
+          <input type="file" id="cover-picture-upload" className="hidden" accept="image/*" onChange={handleUploadCoverPicture} disabled={isUploadingCover} />
+          <div className="relative h-40 overflow-hidden bg-gradient-to-br from-rose-100 via-rose-50 to-amber-100 sm:h-44">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button type="button" disabled={isUploadingCover} className="group absolute inset-0 h-full w-full overflow-hidden text-left outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-rose-300 disabled:cursor-wait" aria-label="Cover picture options">
+                  {profile?.coverPicture && <img src={profile.coverPicture} alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]" />}
+                  <span className={`absolute inset-0 transition-colors ${profile?.coverPicture ? 'bg-gradient-to-t from-slate-950/30 via-transparent to-white/10 group-hover:bg-slate-950/10' : 'bg-[radial-gradient(circle_at_80%_10%,rgba(251,113,133,0.16),transparent_45%)]'}`} aria-hidden="true" />
+                  {isUploadingCover && <span className="absolute inset-0 flex items-center justify-center bg-white/70"><Loader2 className="h-6 w-6 animate-spin text-rose-600" /></span>}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" sideOffset={8} className="w-48 rounded-2xl border-rose-100 p-1.5 shadow-xl">
+                <DropdownMenuItem onSelect={() => document.getElementById('cover-picture-upload')?.click()} className="min-h-10 rounded-xl px-3 font-medium text-slate-700 focus:bg-rose-50 focus:text-rose-700">Change Cover</DropdownMenuItem>
+                <DropdownMenuItem variant="destructive" disabled={!profile?.coverPicture} onSelect={() => void handleDeleteCoverPicture()} className="min-h-10 rounded-xl px-3 font-medium">Delete Cover</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <div className="pointer-events-none absolute left-6 top-6 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold tracking-wide text-rose-700 shadow-sm ring-1 ring-rose-100 backdrop-blur-sm sm:left-9">
               <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" aria-hidden="true" />
               Your shared journey
             </div>
-            <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-              <div className="relative">
-                <Avatar className="h-24 w-24 border-4 border-white shadow-lg ring-1 ring-rose-100">
-                  <AvatarImage src={profile?.profilePicture || ""} alt={profile?.name} />
-                  <AvatarFallback className="bg-gradient-to-br from-rose-500 to-rose-600 text-2xl text-white">
-                    {userInitials}
-                  </AvatarFallback>
-                </Avatar>
+          </div>
+          <CardContent className="relative px-6 pb-7 sm:px-9 sm:pb-9">
+            <div className="flex -mt-11 flex-col gap-5 sm:flex-row sm:items-end">
+              <div>
                 <input
                   type="file"
                   id="profile-picture-upload"
@@ -621,33 +695,29 @@ export function SettingsScreen({
                   onChange={handleUploadProfilePicture}
                   disabled={isUploadingPicture}
                 />
-                <Button
-                  size="sm"
-                  className="absolute bottom-0 right-0 h-8 w-8 rounded-full bg-white p-0 text-slate-700 shadow-md hover:bg-rose-50 hover:text-rose-700"
-                  onClick={() => document.getElementById('profile-picture-upload')?.click()}
-                  disabled={isUploadingPicture}
-                  aria-label="Change profile picture"
-                >
-                  {isUploadingPicture ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Camera className="w-4 h-4" />
-                  )}
-                </Button>
-                {profile?.profilePicture && (
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    className="absolute -right-2 -top-2 h-6 w-6 rounded-full p-0 shadow-md"
-                    onClick={handleDeleteProfilePicture}
-                    title="Delete profile picture"
-                    aria-label="Delete profile picture"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
-                )}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button type="button" disabled={isUploadingPicture} className="group relative block rounded-full outline-none transition-transform hover:scale-[1.02] focus-visible:ring-4 focus-visible:ring-rose-200 disabled:cursor-wait" aria-label="Profile picture options">
+                      <Avatar className="h-24 w-24 border-4 border-white shadow-lg ring-1 ring-rose-100 transition-shadow group-hover:shadow-xl">
+                        <AvatarImage src={profile?.profilePicture || ""} alt={profile?.name} />
+                        <AvatarFallback className="bg-gradient-to-br from-rose-500 to-rose-600 text-2xl text-white">
+                          {userInitials}
+                        </AvatarFallback>
+                      </Avatar>
+                      {isUploadingPicture && <span className="absolute inset-0 flex items-center justify-center rounded-full bg-white/75"><Loader2 className="h-5 w-5 animate-spin text-rose-600" /></span>}
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" sideOffset={10} className="w-48 rounded-2xl border-rose-100 p-1.5 shadow-xl">
+                    <DropdownMenuItem onSelect={() => document.getElementById('profile-picture-upload')?.click()} className="min-h-10 rounded-xl px-3 font-medium text-slate-700 focus:bg-rose-50 focus:text-rose-700">
+                      Change Picture
+                    </DropdownMenuItem>
+                    <DropdownMenuItem variant="destructive" disabled={!profile?.profilePicture} onSelect={() => void handleDeleteProfilePicture()} className="min-h-10 rounded-xl px-3 font-medium">
+                      Delete Picture
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 sm:pb-1">
                 <h1 className="text-3xl font-bold tracking-[-0.035em] text-slate-950">{profile?.name || 'Your Profile'}</h1>
                 <p className="mt-1 truncate text-sm text-slate-500">{profile?.email}</p>
                 {partner && (

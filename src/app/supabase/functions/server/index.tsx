@@ -178,6 +178,7 @@ app.post('/make-server-6d579fee/signup', async (c) => {
       relationshipStart: null,
       bio: null,
       profilePicture: null,
+      coverPicture: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -1018,6 +1019,109 @@ app.delete('/make-server-6d579fee/profile/delete-picture', async (c) => {
   }
 });
 
+// Upload profile cover picture
+app.post('/make-server-6d579fee/profile/upload-cover', async (c) => {
+  try {
+    const userId = await getUserFromToken(c.req.header('Authorization'));
+    if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+
+    const { imageData, contentType } = await c.req.json();
+    const allowedTypes: Record<string, string> = {
+      'image/jpeg': 'jpg',
+      'image/png': 'png',
+      'image/webp': 'webp',
+      'image/gif': 'gif'
+    };
+    if (!imageData || !allowedTypes[contentType]) {
+      return c.json({ error: 'A JPEG, PNG, WebP, or GIF image is required' }, 400);
+    }
+
+    const profile = await kv.get(`user:${userId}`);
+    if (!profile) return c.json({ error: 'Profile not found' }, 404);
+
+    const base64Data = imageData.split(',')[1] || imageData;
+    const buffer = Uint8Array.from(atob(base64Data), (character) => character.charCodeAt(0));
+    if (buffer.byteLength > 10 * 1024 * 1024) {
+      return c.json({ error: 'Cover image must be smaller than 10MB' }, 400);
+    }
+
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+    const bucketName = 'make-6d579fee-profile-covers';
+    const { data: buckets } = await supabase.storage.listBuckets();
+    if (!buckets?.some((bucket) => bucket.name === bucketName)) {
+      const { error: bucketError } = await supabase.storage.createBucket(bucketName, {
+        public: false,
+        fileSizeLimit: 10485760
+      });
+      if (bucketError) return c.json({ error: bucketError.message }, 500);
+    }
+
+    if (profile.coverPicture) {
+      const oldFileName = profile.coverPicture.split('/').pop()?.split('?')[0];
+      if (oldFileName) await supabase.storage.from(bucketName).remove([`${userId}/${oldFileName}`]);
+    }
+
+    const fileName = `cover-${Date.now()}.${allowedTypes[contentType]}`;
+    const filePath = `${userId}/${fileName}`;
+    const { error: uploadError } = await supabase.storage
+      .from(bucketName)
+      .upload(filePath, buffer, { contentType, upsert: true });
+    if (uploadError) return c.json({ error: uploadError.message }, 500);
+
+    const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+      .from(bucketName)
+      .createSignedUrl(filePath, 60 * 60 * 24 * 365 * 10);
+    if (signedUrlError || !signedUrlData?.signedUrl) {
+      await supabase.storage.from(bucketName).remove([filePath]);
+      return c.json({ error: 'Failed to generate cover URL' }, 500);
+    }
+
+    profile.coverPicture = signedUrlData.signedUrl;
+    profile.updatedAt = new Date().toISOString();
+    await kv.set(`user:${userId}`, profile);
+    return c.json({ success: true, imageUrl: profile.coverPicture, profile });
+  } catch (error: any) {
+    console.error('[POST /profile/upload-cover] Error:', error);
+    return c.json({ error: error.message || 'Failed to upload cover picture' }, 500);
+  }
+});
+
+// Delete profile cover picture
+app.delete('/make-server-6d579fee/profile/delete-cover', async (c) => {
+  try {
+    const userId = await getUserFromToken(c.req.header('Authorization'));
+    if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+
+    const profile = await kv.get(`user:${userId}`);
+    if (!profile) return c.json({ error: 'Profile not found' }, 404);
+    if (!profile.coverPicture) return c.json({ error: 'No cover picture to delete' }, 400);
+
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+    const bucketName = 'make-6d579fee-profile-covers';
+    const fileName = profile.coverPicture.split('/').pop()?.split('?')[0];
+    if (fileName) {
+      const { error: deleteError } = await supabase.storage
+        .from(bucketName)
+        .remove([`${userId}/${fileName}`]);
+      if (deleteError) console.error('[DELETE /profile/delete-cover] Storage cleanup failed:', deleteError);
+    }
+
+    profile.coverPicture = null;
+    profile.updatedAt = new Date().toISOString();
+    await kv.set(`user:${userId}`, profile);
+    return c.json({ success: true, profile });
+  } catch (error: any) {
+    console.error('[DELETE /profile/delete-cover] Error:', error);
+    return c.json({ error: error.message || 'Failed to delete cover picture' }, 500);
+  }
+});
+
 // Export user data
 app.get('/make-server-6d579fee/profile/export-data', async (c) => {
   try {
@@ -1065,6 +1169,7 @@ app.get('/make-server-6d579fee/profile/export-data', async (c) => {
         bio: profile.bio,
         phone: profile.phone,
         location: profile.location,
+        coverPicture: profile.coverPicture,
         relationshipStart: profile.relationshipStart,
         inviteCode: profile.inviteCode,
         createdAt: profile.createdAt,
@@ -1184,6 +1289,15 @@ app.delete('/make-server-6d579fee/profile/delete-account', async (c) => {
         const filePath = `${userId}/${fileName}`;
         console.log('[DELETE /profile/delete-account] Deleting profile picture:', filePath);
         await supabase.storage.from(bucketName).remove([filePath]);
+      }
+    }
+
+    if (profile.coverPicture) {
+      const fileName = profile.coverPicture.split('/').pop()?.split('?')[0];
+      if (fileName) {
+        await supabase.storage
+          .from('make-6d579fee-profile-covers')
+          .remove([`${userId}/${fileName}`]);
       }
     }
 
