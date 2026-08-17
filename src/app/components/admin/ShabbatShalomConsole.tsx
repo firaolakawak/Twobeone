@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
 import { CalendarClock, CheckCircle2, Loader2, Mail, RefreshCw, Send, UserCheck, UserMinus, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { projectId } from '../../utils/supabase/info';
@@ -34,13 +34,23 @@ interface NewsletterPreview {
   };
 }
 
+interface RegisteredRecipient {
+  id: string;
+  email: string;
+  name: string;
+  eligible: boolean;
+  status: 'ready' | 'opted_out' | 'already_sent';
+}
+
 const apiBase = `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/newsletter`;
 
 export function ShabbatShalomConsole({ accessToken }: ShabbatShalomConsoleProps) {
   const [overview, setOverview] = useState<AdminOverview | null>(null);
   const [preview, setPreview] = useState<NewsletterPreview | null>(null);
+  const [recipients, setRecipients] = useState<RegisteredRecipient[]>([]);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
-  const [testEmail, setTestEmail] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
 
@@ -58,16 +68,21 @@ export function ShabbatShalomConsole({ accessToken }: ShabbatShalomConsoleProps)
     setLoading(true);
     setError('');
     try {
-      const [overviewResponse, previewResponse] = await Promise.all([
+      const [overviewResponse, previewResponse, recipientsResponse] = await Promise.all([
         fetch(`${apiBase}/admin-overview`, { headers: headers() }),
         fetch(`${apiBase}/preview`, { headers: headers() }),
+        fetch(`${apiBase}/admin-recipients`, { headers: headers() }),
       ]);
       const overviewData = await overviewResponse.json().catch(() => ({}));
       const previewData = await previewResponse.json().catch(() => ({}));
+      const recipientsData = await recipientsResponse.json().catch(() => ({}));
       if (!overviewResponse.ok) throw new Error(overviewData.error || 'Unable to load the audience overview.');
       if (!previewResponse.ok) throw new Error(previewData.error || 'Unable to load the weekly preview.');
+      if (!recipientsResponse.ok) throw new Error(recipientsData.error || 'Unable to load registered users.');
       setOverview(overviewData);
       setPreview(previewData);
+      setRecipients(Array.isArray(recipientsData.users) ? recipientsData.users : []);
+      setSelectedIds(new Set());
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : 'Unable to load Shabbat Shalom.');
     } finally {
@@ -79,24 +94,51 @@ export function ShabbatShalomConsole({ accessToken }: ShabbatShalomConsoleProps)
     void loadConsole();
   }, [loadConsole]);
 
-  const sendTest = async (event: FormEvent) => {
+  const sendSelected = async (event: FormEvent) => {
     event.preventDefault();
-    if (!accessToken || !testEmail.trim()) return;
+    if (!accessToken || !selectedIds.size) return;
+    const confirmed = window.confirm(`Send the actual Shabbat Shalom edition to ${selectedIds.size} selected registered user(s) now?`);
+    if (!confirmed) return;
     setSending(true);
     try {
-      const response = await fetch(`${apiBase}/test`, {
+      const response = await fetch(`${apiBase}/send-selected`, {
         method: 'POST',
         headers: headers(),
-        body: JSON.stringify({ email: testEmail.trim() }),
+        body: JSON.stringify({ userIds: [...selectedIds], requestId: crypto.randomUUID() }),
       });
       const data = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(data.error || 'Unable to send the test email.');
-      toast.success(`Shabbat Shalom test sent to ${testEmail.trim()}`);
+      if (!response.ok) throw new Error(data.error || 'Unable to send Shabbat Shalom.');
+      toast.success(`Shabbat Shalom sent to ${data.sent || 0} user(s)${data.skipped ? `; ${data.skipped} skipped` : ''}.`);
+      await loadConsole();
     } catch (sendError) {
-      toast.error(sendError instanceof Error ? sendError.message : 'Unable to send the test email.');
+      toast.error(sendError instanceof Error ? sendError.message : 'Unable to send Shabbat Shalom.');
     } finally {
       setSending(false);
     }
+  };
+
+  const visibleRecipients = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return recipients;
+    return recipients.filter(recipient => `${recipient.name} ${recipient.email}`.toLowerCase().includes(query));
+  }, [recipients, search]);
+
+  const toggleRecipient = (recipient: RegisteredRecipient) => {
+    if (!recipient.eligible) return;
+    setSelectedIds(current => {
+      const next = new Set(current);
+      if (next.has(recipient.id)) next.delete(recipient.id);
+      else next.add(recipient.id);
+      return next;
+    });
+  };
+
+  const selectVisible = () => {
+    setSelectedIds(current => {
+      const next = new Set(current);
+      visibleRecipients.filter(recipient => recipient.eligible).forEach(recipient => next.add(recipient.id));
+      return next;
+    });
   };
 
   const metrics = overview ? [
@@ -158,17 +200,31 @@ export function ShabbatShalomConsole({ accessToken }: ShabbatShalomConsoleProps)
               </dl>
             </article>
 
-            <form className="admin-shabbat__test" onSubmit={sendTest}>
-              <p className="admin-eyebrow">Delivery test</p>
-              <h3>Send this edition to yourself</h3>
-              <p>This sends one test only. It does not start the user campaign.</p>
-              <label htmlFor="shabbat-test-email">Test email address</label>
-              <input id="shabbat-test-email" type="email" value={testEmail} onChange={event => setTestEmail(event.target.value)} placeholder="admin@example.com" required />
-              <button className="admin-shabbat__send" type="submit" disabled={sending || !testEmail.trim()}>
+            <form className="admin-shabbat__delivery" onSubmit={sendSelected}>
+              <p className="admin-eyebrow">Actual delivery</p>
+              <h3>Select registered users</h3>
+              <p>Send the current edition now. Opted-out users and users already sent this week cannot be selected.</p>
+              <label htmlFor="shabbat-recipient-search">Search registered users</label>
+              <input id="shabbat-recipient-search" type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder="Name or email" />
+              <div className="admin-shabbat__selection-actions">
+                <button type="button" onClick={selectVisible}>Select eligible shown</button>
+                <button type="button" onClick={() => setSelectedIds(new Set())}>Clear</button>
+                <strong>{selectedIds.size} selected</strong>
+              </div>
+              <div className="admin-shabbat__recipient-list" role="group" aria-label="Registered email recipients">
+                {visibleRecipients.length ? visibleRecipients.map(recipient => (
+                  <label key={recipient.id} data-disabled={!recipient.eligible || undefined}>
+                    <input type="checkbox" checked={selectedIds.has(recipient.id)} disabled={!recipient.eligible} onChange={() => toggleRecipient(recipient)} />
+                    <span><strong>{recipient.name || 'TwoBeOne user'}</strong><small>{recipient.email}</small></span>
+                    <em>{recipient.status === 'ready' ? 'Ready' : recipient.status === 'opted_out' ? 'Opted out' : 'Sent this week'}</em>
+                  </label>
+                )) : <p className="admin-empty">No registered users match this search.</p>}
+              </div>
+              <button className="admin-shabbat__send" type="submit" disabled={sending || !selectedIds.size}>
                 {sending ? <Loader2 className="admin-spin" aria-hidden="true" /> : <Send aria-hidden="true" />}
-                {sending ? 'Sending…' : 'Send test email'}
+                {sending ? 'Sending actual email…' : `Send now to ${selectedIds.size} selected`}
               </button>
-              <small>{overview.audience.pendingConfirmation} standalone subscriber(s) awaiting confirmation.</small>
+              <small>Manual recipients are recorded and will not receive this edition again from Saturday automation.</small>
             </form>
           </div>
         </>

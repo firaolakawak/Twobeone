@@ -83,24 +83,42 @@
 .admin-shabbat__metrics svg { grid-row: span 2; align-self: center; width: 20px; color: var(--admin-color-primary); }
 .admin-shabbat__metrics span { color: var(--admin-color-text-muted); font-size: .72rem; }
 .admin-shabbat__metrics strong { font-size: 1.35rem; }
-.admin-shabbat__workspace { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(260px, .8fr); gap: var(--admin-space-3); margin-top: var(--admin-space-3); }
-.admin-shabbat__preview, .admin-shabbat__test { padding: var(--admin-space-3); border: 1px solid var(--admin-color-border); border-radius: var(--admin-radius-sm); background: var(--admin-color-surface); }
-.admin-shabbat__preview h3, .admin-shabbat__test h3 { margin: 5px 0 9px; font-size: 1.05rem; }
-.admin-shabbat__preview > p:not(.admin-eyebrow), .admin-shabbat__test > p:not(.admin-eyebrow) { margin: 0; font-size: .86rem; line-height: 1.55; }
+.admin-shabbat__workspace { display: grid; grid-template-columns: minmax(0, 1fr) minmax(340px, 1fr); gap: var(--admin-space-3); margin-top: var(--admin-space-3); }
+.admin-shabbat__preview, .admin-shabbat__delivery { padding: var(--admin-space-3); border: 1px solid var(--admin-color-border); border-radius: var(--admin-radius-sm); background: var(--admin-color-surface); }
+.admin-shabbat__preview h3, .admin-shabbat__delivery h3 { margin: 5px 0 9px; font-size: 1.05rem; }
+.admin-shabbat__preview > p:not(.admin-eyebrow), .admin-shabbat__delivery > p:not(.admin-eyebrow) { margin: 0; font-size: .86rem; line-height: 1.55; }
 .admin-shabbat__preview blockquote { margin: 14px 0; padding: 13px 15px; border-left: 3px solid var(--admin-color-primary); border-radius: 0 var(--admin-radius-sm) var(--admin-radius-sm) 0; background: var(--admin-color-primary-soft); font-size: .86rem; line-height: 1.55; }
 .admin-shabbat__preview cite { display: block; margin-top: 5px; color: var(--admin-color-primary); font-style: normal; font-weight: 750; }
 .admin-shabbat__preview dl { display: grid; gap: 10px; margin: 0; }
 .admin-shabbat__preview dl div { display: grid; grid-template-columns: 120px 1fr; gap: 10px; }
 .admin-shabbat__preview dt { color: var(--admin-color-text-muted); font-size: .75rem; font-weight: 800; text-transform: uppercase; }
 .admin-shabbat__preview dd { margin: 0; font-size: .82rem; line-height: 1.45; }
-.admin-shabbat__test { align-self: start; }
-.admin-shabbat__test label { display: block; margin-top: 18px; color: var(--admin-color-text-muted); font-size: .76rem; font-weight: 750; }
-.admin-shabbat__test input { width: 100%; min-height: 43px; margin-top: 6px; padding: 0 12px; border: 1px solid var(--admin-color-border); border-radius: var(--admin-radius-sm); background: var(--admin-color-surface); color: var(--admin-color-text); font: inherit; }
-.admin-shabbat__test input:focus { border-color: var(--admin-color-primary); outline: 2px solid var(--admin-color-primary-soft); }
+.admin-shabbat__delivery { align-self: start; }
+.admin-shabbat__delivery > label { display: block; margin-top: 18px; color: var(--admin-color-text-muted); font-size: .76rem; font-weight: 750; }
+.admin-shabbat__delivery > input { width: 100%; min-height: 43px; margin-top: 6px; padding: 0 12px; border: 1px solid var(--admin-color-border); border-radius: var(--admin-radius-sm); background: var(--admin-color-surface); color: var(--admin-color-text); font: inherit; }
+.admin-shabbat__delivery > input:focus { border-color: var(--admin-color-primary); outline: 2px solid var(--admin-color-primary-soft); }
+.admin-shabbat__selection-actions { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+.admin-shabbat__selection-actions button { padding: 6px 9px; border: 1px solid var(--admin-color-border); border-radius: var(--admin-radius-pill); background: var(--admin-color-surface); color: var(--admin-color-text); font-size: .72rem; font-weight: 750; cursor: pointer; }
+.admin-shabbat__selection-actions button:hover { border-color: var(--admin-color-primary); color: var(--admin-color-primary); }
+.admin-shabbat__selection-actions strong { margin-left: auto; color: var(--admin-color-primary); font-size: .74rem; }
+.admin-shabbat__recipient-list { max-height: 320px; overflow-y: auto; border: 1px solid var(--admin-color-border); border-radius: var(--admin-radius-sm); background: var(--admin-color-surface-muted); }
+.admin-shabbat__recipient-list > label { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 10px 11px; border-bottom: 1px solid var(--admin-color-border); cursor: pointer; }
+.admin-shabbat__recipient-list > label:last-child { border-bottom: 0; }
+.admin-shabbat__recipient-list > label:hover { background: var(--admin-color-primary-soft); }
+.admin-shabbat__recipient-list > label[data-disabled] { cursor: not-allowed; opacity: .62; }
+.admin-shabbat__recipient-list > label[data-disabled]:hover { background: transparent; }
+.admin-shabbat__recipient-list input { width: 16px; height: 16px; accent-color: var(--admin-color-primary); }
+.admin-shabbat__recipient-list label > span { display: grid; min-width: 0; gap: 2px; }
+.admin-shabbat__recipient-list label strong, .admin-shabbat__recipient-list label small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admin-shabbat__recipient-list label strong { font-size: .78rem; }
+.admin-shabbat__recipient-list label small { color: var(--admin-color-text-muted); font-size: .7rem; }
+.admin-shabbat__recipient-list em { padding: 4px 7px; border-radius: var(--admin-radius-pill); background: var(--admin-color-success-soft); color: var(--admin-color-success); font-size: .65rem; font-style: normal; font-weight: 800; white-space: nowrap; }
+.admin-shabbat__recipient-list label[data-disabled] em { background: var(--admin-color-surface); color: var(--admin-color-text-muted); }
+.admin-shabbat__recipient-list .admin-empty { margin: 0; padding: 18px; text-align: center; }
 .admin-shabbat__send { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 43px; margin-top: 10px; border: 0; border-radius: var(--admin-radius-pill); background: var(--admin-color-action); color: #fff; font-weight: 800; cursor: pointer; }
 .admin-shabbat__send:disabled { cursor: not-allowed; opacity: .55; }
 .admin-shabbat__send svg { width: 17px; }
-.admin-shabbat__test small { display: block; margin-top: 12px; color: var(--admin-color-text-muted); }
+.admin-shabbat__delivery > small { display: block; margin-top: 12px; color: var(--admin-color-text-muted); }
 .admin-shabbat__loading, .admin-shabbat__error { margin-top: var(--admin-space-4); padding: var(--admin-space-4); border-radius: var(--admin-radius-sm); }
 .admin-shabbat__loading { display: flex; align-items: center; justify-content: center; gap: 9px; background: var(--admin-color-surface-muted); color: var(--admin-color-text-muted); }
 .admin-shabbat__loading svg, .admin-spin { width: 18px; animation: admin-spin 1s linear infinite; }

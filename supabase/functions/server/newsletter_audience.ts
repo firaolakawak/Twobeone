@@ -13,6 +13,7 @@ export interface NewsletterSubscriber {
 export interface RegisteredEmail {
   id: string;
   email: string;
+  name?: string;
   createdAt?: string;
   confirmedAt?: string;
 }

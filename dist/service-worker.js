@@ -1,5 +1,5 @@
-const CACHE_NAME = 'twobeone-shell-v3';
-const RUNTIME_CACHE = 'twobeone-runtime-v3';
+const CACHE_NAME = 'twobeone-shell-v4';
+const RUNTIME_CACHE = 'twobeone-runtime-v4';
 const OFFLINE_URL = '/offline.html';
 
 // Files to cache immediately on install

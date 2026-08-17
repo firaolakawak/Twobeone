@@ -12,6 +12,8 @@ const newsletter = new Hono();
 const SUBSCRIBER_PREFIX = 'newsletter:';
 const TOKEN_PREFIX = 'newsletter_token:';
 const CAMPAIGN_PREFIX = 'newsletter_campaign:';
+const DELIVERY_PREFIX = 'newsletter_delivery:';
+const ADMIN_SEND_PREFIX = 'newsletter_admin_send:';
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const CONFIRMATION_TTL_MS = 24 * 60 * 60 * 1000;
 const SITE_ORIGIN = 'https://www.twobeone.app';
@@ -63,6 +65,28 @@ async function ensureUnsubscribeToken(subscriber: NewsletterSubscriber): Promise
   return token;
 }
 
+function deliveryPrefix(weekKey: string): string {
+  return `${DELIVERY_PREFIX}${weekKey}:`;
+}
+
+async function deliveredEmailsForWeek(weekKey: string): Promise<Set<string>> {
+  const deliveries = await kv.getByPrefix(deliveryPrefix(weekKey));
+  return new Set(deliveries.map((delivery: any) => normalizeEmail(delivery?.email)).filter(Boolean) as string[]);
+}
+
+async function recordDeliveries(
+  weekKey: string,
+  subscribers: NewsletterSubscriber[],
+  source: 'scheduled' | 'admin_selected',
+): Promise<void> {
+  if (!subscribers.length) return;
+  const sentAt = new Date().toISOString();
+  await kv.mset(
+    await Promise.all(subscribers.map(async subscriber => `${deliveryPrefix(weekKey)}${await tokenDigest(subscriber.email)}`)),
+    subscribers.map(subscriber => ({ email: subscriber.email, weekKey, source, sentAt })),
+  );
+}
+
 function resendApiKey(): string {
   const key = Deno.env.get('RESEND_API_KEY');
   if (!key) throw new Error('RESEND_API_KEY is not configured');
@@ -99,6 +123,23 @@ async function sendConfirmationEmail(email: string, token: string): Promise<void
     html: `<!doctype html><html><body style="background:#fff7f8;font-family:Arial,sans-serif;color:#292524;padding:24px"><div style="max-width:560px;margin:auto;background:#fff;border:1px solid #ffe4e6;border-radius:18px;padding:30px"><div style="color:#be123c;font-weight:bold">TwoBeOne · Shabbat Shalom</div><h1 style="font-size:25px">One more step</h1><p style="line-height:1.7">Confirm that you want Shabbat Shalom: a short Saturday email with encouragement, practical relationship guidance, appreciation, and TwoBeOne updates.</p><a href="${confirmationUrl}" style="display:inline-block;background:#e11d48;color:#fff;text-decoration:none;padding:12px 20px;border-radius:999px;font-weight:bold">Confirm subscription</a><p style="margin-top:24px;color:#78716c;font-size:12px">If you did not request this, you can ignore this email.</p></div></body></html>`,
     headers: { 'X-Entity-Ref-ID': `newsletter-confirm-${digest}` },
   }, `newsletter-confirm-${digest}`);
+}
+
+async function weeklyMessage(subscriber: NewsletterSubscriber, edition: ReturnType<typeof generateWeeklyNewsletter>) {
+  const token = await ensureUnsubscribeToken(subscriber);
+  const unsubscribePageUrl = `${SITE_ORIGIN}/newsletter/unsubscribe?token=${encodeURIComponent(token)}`;
+  const oneClickUrl = `${newsletterApiBase()}/unsubscribe-one-click?token=${encodeURIComponent(token)}`;
+  const rendered = renderWeeklyNewsletter(edition, unsubscribePageUrl);
+  return {
+    from: fromAddress(), to: [subscriber.email], subject: edition.subject,
+    html: rendered.html, text: rendered.text,
+    headers: {
+      'List-Unsubscribe': `<${oneClickUrl}>`,
+      'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+      'X-Entity-Ref-ID': `twobeone-${edition.weekKey}-${token.slice(0, 10)}`,
+    },
+    tags: [{ name: 'campaign', value: edition.weekKey }, { name: 'type', value: 'weekly-newsletter' }],
+  };
 }
 
 async function requireAdmin(c: any): Promise<string | Response> {
@@ -138,6 +179,7 @@ async function getRegisteredEmails(): Promise<RegisteredEmail[]> {
       registered.push({
         id: user.id,
         email,
+        name: String(user.user_metadata?.name || user.user_metadata?.full_name || '').trim() || undefined,
         createdAt: user.created_at,
         confirmedAt: user.email_confirmed_at,
       });
@@ -371,6 +413,116 @@ newsletter.get('/admin-overview', async c => {
   }
 });
 
+newsletter.get('/admin-recipients', async c => {
+  try {
+    const admin = await requireAdmin(c);
+    if (admin instanceof Response) return admin;
+    const edition = generateWeeklyNewsletter();
+    const [registeredUsers, storedValues, deliveredEmails] = await Promise.all([
+      getRegisteredEmails(),
+      kv.getByPrefix(SUBSCRIBER_PREFIX),
+      deliveredEmailsForWeek(edition.weekKey),
+    ]);
+    const storedByEmail = new Map(
+      storedValues
+        .filter((value: any) => normalizeEmail(value?.email))
+        .map((value: any) => [normalizeEmail(value.email) as string, value as NewsletterSubscriber]),
+    );
+    const users = registeredUsers.map(user => {
+      const subscriber = storedByEmail.get(user.email);
+      const optedOut = subscriber?.status === 'unsubscribed';
+      const delivered = deliveredEmails.has(user.email);
+      return {
+        id: user.id,
+        email: user.email,
+        name: user.name || '',
+        eligible: !optedOut && !delivered,
+        status: optedOut ? 'opted_out' : delivered ? 'already_sent' : 'ready',
+      };
+    }).sort((first, second) => (first.name || first.email).localeCompare(second.name || second.email));
+    return c.json({ weekKey: edition.weekKey, count: users.length, users });
+  } catch (error: any) {
+    console.error('[Newsletter] Admin recipients error:', error?.message || error);
+    return c.json({ error: 'Unable to load registered email recipients.' }, 500);
+  }
+});
+
+newsletter.post('/send-selected', async c => {
+  let jobKey = '';
+  try {
+    const admin = await requireAdmin(c);
+    if (admin instanceof Response) return admin;
+    const payload = await c.req.json();
+    const userIds = [...new Set(Array.isArray(payload?.userIds) ? payload.userIds.filter((id: unknown) => typeof id === 'string') : [])] as string[];
+    const requestId = typeof payload?.requestId === 'string' ? payload.requestId : '';
+    if (!userIds.length) return c.json({ error: 'Select at least one registered user.' }, 400);
+    if (userIds.length > 500) return c.json({ error: 'A maximum of 500 users can be sent at one time.' }, 400);
+    if (!/^[a-zA-Z0-9-]{16,80}$/.test(requestId)) return c.json({ error: 'A valid request ID is required.' }, 400);
+
+    jobKey = `${ADMIN_SEND_PREFIX}${requestId}`;
+    const existingJob = await kv.get(jobKey);
+    if (existingJob?.status === 'completed') return c.json({ ...existingJob, duplicate: true }, 200);
+    if (existingJob?.status === 'processing' && Date.now() - Date.parse(existingJob.startedAt || 0) < 15 * 60 * 1000) {
+      return c.json({ error: 'This send is already processing.' }, 409);
+    }
+
+    const edition = generateWeeklyNewsletter();
+    const [registeredUsers, storedValues, deliveredEmails] = await Promise.all([
+      getRegisteredEmails(),
+      kv.getByPrefix(SUBSCRIBER_PREFIX),
+      deliveredEmailsForWeek(edition.weekKey),
+    ]);
+    const selectedIds = new Set(userIds);
+    const selectedUsers = registeredUsers.filter(user => selectedIds.has(user.id));
+    const selectedEmails = new Set(selectedUsers.map(user => user.email));
+    const selectedStored = storedValues.filter((value: any) => selectedEmails.has(normalizeEmail(value?.email) || '')) as NewsletterSubscriber[];
+    const audience = buildNewsletterAudience(selectedStored, selectedUsers);
+    if (audience.recordsToPersist.length) {
+      await kv.mset(
+        audience.recordsToPersist.map(subscriber => subscriberKey(subscriber.email)),
+        audience.recordsToPersist,
+      );
+    }
+    const recipients = audience.recipients.filter(subscriber => !deliveredEmails.has(subscriber.email));
+    const skipped = userIds.length - recipients.length;
+    const job = {
+      requestId,
+      weekKey: edition.weekKey,
+      status: 'processing',
+      selected: userIds.length,
+      eligible: recipients.length,
+      skipped,
+      sent: 0,
+      startedAt: new Date().toISOString(),
+    };
+    await kv.set(jobKey, job);
+
+    for (let offset = 0; offset < recipients.length; offset += 100) {
+      const batch = recipients.slice(offset, offset + 100);
+      const messages = await Promise.all(batch.map(subscriber => weeklyMessage(subscriber, edition)));
+      const batchIndex = Math.floor(offset / 100);
+      await resendRequest('/emails/batch', messages, `twobeone-admin-${edition.weekKey}-${requestId}-${batchIndex}`);
+      await recordDeliveries(edition.weekKey, batch, 'admin_selected');
+      job.sent += batch.length;
+      await kv.set(jobKey, job);
+    }
+
+    const completed = { ...job, status: 'completed', completedAt: new Date().toISOString() };
+    await kv.set(jobKey, completed);
+    await logAudit('admin.shabbat_shalom_selected_sent', admin, {
+      requestId, weekKey: edition.weekKey, selected: userIds.length, sent: job.sent, skipped,
+    });
+    return c.json(completed);
+  } catch (error: any) {
+    console.error('[Newsletter] Selected send error:', error?.message || error);
+    if (jobKey) {
+      const existing = await kv.get(jobKey).catch(() => ({}));
+      await kv.set(jobKey, { ...existing, status: 'failed', failedAt: new Date().toISOString(), error: String(error?.message || error).slice(0, 300) }).catch(() => {});
+    }
+    return c.json({ error: error?.message || 'Unable to send Shabbat Shalom.' }, 500);
+  }
+});
+
 newsletter.get('/subscribers', async c => {
   try {
     const admin = await requireAdmin(c);
@@ -401,29 +553,6 @@ newsletter.get('/preview', async c => {
   return c.json({ edition, ...rendered });
 });
 
-newsletter.post('/test', async c => {
-  try {
-    const admin = await requireAdmin(c);
-    if (admin instanceof Response) return admin;
-    const { email: inputEmail } = await c.req.json();
-    const email = normalizeEmail(inputEmail);
-    if (!email) return c.json({ error: 'Valid test email required' }, 400);
-    const edition = generateWeeklyNewsletter();
-    const rendered = renderWeeklyNewsletter(edition, `${SITE_ORIGIN}/newsletter/unsubscribe?token=test`);
-    const result = await resendRequest('/emails', {
-      from: fromAddress(), to: [email], subject: `[TEST] ${edition.subject}`,
-      html: rendered.html, text: rendered.text,
-      headers: { 'X-Entity-Ref-ID': `newsletter-test-${edition.weekKey}` },
-      tags: [{ name: 'campaign', value: edition.weekKey }, { name: 'type', value: 'newsletter-test' }],
-    }, `newsletter-test-${edition.weekKey}-${await tokenDigest(email)}`);
-    await logAudit('admin.newsletter_test_sent', admin, { weekKey: edition.weekKey });
-    return c.json({ success: true, id: result?.id || null, weekKey: edition.weekKey });
-  } catch (error: any) {
-    console.error('[Newsletter] Test send error:', error?.message || error);
-    return c.json({ error: error?.message || 'Unable to send test email' }, 500);
-  }
-});
-
 newsletter.post('/send-weekly', async c => {
   try {
     if (!(await isAuthorizedCronRequest(c))) return c.json({ error: 'Unauthorized' }, 401);
@@ -435,47 +564,33 @@ newsletter.post('/send-weekly', async c => {
       return c.json({ error: 'Campaign is already processing' }, 409);
     }
 
-    const subscribers = await getWeeklyAudience();
+    const allSubscribers = await getWeeklyAudience();
+    const deliveredEmails = await deliveredEmailsForWeek(edition.weekKey);
+    const subscribers = allSubscribers.filter(subscriber => !deliveredEmails.has(subscriber.email));
     const campaign = {
       weekKey: edition.weekKey,
       status: 'processing',
       startedAt: new Date().toISOString(),
-      audience: subscribers.length,
-      completedBatches: Array.isArray(existing.completedBatches) ? existing.completedBatches : [],
+      audience: allSubscribers.length,
+      remainingAtStart: subscribers.length,
       sent: Number(existing.sent) || 0,
     };
     await kv.set(campaignKey, campaign);
 
     for (let offset = 0; offset < subscribers.length; offset += 100) {
       const batchIndex = Math.floor(offset / 100);
-      if (campaign.completedBatches.includes(batchIndex)) continue;
       const batch = subscribers.slice(offset, offset + 100);
-      const messages = [];
-      for (const subscriber of batch) {
-        const token = await ensureUnsubscribeToken(subscriber);
-        const unsubscribePageUrl = `${SITE_ORIGIN}/newsletter/unsubscribe?token=${encodeURIComponent(token)}`;
-        const oneClickUrl = `${newsletterApiBase()}/unsubscribe-one-click?token=${encodeURIComponent(token)}`;
-        const rendered = renderWeeklyNewsletter(edition, unsubscribePageUrl);
-        messages.push({
-          from: fromAddress(), to: [subscriber.email], subject: edition.subject,
-          html: rendered.html, text: rendered.text,
-          headers: {
-            'List-Unsubscribe': `<${oneClickUrl}>`,
-            'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-            'X-Entity-Ref-ID': `twobeone-${edition.weekKey}-${token.slice(0, 10)}`,
-          },
-          tags: [{ name: 'campaign', value: edition.weekKey }, { name: 'type', value: 'weekly-newsletter' }],
-        });
-      }
-      await resendRequest('/emails/batch', messages, `twobeone-weekly-${edition.weekKey}-${batchIndex}`);
-      campaign.completedBatches.push(batchIndex);
+      const messages = await Promise.all(batch.map(subscriber => weeklyMessage(subscriber, edition)));
+      const fingerprint = (await tokenDigest(batch.map(subscriber => subscriber.email).sort().join(','))).slice(0, 20);
+      await resendRequest('/emails/batch', messages, `twobeone-weekly-${edition.weekKey}-${fingerprint}-${batchIndex}`);
+      await recordDeliveries(edition.weekKey, batch, 'scheduled');
       campaign.sent += batch.length;
       await kv.set(campaignKey, campaign);
     }
 
     const completed = { ...campaign, status: 'completed', completedAt: new Date().toISOString() };
     await kv.set(campaignKey, completed);
-    await logAudit('system.newsletter_weekly_sent', 'system', { weekKey: edition.weekKey, audience: subscribers.length, sent: campaign.sent });
+    await logAudit('system.newsletter_weekly_sent', 'system', { weekKey: edition.weekKey, audience: allSubscribers.length, sent: campaign.sent });
     return c.json({ success: true, ...completed });
   } catch (error: any) {
     console.error('[Newsletter] Weekly campaign failed:', error?.message || error);
