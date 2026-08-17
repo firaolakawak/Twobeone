@@ -83,6 +83,46 @@ export function setupAdminRoutes(app: Hono, supabase: any) {
     }
   });
 
+  app.post('/make-server-6d579fee/admin/push/broadcast', async (c) => {
+    try {
+      const userId = await getUserFromToken(c.req.header('Authorization'), supabase);
+      if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+      if (!(await isAdmin(userId))) return c.json({ error: 'Forbidden - Admin access required' }, 403);
+      const payload = await c.req.json();
+      const title = typeof payload?.title === 'string' ? payload.title.trim() : '';
+      const body = typeof payload?.body === 'string' ? payload.body.trim() : '';
+      const url = typeof payload?.url === 'string' ? payload.url.trim() : '/';
+      const templateId = typeof payload?.templateId === 'string' ? payload.templateId.slice(0, 50) : 'custom';
+      if (!title || !body) return c.json({ error: 'Title and message are required' }, 400);
+      if (title.length > 80) return c.json({ error: 'Title must be 80 characters or fewer' }, 400);
+      if (body.length > 240) return c.json({ error: 'Message must be 240 characters or fewer' }, 400);
+      if (!url.startsWith('/') || url.startsWith('//')) return c.json({ error: 'Destination must be an internal app path' }, 400);
+
+      const users: any[] = await kv.getByPrefix('user:');
+      const webpush = await import('npm:web-push@3.6.7');
+      webpush.setVapidDetails('mailto:support@twobeone.app', Deno.env.get('VAPID_PUBLIC_KEY') || 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDCoXjbK3s9gE8ZCXzp8zQJZs8qI67y_NvZy7p3kk0z0', Deno.env.get('VAPID_PRIVATE_KEY') || 'sMIyJcgzS-OKkMHmQkfO9V5rNkVGXrQvZOJGm3I2QFk');
+      let totalSubscribers = 0, sent = 0, failed = 0, invalidSubscriptions = 0;
+      for (let index = 0; index < users.length; index += 20) {
+        await Promise.all(users.slice(index, index + 20).map(async (user: any) => {
+          if (!user?.id) return;
+          const subscription: any = await kv.get(`push_subscription:${user.id}`).catch(() => null);
+          if (!subscription?.endpoint) return;
+          totalSubscribers++;
+          try {
+            await webpush.sendNotification(subscription, JSON.stringify({ title, body, icon: '/icons/icon-192x192.png', badge: '/icons/icon-72x72.png', tag: `twobeone-${templateId}`, url, data: { type: 'admin_broadcast', templateId, url } }));
+            sent++;
+          } catch (error: any) {
+            if (error?.statusCode === 404 || error?.statusCode === 410) { await kv.del(`push_subscription:${user.id}`); invalidSubscriptions++; }
+            else { failed++; }
+          }
+        }));
+      }
+      return c.json({ success: true, message: { title, body, url, templateId }, totalUsers: users.length, totalSubscribers, sent, failed, invalidSubscriptions });
+    } catch (error: any) {
+      return c.json({ error: error?.message || 'Failed to send push notification' }, 500);
+    }
+  });
+
   // ============================================
   // ADMIN PRIVILEGE MANAGEMENT
   // ============================================

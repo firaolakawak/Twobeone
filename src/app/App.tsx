@@ -194,9 +194,17 @@ const APP_TRANSLATIONS: Record<
   },
 };
 
+const PUSH_TABS = new Set(['home', 'devotions', 'prayer', 'journal', 'questions']);
+
+function initialTabFromNotification(): string {
+  if (typeof window === 'undefined') return 'home';
+  const requestedTab = new URLSearchParams(window.location.search).get('tab') || 'home';
+  return PUSH_TABS.has(requestedTab) ? requestedTab : 'home';
+}
+
 export default function App() {
   const [showLanding, setShowLanding] = useState(true);
-  const [activeTab, setActiveTabRaw] = useState("home");
+  const [activeTab, setActiveTabRaw] = useState(initialTabFromNotification);
   const [selectedScreen, setSelectedScreenRaw] = useState<
     string | null
   >("dashboard");

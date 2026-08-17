@@ -9,12 +9,14 @@ describe('PushNotificationsManager', () => {
     vi.unstubAllGlobals();
   });
 
-  it('previews the polished message and requires audience confirmation', () => {
+  it('shows the template library and requires audience confirmation', () => {
     render(<PushNotificationsManager accessToken="admin-token" />);
 
-    expect(screen.getByText('Thank you for being part of TwoBeOne 💕')).toBeInTheDocument();
-    expect(screen.getByText(/We truly appreciate you using the TwoBeOne app/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Send appreciation push' })).toBeDisabled();
+    expect(screen.getByText('12 templates')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Morning devotional/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: /Prayer reminder/ })).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Good morning 🌅')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Send push notification' })).toBeDisabled();
   });
 
   it('sends the admin broadcast and reports its delivery result', async () => {
@@ -26,17 +28,31 @@ describe('PushNotificationsManager', () => {
     const user = userEvent.setup();
     render(<PushNotificationsManager accessToken="admin-token" />);
 
-    await user.click(screen.getByRole('checkbox', { name: /reviewed the message and audience/i }));
-    await user.click(screen.getByRole('button', { name: 'Send appreciation push' }));
+    await user.click(screen.getByRole('checkbox', { name: /reviewed the message, destination, and audience/i }));
+    await user.click(screen.getByRole('button', { name: 'Send push notification' }));
 
     expect(await screen.findByText('Broadcast complete')).toBeInTheDocument();
     expect(screen.getByText('2 of 3 subscribed devices reached.')).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith(
-      expect.stringContaining('/admin/push/appreciation'),
+      expect.stringContaining('/admin/push/broadcast'),
       expect.objectContaining({
         method: 'POST',
         headers: expect.objectContaining({ Authorization: 'Bearer admin-token' }),
+        body: expect.stringContaining('morning-devotional'),
       }),
     );
+  });
+
+  it('lets an admin create a custom notification', async () => {
+    const user = userEvent.setup();
+    render(<PushNotificationsManager accessToken="admin-token" />);
+
+    await user.click(screen.getByRole('button', { name: 'Create new' }));
+    expect(screen.getByRole('heading', { name: 'Create new notification' })).toBeInTheDocument();
+    await user.type(screen.getByPlaceholderText('Notification title'), 'A note for your marriage');
+    await user.type(screen.getByPlaceholderText('Write a short, meaningful message'), 'Take a moment to encourage one another today.');
+
+    expect(screen.getByText('A note for your marriage', { selector: '.push-console__preview strong' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Send push notification' })).toBeDisabled();
   });
 });

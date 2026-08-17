@@ -71,7 +71,7 @@ const APPRECIATION_PUSH = {
   body: 'We truly appreciate you using the TwoBeOne app. Share it with your friends, loved ones, and family.',
 };
 
-async function logPushAudit(actorId: string, delivery: Record<string, number>): Promise<void> {
+async function logPushAudit(actorId: string, title: string, delivery: Record<string, number>): Promise<void> {
   try {
     const actor = await kv.get(`user:${actorId}`);
     const id = generateId();
@@ -83,12 +83,60 @@ async function logPushAudit(actorId: string, delivery: Record<string, number>): 
       userId: actorId,
       userName: actor?.name || actor?.full_name || 'Admin',
       userEmail: actor?.email || '',
-      metadata: { ...delivery, title: APPRECIATION_PUSH.title },
+      metadata: { ...delivery, title },
       timestamp,
     });
   } catch (error) {
     console.error('[Audit] Failed to record push broadcast:', error);
   }
+}
+
+interface AdminPushMessage {
+  title: string;
+  body: string;
+  url: string;
+  templateId?: string;
+}
+
+async function deliverPushBroadcast(message: AdminPushMessage) {
+  const users: any[] = await kv.getByPrefix('user:');
+  const webpush = await import('npm:web-push@3.6.7');
+  webpush.setVapidDetails(
+    'mailto:support@twobeone.app',
+    Deno.env.get('VAPID_PUBLIC_KEY') || 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDCoXjbK3s9gE8ZCXzp8zQJZs8qI67y_NvZy7p3kk0z0',
+    Deno.env.get('VAPID_PRIVATE_KEY') || 'sMIyJcgzS-OKkMHmQkfO9V5rNkVGXrQvZOJGm3I2QFk',
+  );
+  let totalSubscribers = 0, sent = 0, failed = 0, invalidSubscriptions = 0;
+
+  for (let index = 0; index < users.length; index += 20) {
+    await Promise.all(users.slice(index, index + 20).map(async (user: any) => {
+      if (!user?.id) return;
+      const subscription: any = await kv.get(`push_subscription:${user.id}`).catch(() => null);
+      if (!subscription?.endpoint) return;
+      totalSubscribers++;
+      try {
+        await webpush.sendNotification(subscription, JSON.stringify({
+          title: message.title,
+          body: message.body,
+          icon: '/icons/icon-192x192.png',
+          badge: '/icons/icon-72x72.png',
+          tag: `twobeone-${message.templateId || 'admin-message'}`,
+          url: message.url,
+          data: { type: 'admin_broadcast', templateId: message.templateId || null, url: message.url },
+        }));
+        sent++;
+      } catch (error: any) {
+        if (error?.statusCode === 404 || error?.statusCode === 410) {
+          await kv.del(`push_subscription:${user.id}`);
+          invalidSubscriptions++;
+        } else {
+          failed++;
+          console.error(`[Admin Push] Delivery failed for ${user.id}:`, error?.message || error);
+        }
+      }
+    }));
+  }
+  return { totalUsers: users.length, totalSubscribers, sent, failed, invalidSubscriptions };
 }
 
 export function setupAdminRoutes(app: Hono, supabase: any) {
@@ -99,54 +147,38 @@ export function setupAdminRoutes(app: Hono, supabase: any) {
       if (!userId) return c.json({ error: 'Unauthorized' }, 401);
       if (!(await isAdmin(userId))) return c.json({ error: 'Forbidden - Admin access required' }, 403);
 
-      const users: any[] = await kv.getByPrefix('user:');
-      const webpush = await import('npm:web-push@3.6.7');
-      webpush.setVapidDetails(
-        'mailto:support@twobeone.app',
-        Deno.env.get('VAPID_PUBLIC_KEY') || 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDCoXjbK3s9gE8ZCXzp8zQJZs8qI67y_NvZy7p3kk0z0',
-        Deno.env.get('VAPID_PRIVATE_KEY') || 'sMIyJcgzS-OKkMHmQkfO9V5rNkVGXrQvZOJGm3I2QFk',
-      );
-
-      let totalSubscribers = 0;
-      let sent = 0;
-      let failed = 0;
-      let invalidSubscriptions = 0;
-
-      for (let index = 0; index < users.length; index += 20) {
-        await Promise.all(users.slice(index, index + 20).map(async (user: any) => {
-          if (!user?.id) return;
-          const subscription: any = await kv.get(`push_subscription:${user.id}`).catch(() => null);
-          if (!subscription?.endpoint) return;
-          totalSubscribers++;
-
-          try {
-            await webpush.sendNotification(subscription, JSON.stringify({
-              ...APPRECIATION_PUSH,
-              icon: '/icons/icon-192x192.png',
-              badge: '/icons/icon-72x72.png',
-              tag: 'twobeone-appreciation',
-              url: '/',
-              data: { type: 'admin_appreciation', url: '/' },
-            }));
-            sent++;
-          } catch (error: any) {
-            if (error?.statusCode === 404 || error?.statusCode === 410) {
-              await kv.del(`push_subscription:${user.id}`);
-              invalidSubscriptions++;
-            } else {
-              failed++;
-              console.error(`[Admin Push] Delivery failed for ${user.id}:`, error?.message || error);
-            }
-          }
-        }));
-      }
-
-      const delivery = { totalUsers: users.length, totalSubscribers, sent, failed, invalidSubscriptions };
-      await logPushAudit(userId, delivery);
+      const delivery = await deliverPushBroadcast({ ...APPRECIATION_PUSH, url: '/', templateId: 'appreciation' });
+      await logPushAudit(userId, APPRECIATION_PUSH.title, delivery);
       return c.json({ success: true, message: APPRECIATION_PUSH, ...delivery });
     } catch (error: any) {
       console.error('[Admin Push] Broadcast failed:', error);
       return c.json({ error: error?.message || 'Failed to send appreciation notification' }, 500);
+    }
+  });
+
+  app.post('/make-server-6d579fee/admin/push/broadcast', async (c) => {
+    try {
+      const userId = await getUserFromToken(c.req.header('Authorization'), supabase);
+      if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+      if (!(await isAdmin(userId))) return c.json({ error: 'Forbidden - Admin access required' }, 403);
+
+      const payload = await c.req.json();
+      const title = typeof payload?.title === 'string' ? payload.title.trim() : '';
+      const body = typeof payload?.body === 'string' ? payload.body.trim() : '';
+      const requestedUrl = typeof payload?.url === 'string' ? payload.url.trim() : '/';
+      const templateId = typeof payload?.templateId === 'string' ? payload.templateId.slice(0, 50) : 'custom';
+      if (!title || !body) return c.json({ error: 'Title and message are required' }, 400);
+      if (title.length > 80) return c.json({ error: 'Title must be 80 characters or fewer' }, 400);
+      if (body.length > 240) return c.json({ error: 'Message must be 240 characters or fewer' }, 400);
+      if (!requestedUrl.startsWith('/') || requestedUrl.startsWith('//')) return c.json({ error: 'Destination must be an internal app path' }, 400);
+
+      const message = { title, body, url: requestedUrl, templateId };
+      const delivery = await deliverPushBroadcast(message);
+      await logPushAudit(userId, title, delivery);
+      return c.json({ success: true, message, ...delivery });
+    } catch (error: any) {
+      console.error('[Admin Push] Broadcast failed:', error);
+      return c.json({ error: error?.message || 'Failed to send push notification' }, 500);
     }
   });
 
