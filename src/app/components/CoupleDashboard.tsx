@@ -372,7 +372,6 @@ export function CoupleDashboard({
   const [showMilestoneDialog, setShowMilestoneDialog] = useState(false);
   const [celebratingMilestoneId, setCelebratingMilestoneId] = useState<string | null>(null);
 
-  const [showPushNotificationSetup, setShowPushNotificationSetup] = useState(false);
   const [showLocationSettings, setShowLocationSettings] = useState(false);
   const [userLocation, setUserLocation] = useState<any>(null);
   const [partnerLocation, setPartnerLocation] = useState<any>(null);
@@ -1916,23 +1915,13 @@ export function CoupleDashboard({
         </Card>
       )}
 
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Continue your spiritual journey</CardDescription>
-            </div>
-            {profile?.id && accessToken && (
-              <PushNotificationSetup
-                userId={profile.id}
-                accessToken={accessToken}
-              />
-            )}
-          </div>
-        </CardHeader>
-      </Card>
+      {profile?.id && accessToken && (
+        <PushNotificationSetup
+          userId={profile.id}
+          accessToken={accessToken}
+          reminderOnly
+        />
+      )}
 
       {/* Learning Modules */}
       <LearningModulesCard 

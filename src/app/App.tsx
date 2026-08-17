@@ -15,6 +15,7 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 import { LanguageSelector } from "./components/LanguageSelector";
 import { SplashScreen } from "./components/SplashScreen";
 import { AuthPage } from "./components/AuthPage";
+import { ResetPasswordPage } from "./components/ResetPasswordPage";
 import { LandingPage } from "./components/LandingPage";
 import { BottomNavigation } from "./components/BottomNavigation";
 import { OfflineIndicator } from "./components/OfflineIndicator";
@@ -204,6 +205,9 @@ function initialTabFromNotification(): string {
 
 export default function App() {
   const [showLanding, setShowLanding] = useState(true);
+  const [isPasswordRecovery, setIsPasswordRecovery] = useState(
+    () => typeof window !== 'undefined' && window.location.pathname === '/reset-password',
+  );
   const [activeTab, setActiveTabRaw] = useState(initialTabFromNotification);
   const [selectedScreen, setSelectedScreenRaw] = useState<
     string | null
@@ -400,6 +404,8 @@ export default function App() {
             setAccessToken(session.access_token);
             setShowLanding(false);
           });
+        } else if (event === "PASSWORD_RECOVERY" && session?.access_token) {
+          setIsPasswordRecovery(true);
         } else if (
           event === "TOKEN_REFRESHED" &&
           session?.access_token
@@ -1133,6 +1139,21 @@ export default function App() {
     () => setActiveTab("prayer"),
     [],
   );
+
+  if (isPasswordRecovery) {
+    return (
+      <LanguageProvider>
+        <SEOHead />
+        <Toaster />
+        <ResetPasswordPage onComplete={() => {
+          setIsPasswordRecovery(false);
+          setUser(null);
+          setAccessToken(null);
+          setShowLanding(false);
+        }} />
+      </LanguageProvider>
+    );
+  }
 
   if (isInitializing) {
     return (

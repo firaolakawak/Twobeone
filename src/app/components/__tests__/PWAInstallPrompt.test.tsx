@@ -71,4 +71,18 @@ describe('PWAInstallPrompt', () => {
     await user.click(screen.getByRole('button', { name: /Install App/i }));
     expect(installEvent.prompt).toHaveBeenCalledOnce();
   });
+
+  it('does not show an install banner after the app has been installed', async () => {
+    vi.useFakeTimers();
+    localStorage.setItem('twobeone_app_installed', 'true');
+    Object.defineProperty(navigator, 'userAgent', {
+      configurable: true,
+      value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148',
+    });
+
+    render(<PWAInstallPrompt />);
+    await act(async () => vi.advanceTimersByTime(1000));
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
 });

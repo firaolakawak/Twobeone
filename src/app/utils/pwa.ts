@@ -146,11 +146,16 @@ export async function unsubscribeFromPushNotifications(): Promise<boolean> {
  * Check if app is running as installed PWA
  */
 export function isInstalledPWA(): boolean {
-  return (
+  const runningInstalled = (
     window.matchMedia('(display-mode: standalone)').matches ||
     (window.navigator as any).standalone ||
     document.referrer.includes('android-app://')
   );
+  if (runningInstalled) {
+    try { localStorage.setItem('twobeone_app_installed', 'true'); } catch { /* Storage may be unavailable. */ }
+    return true;
+  }
+  try { return localStorage.getItem('twobeone_app_installed') === 'true'; } catch { return false; }
 }
 
 /**

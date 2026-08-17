@@ -12,9 +12,10 @@ interface PushNotificationSetupProps {
   userId: string;
   accessToken: string;
   onComplete?: () => void;
+  reminderOnly?: boolean;
 }
 
-export function PushNotificationSetup({ userId, accessToken, onComplete }: PushNotificationSetupProps) {
+export function PushNotificationSetup({ userId, accessToken, onComplete, reminderOnly = false }: PushNotificationSetupProps) {
   const { t } = useLanguage();
   const [showDialog, setShowDialog] = useState(false);
   const [notificationStatus, setNotificationStatus] = useState<'unknown' | 'granted' | 'denied' | 'prompt'>('unknown');
@@ -24,6 +25,18 @@ export function PushNotificationSetup({ userId, accessToken, onComplete }: PushN
   useEffect(() => {
     checkNotificationStatus();
   }, []);
+
+  useEffect(() => {
+    if (!reminderOnly || notificationStatus === 'unknown' || isSubscribed) return;
+    const reminderKey = `twobeone_push_reminder:${userId}`;
+    if (sessionStorage.getItem(reminderKey)) return;
+
+    const timer = window.setTimeout(() => {
+      sessionStorage.setItem(reminderKey, 'shown');
+      setShowDialog(true);
+    }, 1200);
+    return () => window.clearTimeout(timer);
+  }, [isSubscribed, notificationStatus, reminderOnly, userId]);
 
   const checkNotificationStatus = async () => {
     if (!('Notification' in window)) {
@@ -271,13 +284,10 @@ export function PushNotificationSetup({ userId, accessToken, onComplete }: PushN
     }
   };
 
-  // Show prompt if not subscribed and permission is not denied
-  const shouldShowPrompt = notificationStatus === 'prompt' || (notificationStatus === 'granted' && !isSubscribed);
-
   return (
     <>
       {/* Status indicator button */}
-      <Button
+      {!reminderOnly && <Button
         variant="ghost"
         size="icon"
         onClick={() => setShowDialog(true)}
@@ -289,7 +299,7 @@ export function PushNotificationSetup({ userId, accessToken, onComplete }: PushN
         ) : (
           <BellOff className="w-5 h-5" />
         )}
-      </Button>
+      </Button>}
 
       {/* Setup Dialog */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
@@ -304,6 +314,40 @@ export function PushNotificationSetup({ userId, accessToken, onComplete }: PushN
             </DialogDescription>
           </DialogHeader>
 
+          {reminderOnly && !isSubscribed ? (
+            <div className="space-y-4 py-3">
+              <div className="flex items-start gap-3 rounded-2xl bg-gradient-to-br from-primary-50 to-rose-50 p-4">
+                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white shadow-sm">
+                  <Bell className="h-5 w-5 text-primary-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground">{t.notifications.enableNotifications}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                    {notificationStatus === 'denied' ? t.notifications.enableInSettings : t.notifications.stayConnected}
+                  </p>
+                </div>
+              </div>
+              {notificationStatus === 'denied' ? (
+                <Button variant="outline" className="w-full" onClick={() => setShowDialog(false)}>
+                  {t.common.close}
+                </Button>
+              ) : (
+                <div className="flex gap-3">
+                  <Button variant="outline" className="flex-1" onClick={() => setShowDialog(false)}>
+                    {t.common.cancel}
+                  </Button>
+                  <Button
+                    className="flex-1"
+                    style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
+                    onClick={handleEnableNotifications}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? t.common.loading : t.notifications.enableNotifications}
+                  </Button>
+                </div>
+              )}
+            </div>
+          ) : (
           <div className="space-y-4 py-4">
             {/* Status Card */}
             <Card className="border-border">
@@ -408,6 +452,7 @@ export function PushNotificationSetup({ userId, accessToken, onComplete }: PushN
               {t.notifications.disableNotifications}
             </p>
           </div>
+          )}
         </DialogContent>
       </Dialog>
     </>

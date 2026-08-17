@@ -10,10 +10,24 @@ interface BeforeInstallPromptEvent extends Event {
 
 type InstallPlatform = 'ios' | 'native' | 'android' | 'browser';
 
-function isInstalled() {
+const INSTALLED_STORAGE_KEY = 'twobeone_app_installed';
+
+function isRunningInstalled() {
   return window.matchMedia('(display-mode: standalone)').matches ||
     Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone) ||
     document.referrer.includes('android-app://');
+}
+
+function rememberInstalled() {
+  try { localStorage.setItem(INSTALLED_STORAGE_KEY, 'true'); } catch { /* Storage may be unavailable. */ }
+}
+
+function isInstalled() {
+  if (isRunningInstalled()) {
+    rememberInstalled();
+    return true;
+  }
+  try { return localStorage.getItem(INSTALLED_STORAGE_KEY) === 'true'; } catch { return false; }
 }
 
 function isIOSDevice() {
@@ -55,7 +69,9 @@ export function PWAInstallPrompt() {
 
     let autoTimer: ReturnType<typeof setTimeout> | undefined;
     if (!alreadyInstalled && mobileDevice) {
-      autoTimer = setTimeout(() => setShowPrompt(true), 500);
+      autoTimer = setTimeout(() => {
+        if (!isInstalled()) setShowPrompt(true);
+      }, 500);
     }
 
     const handleBeforeInstall = (event: Event) => {
@@ -72,8 +88,13 @@ export function PWAInstallPrompt() {
     };
 
     const handleInstalled = () => {
+      rememberInstalled();
       setInstalled(true);
       setShowPrompt(false);
+    };
+
+    const recheckInstalledState = () => {
+      if (isInstalled()) handleInstalled();
     };
 
     const handleManualOpen = () => {
@@ -82,12 +103,16 @@ export function PWAInstallPrompt() {
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
     window.addEventListener('appinstalled', handleInstalled);
+    window.addEventListener('pageshow', recheckInstalledState);
+    document.addEventListener('visibilitychange', recheckInstalledState);
     window.addEventListener('twobeone:open-install', handleManualOpen);
 
     return () => {
       if (autoTimer) clearTimeout(autoTimer);
       window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
       window.removeEventListener('appinstalled', handleInstalled);
+      window.removeEventListener('pageshow', recheckInstalledState);
+      document.removeEventListener('visibilitychange', recheckInstalledState);
       window.removeEventListener('twobeone:open-install', handleManualOpen);
     };
   }, []);

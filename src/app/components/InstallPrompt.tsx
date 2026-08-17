@@ -44,6 +44,7 @@ export function InstallPrompt() {
       setIsInstalled(true);
       setShowPrompt(false);
       localStorage.setItem('twobeone-installed', 'true');
+      localStorage.setItem('twobeone_app_installed', 'true');
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -281,21 +282,7 @@ export function InstallBanner() {
   }, []);
 
   if (isInstalled) {
-    return (
-      <div className="bg-gradient-to-r from-success-50 to-success-50 dark:from-success-700/20 dark:to-success-700/20 border border-success-500/30 dark:border-success-700 rounded-lg p-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-success-500 flex items-center justify-center">
-            <Heart className="w-5 h-5 text-white" />
-          </div>
-          <div className="flex-1">
-            <p className="font-medium text-foreground dark:text-white">App Installed ✓</p>
-            <p className="text-sm text-muted-foreground dark:text-muted-foreground">
-              TwoBeOne is installed on your device
-            </p>
-          </div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (

@@ -200,8 +200,10 @@ export function AuthPage({ onAuthSuccess }: AuthPageProps) {
     setError('');
     try {
       const supabase = createClient();
+      const productionOrigin = 'https://www.twobeone.app';
+      const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: `${isLocal ? window.location.origin : productionOrigin}/reset-password`,
       });
       if (error) throw error;
       setForgotSent(true);
@@ -381,7 +383,7 @@ export function AuthPage({ onAuthSuccess }: AuthPageProps) {
                     Check your inbox
                   </p>
                   <p style={{ margin: 0, fontSize: 'var(--text-caption)', color: 'var(--muted-foreground)', lineHeight: 1.5 }}>
-                    We sent a password reset link to<br />
+                    If an account exists for this address, a password reset link was sent to<br />
                     <strong style={{ color: 'var(--foreground)' }}>{email}</strong>
                   </p>
                   <button
