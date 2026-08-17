@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLanguage } from '../contexts/LanguageContext';
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
@@ -24,13 +24,11 @@ import {
   ChevronUp,
   Bell,
   Search,
-  SlidersHorizontal,
   Users,
-  Circle,
   CheckCircle2,
   Calendar,
   MessageCircle,
-  Home,
+  X,
 } from "lucide-react";
 import { toast } from "sonner@2.0.3";
 
@@ -259,7 +257,8 @@ export function PrayerBoard({
       const query = searchQuery.toLowerCase();
       if (
         !prayer.title.toLowerCase().includes(query) &&
-        !prayer.description.toLowerCase().includes(query)
+        !prayer.description.toLowerCase().includes(query) &&
+        !prayer.category.toLowerCase().includes(query)
       ) {
         return false;
       }
@@ -289,112 +288,171 @@ export function PrayerBoard({
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
+      month: "short",
+      day: "numeric",
+      year:
+        date.getFullYear() !== new Date().getFullYear()
+          ? "numeric"
+          : undefined,
     });
   };
 
+  const activePrayerCount = prayers.filter(
+    (prayer) => !prayer.isAnswered,
+  ).length;
+  const answeredPrayerCount = prayers.filter(
+    (prayer) => prayer.isAnswered,
+  ).length;
+  const togetherPrayerCount = prayers.filter(
+    (prayer) => prayer.youPrayed && prayer.partnerPrayed,
+  ).length;
+
+  const openPrayerForm = () => {
+    resetForm();
+    setIsOpen(true);
+  };
+
   return (
-    <div className="min-h-screen bg-muted">
-      {/* Header */}
-      <div className="sticky top-0 z-20 bg-card border-b">
-        {/* Tabs */}
-        <div className="flex items-center border-b">
+    <div className="mx-auto min-h-screen w-full max-w-3xl space-y-7 pb-28">
+      <header className="relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-rose-50 via-white to-amber-50 px-6 py-7 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)] ring-1 ring-rose-100/80 sm:px-9 sm:py-9">
+        <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-rose-200/30 blur-3xl" aria-hidden="true" />
+        <div className="pointer-events-none absolute -bottom-24 -left-16 h-52 w-52 rounded-full bg-amber-200/30 blur-3xl" aria-hidden="true" />
+        <div className="relative">
+          {onBackToHome && (
+            <button type="button" onClick={onBackToHome} className="mb-5 inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 transition-colors hover:text-rose-700" aria-label="Back to home">
+              <ChevronLeft className="h-4 w-4" aria-hidden="true" /> Home
+            </button>
+          )}
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-xs font-semibold tracking-wide text-rose-700 shadow-sm ring-1 ring-rose-100">
+                <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" aria-hidden="true" />
+                Held together in prayer
+              </div>
+              <h1 className="text-3xl font-bold tracking-[-0.035em] text-slate-950 sm:text-4xl">{t.prayer.title}</h1>
+              <p className="mt-2 max-w-lg text-[15px] leading-7 text-slate-600">Bring your hopes, needs, and gratitude into one shared sacred space.</p>
+            </div>
+            <Button type="button" onClick={openPrayerForm} className="h-11 rounded-full bg-rose-600 px-5 font-bold text-white shadow-lg shadow-rose-200 hover:bg-rose-700">
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              {t.prayer.newRequest}
+            </Button>
+          </div>
+          <div className="mt-7 grid grid-cols-3 gap-3 border-t border-rose-100/80 pt-5">
+            <div><p className="text-xl font-bold text-slate-900">{activePrayerCount}</p><p className="mt-0.5 text-xs font-medium text-slate-500">Active</p></div>
+            <div className="border-l border-rose-100 pl-3"><p className="text-xl font-bold text-slate-900">{togetherPrayerCount}</p><p className="mt-0.5 text-xs font-medium text-slate-500">Together</p></div>
+            <div className="border-l border-rose-100 pl-3"><p className="text-xl font-bold text-slate-900">{answeredPrayerCount}</p><p className="mt-0.5 text-xs font-medium text-slate-500">Answered</p></div>
+          </div>
+        </div>
+      </header>
+
+      <div className="space-y-5">
+        <div className="grid h-14 w-full grid-cols-3 gap-1 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-[inset_0_1px_2px_rgba(15,23,42,0.04),0_10px_30px_-24px_rgba(15,23,42,0.45)]" role="tablist" aria-label="Prayer sections">
           <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === "requests"}
             onClick={() => setActiveTab("requests")}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium relative ${
+            className={`flex h-full items-center justify-center gap-2 rounded-[0.9rem] px-2 text-xs font-semibold transition-all sm:text-sm ${
               activeTab === "requests"
-                ? "text-primary-700"
-                : "text-muted-foreground"
+                ? "bg-white text-rose-700 shadow-sm ring-1 ring-rose-100"
+                : "text-slate-500 hover:bg-white/65 hover:text-slate-800"
             }`}
           >
-            <MessageCircle className="w-4 h-4" />
-            {t.prayer.prayerRequests}
-            {activeTab === "requests" && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-700"></div>
-            )}
+            <MessageCircle className="h-4 w-4" aria-hidden="true" />
+            <span className="hidden sm:inline">{t.prayer.prayerRequests}</span><span className="sm:hidden">Active</span>
           </button>
           <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === "answered"}
             onClick={() => setActiveTab("answered")}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium relative ${
+            className={`flex h-full items-center justify-center gap-2 rounded-[0.9rem] px-2 text-xs font-semibold transition-all sm:text-sm ${
               activeTab === "answered"
-                ? "text-primary-700"
-                : "text-muted-foreground"
+                ? "bg-white text-rose-700 shadow-sm ring-1 ring-rose-100"
+                : "text-slate-500 hover:bg-white/65 hover:text-slate-800"
             }`}
           >
-            <CheckCircle2 className="w-4 h-4" />
+            <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
             {t.prayer.answered}
-            {activeTab === "answered" && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-700"></div>
-            )}
           </button>
           <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === "together"}
             onClick={() => setActiveTab("together")}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium relative ${
+            className={`flex h-full items-center justify-center gap-2 rounded-[0.9rem] px-2 text-xs font-semibold transition-all sm:text-sm ${
               activeTab === "together"
-                ? "text-primary-700"
-                : "text-muted-foreground"
+                ? "bg-white text-rose-700 shadow-sm ring-1 ring-rose-100"
+                : "text-slate-500 hover:bg-white/65 hover:text-slate-800"
             }`}
           >
-            <Heart className="w-4 h-4" />
+            <Heart className="h-4 w-4" aria-hidden="true" />
             {t.prayer.together}
-            {activeTab === "together" && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-700"></div>
-            )}
           </button>
         </div>
-      </div>
 
-      {/* Search Bar */}
-      <div className="px-4 py-3 bg-card">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <div className="relative" role="search">
+          <Search className="pointer-events-none absolute left-4 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-slate-400" aria-hidden="true" />
           <Input
+            type="search"
             placeholder={t.prayer.searchPrayers}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-muted border-0"
+            onKeyDown={(event) => { if (event.key === "Escape") setSearchQuery(""); }}
+            aria-label="Search prayers"
+            className="h-12 rounded-2xl border-slate-200 bg-white pl-11 pr-11 shadow-[0_8px_25px_-22px_rgba(15,23,42,0.55)] placeholder:text-slate-400 focus-visible:border-rose-300 focus-visible:ring-4 focus-visible:ring-rose-100"
           />
+          {searchQuery && (
+            <button type="button" onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700" aria-label="Clear prayer search">
+              <X className="h-4 w-4" aria-hidden="true" />
+            </button>
+          )}
         </div>
       </div>
 
       {/* Prayer List */}
-      <div className="px-4 py-4 space-y-3">
+      <div className="space-y-4">
         {!hasPartner && activeTab === "together" ? (
-          <div className="text-center py-16">
-            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
-              <Users className="w-10 h-10 text-primary-400" />
+          <Card className="rounded-[2rem] border-rose-100 bg-gradient-to-br from-white to-rose-50/50 p-10 text-center shadow-sm">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 text-rose-500">
+              <Users className="h-8 w-8" aria-hidden="true" />
             </div>
-            <h3 className="font-semibold text-foreground mb-2">
+            <h3 className="mb-2 text-lg font-bold text-slate-900">
               Connect with Your Partner
             </h3>
-            <p className="text-sm text-muted-foreground mb-6 px-6">
+            <p className="mx-auto max-w-md text-sm leading-6 text-slate-500">
               Prayer sharing is available when you're connected
               as a couple. Share your invite code or enter your
               partner's code to start praying together.
             </p>
-          </div>
+          </Card>
         ) : filteredPrayers.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
-              <Heart className="w-10 h-10 text-muted-foreground" />
+          <Card className="rounded-[2rem] border-rose-100 bg-gradient-to-br from-white to-rose-50/50 p-10 text-center shadow-sm">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 text-rose-500">
+              {searchQuery ? <Search className="h-7 w-7" aria-hidden="true" /> : <Heart className="h-8 w-8" aria-hidden="true" />}
             </div>
-            <h3 className="font-semibold text-foreground mb-2">
-              {activeTab === "together"
+            <h3 className="mb-2 text-lg font-bold text-slate-900">
+              {searchQuery
+                ? "No matching prayers"
+                : activeTab === "together"
                 ? t.prayer.prayTogether
                 : activeTab === "answered"
                   ? t.prayer.answered
                   : t.prayer.noRequests}
             </h3>
-            <p className="text-sm text-muted-foreground mb-6">
-              {activeTab === "together"
+            <p className="text-sm leading-6 text-slate-500">
+              {searchQuery
+                ? "Try a different title, category, or prayer detail."
+                : activeTab === "together"
                 ? "Pray together as a couple to strengthen your bond"
                 : activeTab === "answered"
                   ? "Answered prayers will appear here"
                   : "Start by adding a prayer request"}
             </p>
-          </div>
+            {searchQuery && (
+              <Button type="button" variant="ghost" onClick={() => setSearchQuery("")} className="mt-4 rounded-full text-rose-700 hover:bg-rose-100/70 hover:text-rose-800">Clear search</Button>
+            )}
+          </Card>
         ) : (
           filteredPrayers.map((prayer) => {
             const catData = getCategoryData(prayer.category);
@@ -407,115 +465,93 @@ export function PrayerBoard({
             return (
               <Card
                 key={prayer.id}
-                className="overflow-hidden border-0 shadow-sm hover:shadow-md transition-shadow"
+                className="group overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-[0_12px_36px_-28px_rgba(15,23,42,0.45)] transition-all hover:-translate-y-0.5 hover:border-rose-200 hover:shadow-[0_18px_42px_-26px_rgba(190,24,93,0.3)]"
               >
                 <CardContent className="p-0">
-                  <div className="flex items-start gap-3 p-4">
-                    {/* Category Icon */}
+                  <div className="p-5 sm:p-6">
+                    <div className="flex items-start gap-4">
                     <div
-                      className={`flex-shrink-0 w-12 h-12 rounded-full ${catData.color} flex items-center justify-center text-white text-xl`}
+                      className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-rose-50 text-xl ring-1 ring-rose-100"
                     >
                       {catData.icon}
                     </div>
 
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      {/* Title */}
-                      <h3 className="font-semibold text-foreground mb-1 leading-tight">
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-medium text-slate-500">
+                        <span className="text-rose-700">{prayer.category}</span>
+                        <span aria-hidden="true">•</span>
+                        <span className="flex items-center gap-1">
+                          <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
+                          {formatDate(prayer.createdAt)}
+                        </span>
+                        {prayer.isAnswered && (
+                          <Badge className="border-0 bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 shadow-none hover:bg-emerald-50">
+                            Answered
+                          </Badge>
+                        )}
+                      </div>
+                      <h3 className="mb-1.5 text-base font-bold leading-snug text-slate-900 sm:text-lg">
                         {prayer.title}
                       </h3>
-
-                      {/* Description */}
                       <p
-                        className={`text-sm text-muted-foreground leading-relaxed ${
+                        className={`text-sm leading-6 text-slate-600 ${
                           isExpanded ? "" : "line-clamp-2"
                         }`}
                       >
                         {prayer.description}
                       </p>
-
-                      {/* Meta Info */}
-                      <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {formatDate(prayer.createdAt)}
-                        </span>
-                        <span>•</span>
-                        <span>
-                          {prayerCount} prayer
-                          {prayerCount !== 1 ? "s" : ""}
-                        </span>
-                      </div>
                     </div>
 
-                    {/* Right Side Actions */}
-                    <div className="flex-shrink-0 flex flex-col items-end gap-2">
-                      {/* Prayer Status Circles */}
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() =>
-                            handleTogglePrayed(prayer, "you")
-                          }
-                          disabled={!canEdit}
-                          className="flex flex-col items-center gap-1 disabled:opacity-50"
-                        >
-                          {prayer.youPrayed ? (
-                            <div className="w-6 h-6 rounded-full bg-primary-600 flex items-center justify-center">
-                              <Check className="w-4 h-4 text-white" />
-                            </div>
-                          ) : (
-                            <div className="w-6 h-6 rounded-full border-2 border-border"></div>
-                          )}
-                          <span className="text-xs text-muted-foreground">
-                            You
-                          </span>
-                        </button>
+                    <button
+                      type="button"
+                      onClick={() => toggleExpand(prayer.id)}
+                      className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-slate-500 transition-colors hover:bg-rose-50 hover:text-rose-700"
+                      aria-label={`${isExpanded ? "Collapse" : "Expand"} ${prayer.title}`}
+                      aria-expanded={isExpanded}
+                    >
+                      {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                    </button>
+                    </div>
 
-                        <button
-                          onClick={() =>
-                            handleTogglePrayed(
-                              prayer,
-                              "partner",
-                            )
-                          }
-                          disabled={!canEdit}
-                          className="flex flex-col items-center gap-1 disabled:opacity-50"
-                        >
-                          {prayer.partnerPrayed ? (
-                            <div className="w-6 h-6 rounded-full bg-primary-600 flex items-center justify-center">
-                              <Check className="w-4 h-4 text-white" />
-                            </div>
-                          ) : (
-                            <div className="w-6 h-6 rounded-full border-2 border-border"></div>
-                          )}
-                          <span className="text-xs text-muted-foreground">
-                            Partner
-                          </span>
-                        </button>
-                      </div>
-
-                      {/* Expand Button */}
+                    <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-4">
                       <button
-                        onClick={() => toggleExpand(prayer.id)}
-                        className="text-muted-foreground hover:text-muted-foreground"
+                        type="button"
+                        onClick={() => handleTogglePrayed(prayer, "you")}
+                        disabled={!canEdit}
+                        aria-pressed={Boolean(prayer.youPrayed)}
+                        className={`flex min-h-10 items-center gap-2 rounded-full px-3.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${prayer.youPrayed ? "bg-rose-100 text-rose-700" : "bg-slate-50 text-slate-600 hover:bg-rose-50 hover:text-rose-700"}`}
                       >
-                        {isExpanded ? (
-                          <ChevronUp className="w-5 h-5" />
-                        ) : (
-                          <ChevronDown className="w-5 h-5" />
-                        )}
+                        <span className={`flex h-5 w-5 items-center justify-center rounded-full ${prayer.youPrayed ? "bg-rose-500 text-white" : "border border-slate-300 bg-white"}`}>
+                          {prayer.youPrayed && <Check className="h-3.5 w-3.5" aria-hidden="true" />}
+                        </span>
+                        You prayed
                       </button>
+                      <button
+                        type="button"
+                        onClick={() => handleTogglePrayed(prayer, "partner")}
+                        disabled={!canEdit}
+                        aria-pressed={Boolean(prayer.partnerPrayed)}
+                        className={`flex min-h-10 items-center gap-2 rounded-full px-3.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${prayer.partnerPrayed ? "bg-amber-100 text-amber-800" : "bg-slate-50 text-slate-600 hover:bg-amber-50 hover:text-amber-800"}`}
+                      >
+                        <span className={`flex h-5 w-5 items-center justify-center rounded-full ${prayer.partnerPrayed ? "bg-amber-500 text-white" : "border border-slate-300 bg-white"}`}>
+                          {prayer.partnerPrayed && <Check className="h-3.5 w-3.5" aria-hidden="true" />}
+                        </span>
+                        Partner prayed
+                      </button>
+                      <span className="ml-auto flex items-center gap-1.5 text-xs font-medium text-slate-500">
+                        <Heart className="h-3.5 w-3.5 text-rose-500" aria-hidden="true" />
+                        {prayerCount} praying
+                      </span>
                     </div>
                   </div>
 
-                  {/* Expanded Actions */}
                   {isExpanded && canEdit && (
-                    <div className="px-4 pb-4 pt-2 border-t border-border flex items-center gap-2">
+                    <div className="grid grid-cols-3 gap-2 border-t border-slate-100 bg-slate-50/70 p-3 sm:px-5">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => handleEdit(prayer)}
-                        className="flex-1 text-xs"
+                        className="rounded-full border-slate-200 bg-white text-xs"
                       >
                         Edit
                       </Button>
@@ -525,7 +561,7 @@ export function PrayerBoard({
                         onClick={() =>
                           handleToggleAnswered(prayer)
                         }
-                        className="flex-1 text-xs"
+                        className="rounded-full border-slate-200 bg-white text-xs"
                       >
                         {prayer.isAnswered
                           ? "Mark Active"
@@ -539,7 +575,7 @@ export function PrayerBoard({
                             onDeletePrayer(prayer.id);
                           }
                         }}
-                        className="flex-1 text-xs text-error-500 hover:text-error-700"
+                        className="rounded-full border-slate-200 bg-white text-xs text-red-600 hover:bg-red-50 hover:text-red-700"
                       >
                         Delete
                       </Button>
@@ -552,14 +588,6 @@ export function PrayerBoard({
         )}
       </div>
 
-      {/* Floating Action Button */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-40 right-6 w-14 h-14 rounded-full bg-gradient-to-r from-warning-500 to-warning-500 shadow-lg flex items-center justify-center text-white hover:shadow-xl transition-shadow z-50"
-      >
-        <Plus className="w-6 h-6" />
-      </button>
-
       {/* Add/Edit Prayer Dialog */}
       <Dialog
         open={isOpen}
@@ -568,20 +596,19 @@ export function PrayerBoard({
           if (!open) resetForm();
         }}
       >
-        <DialogContent className="sm:max-w-[550px]">
-          <DialogHeader>
-            <DialogTitle>
+        <DialogContent className="max-h-[92dvh] gap-0 overflow-y-auto rounded-[1.75rem] border-rose-100 p-0 sm:max-w-xl">
+          <DialogHeader className="border-b border-rose-100 bg-gradient-to-br from-rose-50 via-white to-amber-50 px-6 py-6 pr-12 text-left">
+            <DialogTitle className="text-2xl font-bold text-slate-900">
               {editingPrayer
                 ? "Edit Prayer"
                 : "New Prayer Request"}
             </DialogTitle>
-            <DialogDescription>
-              {t.prayer.prayerRequests}. 
-              together as a couple.
+            <DialogDescription className="leading-6 text-slate-600">
+              Create a space to return to this prayer together.
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5 p-6">
             {/* Category Selection */}
             <div className="space-y-2">
               <Label>Category</Label>
@@ -591,10 +618,11 @@ export function PrayerBoard({
                     key={cat.value}
                     type="button"
                     onClick={() => setCategory(cat.value)}
-                    className={`flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all ${
+                    aria-pressed={category === cat.value}
+                    className={`flex min-h-20 flex-col items-center justify-center rounded-xl border p-3 transition-all ${
                       category === cat.value
-                        ? `border-primary-500 bg-primary-50 scale-105`
-                        : "border-border hover:border-primary-300"
+                        ? "border-rose-300 bg-rose-50 text-rose-800 shadow-sm"
+                        : "border-slate-200 bg-white text-slate-700 hover:border-rose-200 hover:bg-rose-50/50"
                     }`}
                   >
                     <span className="text-2xl mb-1">
@@ -617,6 +645,7 @@ export function PrayerBoard({
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
+                className="h-11 rounded-xl border-slate-200 focus-visible:ring-rose-400"
               />
             </div>
 
@@ -630,6 +659,7 @@ export function PrayerBoard({
                 onChange={(e) => setDescription(e.target.value)}
                 rows={4}
                 required
+                className="rounded-xl border-slate-200 focus-visible:ring-rose-400"
               />
             </div>
 
@@ -647,11 +677,12 @@ export function PrayerBoard({
                   setReminderDate(e.target.value)
                 }
                 min={new Date().toISOString().split("T")[0]}
+                className="h-11 rounded-xl border-slate-200 focus-visible:ring-rose-400"
               />
             </div>
 
             {/* Community Sharing */}
-            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-sky-50 to-sky-100 rounded-lg border border-sky-200">
+            <div className="flex items-center justify-between rounded-2xl border border-rose-100 bg-gradient-to-r from-rose-50 to-amber-50 p-4">
               <div className="flex-1">
                 <Label
                   htmlFor="community"
@@ -671,18 +702,19 @@ export function PrayerBoard({
               />
             </div>
 
-            <DialogFooter>
+            <DialogFooter className="gap-2 pt-1 sm:gap-0">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setIsOpen(false)}
+                className="rounded-full"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
+                className="rounded-full bg-rose-600 px-6 text-white shadow-sm hover:bg-rose-700"
               >
                 {isLoading
                   ? "Saving..."
