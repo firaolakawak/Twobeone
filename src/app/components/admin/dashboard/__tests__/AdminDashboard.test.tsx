@@ -10,10 +10,6 @@ vi.mock("../../../../utils/api", () => ({
     getActivityLog: vi.fn(),
   },
 }));
-vi.mock("../../ShabbatShalomConsole", () => ({
-  ShabbatShalomConsole: () => <section aria-label="Shabbat Shalom console" />,
-}));
-
 describe("AdminDashboard", () => {
   it("renders its primary regions before API data is available", async () => {
     render(<AdminDashboard onNavigate={vi.fn()} />);

@@ -6,6 +6,7 @@ import {
   GraduationCap,
   Home,
   LayoutDashboard,
+  Mail,
   Menu,
   MessageCircle,
   Shield,
@@ -25,6 +26,7 @@ import { ModulesManager } from "./admin/ModulesManager";
 import { PrivilegeManager } from "./admin/PrivilegeManager";
 import { PushNotificationsManager } from "./admin/PushNotificationsManager";
 import { QuestionsManager } from "./admin/QuestionsManager";
+import { ShabbatShalomConsole } from "./admin/ShabbatShalomConsole";
 import { UsersManager } from "./admin/UsersManager";
 import { Sidebar, type SidebarItem } from "./admin/dashboard/Sidebar";
 import { ContentLanguageProvider } from "../contexts/ContentLanguageContext";
@@ -44,6 +46,7 @@ const sections: SidebarItem[] = [
   { id: "groups", label: "Community Groups", icon: Users },
   { id: "users", label: "User Management", icon: TrendingUp },
   { id: "pushNotifications", label: "Push Notifications", icon: BellRing },
+  { id: "shabbatShalom", label: "Shabbat Shalom", icon: Mail },
   { id: "landingPage", label: "Landing Page", icon: Home },
   { id: "privileges", label: "Privileges", icon: ShieldCheck },
   { id: "auditLog", label: "Audit Log", icon: ClipboardList },
@@ -77,6 +80,7 @@ export function AdminPanel({ onSignOut, accessToken, onBackToHome }: AdminPanelP
             {activeSection === "groups" && <GroupsManager accessToken={accessToken} />}
             {activeSection === "users" && <UsersManager accessToken={accessToken} />}
             {activeSection === "pushNotifications" && <PushNotificationsManager accessToken={accessToken} />}
+            {activeSection === "shabbatShalom" && <ShabbatShalomConsole accessToken={accessToken} />}
             {activeSection === "landingPage" && <LandingPageManager accessToken={accessToken} />}
             {activeSection === "privileges" && <PrivilegeManager accessToken={accessToken} />}
             {activeSection === "auditLog" && <AuditLog accessToken={accessToken || ""} />}
