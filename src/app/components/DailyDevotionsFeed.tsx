@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { BookOpen, Play, Headphones, Bookmark, CheckCircle2, Trash2, Pause, ArrowRight, Clock3 } from 'lucide-react';
+import { BookOpen, Play, Headphones, Bookmark, CheckCircle2, Trash2, Pause, ArrowRight, Clock3, Heart } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Badge } from './ui/badge';
-import { ScrollArea } from './ui/scroll-area';
 import { toast } from 'sonner';
 
 interface Devotional {
@@ -35,21 +34,6 @@ interface Highlight {
   sharedBy?: string;
   sharedById?: string;
   createdAt: string;
-}
-
-interface AudioLesson {
-  id: string;
-  title: string;
-  speaker: string;
-  duration: string;
-  topic: string;
-}
-
-interface MemoryVerse {
-  id: string;
-  verse: string;
-  reference: string;
-  isMemorized?: boolean;
 }
 
 interface DailyDevotionsFeedProps {
@@ -112,6 +96,7 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
             audioUrl: d.audioUrl,
             audioFileName: d.audioFileName,
             date: d.date,
+            duration: d.duration,
             prayerPrompt: d.prayerPrompt,
             language: d.language // Add language field
           })) || [];
@@ -221,6 +206,7 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
               audioUrl: d.audioUrl,
               audioFileName: d.audioFileName,
               date: d.date,
+              duration: d.duration,
               prayerPrompt: d.prayerPrompt,
               language: d.language // Add language field
             })) || [];
@@ -362,140 +348,183 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
     }
   };
 
-  const audioLessons: AudioLesson[] = [
-    {
-      id: '1',
-      title: 'Communication in Christian Marriage',
-      speaker: 'Dr. James Dobson',
-      duration: '25 min',
-      topic: 'Communication',
-    },
-    {
-      id: '2',
-      title: 'Conflict Resolution God\'s Way',
-      speaker: 'Gary Chapman',
-      duration: '30 min',
-      topic: 'Conflict',
-    },
-  ];
-
-  const memoryVerses: MemoryVerse[] = [
-    {
-      id: '1',
-      verse: 'Two are better than one, because they have a good return for their labor.',
-      reference: 'Ecclesiastes 4:9',
-      isMemorized: true,
-    },
-    {
-      id: '2',
-      verse: 'Above all, love each other deeply, because love covers over a multitude of sins.',
-      reference: '1 Peter 4:8',
-    },
-  ];
+  const featuredDevotional = filteredDevotionals[0];
+  const earlierDevotionals = filteredDevotionals.slice(1);
+  const completedVisibleCount = filteredDevotionals.filter((devotional) =>
+    completedDevotionals.has(devotional.id),
+  ).length;
+  const completionProgress = filteredDevotionals.length
+    ? Math.round((completedVisibleCount / filteredDevotionals.length) * 100)
+    : 0;
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-8 pb-4">
-      {/* Header */}
-      <div className="space-y-3 px-2 pt-3 text-center">
-        <div className="flex items-center justify-center gap-3">
-          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 ring-1 ring-primary-100">
-            <BookOpen className="h-7 w-7" aria-hidden="true" />
-          </span>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">{t.devotionals.title}</h1>
+    <div className="mx-auto w-full max-w-3xl space-y-7 pb-6">
+      {/* Warm, quiet introduction */}
+      <header className="relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-rose-50 via-white to-amber-50 px-6 py-8 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)] ring-1 ring-rose-100/80 sm:px-9 sm:py-10">
+        <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-rose-200/30 blur-3xl" aria-hidden="true" />
+        <div className="pointer-events-none absolute -bottom-24 -left-16 h-52 w-52 rounded-full bg-amber-200/30 blur-3xl" aria-hidden="true" />
+        <div className="relative max-w-xl">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white/75 px-3 py-1.5 text-xs font-semibold tracking-wide text-rose-700 shadow-sm ring-1 ring-rose-100 backdrop-blur">
+            <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" aria-hidden="true" />
+            A quiet moment for two
+          </div>
+          <h1 className="text-3xl font-bold tracking-[-0.035em] text-slate-950 sm:text-4xl">{t.devotionals.title}</h1>
+          <p className="mt-3 max-w-lg text-[15px] leading-7 text-slate-600 sm:text-base">
+            {t.dashboard.growingTogetherInFaith}
+          </p>
+
+          {!isLoadingDevotionals && filteredDevotionals.length > 0 && (
+            <div
+              className="mt-7 flex items-center gap-4"
+              role="progressbar"
+              aria-label="Devotional reading progress"
+              aria-valuemin={0}
+              aria-valuemax={filteredDevotionals.length}
+              aria-valuenow={completedVisibleCount}
+              aria-valuetext={`${completedVisibleCount} of ${filteredDevotionals.length} readings completed`}
+            >
+              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/90 ring-1 ring-rose-100">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-rose-500 to-pink-500 transition-[width] duration-700 ease-out motion-reduce:transition-none"
+                  style={{ width: `${completionProgress}%` }}
+                />
+              </div>
+              <span className="shrink-0 text-xs font-semibold text-slate-500">
+                {completedVisibleCount}/{filteredDevotionals.length} read
+              </span>
+            </div>
+          )}
         </div>
-        <p className="text-base leading-relaxed text-slate-600">{t.dashboard.growingTogetherInFaith}</p>
-      </div>
+      </header>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full gap-6">
-        <TabsList className="grid h-14 w-full grid-cols-3 rounded-2xl border border-slate-200 bg-slate-100/90 p-1.5 shadow-inner" aria-label="Devotional sections">
-          <TabsTrigger value="devotionals" className="h-full rounded-xl px-1 text-xs font-semibold text-slate-600 transition-all duration-200 hover:text-primary-700 data-[state=active]:bg-white data-[state=active]:text-primary-700 data-[state=active]:shadow-sm sm:text-sm">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full gap-7">
+        <TabsList className="grid h-12 w-full grid-cols-3 border-b border-slate-200 bg-transparent p-0" aria-label="Devotional sections">
+          <TabsTrigger value="devotionals" className="relative h-full rounded-none border-b-2 border-transparent bg-transparent px-1 text-xs font-semibold text-slate-500 shadow-none transition-colors duration-200 hover:text-rose-700 data-[state=active]:border-rose-500 data-[state=active]:bg-transparent data-[state=active]:text-rose-700 data-[state=active]:shadow-none sm:text-sm">
             <BookOpen className="h-4 w-4" aria-hidden="true" />
             <span>{t.devotionals.title}</span>
           </TabsTrigger>
-          <TabsTrigger value="audio" className="h-full rounded-xl px-1 text-xs font-semibold text-slate-600 transition-all duration-200 hover:text-primary-700 data-[state=active]:bg-white data-[state=active]:text-primary-700 data-[state=active]:shadow-sm sm:text-sm">
+          <TabsTrigger value="audio" className="relative h-full rounded-none border-b-2 border-transparent bg-transparent px-1 text-xs font-semibold text-slate-500 shadow-none transition-colors duration-200 hover:text-rose-700 data-[state=active]:border-rose-500 data-[state=active]:bg-transparent data-[state=active]:text-rose-700 data-[state=active]:shadow-none sm:text-sm">
             <Headphones className="h-4 w-4" aria-hidden="true" />
             <span>{t.devotionals.audioTab}</span>
           </TabsTrigger>
-          <TabsTrigger value="verses" className="h-full rounded-xl px-1 text-xs font-semibold text-slate-600 transition-all duration-200 hover:text-primary-700 data-[state=active]:bg-white data-[state=active]:text-primary-700 data-[state=active]:shadow-sm sm:text-sm">
+          <TabsTrigger value="verses" className="relative h-full rounded-none border-b-2 border-transparent bg-transparent px-1 text-xs font-semibold text-slate-500 shadow-none transition-colors duration-200 hover:text-rose-700 data-[state=active]:border-rose-500 data-[state=active]:bg-transparent data-[state=active]:text-rose-700 data-[state=active]:shadow-none sm:text-sm">
             <Bookmark className="h-4 w-4" aria-hidden="true" />
             <span>{t.devotionals.versesTab}</span>
           </TabsTrigger>
         </TabsList>
 
         {/* Devotionals Tab */}
-        <TabsContent value="devotionals" className="space-y-6">
+        <TabsContent value="devotionals" className="space-y-7 data-[state=active]:animate-in data-[state=active]:fade-in data-[state=active]:slide-in-from-bottom-2 data-[state=active]:duration-300">
           <div className="flex items-end justify-between gap-4 px-1">
             <div>
-              <h2 className="text-xl font-bold tracking-tight text-slate-950">Daily readings</h2>
-              <p className="mt-1 text-sm text-slate-500">Pause, reflect, and grow together in Scripture.</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-rose-600">Your shared rhythm</p>
+              <h2 className="mt-1 text-xl font-bold tracking-tight text-slate-950">Daily readings</h2>
             </div>
             {!isLoadingDevotionals && (
-              <span className="shrink-0 text-sm font-medium text-slate-500">{filteredDevotionals.length} {filteredDevotionals.length === 1 ? 'reading' : 'readings'}</span>
+              <span className="shrink-0 text-xs font-medium text-slate-400">{filteredDevotionals.length} {filteredDevotionals.length === 1 ? 'reading' : 'readings'}</span>
             )}
           </div>
           {isLoadingDevotionals ? (
             <div className="py-2 text-center" role="status" aria-label={t.devotionals.loading}>
-              <div className="animate-pulse space-y-5">
-                <div className="h-52 rounded-2xl bg-slate-100"></div>
-                <div className="h-52 rounded-2xl bg-slate-100"></div>
-                <div className="h-52 rounded-2xl bg-slate-100"></div>
+              <div className="animate-pulse space-y-4">
+                <div className="h-72 rounded-[2rem] bg-gradient-to-br from-rose-50 to-slate-100" />
+                <div className="h-32 rounded-2xl bg-slate-100" />
+                <div className="h-32 rounded-2xl bg-slate-100" />
               </div>
               <p className="mt-4 text-sm text-slate-500">{t.devotionals.loading}</p>
             </div>
-          ) : filteredDevotionals.length > 0 ? (
-            <div className="grid gap-5">
-              {filteredDevotionals.map((devotional) => {
-                const isCompleted = completedDevotionals.has(devotional.id);
-                return (
-                  <Card
-                    key={devotional.id}
-                    lang={devotional.language === 'am' || devotional.language === 'om' ? devotional.language : undefined}
-                    className="group overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-0 shadow-sm transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-md focus-within:border-primary-300 focus-within:ring-4 focus-within:ring-primary-100/70"
-                  >
-                    <button
-                      type="button"
-                      className="w-full p-5 text-left outline-none sm:p-6"
-                      onClick={() => onDevotionalClick(devotional.id)}
-                      aria-label={`Read ${devotional.title}`}
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex flex-wrap items-center gap-2.5">
-                          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                            <Clock3 className="h-3.5 w-3.5" aria-hidden="true" />
-                            {devotional.duration || '5 min read'}
-                          </span>
-                          {isCompleted && (
-                            <Badge className="h-6 gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 text-xs font-semibold text-emerald-700 shadow-none hover:bg-emerald-50">
-                              <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-                              {t.devotionals.completed}
-                            </Badge>
-                          )}
-                        </div>
-                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary-600 ring-1 ring-primary-100 transition-transform duration-200 group-hover:scale-105">
-                          <BookOpen className="h-5 w-5" aria-hidden="true" />
-                        </span>
-                      </div>
+          ) : featuredDevotional ? (
+            <div className="space-y-7">
+              <Card
+                lang={featuredDevotional.language === 'am' || featuredDevotional.language === 'om' ? featuredDevotional.language : undefined}
+                className="group relative overflow-hidden rounded-[2rem] border-0 bg-slate-950 p-0 text-white shadow-[0_24px_60px_-35px_rgba(15,23,42,0.8)] ring-1 ring-white/10 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_30px_70px_-35px_rgba(190,24,93,0.5)] focus-within:ring-4 focus-within:ring-rose-200 motion-reduce:transform-none"
+              >
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(244,114,182,0.26),transparent_42%),radial-gradient(circle_at_bottom_left,rgba(251,191,36,0.14),transparent_38%)]" aria-hidden="true" />
+                <button
+                  type="button"
+                  className="relative w-full p-6 text-left outline-none active:scale-[0.995] motion-reduce:transform-none sm:p-8"
+                  onClick={() => onDevotionalClick(featuredDevotional.id)}
+                  aria-label={`Read ${featuredDevotional.title}`}
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-rose-200">
+                      <span className="h-1.5 w-1.5 rounded-full bg-rose-400 shadow-[0_0_0_4px_rgba(251,113,133,0.12)]" />
+                      Featured devotion
+                    </span>
+                    {completedDevotionals.has(featuredDevotional.id) ? (
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/15 px-3 py-1.5 text-xs font-semibold text-emerald-200 ring-1 ring-emerald-300/20">
+                        <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
+                        {t.devotionals.completed}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-300">
+                        <Clock3 className="h-3.5 w-3.5" aria-hidden="true" />
+                        {featuredDevotional.duration || '5 min'}
+                      </span>
+                    )}
+                  </div>
 
-                      <h3 className="mt-4 text-xl font-bold leading-tight tracking-tight text-slate-950 sm:text-2xl">{devotional.title}</h3>
-                      <blockquote className="mt-4 border-l-2 border-primary-300 pl-4">
-                        <p className="text-[15px] italic leading-7 text-slate-600 sm:text-base">“{devotional.verse}”</p>
-                      </blockquote>
-                      <div className="mt-4 flex items-center justify-between gap-4 border-t border-slate-100 pt-4">
-                        <cite className="text-sm font-semibold not-italic text-slate-600">{devotional.reference}</cite>
-                        <span className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-primary-700">
-                          Read devotional
-                          <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
-                        </span>
-                      </div>
-                    </button>
-                  </Card>
-                );
-              })}
+                  <h3 className="mt-10 max-w-xl text-2xl font-bold leading-tight tracking-[-0.025em] text-white sm:text-3xl">{featuredDevotional.title}</h3>
+                  <blockquote className="mt-5 max-w-xl">
+                    <p className="text-[15px] italic leading-7 text-slate-300 sm:text-base">“{featuredDevotional.verse}”</p>
+                    <cite className="mt-3 block text-sm font-semibold not-italic text-rose-200">{featuredDevotional.reference}</cite>
+                  </blockquote>
+
+                  <span className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-bold text-slate-950 shadow-lg shadow-black/10 transition-all duration-200 group-hover:gap-3 group-hover:bg-rose-50">
+                    Begin together
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  </span>
+                </button>
+              </Card>
+
+              {earlierDevotionals.length > 0 && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 px-1">
+                    <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Continue your journey</span>
+                    <span className="h-px flex-1 bg-slate-200" />
+                  </div>
+                  {earlierDevotionals.map((devotional, index) => {
+                    const isCompleted = completedDevotionals.has(devotional.id);
+                    return (
+                      <Card
+                        key={devotional.id}
+                        lang={devotional.language === 'am' || devotional.language === 'om' ? devotional.language : undefined}
+                        className="group animate-in overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-[0_8px_30px_-24px_rgba(15,23,42,0.5)] fade-in slide-in-from-bottom-2 transition-all duration-300 ease-out hover:border-rose-200 hover:bg-rose-50/20 hover:shadow-[0_16px_38px_-26px_rgba(190,24,93,0.45)] focus-within:ring-4 focus-within:ring-rose-100 motion-reduce:animate-none"
+                        style={{ animationDelay: `${Math.min(index * 45, 225)}ms` }}
+                      >
+                        <button
+                          type="button"
+                          className="w-full p-5 text-left outline-none active:bg-rose-50/50 sm:p-6"
+                          onClick={() => onDevotionalClick(devotional.id)}
+                          aria-label={`Read ${devotional.title}`}
+                        >
+                          <div className="flex items-center gap-4">
+                            <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors duration-200 ${isCompleted ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600 group-hover:bg-rose-100'}`}>
+                              {isCompleted ? <CheckCircle2 className="h-5 w-5" aria-hidden="true" /> : <BookOpen className="h-5 w-5" aria-hidden="true" />}
+                            </span>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
+                                <span>{devotional.duration || '5 min read'}</span>
+                                <span aria-hidden="true">·</span>
+                                <span className="truncate">{devotional.reference}</span>
+                              </div>
+                              <h3 className="mt-1.5 text-lg font-bold leading-snug tracking-tight text-slate-900">{devotional.title}</h3>
+                            </div>
+                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-400 transition-all duration-200 group-hover:translate-x-1 group-hover:bg-white group-hover:text-rose-600 group-hover:shadow-sm">
+                              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                            </span>
+                          </div>
+                        </button>
+                      </Card>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           ) : (
-            <Card className="rounded-2xl border-slate-200 p-10 text-center shadow-sm">
-              <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+            <Card className="rounded-[2rem] border-rose-100 bg-gradient-to-br from-white to-rose-50/50 p-10 text-center shadow-sm">
+              <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-rose-100/70 text-rose-500">
                 <BookOpen className="h-7 w-7" aria-hidden="true" />
               </span>
               <h3 className="mb-2 text-lg font-bold text-slate-900">{t.devotionals.noDevotionals}</h3>

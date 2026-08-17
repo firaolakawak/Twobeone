@@ -88,7 +88,10 @@ import {
   projectId,
   publicAnonKey,
 } from "./utils/supabase/info";
-import { sendNotification } from "./utils/notifications";
+import {
+  getDevotionalNotificationId,
+  sendNotification,
+} from "./utils/notifications";
 import { toast } from "sonner@2.0.3";
 import api, {
   warmUpServer,
@@ -1293,7 +1296,10 @@ export default function App() {
                   onNotificationClick={(notification) => {
                     if (notification.type === "devotional") {
                       setActiveTab("devotions");
-                      if (notification.data?.devotionId) {
+                      const devotionId =
+                        getDevotionalNotificationId(notification);
+                      if (devotionId) {
+                        setSelectedDevotionalId(devotionId);
                         setTimeout(() => {
                           setIsDevotionalOpen(true);
                         }, 100);

@@ -41,6 +41,6 @@ describe('DailyDevotionsFeed', () => {
 
     expect(await screen.findByRole('button', { name: 'Read Building on the Rock' })).toBeInTheDocument();
     expect(screen.getByText('Matthew 7:24–25')).toBeInTheDocument();
-    expect(screen.getByText('Read devotional')).toBeInTheDocument();
+    expect(screen.getByText('Begin together')).toBeInTheDocument();
   });
 });

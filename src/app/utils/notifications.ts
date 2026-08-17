@@ -11,6 +11,27 @@ interface SendNotificationParams {
   sendPush?: boolean;
 }
 
+interface DevotionalNotification {
+  type: string;
+  data?: {
+    devotionId?: unknown;
+    devotion_id?: unknown;
+  } | null;
+}
+
+export function getDevotionalNotificationId(
+  notification: DevotionalNotification,
+): string | null {
+  if (notification.type !== 'devotional') return null;
+
+  const devotionId =
+    notification.data?.devotionId ?? notification.data?.devotion_id;
+
+  return typeof devotionId === 'string' && devotionId.trim()
+    ? devotionId
+    : null;
+}
+
 export async function sendNotification({
   recipientId,
   type,
