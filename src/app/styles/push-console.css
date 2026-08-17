@@ -15,15 +15,15 @@
 .push-console__subscribers-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; padding: clamp(20px, 3vw, 28px); }
 .push-console__subscribers-heading h2 { margin: 3px 0 5px; color: var(--admin-color-text); font-size: 1.15rem; }
 .push-console__subscribers-heading p:last-child { margin: 0; color: var(--admin-color-text-muted); font-size: .84rem; }
-.push-console__subscribers-actions { display: flex; align-items: center; gap: 10px; }
+.push-console__subscribers-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; }
 .push-console__subscriber-count { display: inline-flex; align-items: center; gap: 7px; border-radius: var(--admin-radius-pill); background: var(--admin-color-success-soft); color: var(--admin-color-success); font-size: .76rem; font-weight: 800; white-space: nowrap; }
 .push-console__subscriber-count { min-height: 36px; padding: 0 12px; }
 .push-console__subscriber-count > span { width: 7px; height: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 13%, transparent); }
-.push-console__refresh { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 36px; padding: 0 12px; border: 1px solid var(--admin-color-border); border-radius: var(--admin-radius-pill); background: var(--admin-color-surface); color: var(--admin-color-text); font: inherit; font-size: .76rem; font-weight: 750; cursor: pointer; transition: border-color var(--admin-ease), color var(--admin-ease), background var(--admin-ease); }
-.push-console__refresh:hover:not(:disabled) { border-color: var(--admin-color-primary); background: var(--admin-color-primary-soft); color: var(--admin-color-primary); }
-.push-console__refresh:focus-visible { outline: none; box-shadow: var(--admin-focus); }
+.push-console__refresh, .push-console__expand { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 36px; padding: 0 12px; border: 1px solid var(--admin-color-border); border-radius: var(--admin-radius-pill); background: var(--admin-color-surface); color: var(--admin-color-text); font: inherit; font-size: .76rem; font-weight: 750; cursor: pointer; transition: border-color var(--admin-ease), color var(--admin-ease), background var(--admin-ease); }
+.push-console__refresh:hover:not(:disabled), .push-console__expand:hover { border-color: var(--admin-color-primary); background: var(--admin-color-primary-soft); color: var(--admin-color-primary); }
+.push-console__refresh:focus-visible, .push-console__expand:focus-visible { outline: none; box-shadow: var(--admin-focus); }
 .push-console__refresh:disabled { cursor: wait; opacity: .6; }
-.push-console__refresh svg { width: 15px; }
+.push-console__refresh svg, .push-console__expand svg { width: 15px; }
 .push-console__refresh svg.is-spinning { animation: push-console-spin .8s linear infinite; }
 .push-console__subscriber-table-wrap { overflow-x: auto; border-top: 1px solid var(--admin-color-border); }
 .push-console__subscriber-table { width: 100%; min-width: 480px; border-collapse: collapse; }
@@ -35,6 +35,14 @@
 .push-console__subscriber-table tbody tr:hover { background: color-mix(in srgb, var(--admin-color-primary-soft) 45%, transparent); }
 .push-console__subscriber-table td:first-child { display: grid; gap: 4px; }
 .push-console__subscriber-table td:first-child strong { font-size: .88rem; }
+.push-console__pagination { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 20px; border-top: 1px solid var(--admin-color-border); background: var(--admin-color-surface-muted); }
+.push-console__pagination > span { color: var(--admin-color-text-muted); font-size: .74rem; }
+.push-console__pagination > div { display: flex; align-items: center; gap: 10px; }
+.push-console__pagination strong { color: var(--admin-color-text-muted); font-size: .72rem; white-space: nowrap; }
+.push-console__pagination button { display: inline-flex; align-items: center; gap: 4px; min-height: 34px; padding: 0 10px; border: 1px solid var(--admin-color-border); border-radius: 9px; background: var(--admin-color-surface); color: var(--admin-color-text); font: inherit; font-size: .72rem; font-weight: 750; cursor: pointer; }
+.push-console__pagination button:hover:not(:disabled) { border-color: var(--admin-color-primary); color: var(--admin-color-primary); }
+.push-console__pagination button:disabled { cursor: not-allowed; opacity: .45; }
+.push-console__pagination button svg { width: 14px; }
 .push-console__subscriber-state { display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 92px; padding: 20px; border-top: 1px solid var(--admin-color-border); color: var(--admin-color-text-muted); font-size: .83rem; text-align: center; }
 .push-console__subscriber-state svg { width: 19px; color: var(--admin-color-primary); }
 .push-console__subscriber-state strong { color: var(--admin-color-text); }
@@ -100,4 +108,4 @@
 .push-console__guidance li + li { margin-top: 8px; }
 @media (max-width: 1050px) { .push-console__layout { grid-template-columns: 1fr; } }
 @media (max-width: 680px) { .push-console { gap: 16px; } .push-console__hero { flex-direction: column; padding: 22px; } .push-console__hero-actions { align-items: flex-start; margin-top: 16px; } }
-@media (max-width: 520px) { .push-console__subscribers-heading { display: grid; } .push-console__subscribers-actions { justify-content: space-between; } .push-console__templates-heading { display: grid; } .push-console__templates-heading > span { justify-self: start; } .push-console__composer { padding: 18px; } .push-console__preview { grid-template-columns: 40px 1fr; padding: 14px; } .push-console__app-icon { width: 40px; height: 40px; } .push-console__send { width: 100%; } }
+@media (max-width: 520px) { .push-console__subscribers-heading { display: grid; } .push-console__subscribers-actions { justify-content: flex-start; } .push-console__pagination { align-items: stretch; flex-direction: column; } .push-console__pagination > div { justify-content: space-between; } .push-console__pagination button { font-size: 0; } .push-console__pagination button svg { width: 16px; } .push-console__templates-heading { display: grid; } .push-console__templates-heading > span { justify-self: start; } .push-console__composer { padding: 18px; } .push-console__preview { grid-template-columns: 40px 1fr; padding: 14px; } .push-console__app-icon { width: 40px; height: 40px; } .push-console__send { width: 100%; } }

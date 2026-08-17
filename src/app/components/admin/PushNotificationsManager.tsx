@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, BellRing, CheckCircle2, FilePlus2, RefreshCw, Send, Sparkles, Users } from 'lucide-react';
+import { AlertTriangle, BellRing, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, FilePlus2, RefreshCw, Send, Sparkles, Users } from 'lucide-react';
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
 import '../../styles/push-console.css';
 
@@ -44,6 +44,12 @@ export function PushNotificationsManager({ accessToken }: PushNotificationsManag
   const [subscribers, setSubscribers] = useState<PushSubscriber[]>([]);
   const [subscribersLoading, setSubscribersLoading] = useState(true);
   const [subscribersError, setSubscribersError] = useState('');
+  const [subscribersExpanded, setSubscribersExpanded] = useState(false);
+  const [subscriberPage, setSubscriberPage] = useState(1);
+  const subscribersPerPage = 10;
+  const subscriberPageCount = Math.max(1, Math.ceil(subscribers.length / subscribersPerPage));
+  const currentSubscriberPage = Math.min(subscriberPage, subscriberPageCount);
+  const visibleSubscribers = subscribers.slice((currentSubscriberPage - 1) * subscribersPerPage, currentSubscriberPage * subscribersPerPage);
   const categories = useMemo(() => Array.from(new Set(PUSH_TEMPLATES.map((template) => template.category))), []);
   const hasPlaceholder = body.includes('[Add a short verse]');
   const canSend = Boolean(title.trim() && body.trim() && confirmed && !sending && !hasPlaceholder);
@@ -105,42 +111,6 @@ export function PushNotificationsManager({ accessToken }: PushNotificationsManag
         </div>
       </header>
 
-      <section className="push-console__subscribers" aria-labelledby="subscribers-heading">
-        <div className="push-console__subscribers-heading">
-          <div>
-            <p className="admin-eyebrow">Push audience</p>
-            <h2 id="subscribers-heading">Subscribed users</h2>
-            <p>Members with an active browser notification subscription.</p>
-          </div>
-          <div className="push-console__subscribers-actions">
-            <span className="push-console__subscriber-count"><span aria-hidden="true" />{subscribers.length} enabled</span>
-            <button type="button" className="push-console__refresh" onClick={() => void loadSubscribers()} disabled={subscribersLoading} aria-label="Refresh subscribed users">
-              <RefreshCw aria-hidden="true" className={subscribersLoading ? 'is-spinning' : ''} />
-              Refresh
-            </button>
-          </div>
-        </div>
-
-        {subscribersError && <div className="push-console__subscriber-error" role="alert"><AlertTriangle aria-hidden="true" /><span>{subscribersError}</span></div>}
-        {subscribersLoading && subscribers.length === 0 ? (
-          <div className="push-console__subscriber-state" role="status">Loading subscribed users…</div>
-        ) : subscribers.length === 0 ? (
-          <div className="push-console__subscriber-state"><BellRing aria-hidden="true" /><strong>No subscribed users yet</strong><span>Enabled members will appear here after their browser subscription is saved.</span></div>
-        ) : (
-          <div className="push-console__subscriber-table-wrap">
-            <table className="push-console__subscriber-table">
-              <thead><tr><th scope="col">Name</th><th scope="col">Email</th></tr></thead>
-              <tbody>{subscribers.map((subscriber) => (
-                <tr key={subscriber.userId}>
-                  <td><strong>{subscriber.name}</strong></td>
-                  <td>{subscriber.email || 'No email available'}</td>
-                </tr>
-              ))}</tbody>
-            </table>
-          </div>
-        )}
-      </section>
-
       <section className="push-console__templates" aria-labelledby="template-heading">
         <div className="push-console__templates-heading"><div><h2 id="template-heading">Message templates</h2><p>Select a template, then personalize it before sending.</p></div><span>{PUSH_TEMPLATES.length} templates</span></div>
         <label className="push-console__template-select">
@@ -180,6 +150,58 @@ export function PushNotificationsManager({ accessToken }: PushNotificationsManag
         </section>
         <aside className="push-console__guidance"><span className="push-console__guidance-icon"><BellRing aria-hidden="true" /></span><h2>Before you send</h2><p>This is a real broadcast and may appear immediately on members’ devices.</p><ul><li>Use a clear title and one focused action.</li><li>Admin authorization is verified by the server.</li><li>Expired subscriptions are removed automatically.</li><li>Every delivery is recorded in the audit log.</li></ul></aside>
       </div>
+
+      <section className="push-console__subscribers" aria-labelledby="subscribers-heading">
+        <div className="push-console__subscribers-heading">
+          <div>
+            <p className="admin-eyebrow">Push audience</p>
+            <h2 id="subscribers-heading">Subscribed users</h2>
+            <p>Members with an active browser notification subscription.</p>
+          </div>
+          <div className="push-console__subscribers-actions">
+            <span className="push-console__subscriber-count"><span aria-hidden="true" />{subscribersLoading ? 'Loading…' : `${subscribers.length} enabled`}</span>
+            <button type="button" className="push-console__refresh" onClick={() => void loadSubscribers()} disabled={subscribersLoading} aria-label="Refresh subscribed users">
+              <RefreshCw aria-hidden="true" className={subscribersLoading ? 'is-spinning' : ''} />
+              Refresh
+            </button>
+            <button type="button" className="push-console__expand" onClick={() => setSubscribersExpanded((expanded) => !expanded)} aria-expanded={subscribersExpanded} aria-controls="push-subscriber-list">
+              {subscribersExpanded ? <ChevronUp aria-hidden="true" /> : <ChevronDown aria-hidden="true" />}
+              {subscribersExpanded ? 'Hide list' : 'Show list'}
+            </button>
+          </div>
+        </div>
+
+        {subscribersExpanded && <div id="push-subscriber-list">
+          {subscribersError && <div className="push-console__subscriber-error" role="alert"><AlertTriangle aria-hidden="true" /><span>{subscribersError}</span></div>}
+          {subscribersLoading && subscribers.length === 0 ? (
+            <div className="push-console__subscriber-state" role="status">Loading subscribed users…</div>
+          ) : subscribers.length === 0 ? (
+            <div className="push-console__subscriber-state"><BellRing aria-hidden="true" /><strong>No subscribed users yet</strong><span>Enabled members will appear here after their browser subscription is saved.</span></div>
+          ) : (
+            <>
+              <div className="push-console__subscriber-table-wrap">
+                <table className="push-console__subscriber-table">
+                  <thead><tr><th scope="col">Name</th><th scope="col">Email</th></tr></thead>
+                  <tbody>{visibleSubscribers.map((subscriber) => (
+                    <tr key={subscriber.userId}>
+                      <td><strong>{subscriber.name}</strong></td>
+                      <td>{subscriber.email || 'No email available'}</td>
+                    </tr>
+                  ))}</tbody>
+                </table>
+              </div>
+              <nav className="push-console__pagination" aria-label="Subscribed users pagination">
+                <span>Showing {(currentSubscriberPage - 1) * subscribersPerPage + 1}–{Math.min(currentSubscriberPage * subscribersPerPage, subscribers.length)} of {subscribers.length}</span>
+                <div>
+                  <button type="button" onClick={() => setSubscriberPage((page) => Math.max(1, page - 1))} disabled={currentSubscriberPage === 1} aria-label="Previous subscriber page"><ChevronLeft aria-hidden="true" />Previous</button>
+                  <strong>Page {currentSubscriberPage} of {subscriberPageCount}</strong>
+                  <button type="button" onClick={() => setSubscriberPage((page) => Math.min(subscriberPageCount, page + 1))} disabled={currentSubscriberPage === subscriberPageCount} aria-label="Next subscriber page">Next<ChevronRight aria-hidden="true" /></button>
+                </div>
+              </nav>
+            </>
+          )}
+        </div>}
+      </section>
     </main>
   );
 }
