@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Button } from './ui/button';
-import { BookOpen, Heart, CheckCircle2, Music, Play, Pause } from 'lucide-react';
+import { ArrowLeft, BookOpen, Heart, CheckCircle2, Music, Play, Pause } from 'lucide-react';
 import { PrayerTogetherChat } from './PrayerTogetherChat';
 import { useState, useRef, useEffect } from 'react';
 
@@ -122,36 +122,48 @@ export function DevotionalDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className="flex h-[92dvh] flex-col gap-0 overflow-hidden rounded-[1.75rem] border-rose-100 bg-white p-0 shadow-[0_32px_90px_-36px_rgba(15,23,42,0.55)] sm:h-[90vh] sm:max-w-2xl sm:rounded-[2rem]"
+        className="inset-0 left-0 top-0 flex h-dvh w-full max-w-none translate-x-0 translate-y-0 flex-col gap-0 overflow-hidden rounded-none border-0 bg-white p-0 shadow-none sm:h-dvh sm:max-w-none sm:rounded-none"
         lang={devotional.language === 'am' || devotional.language === 'om' ? devotional.language : undefined}
+        showCloseButton={false}
       >
         <DialogDescription className="sr-only">
           Scripture, reflection, and prayer for your shared walk.
         </DialogDescription>
-        <DialogHeader className="relative flex-shrink-0 border-b border-rose-100/80 bg-gradient-to-br from-rose-50 via-white to-amber-50 px-5 py-5 pr-14 text-left sm:px-8 sm:py-6 sm:pr-16">
+        <DialogHeader className="relative flex-shrink-0 border-b border-rose-100/80 bg-gradient-to-br from-rose-50 via-white to-amber-50 px-4 py-4 text-left sm:px-8 sm:py-5">
           <div className="pointer-events-none absolute -right-10 -top-16 h-36 w-36 rounded-full bg-rose-200/25 blur-3xl" aria-hidden="true" />
-          <div className="relative">
-            <div className="mb-3 flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-rose-700 shadow-sm ring-1 ring-rose-100">
-                <Heart className="h-3 w-3 fill-rose-500 text-rose-500" aria-hidden="true" />
-                Devotional reading
-              </span>
-              {isCompleted && (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100">
-                  <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-                  {t.devotionals.completed}
+          <div className="relative mx-auto flex w-full max-w-3xl items-start gap-3 sm:gap-5">
+            <button
+              type="button"
+              onClick={onClose}
+              className="mt-0.5 inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-white/85 px-3 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-white hover:text-rose-700 hover:ring-rose-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-rose-100 sm:px-4"
+              aria-label="Back to devotionals"
+            >
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+              <span className="hidden sm:inline">Back</span>
+            </button>
+            <div className="min-w-0 flex-1">
+              <div className="mb-2 flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-rose-700 shadow-sm ring-1 ring-rose-100 sm:text-[11px]">
+                  <Heart className="h-3 w-3 fill-rose-500 text-rose-500" aria-hidden="true" />
+                  Devotional reading
                 </span>
-              )}
+                {isCompleted && (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100">
+                    <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
+                    {t.devotionals.completed}
+                  </span>
+                )}
+              </div>
+              <DialogTitle className="truncate text-xl font-bold leading-tight tracking-[-0.025em] text-slate-950 sm:text-2xl">{devotional.title}</DialogTitle>
+              <p className="mt-1 hidden max-w-xl text-sm leading-6 text-slate-500 sm:block">
+                Scripture, reflection, and prayer for your shared walk.
+              </p>
             </div>
-            <DialogTitle className="max-w-xl text-2xl font-bold leading-tight tracking-[-0.025em] text-slate-950 sm:text-3xl">{devotional.title}</DialogTitle>
-            <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">
-              Scripture, reflection, and prayer for your shared walk.
-            </p>
           </div>
         </DialogHeader>
 
         <div className="min-h-0 flex-1 overflow-y-auto bg-slate-50/55 px-4 py-5 sm:px-8 sm:py-8">
-          <div className="mx-auto max-w-2xl space-y-8">
+          <div className="mx-auto max-w-3xl space-y-8">
             {/* Scripture */}
             <section className="relative overflow-hidden rounded-[1.75rem] bg-slate-950 p-6 text-white shadow-[0_22px_55px_-34px_rgba(15,23,42,0.85)] sm:p-8">
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(244,114,182,0.24),transparent_42%),radial-gradient(circle_at_bottom_left,rgba(251,191,36,0.12),transparent_36%)]" aria-hidden="true" />
@@ -311,17 +323,9 @@ export function DevotionalDialog({
           </div>
         </div>
 
-        <div className={`grid flex-shrink-0 gap-3 border-t border-slate-200 bg-white/95 p-4 shadow-[0_-12px_35px_-28px_rgba(15,23,42,0.35)] backdrop-blur sm:p-5 ${onComplete ? 'grid-cols-[0.8fr_1.2fr]' : 'grid-cols-1'}`}>
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="h-12 rounded-full border-slate-200 bg-white font-semibold text-slate-700 shadow-sm hover:border-slate-300 hover:bg-slate-50"
-          >
-            Close
-          </Button>
-
-          {/* Always visible — changes to completed state after marking */}
-          {onComplete && (
+        {onComplete && (
+          <div className="flex-shrink-0 border-t border-slate-200 bg-white/95 p-4 shadow-[0_-12px_35px_-28px_rgba(15,23,42,0.35)] backdrop-blur sm:p-5">
+            <div className="mx-auto flex w-full max-w-3xl justify-end">
             <Button
               disabled={!!isCompleted}
               onClick={async () => {
@@ -329,13 +333,14 @@ export function DevotionalDialog({
                 await onComplete();
                 onClose();
               }}
-              className="h-12 rounded-full bg-rose-600 px-2 text-xs font-bold text-white shadow-lg shadow-rose-200 transition-all duration-200 hover:bg-rose-700 hover:shadow-xl disabled:bg-emerald-50 disabled:text-emerald-700 disabled:opacity-100 disabled:shadow-none sm:text-sm"
+              className="h-12 w-full rounded-full bg-rose-600 px-6 text-sm font-bold text-white shadow-lg shadow-rose-200 transition-all duration-200 hover:bg-rose-700 hover:shadow-xl disabled:bg-emerald-50 disabled:text-emerald-700 disabled:opacity-100 disabled:shadow-none sm:w-auto sm:min-w-56"
             >
               <CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden="true" />
               {isCompleted ? 'Completed' : 'Mark as Complete'}
             </Button>
-          )}
-        </div>
+            </div>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
