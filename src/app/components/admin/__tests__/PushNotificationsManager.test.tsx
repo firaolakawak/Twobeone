@@ -32,6 +32,7 @@ describe('PushNotificationsManager', () => {
     await user.click(screen.getByRole('button', { name: 'Show list' }));
     expect(screen.getByText('Firaol Akawak')).toBeInTheDocument();
     expect(screen.getByText('fireksf@gmail.com')).toBeInTheDocument();
+    expect(screen.queryByText('ff89619f-a5cd-41fa-a28b-04f93908afc5')).not.toBeInTheDocument();
     expect(screen.getByText('12 templates')).toBeInTheDocument();
     expect(screen.getByRole('combobox', { name: 'Choose a message template' })).toHaveValue('morning-devotional');
     expect(screen.getByRole('option', { name: /Prayer reminder/ })).toBeInTheDocument();
