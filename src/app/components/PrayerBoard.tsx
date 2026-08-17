@@ -19,7 +19,6 @@ import {
   Plus,
   Heart,
   Check,
-  ChevronLeft,
   ChevronDown,
   ChevronUp,
   Bell,
@@ -123,7 +122,6 @@ export function PrayerBoard({
   onUpdatePrayer,
   onDeletePrayer,
   onMarkPrayed,
-  onBackToHome,
 }: PrayerBoardProps) {
   const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
@@ -318,11 +316,6 @@ export function PrayerBoard({
         <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-rose-200/30 blur-3xl" aria-hidden="true" />
         <div className="pointer-events-none absolute -bottom-24 -left-16 h-52 w-52 rounded-full bg-amber-200/30 blur-3xl" aria-hidden="true" />
         <div className="relative">
-          {onBackToHome && (
-            <button type="button" onClick={onBackToHome} className="mb-5 inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 transition-colors hover:text-rose-700" aria-label="Back to home">
-              <ChevronLeft className="h-4 w-4" aria-hidden="true" /> Home
-            </button>
-          )}
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-xs font-semibold tracking-wide text-rose-700 shadow-sm ring-1 ring-rose-100">
