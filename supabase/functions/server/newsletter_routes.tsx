@@ -167,6 +167,80 @@ async function getWeeklyAudience(): Promise<NewsletterSubscriber[]> {
   return audience.recipients;
 }
 
+async function getRegisteredUser(c: any): Promise<RegisteredEmail | Response> {
+  const userId = await getUserFromToken(c.req.header('Authorization'));
+  if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+  const { data, error } = await getSupabase().auth.admin.getUserById(userId);
+  const email = normalizeEmail(data?.user?.email);
+  if (error || !data?.user || !email) return c.json({ error: 'Registered account email not found' }, 404);
+  return {
+    id: data.user.id,
+    email,
+    createdAt: data.user.created_at,
+    confirmedAt: data.user.email_confirmed_at || undefined,
+  };
+}
+
+newsletter.get('/preference', async c => {
+  try {
+    const user = await getRegisteredUser(c);
+    if (user instanceof Response) return user;
+    const subscriber = await kv.get(subscriberKey(user.email)) as NewsletterSubscriber | null;
+    return c.json({
+      enabled: subscriber?.status !== 'unsubscribed',
+      email: user.email,
+      schedule: 'Saturday at 09:00 Africa/Addis_Ababa',
+    });
+  } catch (error: any) {
+    console.error('[Newsletter] Preference load error:', error?.message || error);
+    return c.json({ error: 'Unable to load your email preference.' }, 500);
+  }
+});
+
+newsletter.post('/preference', async c => {
+  try {
+    const user = await getRegisteredUser(c);
+    if (user instanceof Response) return user;
+    const payload = await c.req.json();
+    if (typeof payload?.enabled !== 'boolean') return c.json({ error: 'enabled must be a boolean' }, 400);
+    const key = subscriberKey(user.email);
+    const existing = await kv.get(key) as NewsletterSubscriber | null;
+    const now = new Date().toISOString();
+    const subscriber: NewsletterSubscriber = payload.enabled
+      ? {
+          ...existing,
+          email: user.email,
+          status: 'active',
+          source: 'registered_user',
+          subscribedAt: existing?.subscribedAt || user.createdAt || now,
+          confirmedAt: existing?.confirmedAt || user.confirmedAt,
+          registeredUserId: user.id,
+          unsubscribedAt: undefined,
+        }
+      : {
+          ...existing,
+          email: user.email,
+          status: 'unsubscribed',
+          source: existing?.source || 'registered_user',
+          subscribedAt: existing?.subscribedAt || user.createdAt || now,
+          registeredUserId: user.id,
+          unsubscribedAt: now,
+        };
+    await kv.set(key, subscriber);
+    await logAudit('user.newsletter_preference_changed', user.id, { enabled: payload.enabled });
+    return c.json({
+      enabled: payload.enabled,
+      email: user.email,
+      message: payload.enabled
+        ? 'Saturday emails are enabled.'
+        : 'Saturday emails are paused. Essential account emails are unaffected.',
+    });
+  } catch (error: any) {
+    console.error('[Newsletter] Preference update error:', error?.message || error);
+    return c.json({ error: 'Unable to update your email preference.' }, 500);
+  }
+});
+
 newsletter.post('/subscribe', async c => {
   try {
     const payload = await c.req.json();

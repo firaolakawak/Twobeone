@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { CheckCircle2, Heart, Loader2, MailCheck, MailX } from 'lucide-react';
-import { projectId } from '../utils/supabase/info';
+import { projectId, publicAnonKey } from '../utils/supabase/info';
 
 type NewsletterAction = 'confirm' | 'unsubscribe';
 
@@ -21,7 +21,15 @@ export function NewsletterPreferencePage({ action, onComplete }: { action: Newsl
     try {
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/newsletter/${action}`,
-        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token }) },
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${publicAnonKey}`,
+            apikey: publicAnonKey,
+          },
+          body: JSON.stringify({ token }),
+        },
       );
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || 'Unable to update your email preference.');
