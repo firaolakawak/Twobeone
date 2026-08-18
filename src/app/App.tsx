@@ -1439,8 +1439,13 @@ export default function App() {
                     userId={profile.id}
                     userName={profile.name}
                     partnerName={partner?.name}
+                    milestones={milestones}
+                    journalEntries={journalEntries}
                     onBack={() => setSelectedScreen("dashboard")}
                     onPrayerChanged={loadUserData}
+                    onDataRefresh={loadUserData}
+                    onOpenMilestones={() => setSelectedScreen("milestones")}
+                    onOpenJournal={() => setActiveTab("journal")}
                   />
                 )}
 

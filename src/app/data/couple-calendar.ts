@@ -134,7 +134,8 @@ export const coupleCalendarCopy: Record<Language, CalendarCopy> = {
   en: {
     eyebrow: 'Faithful planning, together', title: 'Couple Calendar', subtitle: 'Plan your shared life and carry every commitment into prayer.',
     newItem: 'Create together', calendar: 'Calendar', weekly: 'Weekly', monthlyView: 'Monthly', yearly: 'Yearly', events: 'Event list', prayers: 'Prayer list', today: 'Today',
-    markedDays: 'Marked days', items: 'items', selectedAgenda: 'Selected day',
+    markedDays: 'Marked days', items: 'items', selectedAgenda: 'Selected day', milestone: 'Milestone', journal: 'Journal',
+    relationshipMilestones: 'Relationship Milestones', recentJournalEntries: 'Recent Journal Entries', ourJourney: 'Our journey', sharedMemories: 'Shared memories', viewAll: 'View all', untitledJournal: 'A shared reflection', noMilestones: 'Your milestones will appear here.', noJournalEntries: 'Your recent journal entries will appear here.',
     emptyDay: 'A quiet day', emptyDayHint: 'Create a plan or leave room to rest together.', upcoming: 'Coming up', noUpcoming: 'No upcoming plans yet',
     plansThisWeek: 'This week', linkedPrayers: 'Prayer-linked', routines: 'Routines', newTitle: 'Create a shared plan', newDescription: 'Add it once. We will place it in your planner and prepare a prayer for it.',
     itemType: 'What are you planning?', plan: 'Plan', event: 'Event', reminder: 'Reminder', routine: 'Routine',
@@ -150,7 +151,8 @@ export const coupleCalendarCopy: Record<Language, CalendarCopy> = {
   am: {
     eyebrow: 'በእምነት አብረን እናቅድ', title: 'የጥንዶች የቀን መቁጠሪያ', subtitle: 'የጋራ ሕይወታችሁን አቅዱ፣ እያንዳንዱንም እቅድ በጸሎት አቅርቡ።',
     newItem: 'አብረን እንፍጠር', calendar: 'የቀን መቁጠሪያ', weekly: 'ሳምንታዊ', monthlyView: 'ወርሃዊ', yearly: 'ዓመታዊ', events: 'የክስተት ዝርዝር', prayers: 'የጸሎት ዝርዝር', today: 'ዛሬ',
-    markedDays: 'ምልክት የተደረገባቸው ቀናት', items: 'እቅዶች', selectedAgenda: 'የተመረጠው ቀን',
+    markedDays: 'ምልክት የተደረገባቸው ቀናት', items: 'እቅዶች', selectedAgenda: 'የተመረጠው ቀን', milestone: 'የግንኙነት ምዕራፍ', journal: 'ማስታወሻ',
+    relationshipMilestones: 'የግንኙነት ምዕራፎች', recentJournalEntries: 'የቅርብ ጊዜ ማስታወሻዎች', ourJourney: 'የእኛ ጉዞ', sharedMemories: 'የጋራ ትውስታዎች', viewAll: 'ሁሉንም ይመልከቱ', untitledJournal: 'የጋራ ነጸብራቅ', noMilestones: 'የግንኙነት ምዕራፎቻችሁ እዚህ ይታያሉ።', noJournalEntries: 'የቅርብ ጊዜ ማስታወሻዎቻችሁ እዚህ ይታያሉ።',
     emptyDay: 'ጸጥ ያለ ቀን', emptyDayHint: 'እቅድ ይፍጠሩ ወይም አብራችሁ ለማረፍ ጊዜ ይተዉ።', upcoming: 'በቅርቡ', noUpcoming: 'ገና የሚመጣ እቅድ የለም',
     plansThisWeek: 'በዚህ ሳምንት', linkedPrayers: 'ከጸሎት ጋር', routines: 'ልምዶች', newTitle: 'የጋራ እቅድ ፍጠሩ', newDescription: 'አንድ ጊዜ ያክሉት፤ በእቅዳችሁ እናስቀምጠውና ጸሎት እናዘጋጃለን።',
     itemType: 'ምን እያቀዳችሁ ነው?', plan: 'እቅድ', event: 'ክስተት', reminder: 'ማስታወሻ', routine: 'መደበኛ ልምድ',
@@ -163,7 +165,8 @@ export const coupleCalendarCopy: Record<Language, CalendarCopy> = {
   om: {
     eyebrow: 'Amanannaadhaan waliin karoorfachuu', title: 'Kaalaandarii Hiriyootaa', subtitle: 'Jireenya waliinii keessan karoorfadhaa; waadaa hundas kadhannaatti fidaa.',
     newItem: 'Waliin uumi', calendar: 'Kaalaandarii', weekly: 'Torban', monthlyView: "Ji'a", yearly: 'Waggaa', events: 'Tarree taateewwanii', prayers: 'Tarree kadhannaa', today: "Har'a",
-    markedDays: 'Guyyoota mallatteeffaman', items: 'karoorawwan', selectedAgenda: 'Guyyaa filatame',
+    markedDays: 'Guyyoota mallatteeffaman', items: 'karoorawwan', selectedAgenda: 'Guyyaa filatame', milestone: 'Milkaaʼina', journal: 'Galmee',
+    relationshipMilestones: 'Milkaaʼina Hariiroo', recentJournalEntries: 'Galmeewwan Dhihoo', ourJourney: 'Imala keenya', sharedMemories: 'Yaadannoo waliin', viewAll: 'Hunda ilaali', untitledJournal: 'Yaada waliinii', noMilestones: 'Milkaaʼinoonni keessan asitti mulʼatu.', noJournalEntries: 'Galmeewwan keessan kan dhihoo asitti mulʼatu.',
     emptyDay: 'Guyyaa boqonnaa', emptyDayHint: 'Karoora uumi ykn waliin boqachuuf iddoo dhiisi.', upcoming: 'Dhufaa jira', noUpcoming: 'Karoorri dhufu hin jiru',
     plansThisWeek: 'Torban kana', linkedPrayers: 'Kadhannaatti hidhame', routines: 'Barmaatilee', newTitle: 'Karoora waliinii uumaa', newDescription: 'Yeroo tokko dabalaa; karoora keessan keessa kaaʼnee kadhannaa isaaf qopheessina.',
     itemType: 'Maal karoorfachaa jirtu?', plan: 'Karoora', event: 'Taatee', reminder: 'Yaadachiisa', routine: 'Barmaata',

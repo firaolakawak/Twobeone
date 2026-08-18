@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowLeft, Bell, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3,
-  Heart, ListTodo, Loader2, MapPin, Plus, Repeat2, Sparkles, Trash2,
+  BookHeart, Heart, ListTodo, Loader2, MapPin, Plus, Repeat2, Sparkles, Trophy, Trash2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -27,6 +27,34 @@ interface CoupleCalendarProps {
   partnerName?: string;
   onBack: () => void;
   onPrayerChanged?: () => void | Promise<void>;
+  milestones?: CalendarMilestone[];
+  journalEntries?: CalendarJournalEntry[];
+  onOpenMilestones?: () => void;
+  onOpenJournal?: () => void;
+  onDataRefresh?: () => void | Promise<void>;
+}
+
+interface CalendarMilestone {
+  id: string;
+  title: string;
+  description?: string;
+  date?: string;
+  createdAt?: string;
+  category?: string;
+  icon?: string;
+  isPartner?: boolean;
+}
+
+interface CalendarJournalEntry {
+  id: string;
+  title?: string | null;
+  content: string;
+  createdAt?: string;
+  created_at?: string;
+  userId?: string;
+  author_id?: string;
+  isPartner?: boolean;
+  emoji?: string | null;
 }
 
 type CalendarView = 'calendar' | 'events' | 'prayers';
@@ -61,7 +89,10 @@ function itemAccent(type: CalendarItemType) {
   }[type];
 }
 
-export function CoupleCalendar({ accessToken, userId, userName, partnerName, onBack, onPrayerChanged }: CoupleCalendarProps) {
+export function CoupleCalendar({
+  accessToken, userId, userName, partnerName, onBack, onPrayerChanged,
+  milestones = [], journalEntries = [], onOpenMilestones, onOpenJournal, onDataRefresh,
+}: CoupleCalendarProps) {
   const { language } = useLanguage();
   const copy = coupleCalendarCopy[language];
   const locale = localeByLanguage[language];
@@ -74,6 +105,7 @@ export function CoupleCalendar({ accessToken, userId, userName, partnerName, onB
   const [draft, setDraft] = useState<CalendarDraft>(() => initialDraft(language));
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const onDataRefreshRef = useRef(onDataRefresh);
 
   const apiUrl = `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/calendar`;
 
@@ -92,8 +124,14 @@ export function CoupleCalendar({ accessToken, userId, userName, partnerName, onB
   };
 
   useEffect(() => {
+    onDataRefreshRef.current = onDataRefresh;
+  }, [onDataRefresh]);
+  useEffect(() => {
     void loadItems();
-    const interval = window.setInterval(() => void loadItems(true), 30_000);
+    const interval = window.setInterval(() => {
+      void loadItems(true);
+      void onDataRefreshRef.current?.();
+    }, 30_000);
     return () => window.clearInterval(interval);
   }, [accessToken, userId, language]);
   useEffect(() => { setDraft(current => ({ ...current, language })); }, [language]);
@@ -110,6 +148,20 @@ export function CoupleCalendar({ accessToken, userId, userName, partnerName, onB
     .filter(item => item.status !== 'completed' && new Date(item.startsAt).getTime() >= startOfWeek(new Date()).getTime())
     .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()), [items]);
   const linkedPrayerItems = useMemo(() => items.filter(item => item.prayerId && item.prayerText), [items]);
+  const recentMilestones = useMemo(() => [...milestones]
+    .sort((a, b) => new Date(b.date || b.createdAt || 0).getTime() - new Date(a.date || a.createdAt || 0).getTime())
+    .slice(0, 3), [milestones]);
+  const recentJournalEntries = useMemo(() => [...journalEntries]
+    .sort((a, b) => new Date(b.createdAt || b.created_at || 0).getTime() - new Date(a.createdAt || a.created_at || 0).getTime())
+    .slice(0, 3), [journalEntries]);
+  const selectedMilestones = useMemo(() => milestones.filter(milestone => {
+    const date = milestone.date || milestone.createdAt;
+    return Boolean(date) && isSameLocalDay(new Date(date!), selectedDay);
+  }), [milestones, selectedDay]);
+  const selectedJournalEntries = useMemo(() => journalEntries.filter(entry => {
+    const date = entry.createdAt || entry.created_at;
+    return Boolean(date) && isSameLocalDay(new Date(date!), selectedDay);
+  }), [journalEntries, selectedDay]);
   const weekCount = items.filter(item => weekDays.some(day => occursOnDay(item, day)) && item.status !== 'completed').length;
 
   const openCreate = (type: CalendarItemType = 'plan', day?: Date) => {
@@ -140,15 +192,25 @@ export function CoupleCalendar({ accessToken, userId, userName, partnerName, onB
     setSelectedDay(day);
   };
 
-  const marksForDay = (day: Date) => {
-    const types = items
+  type DayMark = CalendarItemType | 'milestone' | 'journal';
+  const marksForDay = (day: Date): DayMark[] => {
+    const types: DayMark[] = items
       .filter(item => item.status !== 'completed' && occursOnDay(item, day))
       .map(item => item.type);
+    if (milestones.some(milestone => {
+      const date = milestone.date || milestone.createdAt;
+      return Boolean(date) && isSameLocalDay(new Date(date!), day);
+    })) types.push('milestone');
+    if (journalEntries.some(entry => {
+      const date = entry.createdAt || entry.created_at;
+      return Boolean(date) && isSameLocalDay(new Date(date!), day);
+    })) types.push('journal');
     return Array.from(new Set(types));
   };
 
-  const markerColor: Record<CalendarItemType, string> = {
+  const markerColor: Record<DayMark, string> = {
     plan: 'bg-rose-500', event: 'bg-violet-500', reminder: 'bg-amber-500', routine: 'bg-emerald-500',
+    milestone: 'bg-fuchsia-500', journal: 'bg-sky-500',
   };
 
   const periodTitle = period === 'yearly'
@@ -210,6 +272,10 @@ export function CoupleCalendar({ accessToken, userId, userName, partnerName, onB
   const formatTime = (item: CoupleCalendarItem) => item.allDay
     ? copy.allDay
     : new Intl.DateTimeFormat(locale, { hour: 'numeric', minute: '2-digit' }).format(new Date(item.startsAt));
+
+  const formatRelatedDate = (value?: string) => value
+    ? new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(value))
+    : '';
 
   const renderItem = (item: CoupleCalendarItem) => (
     <article key={item.id} className={`group rounded-2xl border p-4 transition-all hover:-translate-y-0.5 hover:shadow-md ${itemAccent(item.type)} ${item.status === 'completed' ? 'opacity-60' : ''}`}>
@@ -353,14 +419,17 @@ export function CoupleCalendar({ accessToken, userId, userName, partnerName, onB
             </div>
           )}
 
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl bg-slate-50 px-4 py-3 text-[10px] font-bold text-slate-500"><span className="mr-1 uppercase tracking-wider text-slate-400">{copy.markedDays}</span>{(['plan', 'event', 'reminder', 'routine'] as CalendarItemType[]).map(type => <span key={type} className="flex items-center gap-1.5"><span className={`h-2 w-2 rounded-full ${markerColor[type]}`} />{copy[type]}</span>)}</div>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl bg-slate-50 px-4 py-3 text-[10px] font-bold text-slate-500"><span className="mr-1 uppercase tracking-wider text-slate-400">{copy.markedDays}</span>{(['plan', 'event', 'reminder', 'routine', 'milestone', 'journal'] as DayMark[]).map(type => <span key={type} className="flex items-center gap-1.5"><span className={`h-2 w-2 rounded-full ${markerColor[type]}`} />{copy[type]}</span>)}</div>
 
           <div className="flex items-end justify-between gap-3">
             <div><p className="text-xs font-bold uppercase tracking-[.14em] text-rose-600">{copy.selectedAgenda} · {new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(selectedDay)}</p><h2 className="mt-1 text-xl font-black text-slate-950">{new Intl.DateTimeFormat(locale, { month: 'long', day: 'numeric', year: 'numeric' }).format(selectedDay)}</h2></div>
             <Button onClick={() => openCreate('plan', selectedDay)} className="rounded-full bg-slate-950 text-white"><Plus className="h-4 w-4" />{copy.newItem}</Button>
           </div>
           <div className="space-y-3">
-            {selectedItems.length ? selectedItems.map(renderItem) : <Card className="rounded-[1.75rem] border-dashed border-rose-200 bg-gradient-to-br from-white to-rose-50/50"><CardContent className="p-9 text-center"><Sparkles className="mx-auto h-8 w-8 text-amber-400" /><h3 className="mt-3 font-black text-slate-900">{copy.emptyDay}</h3><p className="mt-1 text-sm text-slate-500">{copy.emptyDayHint}</p></CardContent></Card>}
+            {selectedItems.map(renderItem)}
+            {selectedMilestones.map(milestone => <button type="button" key={`milestone-${milestone.id}`} onClick={onOpenMilestones} className="flex w-full items-start gap-3 rounded-2xl border border-fuchsia-100 bg-fuchsia-50/60 p-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-md"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-xl shadow-sm">{milestone.icon && milestone.icon.length <= 4 ? milestone.icon : '🏆'}</span><span><span className="text-[10px] font-black uppercase tracking-wider text-fuchsia-600">{copy.milestone}</span><span className="mt-1 block font-black text-slate-900">{milestone.title}</span>{milestone.description && <span className="mt-1 line-clamp-2 block text-sm text-slate-600">{milestone.description}</span>}</span></button>)}
+            {selectedJournalEntries.map(entry => <button type="button" key={`journal-${entry.id}`} onClick={onOpenJournal} className="flex w-full items-start gap-3 rounded-2xl border border-sky-100 bg-sky-50/60 p-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-md"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-xl shadow-sm">{entry.emoji || '📖'}</span><span><span className="text-[10px] font-black uppercase tracking-wider text-sky-600">{copy.journal}</span><span className="mt-1 block font-black text-slate-900">{entry.title || copy.untitledJournal}</span><span className="mt-1 line-clamp-2 block text-sm text-slate-600">{entry.content}</span></span></button>)}
+            {selectedItems.length === 0 && selectedMilestones.length === 0 && selectedJournalEntries.length === 0 && <Card className="rounded-[1.75rem] border-dashed border-rose-200 bg-gradient-to-br from-white to-rose-50/50"><CardContent className="p-9 text-center"><Sparkles className="mx-auto h-8 w-8 text-amber-400" /><h3 className="mt-3 font-black text-slate-900">{copy.emptyDay}</h3><p className="mt-1 text-sm text-slate-500">{copy.emptyDayHint}</p></CardContent></Card>}
           </div>
         </section>
       ) : view === 'events' ? (
@@ -374,6 +443,31 @@ export function CoupleCalendar({ accessToken, userId, userName, partnerName, onB
           {linkedPrayerItems.length ? linkedPrayerItems.map(item => <article key={item.id} className="rounded-[1.5rem] border border-rose-100 bg-gradient-to-br from-white to-rose-50/60 p-5 shadow-sm"><div className="flex items-start gap-3"><div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-rose-100">🙏</div><div><h3 className="font-black text-slate-900">{item.prayerTitle}</h3><p className="mt-2 text-sm leading-6 text-slate-600">{item.prayerText}</p>{item.scripture && <p className="mt-3 text-xs font-bold text-rose-700">{copy.scripture}: {item.scripture}</p>}</div></div></article>) : <p className="rounded-2xl border border-dashed p-8 text-center text-sm text-slate-500">{copy.noUpcoming}</p>}
         </section>
       )}
+
+      <section className="mt-8 grid gap-5 lg:grid-cols-2" aria-label={copy.sharedMemories}>
+        <article className="overflow-hidden rounded-[1.75rem] border border-fuchsia-100 bg-gradient-to-br from-white via-white to-fuchsia-50/60 shadow-sm">
+          <header className="flex items-center justify-between gap-3 border-b border-fuchsia-100 px-5 py-4">
+            <div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-xl bg-fuchsia-100 text-fuchsia-700"><Trophy className="h-5 w-5" /></span><div><p className="text-[10px] font-black uppercase tracking-[.14em] text-fuchsia-600">{copy.ourJourney}</p><h2 className="font-black text-slate-950">{copy.relationshipMilestones}</h2></div></div>
+            {onOpenMilestones && <button type="button" onClick={onOpenMilestones} className="rounded-full px-3 py-2 text-xs font-black text-fuchsia-700 hover:bg-fuchsia-50">{copy.viewAll}</button>}
+          </header>
+          <div className="space-y-1 p-3">
+            {recentMilestones.length ? recentMilestones.map((milestone, index) => <button type="button" key={milestone.id} onClick={onOpenMilestones} className="flex w-full items-start gap-3 rounded-2xl p-3 text-left hover:bg-white hover:shadow-sm"><span className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full bg-fuchsia-100 text-lg">{milestone.icon && milestone.icon.length <= 4 ? milestone.icon : '💞'}{index < recentMilestones.length - 1 && <span className="absolute left-1/2 top-10 h-5 w-px bg-fuchsia-200" />}</span><span className="min-w-0"><span className="block truncate text-sm font-black text-slate-900">{milestone.title}</span><span className="mt-1 block text-xs font-semibold text-slate-500">{formatRelatedDate(milestone.date || milestone.createdAt)}{milestone.category ? ` · ${milestone.category}` : ''}</span></span></button>) : <div className="p-7 text-center"><Trophy className="mx-auto h-7 w-7 text-fuchsia-200" /><p className="mt-2 text-sm font-bold text-slate-500">{copy.noMilestones}</p></div>}
+          </div>
+        </article>
+
+        <article className="overflow-hidden rounded-[1.75rem] border border-sky-100 bg-gradient-to-br from-white via-white to-sky-50/60 shadow-sm">
+          <header className="flex items-center justify-between gap-3 border-b border-sky-100 px-5 py-4">
+            <div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-xl bg-sky-100 text-sky-700"><BookHeart className="h-5 w-5" /></span><div><p className="text-[10px] font-black uppercase tracking-[.14em] text-sky-600">{copy.sharedMemories}</p><h2 className="font-black text-slate-950">{copy.recentJournalEntries}</h2></div></div>
+            {onOpenJournal && <button type="button" onClick={onOpenJournal} className="rounded-full px-3 py-2 text-xs font-black text-sky-700 hover:bg-sky-50">{copy.viewAll}</button>}
+          </header>
+          <div className="space-y-1 p-3">
+            {recentJournalEntries.length ? recentJournalEntries.map(entry => {
+              const isPartner = entry.isPartner || (entry.userId && entry.userId !== userId) || (entry.author_id && entry.author_id !== userId);
+              return <button type="button" key={entry.id} onClick={onOpenJournal} className="flex w-full items-start gap-3 rounded-2xl p-3 text-left hover:bg-white hover:shadow-sm"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-sky-100 text-lg">{entry.emoji || '📖'}</span><span className="min-w-0 flex-1"><span className="flex items-center gap-2"><span className="truncate text-sm font-black text-slate-900">{entry.title || copy.untitledJournal}</span>{isPartner && <Badge variant="outline" className="shrink-0 bg-white text-[9px]">{copy.partner}</Badge>}</span><span className="mt-1 line-clamp-2 block text-xs leading-5 text-slate-500">{entry.content}</span><span className="mt-1 block text-[10px] font-bold text-sky-700">{formatRelatedDate(entry.createdAt || entry.created_at)}</span></span></button>;
+            }) : <div className="p-7 text-center"><BookHeart className="mx-auto h-7 w-7 text-sky-200" /><p className="mt-2 text-sm font-bold text-slate-500">{copy.noJournalEntries}</p></div>}
+          </div>
+        </article>
+      </section>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-h-[94dvh] overflow-y-auto rounded-[1.75rem] border-rose-100 p-0 sm:max-w-2xl">

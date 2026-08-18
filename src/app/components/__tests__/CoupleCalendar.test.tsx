@@ -83,4 +83,36 @@ describe('CoupleCalendar', () => {
     expect(screen.getByRole('button', { name: 'January' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'December' })).toBeInTheDocument();
   });
+
+  it('unifies milestones and recent journals with the calendar page', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => ({ items: [] }) })));
+    const onOpenMilestones = vi.fn();
+    const onOpenJournal = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <LanguageProvider>
+        <CoupleCalendar
+          accessToken="token"
+          userId="user-1"
+          onBack={vi.fn()}
+          milestones={[{ id: 'milestone-1', title: 'Our engagement', date: '2026-08-18T12:00:00.000Z', icon: '💍' }]}
+          journalEntries={[{ id: 'journal-1', title: 'A joyful day', content: 'We prayed and celebrated.', createdAt: '2026-08-18T13:00:00.000Z' }]}
+          onOpenMilestones={onOpenMilestones}
+          onOpenJournal={onOpenJournal}
+        />
+      </LanguageProvider>,
+    );
+
+    expect(await screen.findByText('Relationship Milestones')).toBeInTheDocument();
+    expect(screen.getByText('Recent Journal Entries')).toBeInTheDocument();
+    expect(screen.getAllByText('Our engagement').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('A joyful day').length).toBeGreaterThan(0);
+
+    const viewAllButtons = screen.getAllByRole('button', { name: 'View all' });
+    await user.click(viewAllButtons[0]);
+    await user.click(viewAllButtons[1]);
+    expect(onOpenMilestones).toHaveBeenCalledOnce();
+    expect(onOpenJournal).toHaveBeenCalledOnce();
+  });
 });
