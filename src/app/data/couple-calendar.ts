@@ -24,6 +24,8 @@ export interface CoupleCalendarItem {
   prayerTitle?: string;
   prayerText?: string;
   scripture?: string;
+  prayerLanguage?: Language;
+  prayerGenerationSource?: 'ai' | 'fallback';
   createdAt: string;
   updatedAt: string;
   isPartner?: boolean;

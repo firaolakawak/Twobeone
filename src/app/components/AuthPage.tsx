@@ -14,6 +14,19 @@ interface AuthPageProps {
 
 type AuthMode = 'signin' | 'signup' | 'forgot';
 
+export function isAuthNetworkError(error: unknown): boolean {
+  const message = String((error as any)?.message || error || '').toLowerCase();
+  return (error as any)?.name === 'TypeError' ||
+    /failed to fetch|fetch failed|network|load failed|connection|timed out|timeout|\b52[12]\b/.test(message);
+}
+
+function authConnectionMessage() {
+  if (typeof navigator !== 'undefined' && !navigator.onLine) {
+    return 'Your phone is offline. Reconnect to Wi-Fi or mobile data, then tap Sign In again.';
+  }
+  return 'Cannot reach the sign-in service right now. Please tap Sign In again or switch between Wi-Fi and mobile data.';
+}
+
 const FloatingOrb = ({ style }: { style: React.CSSProperties }) => (
   <div style={{
     position: 'absolute',
@@ -137,16 +150,26 @@ export function AuthPage({ onAuthSuccess }: AuthPageProps) {
       const supabase = createClient();
       let data: any = null;
       let signInError: any = null;
-      for (let attempt = 1; attempt <= 2; attempt++) {
+      for (let attempt = 1; attempt <= 3; attempt++) {
         try {
-          const result = await supabase.auth.signInWithPassword({ email, password });
-          data = result.data; signInError = result.error; break;
+          const result = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+          if (result.error && isAuthNetworkError(result.error) && attempt < 3) {
+            await new Promise(r => setTimeout(r, attempt * 1200));
+            continue;
+          }
+          data = result.data;
+          signInError = result.error;
+          break;
         } catch (networkErr: any) {
-          if (attempt === 2) throw networkErr;
-          await new Promise(r => setTimeout(r, 2500));
+          if (!isAuthNetworkError(networkErr) || attempt === 3) throw networkErr;
+          await new Promise(r => setTimeout(r, attempt * 1200));
         }
       }
       if (signInError) {
+        if (isAuthNetworkError(signInError)) {
+          setError(authConnectionMessage());
+          return;
+        }
         if (signInError.message?.includes('Email not confirmed') || signInError.code === 'email_not_confirmed') {
           const confirmRes = await fetch(
             `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/auto-confirm-signin`,
@@ -183,8 +206,8 @@ export function AuthPage({ onAuthSuccess }: AuthPageProps) {
       const msg = err.message || '';
       if (msg.includes('BLOCKED_BY_CLIENT')) {
         setError('An ad blocker is blocking the request. Please disable it for this site.');
-      } else if (msg.toLowerCase().includes('fetch') || msg.toLowerCase().includes('network')) {
-        setError('Connection error — please try again in a moment.');
+      } else if (isAuthNetworkError(err)) {
+        setError(authConnectionMessage());
       } else {
         setError(msg || 'Failed to sign in.');
       }

@@ -46,6 +46,27 @@ function fallbackPrayer(title: string, category: CalendarCategory, language: Lan
   };
 }
 
+function resolveLanguage(value: unknown): Language {
+  return value === 'am' || value === 'om' ? value : 'en';
+}
+
+function parsePrayerJson(raw: string, fallback: ReturnType<typeof fallbackPrayer>) {
+  const match = raw.replace(/```(?:json)?/gi, '').replace(/```/g, '').match(/\{[\s\S]*\}/);
+  if (!match) return null;
+  try {
+    const parsed = JSON.parse(match[0]);
+    if (!String(parsed?.title || '').trim() || !String(parsed?.text || '').trim()) return null;
+    return {
+      title: String(parsed.title).trim().slice(0, 180),
+      text: String(parsed.text).trim().slice(0, 700),
+      scripture: String(parsed.scripture || fallback.scripture).trim().slice(0, 120),
+      generationSource: 'ai' as const,
+    };
+  } catch {
+    return null;
+  }
+}
+
 function reminderOccurrence(item: any, now: Date): Date | null {
   const first = new Date(item.startsAt);
   if (!Number.isFinite(first.getTime()) || item.reminderMinutes == null) return null;
@@ -86,8 +107,9 @@ async function sendCalendarPush(userId: string, title: string, body: string, ite
 
 async function generatePrayer(input: { title: string; description: string; type: string; category: CalendarCategory; language: Language }) {
   const fallback = fallbackPrayer(input.title, input.category, input.language);
-  const apiKey = Deno.env.get('OPENAI_API_KEY');
-  if (!apiKey) return fallback;
+  const fallbackResult = { ...fallback, generationSource: 'fallback' as const };
+  const apiKey = Deno.env.get('GEMINI_API_KEY');
+  if (!apiKey) return fallbackResult;
 
   const languageInstruction = input.language === 'am'
     ? 'Write in natural modern Amharic.'
@@ -96,39 +118,48 @@ async function generatePrayer(input: { title: string; description: string; type:
       : 'Write in clear natural English.';
 
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        temperature: 0.6,
-        max_tokens: 220,
-        response_format: { type: 'json_object' },
-        messages: [
+    const prompt = `You write short, warm, biblically grounded prayers for Christian couples.
+${languageInstruction}
+Use both the plan title and description as the prayer topic.
+Write 25-45 words, ending naturally with Amen. Do not promise an outcome or claim to speak for God.
+Return JSON only: {"title":"...","text":"...","scripture":"Bible reference only"}.
+
+Calendar type: ${input.type}
+Plan title: ${input.title}
+Plan description: ${input.description || 'No description provided'}
+Life area: ${input.category}`;
+    const models = ['gemini-3.1-flash-lite', 'gemini-3.5-flash-lite', 'gemini-3.6-flash'];
+    for (const model of models) {
+      try {
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
           {
-            role: 'system',
-            content: `You write brief, warm, biblically grounded prayers for Christian couples. ${languageInstruction} Return JSON only with title, text, and scripture. Never promise outcomes or claim to speak for God.`,
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-goog-api-key': apiKey },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }],
+              generationConfig: {
+                temperature: 0.55,
+                maxOutputTokens: 240,
+                responseMimeType: 'application/json',
+              },
+            }),
+            signal: AbortSignal.timeout(8_000),
           },
-          {
-            role: 'user',
-            content: `Create a 45-70 word couple prayer for this ${input.type}. Topic: ${input.title}. Life area: ${input.category}. Notes: ${input.description || 'None'}. Include one relevant Bible reference in scripture.`,
-          },
-        ],
-      }),
-      signal: AbortSignal.timeout(8_000),
-    });
-    if (!response.ok) return fallback;
-    const data = await response.json();
-    const parsed = JSON.parse(data?.choices?.[0]?.message?.content || '{}');
-    if (!parsed.title || !parsed.text) return fallback;
-    return {
-      title: String(parsed.title).slice(0, 180),
-      text: String(parsed.text).slice(0, 1200),
-      scripture: String(parsed.scripture || fallback.scripture).slice(0, 120),
-    };
+        );
+        if (!response.ok) continue;
+        const data = await response.json();
+        const raw = data?.candidates?.[0]?.content?.parts?.map((part: any) => part?.text || '').join('') || '';
+        const generated = parsePrayerJson(raw, fallback);
+        if (generated) return generated;
+      } catch (modelError) {
+        console.warn(`[Couple Calendar] Gemini prayer model ${model} failed:`, modelError);
+      }
+    }
+    return fallbackResult;
   } catch (error) {
     console.warn('[Couple Calendar] AI prayer fallback used:', error);
-    return fallback;
+    return fallbackResult;
   }
 }
 
@@ -284,7 +315,10 @@ app.post('/calendar', async (c) => {
     const type = allowedTypes.includes(body.type) ? body.type : 'plan';
     const category = (allowedCategories.includes(body.category) ? body.category : 'other') as CalendarCategory;
     const recurrence = allowedRecurrence.includes(body.recurrence) ? body.recurrence : 'none';
-    const language: Language = body.language === 'am' || body.language === 'om' ? body.language : 'en';
+    const profile: any = await kv.get(`user:${userId}`).catch(() => null);
+    // The saved app preference is authoritative. The request language supports
+    // newly created/legacy profiles whose preference has not synced yet.
+    const language = resolveLanguage(profile?.language || body.language);
     const now = new Date().toISOString();
     const itemId = generateId('cal');
     const createPrayer = body.createPrayer !== false;
@@ -305,6 +339,7 @@ app.post('/calendar', async (c) => {
           : null,
       location: String(body.location || '').slice(0, 240), status: 'upcoming', createPrayer,
       prayerId, prayerTitle: generated?.title, prayerText: generated?.text, scripture: generated?.scripture,
+      prayerLanguage: generated ? language : undefined, prayerGenerationSource: generated?.generationSource,
       createdAt: now, updatedAt: now,
     };
 
@@ -317,13 +352,17 @@ app.post('/calendar', async (c) => {
         reminderDate: startsAt.toISOString(), isSharedWithCommunity: false, isShared: false,
         isAnswered: false, youPrayed: false, partnerPrayed: false, prayerCount: 0,
         source: 'couple-calendar', sourcePlanId: itemId, scripture: generated.scripture,
+        language, generationSource: generated.generationSource,
         createdAt: now, updatedAt: now,
       };
     }
 
+    const cacheBase = profile?.coupleId || (profile?.partnerId && profile.partnerId < userId ? profile.partnerId : userId);
     await Promise.all([
       kv.set(`calendar:${userId}:${itemId}`, item),
       prayer ? kv.set(`prayer:${userId}:${prayerId}`, prayer) : Promise.resolve(),
+      prayer ? kv.del(`marriage-readiness:v2:${cacheBase}`).catch(() => undefined) : Promise.resolve(),
+      profile ? kv.set(`user:${userId}`, { ...profile, updatedAt: now }) : Promise.resolve(),
     ]);
     return c.json({ success: true, item, prayer }, 201);
   } catch (error) {
