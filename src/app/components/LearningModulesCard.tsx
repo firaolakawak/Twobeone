@@ -194,9 +194,9 @@ export function LearningModulesCard({
       {/* Header Banner */}
       <div
         style={{
-          background: "linear-gradient(135deg, rgba(255,241,242,.9) 0%, rgba(255,255,255,.96) 55%, rgba(245,243,255,.9) 100%)",
+          background: "linear-gradient(135deg, #e11d48 0%, #be123c 58%, #9f1239 100%)",
           padding: "20px",
-          borderBottom: "1px solid #ffe4e6",
+          borderBottom: "1px solid rgba(159,18,57,.28)",
         }}
       >
         <div
@@ -218,14 +218,14 @@ export function LearningModulesCard({
                 width: 32,
                 height: 32,
                 borderRadius: "16px",
-                backgroundColor: "#ffffff",
+                backgroundColor: "rgba(255,255,255,.16)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
               <BookOpen
-                style={{ width: 16, height: 16, color: "#e11d48" }}
+                style={{ width: 16, height: 16, color: "#ffffff" }}
               />
             </div>
             <div>
@@ -233,7 +233,7 @@ export function LearningModulesCard({
                 style={{
                   fontSize: "var(--text-callout)",
                   fontWeight: "var(--font-weight-semibold)",
-                  color: "#0f172a",
+                  color: "#ffffff",
                   margin: 0,
                 }}
               >
@@ -242,7 +242,7 @@ export function LearningModulesCard({
               <p
                 style={{
                   fontSize: "var(--text-label)",
-                  color: "#64748b",
+                  color: "rgba(255,255,255,.78)",
                   margin: 0,
                 }}
               >
@@ -254,8 +254,8 @@ export function LearningModulesCard({
             style={{
               fontSize: "var(--text-label)",
               fontWeight: "var(--font-weight-semibold)",
-              color: "#be123c",
-              backgroundColor: "#ffffff",
+              color: "#ffffff",
+              backgroundColor: "rgba(255,255,255,.16)",
               borderRadius: "var(--radius-full)",
               padding: "2px 10px",
             }}
@@ -270,7 +270,7 @@ export function LearningModulesCard({
             marginTop: "var(--spacing-2)",
             height: 5,
             borderRadius: "var(--radius-full)",
-            backgroundColor: "#ffe4e6",
+            backgroundColor: "rgba(255,255,255,.24)",
             overflow: "hidden",
           }}
         >
@@ -278,7 +278,7 @@ export function LearningModulesCard({
             style={{
               height: "100%",
               width: `${overallProgress}%`,
-              background: "linear-gradient(90deg, #fb7185, #a78bfa)",
+              background: "#ffffff",
               borderRadius: "var(--radius-full)",
               transition: "width 0.5s ease",
             }}
@@ -287,7 +287,7 @@ export function LearningModulesCard({
         <p
           style={{
             fontSize: "var(--text-label)",
-            color: "#64748b",
+            color: "rgba(255,255,255,.78)",
             margin: "var(--spacing-1) 0 0 0",
           }}
         >
