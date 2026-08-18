@@ -32,11 +32,11 @@ export function ChampionsCard() {
   const levelLabel = labels[summary.champion.level];
 
   return (
-    <section className="relative overflow-hidden rounded-[1.75rem] border border-amber-200/70 bg-gradient-to-br from-amber-50 via-white to-rose-50 p-5 shadow-[0_18px_50px_-30px_rgba(180,83,9,0.45)]" aria-label={labels.title}>
+    <section className="relative overflow-hidden rounded-[1.75rem] border border-amber-100 bg-gradient-to-br from-white via-amber-50/35 to-rose-50/50 p-5 shadow-[0_18px_48px_-34px_rgba(180,83,9,.35)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_54px_-32px_rgba(180,83,9,.42)]" aria-label={labels.title}>
       <div className="absolute -right-8 -top-10 h-32 w-32 rounded-full bg-amber-200/30 blur-3xl" />
       <div className="relative">
         <div className="flex items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-lg shadow-amber-200"><Crown className="h-5 w-5" /></span>
+          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-100 text-amber-700 shadow-sm ring-1 ring-amber-200"><Crown className="h-5 w-5" /></span>
           <div className="min-w-0 flex-1">
             <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-amber-700">{labels.title}</p>
             <h3 className="truncate text-lg font-bold tracking-tight text-slate-900">{levelLabel}</h3>

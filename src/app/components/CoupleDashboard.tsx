@@ -739,7 +739,6 @@ export function CoupleDashboard({
   };
 
   // Calculate stats
-  const totalJournalEntries = journalEntries.length;
   const sharedJournalEntries = journalEntries.filter(e => e.isShared).length;
   const totalPrayers = prayers.length;
   const answeredPrayers = prayers.filter(p => p.isAnswered).length;
@@ -1276,7 +1275,7 @@ export function CoupleDashboard({
         </div>
       </button>
 
-      {/* Quick Stats Grid — neumorphic soft-shadow cards */}
+      {/* Quick Stats Grid */}
       <div className="grid grid-cols-2 gap-3">
         {[
           {
@@ -1285,11 +1284,8 @@ export function CoupleDashboard({
             sub: devotionalStreakValue === 1 ? 'day' : 'days',
             icon: Calendar,
             onClick: () => onNavigate?.('devotions'),
-            accent: 'var(--primary-500)',
-            bg: 'linear-gradient(135deg, var(--primary-50) 0%, #fff0f5 100%)',
-            iconBg: 'var(--primary-100)',
-            textColor: 'var(--primary-700)',
-            numColor: 'var(--primary-900)',
+            surface: 'border-rose-100 bg-gradient-to-br from-white to-rose-50/70',
+            iconClass: 'bg-rose-100 text-rose-600', barClass: 'from-rose-400 to-pink-500', labelClass: 'text-rose-700',
           },
           {
             label: t.dashboard.journalEntries,
@@ -1297,11 +1293,8 @@ export function CoupleDashboard({
             sub: 'shared',
             icon: BookHeart,
             onClick: () => onNavigate?.('journal'),
-            accent: 'var(--secondary-500)',
-            bg: 'linear-gradient(135deg, var(--secondary-50) 0%, #f0f9ff 100%)',
-            iconBg: 'var(--secondary-100)',
-            textColor: 'var(--secondary-700)',
-            numColor: 'var(--secondary-700)',
+            surface: 'border-sky-100 bg-gradient-to-br from-white to-sky-50/70',
+            iconClass: 'bg-sky-100 text-sky-600', barClass: 'from-sky-400 to-cyan-500', labelClass: 'text-sky-700',
           },
           {
             label: t.dashboard.prayers,
@@ -1309,11 +1302,8 @@ export function CoupleDashboard({
             sub: 'answered',
             icon: HandHeart,
             onClick: () => onNavigate?.('prayer'),
-            accent: '#8b5cf6',
-            bg: 'linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%)',
-            iconBg: '#ede9fe',
-            textColor: '#6d28d9',
-            numColor: '#5b21b6',
+            surface: 'border-violet-100 bg-gradient-to-br from-white to-violet-50/70',
+            iconClass: 'bg-violet-100 text-violet-600', barClass: 'from-violet-400 to-purple-500', labelClass: 'text-violet-700',
           },
           {
             label: t.dashboard.questions,
@@ -1321,52 +1311,42 @@ export function CoupleDashboard({
             sub: 'answered',
             icon: MessageCircleHeart,
             onClick: () => onScreenNavigate?.('category-selection'),
-            accent: 'var(--success-500)',
-            bg: 'linear-gradient(135deg, var(--success-50) 0%, #dcfce7 100%)',
-            iconBg: '#bbf7d0',
-            textColor: 'var(--success-700)',
-            numColor: 'var(--success-700)',
+            surface: 'border-emerald-100 bg-gradient-to-br from-white to-emerald-50/70',
+            iconClass: 'bg-emerald-100 text-emerald-600', barClass: 'from-emerald-400 to-green-500', labelClass: 'text-emerald-700',
           },
-        ].map(({ label, value, sub, icon: Icon, onClick, accent, bg, iconBg, textColor, numColor }) => (
+        ].map(({ label, value, sub, icon: Icon, onClick, surface, iconClass, barClass, labelClass }) => (
           <button
             key={label}
             onClick={onClick}
-            className="text-left rounded-2xl p-4 transition-all duration-200 active:scale-[0.97]"
-            style={{
-              background: bg,
-              border: 'none',
-              boxShadow: `0 2px 0 0 var(--neutral-200), 0 8px 24px -4px ${accent}22, 0 1px 3px 0 ${accent}18`,
-            }}
+            className={`group rounded-[1.5rem] border p-4 text-left shadow-[0_14px_38px_-28px_rgba(15,23,42,.35)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_42px_-26px_rgba(15,23,42,.42)] active:scale-[0.98] ${surface}`}
           >
             <div className="flex items-start justify-between">
               <div className="space-y-0.5">
-                <p className="text-xs font-medium" style={{ color: textColor }}>{label}</p>
-                <p className="text-3xl font-bold leading-none mt-1" style={{ color: numColor }}>{value}</p>
-                <p className="text-xs" style={{ color: textColor, opacity: 0.75 }}>{sub}</p>
+                <p className={`text-[10px] font-black uppercase tracking-[.08em] ${labelClass}`}>{label}</p>
+                <p className="mt-2 text-2xl font-black leading-none tracking-tight text-slate-950 sm:text-3xl">{value}</p>
+                <p className="mt-1 text-[10px] font-semibold text-slate-400">{sub}</p>
               </div>
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: iconBg }}>
-                <Icon className="w-5 h-5" style={{ color: accent }} />
+              <div className={`grid h-10 w-10 shrink-0 place-items-center rounded-2xl transition-transform group-hover:scale-105 ${iconClass}`}>
+                <Icon className="h-4.5 w-4.5" />
               </div>
             </div>
-            {/* Subtle bottom accent bar */}
-            <div className="mt-3 h-0.5 rounded-full w-full opacity-30" style={{ background: accent }} />
+            <div className="mt-4 h-1 overflow-hidden rounded-full bg-white/90"><div className={`h-full w-2/3 rounded-full bg-gradient-to-r ${barClass}`} /></div>
           </button>
         ))}
       </div>
 
       {/* Daily Bible Verse */}
       <Card 
-        className="bg-gradient-to-br from-warning-50 via-warning-50 to-warning-50 border-warning-500/30 cursor-pointer hover:shadow-lg transition-shadow"
+        className="cursor-pointer overflow-hidden rounded-[1.75rem] border-amber-100 bg-gradient-to-br from-white via-amber-50/35 to-rose-50/40 shadow-[0_18px_48px_-32px_rgba(180,83,9,.35)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_54px_-30px_rgba(180,83,9,.42)]"
         onClick={() => setIsBibleReaderOpen(true)}
       >
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-warning-500" />
+        <CardHeader className="p-5 pb-3">
+          <CardTitle className="flex items-center gap-3 text-base font-black text-slate-950">
+            <span className="grid h-10 w-10 place-items-center rounded-2xl bg-amber-100 text-amber-700"><BookOpen className="h-5 w-5" /></span>
             Daily Verse
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-5 pb-5">
           {isLoadingVerse ? (
             <div className="text-center py-4">
               <div className="animate-pulse space-y-2">
@@ -1414,7 +1394,7 @@ export function CoupleDashboard({
 
               {verseLanguage === 'am' && dailyVerse.amharicText ? (
                 <>
-                  <blockquote lang="am" style={{ fontSize: 'var(--text-base)', color: 'var(--foreground)', lineHeight: 1.9, borderLeft: '4px solid var(--primary)', paddingLeft: 'var(--spacing-3)', margin: 0, opacity: 0.9 }}>
+                  <blockquote lang="am" className="rounded-2xl border border-white bg-white/80 p-4 text-sm leading-8 text-slate-700 shadow-sm">
                     "{dailyVerse.amharicText}"
                   </blockquote>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -1424,7 +1404,7 @@ export function CoupleDashboard({
                 </>
               ) : (
                 <>
-                  <blockquote style={{ fontSize: 'var(--text-base)', fontStyle: 'italic', color: 'var(--foreground)', lineHeight: 1.6, borderLeft: '4px solid var(--primary)', paddingLeft: 'var(--spacing-3)', margin: 0, opacity: 0.85 }}>
+                  <blockquote className="rounded-2xl border border-white bg-white/80 p-4 text-sm italic leading-7 text-slate-700 shadow-sm">
                     "{dailyVerse.text}"
                   </blockquote>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -1437,7 +1417,7 @@ export function CoupleDashboard({
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full border-warning-500/50 text-warning-700 hover:bg-warning-50"
+                className="h-11 w-full rounded-xl border-amber-200 bg-white/80 font-bold text-amber-800 hover:bg-white"
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsBibleReaderOpen(true);
@@ -1510,12 +1490,12 @@ export function CoupleDashboard({
 
       {/* Mood Tracker */}
       {partner && (
-        <Card>
-          <CardHeader>
+        <Card className="overflow-hidden rounded-[1.75rem] border-rose-100 bg-gradient-to-br from-white via-white to-rose-50/35 shadow-[0_18px_48px_-34px_rgba(190,24,93,.3)]">
+          <CardHeader className="p-5 pb-3">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="flex items-center gap-2">
-                  <Heart className="w-5 h-5 text-primary-600" />
+                <CardTitle className="flex items-center gap-3 text-base font-black text-slate-950">
+                  <span className="grid h-10 w-10 place-items-center rounded-2xl bg-rose-100 text-rose-600"><Heart className="h-5 w-5" /></span>
                   {t.dashboard.todaysMood}
                 </CardTitle>
                 <CardDescription>{t.mood.shareEmotionalState}</CardDescription>
@@ -1531,7 +1511,7 @@ export function CoupleDashboard({
               </Button>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-5 pb-5">
             <div className="grid sm:grid-cols-2 gap-6">
               {/* {t.dashboard.yourMood} */}
               <div className="space-y-3">
@@ -1553,13 +1533,13 @@ export function CoupleDashboard({
                           gap: 'var(--spacing-1)',
                           paddingTop: 'var(--spacing-3)',
                           paddingBottom: 'var(--spacing-2)',
-                          borderRadius: 'var(--radius-lg)',
-                          border: `2px solid ${isSelected ? border : 'var(--neutral-200)'}`,
+                          borderRadius: '18px',
+                          border: `1.5px solid ${isSelected ? border : 'var(--neutral-200)'}`,
                           background: isSelected ? bg : 'var(--card)',
                           cursor: 'pointer',
                           transition: 'all 0.2s cubic-bezier(0.34,1.56,0.64,1)',
-                          transform: isSelected ? 'scale(1.08)' : 'scale(1)',
-                          boxShadow: isSelected ? `0 4px 16px ${glow}, 0 0 0 3px ${glow}` : '0 1px 3px rgba(0,0,0,0.06)',
+                          transform: isSelected ? 'translateY(-2px)' : 'none',
+                          boxShadow: isSelected ? `0 10px 24px -14px ${border}` : '0 8px 24px -20px rgba(15,23,42,.35)',
                         }}
                       >
                         <MoodFace mood={mood} size={44} />
@@ -1589,9 +1569,9 @@ export function CoupleDashboard({
                       display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)',
                       padding: 'var(--spacing-3) var(--spacing-4)',
                       background: m.bg,
-                      border: `1.5px solid ${m.border}`,
-                      borderRadius: 'var(--radius-lg)',
-                      boxShadow: `0 2px 12px ${m.glow}`,
+                      border: `1px solid ${m.border}`,
+                      borderRadius: '20px',
+                      boxShadow: `0 12px 28px -22px ${m.border}`,
                     }}>
                       <MoodFace mood={partnerMood.mood} size={52} />
                       <div>
@@ -1619,18 +1599,18 @@ export function CoupleDashboard({
 
       {/* Journey Progress */}
       {partner && (
-        <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => onNavigate?.('devotions')}>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-primary-600" />
+        <Card className="cursor-pointer overflow-hidden rounded-[1.75rem] border-violet-100 bg-gradient-to-br from-white via-white to-violet-50/45 shadow-[0_18px_48px_-34px_rgba(109,40,217,.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_54px_-32px_rgba(109,40,217,.38)]" onClick={() => onNavigate?.('devotions')}>
+          <CardHeader className="p-5 pb-3">
+            <CardTitle className="flex items-center gap-3 text-base font-black text-slate-950">
+              <span className="grid h-10 w-10 place-items-center rounded-2xl bg-violet-100 text-violet-600"><TrendingUp className="h-5 w-5" /></span>
               {t.dashboard.yourJourneyTogether}
             </CardTitle>
             <CardDescription>{t.dashboard.buildingFoundation}</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-2 px-5 pb-5">
             {/* Devotionals Progress */}
             <div 
-              className="space-y-2 cursor-pointer hover:bg-primary-50/50 p-2 rounded-lg transition-colors"
+              className="cursor-pointer space-y-2 rounded-2xl border border-white bg-white/80 p-3 shadow-sm transition-all hover:border-rose-100 hover:bg-white"
               onClick={(e) => {
                 e.stopPropagation();
                 onNavigate?.('devotions');
@@ -1645,7 +1625,7 @@ export function CoupleDashboard({
 
             {/* Questions Progress */}
             <div 
-              className="space-y-2 cursor-pointer hover:bg-success-50/50 p-2 rounded-lg transition-colors"
+              className="cursor-pointer space-y-2 rounded-2xl border border-white bg-white/80 p-3 shadow-sm transition-all hover:border-emerald-100 hover:bg-white"
               onClick={(e) => {
                 e.stopPropagation();
                 onScreenNavigate?.('category-selection');
@@ -1660,7 +1640,7 @@ export function CoupleDashboard({
 
             {/* Journal Progress */}
             <div 
-              className="space-y-2 cursor-pointer hover:bg-primary-50/50 p-2 rounded-lg transition-colors"
+              className="cursor-pointer space-y-2 rounded-2xl border border-white bg-white/80 p-3 shadow-sm transition-all hover:border-sky-100 hover:bg-white"
               onClick={(e) => {
                 e.stopPropagation();
                 onNavigate?.('journal');
@@ -1690,27 +1670,27 @@ export function CoupleDashboard({
         accessToken={accessToken}
       />
 
-      {/* Scripture Memory - NEW! */}
-      <Card className="hover:shadow-md transition-shadow border-2 border-primary-200 bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-900/20">
-        <CardHeader>
+      {/* Scripture Memory */}
+      <Card className="overflow-hidden rounded-[1.75rem] border-rose-100 bg-gradient-to-br from-white via-rose-50/35 to-violet-50/45 shadow-[0_18px_48px_-34px_rgba(190,24,93,.32)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_54px_-32px_rgba(190,24,93,.4)]">
+        <CardHeader className="p-5 pb-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Brain className="w-5 h-5 text-primary-600" />
-              <CardTitle className="text-base">Scripture Memory</CardTitle>
+            <div className="flex items-center gap-3">
+              <span className="grid h-10 w-10 place-items-center rounded-2xl bg-rose-100 text-rose-600"><Brain className="h-5 w-5" /></span>
+              <CardTitle className="text-base font-black text-slate-950">Scripture Memory</CardTitle>
             </div>
             <Sparkles className="w-4 h-4 text-warning-500" />
           </div>
           <CardDescription>Memorize God's Word together</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="bg-card  rounded-lg p-3 border border-primary-200">
+        <CardContent className="space-y-3 px-5 pb-5">
+          <div className="rounded-2xl border border-white bg-white/85 p-4 shadow-sm">
             <p className="text-xs text-muted-foreground dark:text-muted-foreground mb-2">Featured Verse</p>
             <p className="text-sm mb-2">"Love is patient and kind..."</p>
             <p className="text-xs text-primary-600">1 Corinthians 13:4</p>
           </div>
           <Button 
             variant="outline" 
-            className="w-full border-primary-300 hover:bg-primary-50"
+            className="h-11 w-full rounded-xl border-rose-200 bg-white/80 font-bold text-rose-700 hover:bg-white"
             onClick={() => onScreenNavigate?.('scripture-memory')}
           >
             <Brain className="w-4 h-4 mr-2" />

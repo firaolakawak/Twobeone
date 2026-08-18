@@ -184,19 +184,19 @@ export function LearningModulesCard({
   return (
     <div
       style={{
-        backgroundColor: "var(--card)",
-        borderRadius: "var(--radius-lg)",
-        border: "1px solid var(--border)",
-        boxShadow: "var(--shadow-sm)",
+        background: "linear-gradient(145deg, #ffffff 0%, #fff7f9 58%, #f8f5ff 100%)",
+        borderRadius: "28px",
+        border: "1px solid #ffe4e6",
+        boxShadow: "0 18px 48px -34px rgba(190,24,93,.32)",
         overflow: "hidden",
       }}
     >
       {/* Header Banner */}
       <div
         style={{
-          background:
-            "linear-gradient(135deg, var(--primary-700, #be123c) 0%, var(--primary-500) 100%)",
-          padding: "var(--spacing-4)",
+          background: "linear-gradient(135deg, rgba(255,241,242,.9) 0%, rgba(255,255,255,.96) 55%, rgba(245,243,255,.9) 100%)",
+          padding: "20px",
+          borderBottom: "1px solid #ffe4e6",
         }}
       >
         <div
@@ -217,15 +217,15 @@ export function LearningModulesCard({
               style={{
                 width: 32,
                 height: 32,
-                borderRadius: "var(--radius-md)",
-                backgroundColor: "rgba(255,255,255,0.2)",
+                borderRadius: "16px",
+                backgroundColor: "#ffffff",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
               <BookOpen
-                style={{ width: 16, height: 16, color: "#fff" }}
+                style={{ width: 16, height: 16, color: "#e11d48" }}
               />
             </div>
             <div>
@@ -233,7 +233,7 @@ export function LearningModulesCard({
                 style={{
                   fontSize: "var(--text-callout)",
                   fontWeight: "var(--font-weight-semibold)",
-                  color: "#fff",
+                  color: "#0f172a",
                   margin: 0,
                 }}
               >
@@ -242,7 +242,7 @@ export function LearningModulesCard({
               <p
                 style={{
                   fontSize: "var(--text-label)",
-                  color: "rgba(255,255,255,0.75)",
+                  color: "#64748b",
                   margin: 0,
                 }}
               >
@@ -254,8 +254,8 @@ export function LearningModulesCard({
             style={{
               fontSize: "var(--text-label)",
               fontWeight: "var(--font-weight-semibold)",
-              color: "#fff",
-              backgroundColor: "rgba(255,255,255,0.2)",
+              color: "#be123c",
+              backgroundColor: "#ffffff",
               borderRadius: "var(--radius-full)",
               padding: "2px 10px",
             }}
@@ -270,7 +270,7 @@ export function LearningModulesCard({
             marginTop: "var(--spacing-2)",
             height: 5,
             borderRadius: "var(--radius-full)",
-            backgroundColor: "rgba(255,255,255,0.25)",
+            backgroundColor: "#ffe4e6",
             overflow: "hidden",
           }}
         >
@@ -278,7 +278,7 @@ export function LearningModulesCard({
             style={{
               height: "100%",
               width: `${overallProgress}%`,
-              backgroundColor: "#fff",
+              background: "linear-gradient(90deg, #fb7185, #a78bfa)",
               borderRadius: "var(--radius-full)",
               transition: "width 0.5s ease",
             }}
@@ -287,7 +287,7 @@ export function LearningModulesCard({
         <p
           style={{
             fontSize: "var(--text-label)",
-            color: "rgba(255,255,255,0.75)",
+            color: "#64748b",
             margin: "var(--spacing-1) 0 0 0",
           }}
         >
@@ -299,7 +299,7 @@ export function LearningModulesCard({
       </div>
 
       {/* Module Rows mapping layout array loops */}
-      <div style={{ padding: "var(--spacing-2) 0" }}>
+      <div style={{ padding: "10px 12px" }}>
         {PREVIEW_MODULES.map((m, idx) => {
           const prog = progressMap[m.id] || 0;
           const done = prog === 100;
@@ -319,9 +319,11 @@ export function LearningModulesCard({
                 alignItems: "center",
                 gap: "var(--spacing-3)",
                 width: "100%",
-                padding: "var(--spacing-3) var(--spacing-4)",
-                background: "none",
-                border: "none",
+                padding: "12px",
+                background: "rgba(255,255,255,.72)",
+                border: "1px solid transparent",
+                borderRadius: "16px",
+                margin: "2px 0",
                 cursor: "pointer",
                 textAlign: "left",
                 transition: "background 0.15s ease",
@@ -329,12 +331,12 @@ export function LearningModulesCard({
               onMouseEnter={(e) => {
                 (
                   e.currentTarget as HTMLButtonElement
-                ).style.backgroundColor = "var(--neutral-50)";
+                ).style.backgroundColor = "#ffffff";
               }}
               onMouseLeave={(e) => {
                 (
                   e.currentTarget as HTMLButtonElement
-                ).style.backgroundColor = "transparent";
+                ).style.backgroundColor = "rgba(255,255,255,.72)";
               }}
             >
               {/* Icon badges */}
@@ -456,7 +458,7 @@ export function LearningModulesCard({
       <div
         style={{
           padding: "var(--spacing-3) var(--spacing-4)",
-          borderTop: "1px solid var(--border)",
+          borderTop: "1px solid #ffe4e6",
         }}
       >
         <button
@@ -468,9 +470,9 @@ export function LearningModulesCard({
             gap: "var(--spacing-2)",
             width: "100%",
             padding: "var(--spacing-3)",
-            borderRadius: "var(--radius-md)",
+            borderRadius: "14px",
             border: `1px solid var(--primary-200, #ffc7d7)`,
-            backgroundColor: "var(--primary-50)",
+            backgroundColor: "rgba(255,255,255,.82)",
             color: "var(--primary-600)",
             fontSize: "var(--text-callout)",
             fontWeight: "var(--font-weight-semibold)",
@@ -481,12 +483,12 @@ export function LearningModulesCard({
             (
               e.currentTarget as HTMLButtonElement
             ).style.backgroundColor =
-              "var(--primary-100, #ffe0e8)";
+              "#ffffff";
           }}
           onMouseLeave={(e) => {
             (
               e.currentTarget as HTMLButtonElement
-            ).style.backgroundColor = "var(--primary-50)";
+            ).style.backgroundColor = "rgba(255,255,255,.82)";
           }}
         >
           {vocab.viewAll(PREVIEW_MODULES.length)}
