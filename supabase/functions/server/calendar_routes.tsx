@@ -179,16 +179,48 @@ async function resolveOwnedItem(userId: string, itemId: string) {
   return partner ? { item: partner as any, key: partnerKey, ownerId: profile.partnerId } : null;
 }
 
+function calendarItemIsFulfilled(item: any, now = new Date()) {
+  if (!item?.prayerId || item.prayerAnsweredAt || item.recurrence !== 'none') return false;
+  const due = new Date(item.endsAt || item.startsAt);
+  return Number.isFinite(due.getTime()) && due.getTime() <= now.getTime();
+}
+
+async function answerLinkedCalendarPrayer(ownerId: string, item: any, itemKey: string, answeredAt = new Date().toISOString()) {
+  if (!item?.prayerId || item.prayerAnsweredAt) return { item, prayer: null };
+  const prayerKey = `prayer:${ownerId}:${item.prayerId}`;
+  const currentPrayer: any = await kv.get(prayerKey).catch(() => null);
+  const profile: any = await kv.get(`user:${ownerId}`).catch(() => null);
+  const updatedItem = { ...item, status: 'completed', prayerAnsweredAt: answeredAt, updatedAt: answeredAt };
+  const updatedPrayer = currentPrayer ? { ...currentPrayer, isAnswered: true, answeredAt, updatedAt: answeredAt } : null;
+  const cacheBase = profile?.coupleId || (profile?.partnerId && profile.partnerId < ownerId ? profile.partnerId : ownerId);
+  await Promise.all([
+    kv.set(itemKey, updatedItem),
+    updatedPrayer ? kv.set(prayerKey, updatedPrayer) : Promise.resolve(),
+    kv.del(`marriage-readiness:v2:${cacheBase}`).catch(() => undefined),
+    profile ? kv.set(`user:${ownerId}`, { ...profile, updatedAt: answeredAt }) : Promise.resolve(),
+  ]);
+  return { item: updatedItem, prayer: updatedPrayer };
+}
+
+async function reconcileFulfilledItem(ownerId: string, item: any, now = new Date()) {
+  if (!calendarItemIsFulfilled(item, now)) return item;
+  const result = await answerLinkedCalendarPrayer(ownerId, item, `calendar:${ownerId}:${item.id}`, now.toISOString());
+  return result.item;
+}
+
 app.get('/calendar', async (c) => {
   try {
     const userId = await userIdFromRequest(c);
     if (!userId) return c.json({ error: 'Unauthorized' }, 401);
     const profile: any = await kv.get(`user:${userId}`).catch(() => null);
-    const ownItems: any[] = await kv.getByPrefix(`calendar:${userId}:`).catch(() => []);
+    const ownRaw: any[] = await kv.getByPrefix(`calendar:${userId}:`).catch(() => []);
+    const now = new Date();
+    const ownItems = await Promise.all(ownRaw.map(item => reconcileFulfilledItem(userId, item, now)));
     let partnerItems: any[] = [];
     if (profile?.partnerId) {
       const raw: any[] = await kv.getByPrefix(`calendar:${profile.partnerId}:`).catch(() => []);
-      partnerItems = raw.map(item => ({ ...item, isPartner: true }));
+      const reconciled = await Promise.all(raw.map(item => reconcileFulfilledItem(profile.partnerId, item, now)));
+      partnerItems = reconciled.map(item => ({ ...item, isPartner: true }));
     }
     const items = [...ownItems, ...partnerItems]
       .sort((left, right) => new Date(left.startsAt).getTime() - new Date(right.startsAt).getTime())
@@ -454,14 +486,52 @@ app.put('/calendar/:id', async (c) => {
     if (!resolved) return c.json({ error: 'Calendar item not found' }, 404);
     if (resolved.ownerId !== userId) return c.json({ error: 'Only the creator can update this item' }, 403);
     const body = await c.req.json();
-    const allowedUpdates = ['title', 'description', 'emoji', 'startsAt', 'endsAt', 'allDay', 'recurrence', 'reminderMinutes', 'location', 'status'];
+    const allowedUpdates = ['title', 'description', 'type', 'category', 'emoji', 'startsAt', 'endsAt', 'allDay', 'recurrence', 'reminderMinutes', 'location', 'status'];
     const updates = Object.fromEntries(Object.entries(body).filter(([key]) => allowedUpdates.includes(key)));
-    const item = { ...resolved.item, ...updates, updatedAt: new Date().toISOString() };
+    const now = new Date().toISOString();
+    let item = { ...resolved.item, ...updates, updatedAt: now };
+    let prayer: any = null;
+    const prayerTopicChanged = Boolean(item.prayerId) && ['title', 'description', 'type', 'category']
+      .some(key => Object.prototype.hasOwnProperty.call(updates, key));
+    if (prayerTopicChanged) {
+      const profile: any = await kv.get(`user:${userId}`).catch(() => null);
+      const language = resolveLanguage(profile?.language || item.prayerLanguage);
+      const category = (['faith', 'relationship', 'family', 'health', 'finance', 'service', 'other'].includes(item.category) ? item.category : 'other') as CalendarCategory;
+      const generated = await generatePrayer({ title: String(item.title || '').trim(), description: String(item.description || ''), type: String(item.type || 'plan'), category, language });
+      if (generated.generationSource === 'ai') {
+        const prayerKey = `prayer:${userId}:${item.prayerId}`;
+        const currentPrayer: any = await kv.get(prayerKey).catch(() => null);
+        item = { ...item, prayerTitle: generated.title, prayerText: generated.text, scripture: generated.scripture, prayerLanguage: language, prayerGenerationSource: 'ai' };
+        prayer = { ...(currentPrayer || {}), id: item.prayerId, userId, title: generated.title, description: prayerDescription(generated.text, generated.scripture, language), scripture: generated.scripture, language, generationSource: 'ai', source: 'couple-calendar', sourcePlanId: item.id, reminderDate: item.startsAt, updatedAt: now };
+        await kv.set(prayerKey, prayer);
+      }
+    }
     await kv.set(resolved.key, item);
-    return c.json({ success: true, item });
+    if ((body.status === 'completed' || calendarItemIsFulfilled(item)) && item.prayerId && !item.prayerAnsweredAt) {
+      const answered = await answerLinkedCalendarPrayer(userId, item, resolved.key, now);
+      item = answered.item;
+      prayer = answered.prayer || prayer;
+    }
+    return c.json({ success: true, item, prayer });
   } catch (error) {
     console.error('[Couple Calendar] Update error:', error);
     return c.json({ error: 'Failed to update calendar item' }, 500);
+  }
+});
+
+app.post('/calendar/:id/answer-prayer', async (c) => {
+  try {
+    const userId = await userIdFromRequest(c);
+    if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+    const resolved = await resolveOwnedItem(userId, c.req.param('id'));
+    if (!resolved) return c.json({ error: 'Calendar item not found' }, 404);
+    if (resolved.ownerId !== userId) return c.json({ error: 'Only the creator can answer this prayer' }, 403);
+    if (!resolved.item.prayerId) return c.json({ error: 'This calendar item has no linked prayer' }, 400);
+    const result = await answerLinkedCalendarPrayer(userId, resolved.item, resolved.key);
+    return c.json({ success: true, ...result });
+  } catch (error) {
+    console.error('[Couple Calendar] Answer prayer error:', error);
+    return c.json({ error: 'Failed to mark calendar prayer answered' }, 500);
   }
 });
 
@@ -472,8 +542,12 @@ app.delete('/calendar/:id', async (c) => {
     const resolved = await resolveOwnedItem(userId, c.req.param('id'));
     if (!resolved) return c.json({ success: true });
     if (resolved.ownerId !== userId) return c.json({ error: 'Only the creator can delete this item' }, 403);
+    const profile: any = await kv.get(`user:${userId}`).catch(() => null);
+    const cacheBase = profile?.coupleId || (profile?.partnerId && profile.partnerId < userId ? profile.partnerId : userId);
     await kv.del(resolved.key);
     if (resolved.item.prayerId) await kv.del(`prayer:${userId}:${resolved.item.prayerId}`);
+    if (resolved.item.prayerId) await kv.del(`marriage-readiness:v2:${cacheBase}`).catch(() => undefined);
+    if (profile) await kv.set(`user:${userId}`, { ...profile, updatedAt: new Date().toISOString() });
     return c.json({ success: true });
   } catch (error) {
     console.error('[Couple Calendar] Delete error:', error);
@@ -491,6 +565,10 @@ app.post('/cron/calendar-reminders', async (c) => {
     const items: any[] = await kv.getByPrefix('calendar:').catch(() => []);
     let sent = 0;
     for (const item of items) {
+      if (calendarItemIsFulfilled(item, now)) {
+        await answerLinkedCalendarPrayer(item.userId, item, `calendar:${item.userId}:${item.id}`, now.toISOString());
+        continue;
+      }
       if (!item?.id || item.status === 'completed' || item.reminderMinutes == null) continue;
       const occurrence = reminderOccurrence(item, now);
       if (!occurrence) continue;

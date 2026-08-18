@@ -30,4 +30,18 @@ describe('calendar AI prayer generation', () => {
     expect(source).toContain('kv.set(prayerKey, updatedPrayer)');
     expect(source).toContain('prayerDescription(generated.text, generated.scripture, language)');
   });
+
+  it('answers linked prayers manually and when a one-time calendar date is fulfilled', () => {
+    expect(source).toContain("app.post('/calendar/:id/answer-prayer'");
+    expect(source).toContain('isAnswered: true');
+    expect(source).toContain("item.recurrence !== 'none'");
+    expect(source).toContain('calendarItemIsFulfilled(item, now)');
+    expect(source).toContain("kv.del(`marriage-readiness:v2:${cacheBase}`)");
+  });
+
+  it('keeps the linked prayer id and regenerates prayer copy when a plan is edited', () => {
+    expect(source).toContain("const prayerTopicChanged = Boolean(item.prayerId)");
+    expect(source).toContain('id: item.prayerId');
+    expect(source).toContain("prayerGenerationSource: 'ai'");
+  });
 });

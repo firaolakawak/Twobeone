@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowLeft, Bell, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3,
-  BookHeart, Heart, ListTodo, Loader2, MapPin, Plus, Repeat2, Sparkles, Trophy, Trash2,
+  BookHeart, Heart, ListTodo, Loader2, MapPin, Pencil, Plus, Repeat2, Sparkles, Trophy, Trash2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -118,6 +118,7 @@ export function CoupleCalendar({
   const [calendarAnchor, setCalendarAnchor] = useState(() => new Date());
   const [selectedDay, setSelectedDay] = useState(() => new Date());
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<CoupleCalendarItem | null>(null);
   const [draft, setDraft] = useState<CalendarDraft>(() => initialDraft(language));
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -239,6 +240,20 @@ export function CoupleCalendar({
       next.endsAt = toLocalDateTimeInput(new Date(chosen.getTime() + 60 * 60_000));
     }
     setDraft(next);
+    setEditingItem(null);
+    setDialogOpen(true);
+  };
+
+  const openEdit = (item: CoupleCalendarItem) => {
+    if (item.isPartner) return;
+    setEditingItem(item);
+    setDraft({
+      title: item.title, description: item.description || '', type: item.type, category: item.category,
+      emoji: item.emoji || CALENDAR_CATEGORY_EMOJI[item.category], startsAt: toLocalDateTimeInput(new Date(item.startsAt)),
+      endsAt: item.endsAt ? toLocalDateTimeInput(new Date(item.endsAt)) : '', allDay: item.allDay,
+      recurrence: item.recurrence, reminderMinutes: item.reminderMinutes, location: item.location || '',
+      createPrayer: Boolean(item.prayerId || item.createPrayer), language,
+    });
     setDialogOpen(true);
   };
 
@@ -328,29 +343,43 @@ export function CoupleCalendar({
     setDraft(current => ({ ...current, [key]: value }));
   };
 
-  const handleCreate = async (event: React.FormEvent) => {
+  const handleSave = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!draft.title.trim() || !draft.startsAt) return;
     setSaving(true);
     try {
-      const response = await fetch(apiUrl, {
-        method: 'POST',
+      const response = await fetch(editingItem ? `${apiUrl}/${editingItem.id}` : apiUrl, {
+        method: editingItem ? 'PUT' : 'POST',
         headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...draft, startsAt: new Date(draft.startsAt).toISOString(), endsAt: draft.endsAt ? new Date(draft.endsAt).toISOString() : null }),
       });
       const data = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(data.error || 'Calendar create failed');
-      setItems(current => [data.item, ...current]);
+      if (!response.ok) throw new Error(data.error || 'Calendar save failed');
+      setItems(current => editingItem
+        ? current.map(item => item.id === editingItem.id ? data.item : item)
+        : [data.item, ...current]);
       setDialogOpen(false);
-      toast.success(copy.created);
-      if (data.prayer) await onPrayerChanged?.();
+      toast.success(editingItem ? copy.updated : copy.created);
+      if (data.prayer || editingItem?.prayerId) await onPrayerChanged?.();
+      setEditingItem(null);
       await loadItems(true);
     } catch (error) {
-      console.error('[CoupleCalendar] Create failed:', error);
+      console.error('[CoupleCalendar] Save failed:', error);
       toast.error(copy.failed);
     } finally {
       setSaving(false);
     }
+  };
+
+  const markPrayerAnswered = async (item: CoupleCalendarItem) => {
+    try {
+      const response = await fetch(`${apiUrl}/${item.id}/answer-prayer`, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}` } });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || 'Answer failed');
+      setItems(current => current.map(entry => entry.id === item.id ? data.item : entry));
+      toast.success(copy.prayerAnswered);
+      await onPrayerChanged?.();
+    } catch { toast.error(copy.failed); }
   };
 
   const updateStatus = async (item: CoupleCalendarItem) => {
@@ -361,7 +390,9 @@ export function CoupleCalendar({
         body: JSON.stringify({ status }),
       });
       if (!response.ok) throw new Error('Update failed');
-      setItems(current => current.map(entry => entry.id === item.id ? { ...entry, status } : entry));
+      const data = await response.json().catch(() => ({}));
+      setItems(current => current.map(entry => entry.id === item.id ? (data.item || { ...entry, status }) : entry));
+      if (data.prayer) await onPrayerChanged?.();
       await loadItems(true);
     } catch { toast.error(copy.failed); }
   };
@@ -405,6 +436,7 @@ export function CoupleCalendar({
         </div>
         {!item.isPartner && (
           <div className="flex shrink-0 gap-1">
+            <button type="button" onClick={() => openEdit(item)} className="grid h-9 w-9 place-items-center rounded-full bg-white/75 text-slate-600 hover:bg-white" aria-label={copy.edit}><Pencil className="h-4 w-4" /></button>
             <button type="button" onClick={() => void updateStatus(item)} className="grid h-9 w-9 place-items-center rounded-full bg-white/75 text-slate-600 hover:bg-white" aria-label={copy.complete}><Check className="h-4 w-4" /></button>
             <button type="button" onClick={() => void deleteItem(item)} className="grid h-9 w-9 place-items-center rounded-full bg-white/75 text-slate-400 hover:bg-red-50 hover:text-red-600" aria-label={copy.delete}><Trash2 className="h-4 w-4" /></button>
           </div>
@@ -547,7 +579,7 @@ export function CoupleCalendar({
       ) : (
         <section className="mt-6 space-y-4">
           <div><p className="text-xs font-bold uppercase tracking-[.14em] text-rose-600">{copy.linkedPrayers}</p><h2 className="mt-1 text-2xl font-black text-slate-950">{copy.prayers}</h2></div>
-          {linkedPrayerItems.length ? linkedPrayerItems.map(item => <article key={item.id} className="rounded-[1.5rem] border border-rose-100 bg-gradient-to-br from-white to-rose-50/60 p-5 shadow-sm"><div className="flex items-start gap-3"><div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-rose-100">🙏</div><div><h3 className="font-black text-slate-900">{item.prayerTitle}</h3><p className="mt-2 text-sm leading-6 text-slate-600">{item.prayerText}</p>{item.scripture && <p className="mt-3 text-xs font-bold text-rose-700">{copy.scripture}: {item.scripture}</p>}</div></div></article>) : <p className="rounded-2xl border border-dashed p-8 text-center text-sm text-slate-500">{copy.noUpcoming}</p>}
+          {linkedPrayerItems.length ? linkedPrayerItems.map(item => <article key={item.id} className={`rounded-[1.5rem] border p-5 shadow-sm ${item.prayerAnsweredAt ? 'border-emerald-100 bg-emerald-50/50' : 'border-rose-100 bg-gradient-to-br from-white to-rose-50/60'}`}><div className="flex items-start gap-3"><div className={`grid h-11 w-11 shrink-0 place-items-center rounded-full ${item.prayerAnsweredAt ? 'bg-emerald-100' : 'bg-rose-100'}`}>{item.prayerAnsweredAt ? '🙌' : '🙏'}</div><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><h3 className="font-black text-slate-900">{item.prayerTitle}</h3>{item.prayerAnsweredAt && <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">{copy.answered}</Badge>}</div><p className="mt-2 text-sm leading-6 text-slate-600">{item.prayerText}</p>{item.scripture && <p className="mt-3 text-xs font-bold text-rose-700">{copy.scripture}: {item.scripture}</p>}{!item.isPartner && <div className="mt-4 flex flex-wrap gap-2 border-t border-black/5 pt-3"><Button type="button" size="sm" variant="outline" onClick={() => openEdit(item)} className="rounded-full"><Pencil className="h-4 w-4" />{copy.edit}</Button>{!item.prayerAnsweredAt && <Button type="button" size="sm" onClick={() => void markPrayerAnswered(item)} className="rounded-full bg-emerald-600 text-white hover:bg-emerald-700"><Check className="h-4 w-4" />{copy.markAnswered}</Button>}<Button type="button" size="sm" variant="ghost" onClick={() => void deleteItem(item)} className="rounded-full text-red-600 hover:bg-red-50 hover:text-red-700"><Trash2 className="h-4 w-4" />{copy.delete}</Button></div>}</div></div></article>) : <p className="rounded-2xl border border-dashed p-8 text-center text-sm text-slate-500">{copy.noUpcoming}</p>}
         </section>
       )}
 
@@ -576,13 +608,13 @@ export function CoupleCalendar({
         </article>
       </section>
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={dialogOpen} onOpenChange={open => { setDialogOpen(open); if (!open) setEditingItem(null); }}>
         <DialogContent className="max-h-[94dvh] overflow-y-auto rounded-[1.75rem] border-rose-100 p-0 sm:max-w-2xl">
           <DialogHeader className="border-b border-rose-100 bg-gradient-to-br from-rose-50 via-white to-violet-50 px-6 py-6 pr-12 text-left">
-            <DialogTitle className="text-2xl font-black text-slate-950">{copy.newTitle}</DialogTitle>
+            <DialogTitle className="text-2xl font-black text-slate-950">{editingItem ? copy.editTitle : copy.newTitle}</DialogTitle>
             <DialogDescription className="leading-6 text-slate-600">{copy.newDescription}</DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleCreate} className="space-y-5 p-6">
+          <form onSubmit={handleSave} className="space-y-5 p-6">
             <div className="space-y-2"><Label>{copy.itemType}</Label><div className="grid grid-cols-4 gap-2">{(['plan', 'event', 'reminder', 'routine'] as CalendarItemType[]).map(type => <button key={type} type="button" onClick={() => updateDraft('type', type)} className={`min-h-16 rounded-xl border px-2 text-xs font-bold ${draft.type === type ? itemAccent(type) + ' ring-2 ring-current/10' : 'border-slate-200 bg-white text-slate-500'}`}><span className="block text-lg">{CALENDAR_TYPE_META[type].icon}</span>{copy[type]}</button>)}</div></div>
             <div className="space-y-2"><div><Label>{copy.chooseEmoji}</Label><p className="mt-1 text-xs text-slate-500">{copy.chooseEmojiHint}</p></div><div className="grid grid-cols-8 gap-2 rounded-2xl border border-rose-100 bg-rose-50/40 p-3">{CALENDAR_EVENT_EMOJIS.map(emoji => <button key={emoji} type="button" onClick={() => updateDraft('emoji', emoji)} aria-label={`${copy.chooseEmoji}: ${emoji}`} aria-pressed={draft.emoji === emoji} className={`grid aspect-square place-items-center rounded-full text-xl transition-all hover:-translate-y-0.5 ${draft.emoji === emoji ? 'bg-white shadow-md ring-2 ring-rose-500 ring-offset-2' : 'hover:bg-white/80'}`}>{emoji}</button>)}</div></div>
             <div className="space-y-2"><Label htmlFor="calendar-title">{copy.titleLabel}</Label><Input id="calendar-title" required value={draft.title} onChange={e => updateDraft('title', e.target.value)} placeholder={copy.titlePlaceholder} className="h-12 rounded-xl" /></div>
@@ -592,8 +624,8 @@ export function CoupleCalendar({
             <label className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-700"><span className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-rose-500" />{copy.allDay}</span><Switch checked={draft.allDay} onCheckedChange={checked => updateDraft('allDay', checked)} /></label>
             <div className="grid gap-4 sm:grid-cols-2"><div className="space-y-2"><Label htmlFor="calendar-repeat">{copy.repeats}</Label><select id="calendar-repeat" value={draft.recurrence} onChange={e => updateDraft('recurrence', e.target.value as CalendarRecurrence)} className="h-12 w-full rounded-xl border border-input bg-white px-3 text-sm"><option value="none">{copy.none}</option><option value="daily">{copy.daily}</option><option value="weekly">{copy.weeklyRepeat}</option><option value="monthly">{copy.monthly}</option></select></div><div className="space-y-2"><Label htmlFor="calendar-reminder">{copy.reminderLabel}</Label><select id="calendar-reminder" value={draft.reminderMinutes ?? 'none'} onChange={e => updateDraft('reminderMinutes', e.target.value === 'none' ? null : Number(e.target.value))} className="h-12 w-full rounded-xl border border-input bg-white px-3 text-sm"><option value="none">{copy.noReminder}</option><option value="0">{copy.atTime}</option><option value="15">{copy.fifteen}</option><option value="60">{copy.hour}</option><option value="1440">{copy.day}</option></select></div></div>
             <div className="space-y-2"><Label htmlFor="calendar-location">{copy.location}</Label><Input id="calendar-location" value={draft.location} onChange={e => updateDraft('location', e.target.value)} placeholder={copy.locationPlaceholder} className="h-12 rounded-xl" /></div>
-            <div className="rounded-2xl border border-rose-100 bg-gradient-to-br from-rose-50 to-amber-50 p-4"><div className="flex items-start justify-between gap-4"><div><p className="flex items-center gap-2 font-black text-slate-900"><Sparkles className="h-4 w-4 text-amber-500" />{copy.prayerLink}</p><p className="mt-1 text-xs leading-5 text-slate-600">{copy.prayerLinkHint}</p></div><Switch checked={draft.createPrayer} onCheckedChange={checked => updateDraft('createPrayer', checked)} aria-label={copy.prayerLink} /></div>{draft.createPrayer && <div className="mt-4 rounded-xl bg-white/80 p-4 ring-1 ring-rose-100"><p className="text-[10px] font-black uppercase tracking-[.14em] text-rose-600">{copy.prayerPreview}</p><p className="mt-2 text-sm font-bold text-slate-900">{prayerPreview.title}</p><p className="mt-1 text-xs leading-5 text-slate-600">{prayerPreview.text}</p><p className="mt-2 text-[11px] font-bold text-rose-700">{prayerPreview.scripture}</p></div>}</div>
-            <div className="flex gap-3 pt-1"><Button type="button" variant="outline" className="h-12 flex-1 rounded-xl" onClick={() => setDialogOpen(false)}>{copy.cancel}</Button><Button type="submit" disabled={saving || !draft.title.trim()} className="h-12 flex-[1.4] rounded-xl bg-rose-600 font-bold text-white hover:bg-rose-700">{saving ? <><Loader2 className="h-4 w-4 animate-spin" />{copy.creating}</> : <><Plus className="h-4 w-4" />{copy.create}</>}</Button></div>
+            <div className="rounded-2xl border border-rose-100 bg-gradient-to-br from-rose-50 to-amber-50 p-4"><div className="flex items-start justify-between gap-4"><div><p className="flex items-center gap-2 font-black text-slate-900"><Sparkles className="h-4 w-4 text-amber-500" />{copy.prayerLink}</p><p className="mt-1 text-xs leading-5 text-slate-600">{copy.prayerLinkHint}</p></div><Switch checked={draft.createPrayer} disabled={Boolean(editingItem?.prayerId)} onCheckedChange={checked => updateDraft('createPrayer', checked)} aria-label={copy.prayerLink} /></div>{draft.createPrayer && <div className="mt-4 rounded-xl bg-white/80 p-4 ring-1 ring-rose-100"><p className="text-[10px] font-black uppercase tracking-[.14em] text-rose-600">{copy.prayerPreview}</p><p className="mt-2 text-sm font-bold text-slate-900">{prayerPreview.title}</p><p className="mt-1 text-xs leading-5 text-slate-600">{prayerPreview.text}</p><p className="mt-2 text-[11px] font-bold text-rose-700">{prayerPreview.scripture}</p></div>}</div>
+            <div className="flex gap-3 pt-1"><Button type="button" variant="outline" className="h-12 flex-1 rounded-xl" onClick={() => { setDialogOpen(false); setEditingItem(null); }}>{copy.cancel}</Button><Button type="submit" disabled={saving || !draft.title.trim()} className="h-12 flex-[1.4] rounded-xl bg-rose-600 font-bold text-white hover:bg-rose-700">{saving ? <><Loader2 className="h-4 w-4 animate-spin" />{editingItem ? copy.updating : copy.creating}</> : editingItem ? <><Pencil className="h-4 w-4" />{copy.update}</> : <><Plus className="h-4 w-4" />{copy.create}</>}</Button></div>
           </form>
         </DialogContent>
       </Dialog>

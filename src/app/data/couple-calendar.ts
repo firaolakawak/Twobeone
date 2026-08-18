@@ -26,6 +26,7 @@ export interface CoupleCalendarItem {
   scripture?: string;
   prayerLanguage?: Language;
   prayerGenerationSource?: 'ai' | 'fallback';
+  prayerAnsweredAt?: string | null;
   createdAt: string;
   updatedAt: string;
   isPartner?: boolean;
@@ -152,8 +153,8 @@ export const coupleCalendarCopy: Record<Language, CalendarCopy> = {
     starts: 'Starts', ends: 'Ends', location: 'Location', locationPlaceholder: 'Church, home, online…', repeats: 'Repeats', none: 'Does not repeat', daily: 'Daily', weeklyRepeat: 'Weekly', monthly: 'Monthly',
     reminderLabel: 'Remind us', atTime: 'At event time', fifteen: '15 minutes before', hour: '1 hour before', day: '1 day before', noReminder: 'No reminder',
     prayerLink: 'Create a prayer automatically', prayerLinkHint: 'AI prepares a focused couple prayer from your topic and event type.', prayerPreview: 'Prayer preview', scripture: 'Scripture',
-    cancel: 'Cancel', create: 'Add to our calendar', creating: 'Creating…', complete: 'Complete', completed: 'Completed', delete: 'Delete', deleteConfirm: 'Delete this plan and its linked prayer?', partner: 'Partner', you: 'You',
-    created: 'Plan and prayer created', failed: 'Could not save this plan', loadFailed: 'Could not load your couple calendar', prayerReady: 'Prayer prepared from this plan',
+    cancel: 'Cancel', create: 'Add to our calendar', creating: 'Creating…', edit: 'Edit', editTitle: 'Edit shared plan', update: 'Save changes', updating: 'Saving…', updated: 'Plan and prayer updated', complete: 'Complete', completed: 'Completed', delete: 'Delete', deleteConfirm: 'Delete this plan and its linked prayer?', partner: 'Partner', you: 'You',
+    answered: 'Answered', markAnswered: 'Mark prayer answered', prayerAnswered: 'Prayer marked answered', created: 'Plan and prayer created', failed: 'Could not save this plan', loadFailed: 'Could not load your couple calendar', prayerReady: 'Prayer prepared from this plan',
     calendarCta: 'Couple Calendar', calendarCtaHint: 'Plans, reminders, routines & prayer', openPlanner: 'Open planner', allDay: 'All day', back: 'Back',
   },
   am: {
@@ -169,7 +170,7 @@ export const coupleCalendarCopy: Record<Language, CalendarCopy> = {
     titleLabel: 'ርዕስ', titlePlaceholder: 'ለምሳሌ፦ የጋብቻ ማፈግፈግ…', descriptionLabel: 'ማስታወሻ', descriptionPlaceholder: 'አብራችሁ ምን ማድረግ ትፈልጋላችሁ?', category: 'የሕይወት ክፍል', faith: 'እምነት', relationship: 'ግንኙነት', family: 'ቤተሰብ', health: 'ጤና', finance: 'ገንዘብ', service: 'አገልግሎት', other: 'ሌላ',
     starts: 'የሚጀምረው', ends: 'የሚያበቃው', location: 'ቦታ', locationPlaceholder: 'ቤተ ክርስቲያን፣ ቤት፣ ኦንላይን…', repeats: 'ድግግሞሽ', none: 'አይደገምም', daily: 'በየቀኑ', weeklyRepeat: 'በየሳምንቱ', monthly: 'በየወሩ',
     reminderLabel: 'አስታውሰን', atTime: 'በክስተቱ ሰዓት', fifteen: 'ከ15 ደቂቃ በፊት', hour: 'ከ1 ሰዓት በፊት', day: 'ከ1 ቀን በፊት', noReminder: 'ማስታወሻ የለም', prayerLink: 'ጸሎት በራስ-ሰር ፍጠር', prayerLinkHint: 'AI ከርዕሱና ከክስተቱ ዓይነት የጥንዶች ጸሎት ያዘጋጃል።', prayerPreview: 'የጸሎት ቅድመ እይታ', scripture: 'ቅዱስ ቃል',
-    cancel: 'ሰርዝ', create: 'ወደ ቀን መቁጠሪያችን ጨምር', creating: 'በመፍጠር ላይ…', complete: 'ጨርስ', completed: 'ተጠናቋል', delete: 'ሰርዝ', deleteConfirm: 'ይህን እቅድና ተያያዥ ጸሎቱን ይሰርዙ?', partner: 'አጋር', you: 'እርስዎ', created: 'እቅድና ጸሎት ተፈጥረዋል', failed: 'እቅዱን ማስቀመጥ አልተቻለም', loadFailed: 'የጥንዶችን ቀን መቁጠሪያ መጫን አልተቻለም', prayerReady: 'ከዚህ እቅድ ጸሎት ተዘጋጅቷል',
+    cancel: 'ሰርዝ', create: 'ወደ ቀን መቁጠሪያችን ጨምር', creating: 'በመፍጠር ላይ…', edit: 'አስተካክል', editTitle: 'የጋራ እቅድ አስተካክል', update: 'ለውጦችን አስቀምጥ', updating: 'በማስቀመጥ ላይ…', updated: 'እቅድና ጸሎት ተሻሽለዋል', complete: 'ጨርስ', completed: 'ተጠናቋል', delete: 'ሰርዝ', deleteConfirm: 'ይህን እቅድና ተያያዥ ጸሎቱን ይሰርዙ?', partner: 'አጋር', you: 'እርስዎ', answered: 'ምላሽ አግኝቷል', markAnswered: 'ጸሎቱ ምላሽ እንዳገኘ ምልክት አድርግ', prayerAnswered: 'ጸሎቱ ምላሽ እንዳገኘ ተመዝግቧል', created: 'እቅድና ጸሎት ተፈጥረዋል', failed: 'እቅዱን ማስቀመጥ አልተቻለም', loadFailed: 'የጥንዶችን ቀን መቁጠሪያ መጫን አልተቻለም', prayerReady: 'ከዚህ እቅድ ጸሎት ተዘጋጅቷል',
     calendarCta: 'የጥንዶች ቀን መቁጠሪያ', calendarCtaHint: 'እቅዶች፣ ማስታወሻዎች፣ ልምዶች እና ጸሎት', openPlanner: 'እቅድ ክፈት', allDay: 'ቀኑን ሙሉ', back: 'ተመለስ',
   },
   om: {
@@ -185,7 +186,7 @@ export const coupleCalendarCopy: Record<Language, CalendarCopy> = {
     titleLabel: 'Mata duree', titlePlaceholder: 'Fkn. leenjii gaaʼelaa, galgala baajataa…', descriptionLabel: 'Yaadannoo', descriptionPlaceholder: 'Waliin maal gochuu abdattu?', category: 'Kutaa jireenyaa', faith: 'Amantii', relationship: 'Hariiroo', family: 'Maatii', health: 'Fayyaa', finance: 'Maallaqa', service: 'Tajaajila', other: 'Kan biraa',
     starts: 'Jalqaba', ends: 'Xumura', location: 'Bakka', locationPlaceholder: 'Mana kiristaanaa, mana, toora irra…', repeats: 'Irra deebiʼa', none: 'Hin irra deebiʼu', daily: 'Guyyaa guyyaan', weeklyRepeat: 'Torban torbaniin', monthly: "Ji'a ji'aan",
     reminderLabel: 'Nu yaadachiisi', atTime: 'Yeroo taateetti', fifteen: 'Daqiiqaa 15 dura', hour: "Sa'aatii 1 dura", day: 'Guyyaa 1 dura', noReminder: 'Yaadachiisni hin jiru', prayerLink: 'Kadhannaa ofumaan uumi', prayerLinkHint: 'AI mata duree fi gosa taatee irraa kadhannaa hiriyootaa qopheessa.', prayerPreview: 'Kadhannaa dursee ilaali', scripture: 'Caaffata Qulqulluu',
-    cancel: 'Dhiisi', create: 'Kaalaandarii keenyatti dabali', creating: 'Uumamaa jira…', complete: 'Xumuri', completed: 'Xumurame', delete: 'Haqi', deleteConfirm: 'Karoora kanaa fi kadhannaa isaatti hidhame haqtaa?', partner: 'Hiriyyaa', you: 'Ati', created: 'Karooraa fi kadhannaan uumameera', failed: 'Karoora kana kuusuun hin dandaʼamne', loadFailed: 'Kaalaandarii hiriyootaa feʼuun hin dandaʼamne', prayerReady: 'Kadhannaan karoora kana irraa qophaaʼeera',
+    cancel: 'Dhiisi', create: 'Kaalaandarii keenyatti dabali', creating: 'Uumamaa jira…', edit: 'Gulaali', editTitle: 'Karoora waliinii gulaali', update: 'Jijjiirama kuusi', updating: 'Kuusamaa jira…', updated: 'Karooraa fi kadhannaan haaromfameera', complete: 'Xumuri', completed: 'Xumurame', delete: 'Haqi', deleteConfirm: 'Karoora kanaa fi kadhannaa isaatti hidhame haqtaa?', partner: 'Hiriyyaa', you: 'Ati', answered: 'Deebii argate', markAnswered: 'Kadhannaan deebii akka argate mallatteessi', prayerAnswered: 'Kadhannaan deebii akka argate galmaaʼeera', created: 'Karooraa fi kadhannaan uumameera', failed: 'Karoora kana kuusuun hin dandaʼamne', loadFailed: 'Kaalaandarii hiriyootaa feʼuun hin dandaʼamne', prayerReady: 'Kadhannaan karoora kana irraa qophaaʼeera',
     calendarCta: 'Kaalaandarii Hiriyootaa', calendarCtaHint: 'Karoora, yaadachiisa, barmaata fi kadhannaa', openPlanner: 'Karoora bani', allDay: 'Guyyaa guutuu', back: "Deebi'i",
   },
 };
