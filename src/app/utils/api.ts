@@ -559,10 +559,28 @@ export const milestones = {
     description?: string;
     date?: string;
     category?: string;
+    emotionLevel?: number;
+    icon?: string;
+    isShared?: boolean;
   }) => {
     return apiCall<{ success: boolean; milestone: any }>('/milestones', {
       method: 'POST',
       body: JSON.stringify(milestone),
+    });
+  },
+
+  update: async (id: string, updates: {
+    title?: string;
+    description?: string;
+    date?: string;
+    category?: string;
+    emotionLevel?: number;
+    icon?: string;
+    isShared?: boolean;
+  }) => {
+    return apiCall<{ success: boolean; milestone: any }>(`/milestones/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
     });
   },
 

@@ -950,7 +950,7 @@ export default function App() {
     async (milestone: any) => {
       try {
         const response = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/milestone`,
+          `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/milestones`,
           {
             method: "POST",
             headers: {
@@ -974,7 +974,7 @@ export default function App() {
     async (id: string, updates: any) => {
       try {
         const response = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/milestone/${id}`,
+          `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/milestones/${id}`,
           {
             method: "PUT",
             headers: {
@@ -998,7 +998,7 @@ export default function App() {
     async (id: string) => {
       try {
         const response = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/milestone/${id}`,
+          `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/milestones/${id}`,
           {
             method: "DELETE",
             headers: { Authorization: `Bearer ${accessToken}` },

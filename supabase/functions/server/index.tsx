@@ -3283,8 +3283,23 @@ app.get('/make-server-6d579fee/milestones', async (c) => {
       }
     }
 
+    // Normalize legacy records so the timeline always receives every field it
+    // renders, and clearly mark partner-owned entries as read-only.
+    const normalizeMilestone = (milestone: any, isPartner = false) => ({
+      ...milestone,
+      description: milestone?.description || '',
+      category: milestone?.category || 'General',
+      emotionLevel: Math.max(1, Math.min(10, Number(milestone?.emotionLevel) || 5)),
+      icon: milestone?.icon || '❤️',
+      isShared: milestone?.isShared !== false,
+      isPartner,
+    });
+
     // Combine and sort milestones
-    const milestones = [...(userMilestones as any[]), ...partnerMilestones]
+    const milestones = [
+      ...(userMilestones as any[]).map(milestone => normalizeMilestone(milestone)),
+      ...partnerMilestones.map(milestone => normalizeMilestone(milestone, true)),
+    ]
       .sort((a, b) => {
         const dateA = new Date(b.date || b.createdAt).getTime();
         const dateB = new Date(a.date || a.createdAt).getTime();
@@ -3308,17 +3323,25 @@ app.post('/make-server-6d579fee/milestones', async (c) => {
       return c.json({ error: 'Unauthorized' }, 401);
     }
 
-    const { title, description, date, category } = await c.req.json();
+    const { title, description, date, category, emotionLevel, icon, isShared } = await c.req.json();
+
+    if (!String(title || '').trim()) {
+      return c.json({ error: 'Milestone title is required' }, 400);
+    }
 
     const milestoneId = generateId();
     const milestone = {
       id: milestoneId,
       userId,
-      title,
+      title: String(title).trim(),
       description: description || '',
       date: date || new Date().toISOString(),
       category: category || 'general',
-      createdAt: new Date().toISOString()
+      emotionLevel: Math.max(1, Math.min(10, Number(emotionLevel) || 5)),
+      icon: typeof icon === 'string' && icon ? icon : '❤️',
+      isShared: isShared !== false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
 
     await kv.set(`milestone:${userId}:${milestoneId}`, milestone);
@@ -3327,6 +3350,41 @@ app.post('/make-server-6d579fee/milestones', async (c) => {
     return c.json({ success: true, milestone });
   } catch (error: any) {
     console.error('Milestone create error:', error);
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+app.put('/make-server-6d579fee/milestones/:id', async (c) => {
+  try {
+    const userId = await getUserFromToken(c.req.header('Authorization'));
+    if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+
+    const milestoneId = c.req.param('id');
+    const key = `milestone:${userId}:${milestoneId}`;
+    const current = await kv.get(key) as any;
+    if (!current) return c.json({ error: 'Milestone not found' }, 404);
+
+    const body = await c.req.json();
+    const updated = {
+      ...current,
+      ...(body.title !== undefined ? { title: String(body.title).trim() } : {}),
+      ...(body.description !== undefined ? { description: String(body.description) } : {}),
+      ...(body.date !== undefined ? { date: body.date } : {}),
+      ...(body.category !== undefined ? { category: body.category } : {}),
+      ...(body.emotionLevel !== undefined ? { emotionLevel: Math.max(1, Math.min(10, Number(body.emotionLevel) || 5)) } : {}),
+      ...(body.icon !== undefined ? { icon: body.icon } : {}),
+      ...(body.isShared !== undefined ? { isShared: Boolean(body.isShared) } : {}),
+      id: milestoneId,
+      userId,
+      updatedAt: new Date().toISOString(),
+    };
+    if (!updated.title) return c.json({ error: 'Milestone title is required' }, 400);
+
+    await kv.set(key, updated);
+    touchActivity(userId);
+    return c.json({ success: true, milestone: updated });
+  } catch (error: any) {
+    console.error('Milestone update error:', error);
     return c.json({ error: error.message }, 500);
   }
 });
@@ -3340,6 +3398,7 @@ app.delete('/make-server-6d579fee/milestones/:id', async (c) => {
 
     const milestoneId = c.req.param('id');
     await kv.del(`milestone:${userId}:${milestoneId}`);
+    touchActivity(userId);
 
     return c.json({ success: true });
   } catch (error: any) {
