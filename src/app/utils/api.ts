@@ -6,6 +6,11 @@ const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-
 // Request deduplication - prevents duplicate simultaneous requests
 const pendingRequests = new Map<string, Promise<any>>();
 
+function notifyActivityRecorded(endpoint: string, method: string) {
+  if (typeof window === 'undefined' || method === 'GET' || method === 'HEAD') return;
+  window.dispatchEvent(new CustomEvent('twobeone:activity-recorded', { detail: { endpoint, method } }));
+}
+
 function deduplicateRequest<T>(key: string, fn: () => Promise<T>): Promise<T> {
   if (pendingRequests.has(key)) {
     console.log(`[API] Deduplicating request: ${key}`);
@@ -71,7 +76,11 @@ async function apiCall<T>(
         if (newToken) {
           const retryHeaders = { ...options.headers, 'Authorization': `Bearer ${newToken}`, 'Content-Type': 'application/json' };
           const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, { ...options, headers: retryHeaders });
-          if (retryResponse.ok) return retryResponse.json();
+          if (retryResponse.ok) {
+            const data = await retryResponse.json();
+            notifyActivityRecorded(endpoint, String(options.method || 'GET').toUpperCase());
+            return data;
+          }
         }
         throw new Error('Unauthorized');
       }
@@ -95,7 +104,9 @@ async function apiCall<T>(
       throw new Error(error.error || `API Error: ${response.status}`);
     }
 
-    return response.json();
+    const data = await response.json();
+    notifyActivityRecorded(endpoint, String(options.method || 'GET').toUpperCase());
+    return data;
   } catch (error: any) {
     const isTimeout = error.name === 'AbortError' || error.message?.includes('timeout');
     const isNetworkDown = error.message === 'Failed to fetch' || error.name === 'TypeError';

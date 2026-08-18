@@ -763,14 +763,6 @@ export function CoupleDashboard({
   
   const devotionalStreakValue = devotionalStreak || 0;
 
-  const recentEntries = journalEntries.slice(-3).map(entry => ({
-    id: entry.id,
-    title: entry.title,
-    content: entry.content,
-    createdAt: entry.createdAt,
-    isPartner: entry.userId === partner?.id
-  }));
-
   const spotlight = useMemo(() => {
     const choose = <T,>(items: T[]): T | undefined => items.length
       ? items[Math.floor(Math.random() * items.length)]
@@ -1680,51 +1672,6 @@ export function CoupleDashboard({
               </div>
               <Progress value={Math.min((sharedJournalEntries / 50) * 100, 100)} className="h-2" />
             </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Recent Activity */}
-      {recentEntries.length > 0 && (
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <BookHeart className="w-5 h-5 text-primary-600" />
-                Recent Journal Entries
-              </CardTitle>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => onNavigate?.('journal')}
-              >
-                View All
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {recentEntries.map((entry) => (
-              <div 
-                key={entry.id} 
-                className={`p-3 rounded-lg border cursor-pointer hover:shadow-md transition-shadow ${
-                  entry.isPartner 
-                    ? 'bg-sky-50/50 border-sky-200 hover:bg-sky-50' 
-                    : 'bg-primary-50/50 border-primary-200 hover:bg-primary-50'
-                }`}
-                onClick={() => onNavigate?.('journal')}
-              >
-                <div className="flex items-start justify-between gap-2 mb-1">
-                  <h4 className="font-medium text-sm line-clamp-1">{entry.title}</h4>
-                  <span className="text-xs text-muted-foreground whitespace-nowrap">
-                    {new Date(entry.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground line-clamp-2">{entry.content}</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  by {entry.isPartner ? partner?.name : profile?.name}
-                </p>
-              </div>
-            ))}
           </CardContent>
         </Card>
       )}

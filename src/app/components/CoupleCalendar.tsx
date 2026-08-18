@@ -151,11 +151,25 @@ export function CoupleCalendar({
   }, [onDataRefresh]);
   useEffect(() => {
     void loadItems();
-    const interval = window.setInterval(() => {
+    const refresh = () => {
       void loadItems(true);
       void onDataRefreshRef.current?.();
+    };
+    const refreshWhenVisible = () => { if (document.visibilityState === 'visible') refresh(); };
+    const interval = window.setInterval(() => {
+      refresh();
     }, 30_000);
-    return () => window.clearInterval(interval);
+    window.addEventListener('focus', refresh);
+    window.addEventListener('online', refresh);
+    window.addEventListener('twobeone:activity-recorded', refresh);
+    document.addEventListener('visibilitychange', refreshWhenVisible);
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener('focus', refresh);
+      window.removeEventListener('online', refresh);
+      window.removeEventListener('twobeone:activity-recorded', refresh);
+      document.removeEventListener('visibilitychange', refreshWhenVisible);
+    };
   }, [accessToken, userId, language]);
   useEffect(() => { setDraft(current => ({ ...current, language })); }, [language]);
 
@@ -309,6 +323,7 @@ export function CoupleCalendar({
       setDialogOpen(false);
       toast.success(copy.created);
       if (data.prayer) await onPrayerChanged?.();
+      await loadItems(true);
     } catch (error) {
       console.error('[CoupleCalendar] Create failed:', error);
       toast.error(copy.failed);
@@ -326,6 +341,7 @@ export function CoupleCalendar({
       });
       if (!response.ok) throw new Error('Update failed');
       setItems(current => current.map(entry => entry.id === item.id ? { ...entry, status } : entry));
+      await loadItems(true);
     } catch { toast.error(copy.failed); }
   };
 
@@ -336,6 +352,7 @@ export function CoupleCalendar({
       if (!response.ok) throw new Error('Delete failed');
       setItems(current => current.filter(entry => entry.id !== item.id));
       if (item.prayerId) await onPrayerChanged?.();
+      await loadItems(true);
     } catch { toast.error(copy.failed); }
   };
 

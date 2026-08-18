@@ -198,6 +198,14 @@ app.get('/calendar/activity', async (c) => {
         ...common, id: `prayer-${prayer.id}`, sourceId: prayer.id, type: 'prayer', emoji: '🙏',
         title: prayer.title || 'Prayer', description: prayer.description || '', date: prayer.createdAt || prayer.created_at,
       });
+      for (const prayer of data.prayers) {
+        if (!prayer.youPrayed && !prayer.partnerPrayed && !prayer.you_prayed && !prayer.partner_prayed) continue;
+        add({
+          ...common, id: `prayer-prayed-${prayer.id}`, sourceId: prayer.id, type: 'prayer', emoji: '🙌',
+          title: prayer.title || 'Prayer', description: prayer.description || '',
+          date: prayer.updatedAt || prayer.updated_at || prayer.createdAt || prayer.created_at,
+        });
+      }
       for (const completion of data.completions) add({
         ...common, id: `devotional-${completion.id || `${completion.devotionId}-${completion.completedAt}`}`,
         sourceId: completion.devotionId, type: 'devotional', emoji: '📖', title: 'Devotional completed',
