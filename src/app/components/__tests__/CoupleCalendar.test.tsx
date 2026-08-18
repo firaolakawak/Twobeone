@@ -117,4 +117,31 @@ describe('CoupleCalendar', () => {
     expect(onOpenMilestones).toHaveBeenCalledOnce();
     expect(onOpenJournal).toHaveBeenCalledOnce();
   });
+
+  it('loads every recorded couple activity into the calendar sync summary', async () => {
+    const activities = [
+      ['prayer-1', 'prayer', 'Prayer', '🙏'], ['devotional-1', 'devotional', 'Devotional completed', '📖'],
+      ['qa-1', 'qa', 'Question answered', '💬'], ['journal-1', 'journal', 'Journal reflection', '✍️'],
+      ['verse-1', 'verse', 'John 3:16', '📜'], ['mood-1', 'mood', 'great', '🤩'],
+      ['stage-1', 'stage', 'Couple stage 1', '🌱'],
+    ].map(([id, type, title, emoji]) => ({ id, type, title, emoji, userId: 'user-1', date: '2026-08-18T12:00:00.000Z' }));
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => url.endsWith('/activity')
+      ? { ok: true, json: async () => ({ activities }) }
+      : { ok: true, json: async () => ({ items: [] }) }));
+
+    render(
+      <LanguageProvider>
+        <CoupleCalendar accessToken="token" userId="user-1" onBack={vi.fn()} />
+      </LanguageProvider>,
+    );
+
+    const summary = await screen.findByLabelText('Synced couple activity');
+    expect(summary).toHaveTextContent('Prayer');
+    expect(summary).toHaveTextContent('Devotional');
+    expect(summary).toHaveTextContent('Q&A');
+    expect(summary).toHaveTextContent('Journal');
+    expect(summary).toHaveTextContent('Shared verses');
+    expect(summary).toHaveTextContent('Daily moods');
+    expect(summary).toHaveTextContent('Couple stage');
+  });
 });

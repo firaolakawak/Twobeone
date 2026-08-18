@@ -57,6 +57,21 @@ interface CalendarJournalEntry {
   emoji?: string | null;
 }
 
+type RecordedActivityType = 'prayer' | 'devotional' | 'qa' | 'journal' | 'verse' | 'mood' | 'stage';
+
+interface RecordedActivity {
+  id: string;
+  sourceId?: string;
+  userId: string;
+  type: RecordedActivityType;
+  title: string;
+  description?: string;
+  date: string;
+  emoji: string;
+  stageIndex?: number;
+  isPartner?: boolean;
+}
+
 type CalendarView = 'calendar' | 'events' | 'prayers';
 type CalendarPeriod = 'weekly' | 'monthly' | 'yearly';
 
@@ -97,6 +112,7 @@ export function CoupleCalendar({
   const copy = coupleCalendarCopy[language];
   const locale = localeByLanguage[language];
   const [items, setItems] = useState<CoupleCalendarItem[]>([]);
+  const [recordedActivities, setRecordedActivities] = useState<RecordedActivity[]>([]);
   const [view, setView] = useState<CalendarView>('calendar');
   const [period, setPeriod] = useState<CalendarPeriod>('weekly');
   const [calendarAnchor, setCalendarAnchor] = useState(() => new Date());
@@ -111,10 +127,17 @@ export function CoupleCalendar({
 
   const loadItems = async (silent = false) => {
     try {
-      const response = await fetch(apiUrl, { headers: { Authorization: `Bearer ${accessToken}` } });
+      const [response, activityResponse] = await Promise.all([
+        fetch(apiUrl, { headers: { Authorization: `Bearer ${accessToken}` } }),
+        fetch(`${apiUrl}/activity`, { headers: { Authorization: `Bearer ${accessToken}` } }),
+      ]);
       if (!response.ok) throw new Error('Calendar request failed');
       const data = await response.json();
       setItems(Array.isArray(data.items) ? data.items : []);
+      if (activityResponse.ok) {
+        const activityData = await activityResponse.json();
+        setRecordedActivities(Array.isArray(activityData.activities) ? activityData.activities : []);
+      }
     } catch (error) {
       console.error('[CoupleCalendar] Load failed:', error);
       if (!silent) toast.error(copy.loadFailed);
@@ -162,6 +185,9 @@ export function CoupleCalendar({
     const date = entry.createdAt || entry.created_at;
     return Boolean(date) && isSameLocalDay(new Date(date!), selectedDay);
   }), [journalEntries, selectedDay]);
+  const selectedRecordedActivities = useMemo(() => recordedActivities.filter(activity =>
+    activity.type !== 'journal' && isSameLocalDay(new Date(activity.date), selectedDay)
+  ), [recordedActivities, selectedDay]);
   const weekCount = items.filter(item => weekDays.some(day => occursOnDay(item, day)) && item.status !== 'completed').length;
 
   const openCreate = (type: CalendarItemType = 'plan', day?: Date) => {
@@ -193,7 +219,7 @@ export function CoupleCalendar({
     setSelectedDay(day);
   };
 
-  type DayMark = CalendarItemType | 'milestone' | 'journal';
+  type DayMark = CalendarItemType | 'milestone' | RecordedActivityType;
   const marksForDay = (day: Date): DayMark[] => {
     const types: DayMark[] = items
       .filter(item => item.status !== 'completed' && occursOnDay(item, day))
@@ -206,6 +232,9 @@ export function CoupleCalendar({
       const date = entry.createdAt || entry.created_at;
       return Boolean(date) && isSameLocalDay(new Date(date!), day);
     })) types.push('journal');
+    for (const activity of recordedActivities) {
+      if (isSameLocalDay(new Date(activity.date), day)) types.push(activity.type);
+    }
     return Array.from(new Set(types));
   };
 
@@ -221,13 +250,27 @@ export function CoupleCalendar({
       const date = entry.createdAt || entry.created_at;
       return Boolean(date) && isSameLocalDay(new Date(date!), day);
     });
-    return journal?.emoji || (journal ? '📖' : '');
+    if (journal) return journal.emoji || '📖';
+    return recordedActivities.find(activity => isSameLocalDay(new Date(activity.date), day))?.emoji || '';
   };
 
   const markerColor: Record<DayMark, string> = {
     plan: 'bg-rose-500', event: 'bg-violet-500', reminder: 'bg-amber-500', routine: 'bg-emerald-500',
-    milestone: 'bg-fuchsia-500', journal: 'bg-sky-500',
+    milestone: 'bg-fuchsia-500', journal: 'bg-sky-500', prayer: 'bg-pink-500', devotional: 'bg-indigo-500',
+    qa: 'bg-cyan-500', verse: 'bg-yellow-500', mood: 'bg-orange-500', stage: 'bg-lime-600',
   };
+
+  const activityLabels: Record<RecordedActivityType, string> = {
+    prayer: copy.prayerActivity, devotional: copy.devotionalActivity, qa: copy.qaActivity,
+    journal: copy.journal, verse: copy.verseActivity, mood: copy.moodActivity, stage: copy.stageActivity,
+  };
+
+  const activityTitle = (activity: RecordedActivity) => activity.type === 'stage' && activity.stageIndex !== undefined
+    ? [copy.seedStage, copy.growthStage, copy.unityStage, copy.commitmentStage, copy.covenantStage][activity.stageIndex] || copy.stageActivity
+    : activity.type === 'devotional' ? copy.devotionalCompleted
+      : activity.type === 'qa' ? copy.questionAnswered
+        : activity.type === 'mood' ? `${copy.moodActivity}: ${activity.title === 'great' ? copy.moodGreat : activity.title === 'good' ? copy.moodGood : activity.title === 'sad' ? copy.moodSad : copy.moodOkay}`
+          : activity.title;
 
   const periodTitle = period === 'yearly'
     ? new Intl.DateTimeFormat(locale, { year: 'numeric' }).format(calendarAnchor)
@@ -437,6 +480,15 @@ export function CoupleCalendar({
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl bg-slate-50 px-4 py-3 text-[10px] font-bold text-slate-500"><span className="mr-1 uppercase tracking-wider text-slate-400">{copy.markedDays}</span>{(['plan', 'event', 'reminder', 'routine', 'milestone', 'journal'] as DayMark[]).map(type => <span key={type} className="flex items-center gap-1.5"><span className={`h-2 w-2 rounded-full ${markerColor[type]}`} />{copy[type]}</span>)}</div>
 
+          <section className="rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50/70 via-white to-rose-50/70 p-4" aria-label={copy.syncedActivity}>
+            <div className="mb-3 flex items-center justify-between gap-3"><div><p className="text-[10px] font-black uppercase tracking-[.14em] text-indigo-600">{copy.syncedActivity}</p><p className="mt-1 text-xs text-slate-500">{copy.syncedActivityHint}</p></div><span className="rounded-full bg-white px-3 py-1 text-xs font-black text-indigo-700 shadow-sm">{recordedActivities.length}</span></div>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{(['prayer', 'devotional', 'qa', 'journal', 'verse', 'mood', 'stage'] as RecordedActivityType[]).map(type => {
+              const count = recordedActivities.filter(activity => activity.type === type).length;
+              const emoji = { prayer: '🙏', devotional: '📖', qa: '💬', journal: '✍️', verse: '📜', mood: '😊', stage: '🌱' }[type];
+              return <div key={type} className="flex items-center gap-2 rounded-xl border border-white bg-white/80 px-3 py-2 shadow-sm"><span className="text-base">{emoji}</span><span className="min-w-0"><span className="block truncate text-[10px] font-bold text-slate-500">{activityLabels[type]}</span><span className="block text-sm font-black text-slate-900">{count}</span></span></div>;
+            })}</div>
+          </section>
+
           <div className="flex items-end justify-between gap-3">
             <div><p className="text-xs font-bold uppercase tracking-[.14em] text-rose-600">{copy.selectedAgenda} · {new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(selectedDay)}</p><h2 className="mt-1 text-xl font-black text-slate-950">{new Intl.DateTimeFormat(locale, { month: 'long', day: 'numeric', year: 'numeric' }).format(selectedDay)}</h2></div>
             <Button onClick={() => openCreate('plan', selectedDay)} className="rounded-full bg-slate-950 text-white"><Plus className="h-4 w-4" />{copy.newItem}</Button>
@@ -445,7 +497,8 @@ export function CoupleCalendar({
             {selectedItems.map(renderItem)}
             {selectedMilestones.map(milestone => <button type="button" key={`milestone-${milestone.id}`} onClick={onOpenMilestones} className="flex w-full items-start gap-3 rounded-2xl border border-fuchsia-100 bg-fuchsia-50/60 p-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-md"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-xl shadow-sm">{milestone.icon && milestone.icon.length <= 4 ? milestone.icon : '🏆'}</span><span><span className="text-[10px] font-black uppercase tracking-wider text-fuchsia-600">{copy.milestone}</span><span className="mt-1 block font-black text-slate-900">{milestone.title}</span>{milestone.description && <span className="mt-1 line-clamp-2 block text-sm text-slate-600">{milestone.description}</span>}</span></button>)}
             {selectedJournalEntries.map(entry => <button type="button" key={`journal-${entry.id}`} onClick={onOpenJournal} className="flex w-full items-start gap-3 rounded-2xl border border-sky-100 bg-sky-50/60 p-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-md"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-xl shadow-sm">{entry.emoji || '📖'}</span><span><span className="text-[10px] font-black uppercase tracking-wider text-sky-600">{copy.journal}</span><span className="mt-1 block font-black text-slate-900">{entry.title || copy.untitledJournal}</span><span className="mt-1 line-clamp-2 block text-sm text-slate-600">{entry.content}</span></span></button>)}
-            {selectedItems.length === 0 && selectedMilestones.length === 0 && selectedJournalEntries.length === 0 && <Card className="rounded-[1.75rem] border-dashed border-rose-200 bg-gradient-to-br from-white to-rose-50/50"><CardContent className="p-9 text-center"><Sparkles className="mx-auto h-8 w-8 text-amber-400" /><h3 className="mt-3 font-black text-slate-900">{copy.emptyDay}</h3><p className="mt-1 text-sm text-slate-500">{copy.emptyDayHint}</p></CardContent></Card>}
+            {selectedRecordedActivities.map(activity => <article key={activity.id} className="flex items-start gap-3 rounded-2xl border border-indigo-100 bg-gradient-to-r from-white to-indigo-50/50 p-4"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white text-xl shadow-sm ring-1 ring-indigo-100">{activity.emoji}</span><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><span className="text-[10px] font-black uppercase tracking-wider text-indigo-600">{activityLabels[activity.type]}</span>{activity.isPartner && <Badge variant="outline" className="bg-white text-[9px]">{copy.partner}</Badge>}</div><h3 className="mt-1 font-black text-slate-900">{activityTitle(activity)}</h3>{activity.description && <p className="mt-1 line-clamp-2 text-sm leading-6 text-slate-600">{activity.description}</p>}</div></article>)}
+            {selectedItems.length === 0 && selectedMilestones.length === 0 && selectedJournalEntries.length === 0 && selectedRecordedActivities.length === 0 && <Card className="rounded-[1.75rem] border-dashed border-rose-200 bg-gradient-to-br from-white to-rose-50/50"><CardContent className="p-9 text-center"><Sparkles className="mx-auto h-8 w-8 text-amber-400" /><h3 className="mt-3 font-black text-slate-900">{copy.emptyDay}</h3><p className="mt-1 text-sm text-slate-500">{copy.emptyDayHint}</p></CardContent></Card>}
           </div>
         </section>
       ) : view === 'events' ? (

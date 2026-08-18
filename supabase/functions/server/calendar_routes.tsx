@@ -164,6 +164,102 @@ app.get('/calendar', async (c) => {
   }
 });
 
+app.get('/calendar/activity', async (c) => {
+  try {
+    const userId = await userIdFromRequest(c);
+    if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+    const profile: any = await kv.get(`user:${userId}`).catch(() => null);
+    const partnerId = profile?.partnerId ? String(profile.partnerId) : null;
+    const owners = [{ id: userId, isPartner: false }, ...(partnerId ? [{ id: partnerId, isPartner: true }] : [])];
+
+    const ownerData = await Promise.all(owners.map(async owner => {
+      const [prayers, completions, legacyResponses, currentResponses, journals, moods, highlights] = await Promise.all([
+        kv.getByPrefix(`prayer:${owner.id}:`).catch(() => []),
+        kv.getByPrefix(`completion:${owner.id}:`).catch(() => []),
+        kv.getByPrefix(`response:${owner.id}:`).catch(() => []),
+        kv.getByPrefix(`question-response:${owner.id}:`).catch(() => []),
+        kv.getByPrefix(`journal:${owner.id}:`).catch(() => []),
+        kv.getByPrefix(`mood:${owner.id}:`).catch(() => []),
+        kv.getByPrefix(`highlight:${owner.id}:`).catch(() => []),
+      ]);
+      return { owner, prayers, completions, legacyResponses, currentResponses, journals, moods, highlights } as any;
+    }));
+
+    const activities: any[] = [];
+    const add = (activity: any) => {
+      const date = new Date(activity.date);
+      if (!activity.id || !Number.isFinite(date.getTime())) return;
+      activities.push({ ...activity, date: date.toISOString() });
+    };
+
+    for (const data of ownerData) {
+      const common = { userId: data.owner.id, isPartner: data.owner.isPartner };
+      for (const prayer of data.prayers) add({
+        ...common, id: `prayer-${prayer.id}`, sourceId: prayer.id, type: 'prayer', emoji: '🙏',
+        title: prayer.title || 'Prayer', description: prayer.description || '', date: prayer.createdAt || prayer.created_at,
+      });
+      for (const completion of data.completions) add({
+        ...common, id: `devotional-${completion.id || `${completion.devotionId}-${completion.completedAt}`}`,
+        sourceId: completion.devotionId, type: 'devotional', emoji: '📖', title: 'Devotional completed',
+        description: completion.notes || '', date: completion.completedAt || completion.completed_at,
+      });
+      const responseKeys = new Set<string>();
+      for (const response of [...data.currentResponses, ...data.legacyResponses]) {
+        if (data.owner.isPartner && (response.isPrivate || response.is_private)) continue;
+        const responseKey = `${data.owner.id}:${response.questionId || response.question_id}:${response.createdAt || response.created_at}`;
+        if (responseKeys.has(responseKey)) continue;
+        responseKeys.add(responseKey);
+        add({
+          ...common, id: `qa-${response.id || responseKey}`, sourceId: response.questionId || response.question_id,
+          type: 'qa', emoji: '💬', title: 'Question answered', description: '', date: response.createdAt || response.created_at,
+        });
+      }
+      for (const journal of data.journals) {
+        if (data.owner.isPartner && !journal.isShared && !journal.is_shared) continue;
+        add({
+          ...common, id: `journal-${journal.id}`, sourceId: journal.id, type: 'journal', emoji: journal.emoji || '✍️',
+          title: journal.title || 'Journal reflection', description: journal.content || '', date: journal.createdAt || journal.created_at,
+        });
+      }
+      for (const mood of data.moods) add({
+        ...common, id: `mood-${mood.id}`, sourceId: mood.id, type: 'mood',
+        emoji: mood.mood === 'great' ? '🤩' : mood.mood === 'good' ? '😊' : mood.mood === 'sad' ? '😔' : '🙂',
+        title: mood.mood || 'Mood check-in', description: mood.note || '', date: mood.createdAt || mood.created_at,
+      });
+      for (const highlight of data.highlights) {
+        if (!highlight.sharedById && !highlight.shared_by_id) continue;
+        const sharedById = String(highlight.sharedById || highlight.shared_by_id);
+        add({
+          ...common, isPartner: sharedById !== userId, id: `verse-${highlight.id}`, sourceId: highlight.id, type: 'verse', emoji: '📜',
+          title: highlight.reference || 'Shared verse', description: highlight.text || highlight.note || '', date: highlight.createdAt || highlight.created_at,
+        });
+      }
+    }
+
+    const relationshipStart = profile?.relationshipStart || profile?.relationship_start || profile?.createdAt;
+    if (relationshipStart && Number.isFinite(new Date(relationshipStart).getTime())) {
+      const stageStarts = [0, 90, 180, 250, 360];
+      const stageEmojis = ['🌱', '🌿', '💞', '🤝', '👑'];
+      const start = new Date(relationshipStart);
+      stageStarts.forEach((days, stageIndex) => {
+        const date = new Date(start.getTime() + days * 86_400_000);
+        if (date.getTime() <= Date.now()) add({
+          id: `stage-${stageIndex}`, userId, isPartner: false, type: 'stage', stageIndex,
+          emoji: stageEmojis[stageIndex], title: `Couple stage ${stageIndex + 1}`, description: '', date: date.toISOString(),
+        });
+      });
+    }
+
+    const unique = Array.from(new Map(activities.map(activity => [activity.id, activity])).values())
+      .sort((left: any, right: any) => new Date(right.date).getTime() - new Date(left.date).getTime())
+      .slice(0, 1000);
+    return c.json({ activities: unique });
+  } catch (error) {
+    console.error('[Couple Calendar] Activity load error:', error);
+    return c.json({ error: 'Failed to load couple activity' }, 500);
+  }
+});
+
 app.post('/calendar', async (c) => {
   try {
     const userId = await userIdFromRequest(c);
