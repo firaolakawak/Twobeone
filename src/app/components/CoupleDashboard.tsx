@@ -101,6 +101,45 @@ export function pickRandomHomeSpotlight(
   return choices[Math.floor(random() * choices.length)] || 'devotion';
 }
 
+export const RELATIONSHIP_STAGE_START_DAYS = [0, 90, 180, 250, 360] as const;
+
+export function getElapsedRelationshipTime(start: string | Date | undefined, now = Date.now()) {
+  if (!start) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  const startTime = start instanceof Date ? start.getTime() : new Date(start).getTime();
+  if (!Number.isFinite(startTime)) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+
+  const diffMs = Math.max(0, now - startTime);
+  return {
+    days: Math.floor(diffMs / 86_400_000),
+    hours: Math.floor((diffMs % 86_400_000) / 3_600_000),
+    minutes: Math.floor((diffMs % 3_600_000) / 60_000),
+    seconds: Math.floor((diffMs % 60_000) / 1_000),
+  };
+}
+
+export function getRelationshipStageProgress(daysTogetherInput: number) {
+  const daysTogether = Number.isFinite(daysTogetherInput)
+    ? Math.max(0, Math.floor(daysTogetherInput))
+    : 0;
+  let stageIndex = 0;
+
+  for (let index = RELATIONSHIP_STAGE_START_DAYS.length - 1; index >= 0; index--) {
+    if (daysTogether >= RELATIONSHIP_STAGE_START_DAYS[index]) {
+      stageIndex = index;
+      break;
+    }
+  }
+
+  const stageStart = RELATIONSHIP_STAGE_START_DAYS[stageIndex];
+  const nextStageStart = RELATIONSHIP_STAGE_START_DAYS[stageIndex + 1];
+  const daysLeft = nextStageStart === undefined ? null : Math.max(0, nextStageStart - daysTogether);
+  const progressPercent = nextStageStart === undefined
+    ? 100
+    : Math.min(100, Math.max(0, Math.floor(((daysTogether - stageStart) / (nextStageStart - stageStart)) * 100)));
+
+  return { daysTogether, stageIndex, daysLeft, progressPercent };
+}
+
 interface CoupleData {
   relationshipStartDate?: string;
   couplePicture?: string;
@@ -267,18 +306,8 @@ const TimerDisplay = memo(function TimerDisplay({
 }) {
   const { t } = useLanguage();
   function calc() {
-    let startDate: Date | null = null;
-    if (profile?.relationshipStart) startDate = new Date(profile.relationshipStart);
-    else if (coupleData?.relationshipStartDate) startDate = new Date(coupleData.relationshipStartDate);
-    else if (profile?.createdAt) startDate = new Date(profile.createdAt);
-    if (!startDate) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
-    const diffMs = Date.now() - startDate.getTime();
-    return {
-      days: Math.floor(diffMs / 86400000),
-      hours: Math.floor((diffMs % 86400000) / 3600000),
-      minutes: Math.floor((diffMs % 3600000) / 60000),
-      seconds: Math.floor((diffMs % 60000) / 1000),
-    };
+    const start = profile?.relationshipStart || coupleData?.relationshipStartDate || profile?.createdAt;
+    return getElapsedRelationshipTime(start);
   }
 
   const [time, setTime] = useState(calc);
@@ -403,34 +432,6 @@ export function CoupleDashboard({
   const partnerInitials = partner?.name?.split(' ').map(n => n[0]).join('') || '?';
   
   const unreadCount = notifications.filter(n => !n.read).length;
-
-  const calculateDaysTogether = () => {
-    // First check profile.relationshipStart (set when partners link)
-    if (profile?.relationshipStart) {
-      const start = new Date(profile.relationshipStart);
-      const today = new Date();
-      const diffTime = Math.abs(today.getTime() - start.getTime());
-      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    }
-    
-    // Then check coupleData.relationshipStartDate (legacy)
-    if (coupleData.relationshipStartDate) {
-      const start = new Date(coupleData.relationshipStartDate);
-      const today = new Date();
-      const diffTime = Math.abs(today.getTime() - start.getTime());
-      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    }
-    
-    // Fallback to account creation date
-    if (profile?.createdAt) {
-      const start = new Date(profile.createdAt);
-      const today = new Date();
-      const diffTime = Math.abs(today.getTime() - start.getTime());
-      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    }
-    
-    return 0;
-  };
 
   // 1-second timer is handled by TimerDisplay — removed from here
 
@@ -1046,29 +1047,15 @@ export function CoupleDashboard({
           {/* Readiness Stage Badge — only shown when connected with a partner */}
           {partner && (() => {
             const STAGES = [
-              { label: t.dashboard.stages.seed,       emoji: '🌱', minDays: 0   },
-              { label: t.dashboard.stages.growth,     emoji: '🌿', minDays: 90  },
-              { label: t.dashboard.stages.unity,      emoji: '💞', minDays: 180 },
-              { label: t.dashboard.stages.commitment, emoji: '🤝', minDays: 250 },
-              { label: t.dashboard.stages.covenant,   emoji: '👑', minDays: 360 },
+              { label: t.dashboard.stages.seed,       emoji: '🌱', minDays: RELATIONSHIP_STAGE_START_DAYS[0] },
+              { label: t.dashboard.stages.growth,     emoji: '🌿', minDays: RELATIONSHIP_STAGE_START_DAYS[1] },
+              { label: t.dashboard.stages.unity,      emoji: '💞', minDays: RELATIONSHIP_STAGE_START_DAYS[2] },
+              { label: t.dashboard.stages.commitment, emoji: '🤝', minDays: RELATIONSHIP_STAGE_START_DAYS[3] },
+              { label: t.dashboard.stages.covenant,   emoji: '👑', minDays: RELATIONSHIP_STAGE_START_DAYS[4] },
             ];
-            // Days together — mirrors calculateDaysTogether() logic
-            let daysTogether = 0;
             const startStr = profile?.relationshipStart || coupleData?.relationshipStartDate || profile?.createdAt;
-            if (startStr) {
-              daysTogether = Math.floor((Date.now() - new Date(startStr).getTime()) / 86_400_000);
-            }
-            // Activity boost: up to +30 days equivalent so engaged couples can nudge forward
-            const streak = devotionalStreak ?? 0;
-            const activityBoost =
-              Math.min(10, streak * 1.5) +
-              Math.min(10, (responses?.user?.length ?? 0) * 0.5) +
-              Math.min(10, (prayers?.length ?? 0) * 0.5);
-            const effectiveDays = daysTogether + Math.round(activityBoost);
-            let idx = 0;
-            for (let i = STAGES.length - 1; i >= 0; i--) {
-              if (effectiveDays >= STAGES[i].minDays) { idx = i; break; }
-            }
+            const elapsed = getElapsedRelationshipTime(startStr);
+            const { daysTogether, stageIndex: idx, daysLeft, progressPercent: pct } = getRelationshipStageProgress(elapsed.days);
             const stage = STAGES[idx];
             const accent =
               idx === 4 ? 'var(--success-600, #16a34a)' :
@@ -1077,9 +1064,6 @@ export function CoupleDashboard({
               idx === 1 ? 'var(--warning-600, #d97706)' :
                           'var(--muted-foreground)';
             const nextStage = STAGES[idx + 1];
-            const pct = nextStage
-              ? Math.min(100, Math.round(((effectiveDays - stage.minDays) / (nextStage.minDays - stage.minDays)) * 100))
-              : 100;
             return (
               <div style={{
                 margin: '14px 0 0',
@@ -1127,7 +1111,7 @@ export function CoupleDashboard({
                     )}
                     {nextStage && !stageExpanded && (
                       <span style={{ fontSize: 'var(--text-label)', color: 'var(--muted-foreground)' }}>
-                        {nextStage.minDays - daysTogether} {t.dashboard.daysLeft}
+                        {daysLeft} {t.dashboard.daysLeft}
                       </span>
                     )}
                     <ChevronDown
@@ -1155,7 +1139,7 @@ export function CoupleDashboard({
                     {/* Next stage label */}
                     {nextStage && (
                       <p style={{ margin: '0 0 10px', fontSize: 'var(--text-label)', color: 'var(--muted-foreground)', textAlign: 'right' }}>
-                        {nextStage.emoji} {t.dashboard.nextStage}: <strong style={{ color: accent }}>{nextStage.label}</strong> — {nextStage.minDays - daysTogether} {t.time.days}
+                        {nextStage.emoji} {t.dashboard.nextStage}: <strong style={{ color: accent }}>{nextStage.label}</strong> — {daysLeft} {t.time.days}
                       </p>
                     )}
                     {/* 5 stage nodes */}
