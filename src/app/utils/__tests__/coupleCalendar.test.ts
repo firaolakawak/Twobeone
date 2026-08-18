@@ -3,7 +3,9 @@ import {
   buildPrayerFallback,
   CoupleCalendarItem,
   coupleCalendarCopy,
+  getMonthGridDays,
   getWeekDays,
+  getYearMonths,
   occursOnDay,
 } from '../../data/couple-calendar';
 
@@ -20,6 +22,18 @@ describe('Couple Calendar', () => {
     expect(days).toHaveLength(7);
     expect(days[0].getDay()).toBe(1);
     expect(days[6].getDay()).toBe(0);
+  });
+
+  it('builds complete monthly and yearly calendar views', () => {
+    const monthDays = getMonthGridDays(new Date('2026-08-18T12:00:00'));
+    expect(monthDays).toHaveLength(42);
+    expect(monthDays[0].getDay()).toBe(1);
+    expect(monthDays[41].getDay()).toBe(0);
+
+    const months = getYearMonths(new Date('2026-08-18T12:00:00'));
+    expect(months).toHaveLength(12);
+    expect(months[0].getMonth()).toBe(0);
+    expect(months[11].getMonth()).toBe(11);
   });
 
   it('places weekly routines only on their recurring weekday', () => {

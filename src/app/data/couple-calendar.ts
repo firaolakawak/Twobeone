@@ -71,6 +71,20 @@ export function getWeekDays(anchor: Date): Date[] {
   });
 }
 
+export function getMonthGridDays(anchor: Date): Date[] {
+  const first = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
+  const start = startOfWeek(first);
+  return Array.from({ length: 42 }, (_, index) => {
+    const date = new Date(start);
+    date.setDate(start.getDate() + index);
+    return date;
+  });
+}
+
+export function getYearMonths(anchor: Date): Date[] {
+  return Array.from({ length: 12 }, (_, month) => new Date(anchor.getFullYear(), month, 1));
+}
+
 export function isSameLocalDay(left: Date, right: Date): boolean {
   return left.getFullYear() === right.getFullYear()
     && left.getMonth() === right.getMonth()
@@ -119,7 +133,8 @@ type CalendarCopy = Record<string, string>;
 export const coupleCalendarCopy: Record<Language, CalendarCopy> = {
   en: {
     eyebrow: 'Faithful planning, together', title: 'Couple Calendar', subtitle: 'Plan your shared life and carry every commitment into prayer.',
-    newItem: 'Create together', weekly: 'Weekly planner', events: 'Event list', prayers: 'Prayer list', today: 'Today',
+    newItem: 'Create together', calendar: 'Calendar', weekly: 'Weekly', monthlyView: 'Monthly', yearly: 'Yearly', events: 'Event list', prayers: 'Prayer list', today: 'Today',
+    markedDays: 'Marked days', items: 'items', selectedAgenda: 'Selected day',
     emptyDay: 'A quiet day', emptyDayHint: 'Create a plan or leave room to rest together.', upcoming: 'Coming up', noUpcoming: 'No upcoming plans yet',
     plansThisWeek: 'This week', linkedPrayers: 'Prayer-linked', routines: 'Routines', newTitle: 'Create a shared plan', newDescription: 'Add it once. We will place it in your planner and prepare a prayer for it.',
     itemType: 'What are you planning?', plan: 'Plan', event: 'Event', reminder: 'Reminder', routine: 'Routine',
@@ -134,7 +149,8 @@ export const coupleCalendarCopy: Record<Language, CalendarCopy> = {
   },
   am: {
     eyebrow: 'በእምነት አብረን እናቅድ', title: 'የጥንዶች የቀን መቁጠሪያ', subtitle: 'የጋራ ሕይወታችሁን አቅዱ፣ እያንዳንዱንም እቅድ በጸሎት አቅርቡ።',
-    newItem: 'አብረን እንፍጠር', weekly: 'ሳምንታዊ እቅድ', events: 'የክስተት ዝርዝር', prayers: 'የጸሎት ዝርዝር', today: 'ዛሬ',
+    newItem: 'አብረን እንፍጠር', calendar: 'የቀን መቁጠሪያ', weekly: 'ሳምንታዊ', monthlyView: 'ወርሃዊ', yearly: 'ዓመታዊ', events: 'የክስተት ዝርዝር', prayers: 'የጸሎት ዝርዝር', today: 'ዛሬ',
+    markedDays: 'ምልክት የተደረገባቸው ቀናት', items: 'እቅዶች', selectedAgenda: 'የተመረጠው ቀን',
     emptyDay: 'ጸጥ ያለ ቀን', emptyDayHint: 'እቅድ ይፍጠሩ ወይም አብራችሁ ለማረፍ ጊዜ ይተዉ።', upcoming: 'በቅርቡ', noUpcoming: 'ገና የሚመጣ እቅድ የለም',
     plansThisWeek: 'በዚህ ሳምንት', linkedPrayers: 'ከጸሎት ጋር', routines: 'ልምዶች', newTitle: 'የጋራ እቅድ ፍጠሩ', newDescription: 'አንድ ጊዜ ያክሉት፤ በእቅዳችሁ እናስቀምጠውና ጸሎት እናዘጋጃለን።',
     itemType: 'ምን እያቀዳችሁ ነው?', plan: 'እቅድ', event: 'ክስተት', reminder: 'ማስታወሻ', routine: 'መደበኛ ልምድ',
@@ -146,7 +162,8 @@ export const coupleCalendarCopy: Record<Language, CalendarCopy> = {
   },
   om: {
     eyebrow: 'Amanannaadhaan waliin karoorfachuu', title: 'Kaalaandarii Hiriyootaa', subtitle: 'Jireenya waliinii keessan karoorfadhaa; waadaa hundas kadhannaatti fidaa.',
-    newItem: 'Waliin uumi', weekly: 'Karoora torbanii', events: 'Tarree taateewwanii', prayers: 'Tarree kadhannaa', today: "Har'a",
+    newItem: 'Waliin uumi', calendar: 'Kaalaandarii', weekly: 'Torban', monthlyView: "Ji'a", yearly: 'Waggaa', events: 'Tarree taateewwanii', prayers: 'Tarree kadhannaa', today: "Har'a",
+    markedDays: 'Guyyoota mallatteeffaman', items: 'karoorawwan', selectedAgenda: 'Guyyaa filatame',
     emptyDay: 'Guyyaa boqonnaa', emptyDayHint: 'Karoora uumi ykn waliin boqachuuf iddoo dhiisi.', upcoming: 'Dhufaa jira', noUpcoming: 'Karoorri dhufu hin jiru',
     plansThisWeek: 'Torban kana', linkedPrayers: 'Kadhannaatti hidhame', routines: 'Barmaatilee', newTitle: 'Karoora waliinii uumaa', newDescription: 'Yeroo tokko dabalaa; karoora keessan keessa kaaʼnee kadhannaa isaaf qopheessina.',
     itemType: 'Maal karoorfachaa jirtu?', plan: 'Karoora', event: 'Taatee', reminder: 'Yaadachiisa', routine: 'Barmaata',

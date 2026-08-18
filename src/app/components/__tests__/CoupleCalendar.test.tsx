@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LanguageProvider } from '../../contexts/LanguageContext';
@@ -14,6 +14,7 @@ describe('CoupleCalendar', () => {
   });
 
   afterEach(() => {
+    cleanup();
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
   });
@@ -63,5 +64,23 @@ describe('CoupleCalendar', () => {
       createPrayer: true,
       language: 'en',
     });
+  });
+
+  it('switches between weekly, monthly, and yearly marked-day views', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => ({ items: [] }) })));
+    const user = userEvent.setup();
+
+    render(
+      <LanguageProvider>
+        <CoupleCalendar accessToken="token" userId="user-1" onBack={vi.fn()} />
+      </LanguageProvider>,
+    );
+
+    expect(await screen.findByRole('button', { name: 'Weekly' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Monthly' }));
+    expect(screen.getByText('Marked days')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Yearly' }));
+    expect(screen.getByRole('button', { name: 'January' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'December' })).toBeInTheDocument();
   });
 });
