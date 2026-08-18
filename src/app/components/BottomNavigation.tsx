@@ -29,7 +29,7 @@ export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTa
         aria-label={t.nav.primaryNavigation}
         className="pointer-events-auto mx-auto max-w-lg rounded-[1.75rem] border border-white/90 bg-white/88 px-1.5 shadow-[0_-2px_10px_rgba(83,45,67,0.03),0_16px_45px_rgba(83,45,67,0.18)] ring-1 ring-neutral-950/[0.04] backdrop-blur-2xl"
       >
-        <div className="flex h-14 items-center justify-around px-1 py-1">
+        <div className="flex h-[4.5rem] items-center justify-around px-1 py-1">
           {tabs.map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -43,9 +43,9 @@ export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTa
                 aria-current={isActive ? 'page' : undefined}
                 whileTap={prefersReducedMotion ? undefined : { scale: 0.92 }}
                 transition={{ duration: 0.16 }}
-                className={`group relative flex h-12 min-w-0 flex-1 items-center justify-center rounded-2xl px-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 ${isActive ? 'text-primary-700' : 'text-neutral-500 hover:text-neutral-800'}`}
+                className={`group relative flex h-16 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl px-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 ${isActive ? 'text-primary-700' : 'text-neutral-600 hover:text-neutral-900'}`}
               >
-                <span className="relative flex h-10 w-14 items-center justify-center">
+                <span className="relative flex h-9 w-14 items-center justify-center">
                   {isActive && (
                     <motion.span
                       layoutId="bottom-navigation-active"
@@ -55,9 +55,12 @@ export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTa
                   )}
                   <Icon
                     aria-hidden="true"
-                    className={`relative h-6 w-6 transition-transform duration-200 ${isActive ? 'scale-105 fill-primary-100' : 'group-hover:-translate-y-0.5'}`}
+                    className={`relative h-[1.625rem] w-[1.625rem] transition-transform duration-200 ${isActive ? 'scale-105 fill-primary-100' : 'group-hover:-translate-y-0.5'}`}
                     strokeWidth={isActive ? 2.4 : 1.9}
                   />
+                </span>
+                <span className={`relative max-w-full truncate text-[11px] font-bold leading-none ${isActive ? 'text-primary-700' : 'text-neutral-600'}`}>
+                  {tab.label}
                 </span>
               </motion.button>
             );

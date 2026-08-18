@@ -258,6 +258,25 @@ async function touchActivity(userId: string): Promise<void> {
   }
 }
 
+const MARRIAGE_READINESS_CACHE_VERSION = 'v2';
+
+function marriageReadinessCacheKey(userId: string, profile: any): string {
+  const partnerId = profile?.partnerId;
+  const cacheBase = profile?.coupleId || (partnerId && partnerId < userId ? partnerId : userId);
+  return `marriage-readiness:${MARRIAGE_READINESS_CACHE_VERSION}:${cacheBase}`;
+}
+
+// Readiness metrics are derived from live couple activity. Clear the shared
+// couple cache whenever a prayer changes so both partners see the new totals.
+async function invalidateMarriageReadiness(userId: string): Promise<void> {
+  try {
+    const profile = await kv.get(`user:${userId}`);
+    await kv.del(marriageReadinessCacheKey(userId, profile));
+  } catch (error) {
+    console.warn('[MarriageReadiness] Cache invalidation failed:', error);
+  }
+}
+
 app.get('/make-server-6d579fee/health', (c) => {
   return c.json({
     status: 'ok',
@@ -1971,6 +1990,7 @@ app.post('/make-server-6d579fee/prayer', async (c) => {
 
     await kv.set(`prayer:${userId}:${prayerId}`, prayer);
     touchActivity(userId);
+    await invalidateMarriageReadiness(userId);
     await logAudit('prayer.created', userId, { prayerId, title, isShared: prayer.isShared });
 
     return c.json({ success: true, prayer });
@@ -2015,6 +2035,7 @@ app.put('/make-server-6d579fee/prayer/:id', async (c) => {
     };
 
     await kv.set(ownerKey, updatedPrayer);
+    await invalidateMarriageReadiness(userId);
     if (updates.isAnswered && !(prayer as any).isAnswered) {
       await logAudit('prayer.answered', userId, { prayerId, title: (prayer as any).title });
     }
@@ -2050,6 +2071,8 @@ app.delete('/make-server-6d579fee/prayer/:id', async (c) => {
         }
       }
     }
+
+    await invalidateMarriageReadiness(userId);
 
     return c.json({ success: true });
   } catch (error: any) {
@@ -6197,12 +6220,10 @@ app.get('/make-server-6d579fee/ai/marriage-readiness', async (c) => {
 
     const profile = await kv.get(`user:${userId}`) as any;
     const partnerId = profile?.partnerId;
-    const coupleId = profile?.coupleId;
     const force = c.req.query('force') === 'true';
 
     // Cache key — canonical order so both partners get same key
-    const cacheBase = coupleId || (partnerId && partnerId < userId ? partnerId : userId);
-    const cacheKey = `marriage-readiness:${cacheBase}`;
+    const cacheKey = marriageReadinessCacheKey(userId, profile);
 
     if (!force) {
       const cached = await kv.get(cacheKey) as any;
@@ -6263,7 +6284,11 @@ app.get('/make-server-6d579fee/ai/marriage-readiness', async (c) => {
     const totalDevotions = (userDevotions as any[]).length + (partnerDevotions as any[]).length;
     const devotionalScore = Math.min(100, avgStreak * 6 + Math.round(totalDevotions * 1.5));
 
-    const answeredPrayers = [...(userPrayers as any[]), ...(partnerPrayers as any[])].filter(p => p?.answered).length;
+    // Current prayer records use camelCase. Keep the historical variants so
+    // records created by older deployments are counted correctly as well.
+    const answeredPrayers = [...(userPrayers as any[]), ...(partnerPrayers as any[])].filter(
+      p => Boolean(p?.isAnswered || p?.is_answered || p?.answered),
+    ).length;
     const totalPrayers = (userPrayers as any[]).length + (partnerPrayers as any[]).length;
     const prayerScore = Math.min(100, totalPrayers * 8 + answeredPrayers * 15);
 

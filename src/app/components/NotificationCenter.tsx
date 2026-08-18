@@ -290,10 +290,10 @@ export function NotificationCenter({
       {/* Bell Trigger */}
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className="relative p-2.5 text-slate-700 hover:text-slate-900 rounded-full hover:bg-slate-100 transition-all duration-200 focus:outline-none"
+        className="app-icon-button relative grid h-11 w-11 place-items-center rounded-full text-slate-800 transition-all duration-200 hover:bg-slate-100 hover:text-slate-950 focus:outline-none"
         aria-label="Notifications"
       >
-        <Bell className="w-5 h-5 stroke-[2]" />
+        <Bell className="h-6 w-6 stroke-[2.2]" />
         {unreadCount > 0 && (
           <Badge className="absolute -top-0.5 -right-0.5 h-5 min-w-[20px] px-1 bg-rose-600 hover:bg-rose-600 text-white text-[11px] font-bold rounded-full flex items-center justify-center border-2 border-white shadow-sm animate-pulse">
             {unreadCount > 9 ? "9+" : unreadCount}

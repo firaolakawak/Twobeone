@@ -37,9 +37,9 @@
   --neutral-100: #f3f4f6;
   --neutral-200: #e5e7eb;
   --neutral-300: #d1d5db;
-  --neutral-400: #9ca3af;
-  --neutral-500: #6b7280;
-  --neutral-600: #4b5563;
+  --neutral-400: #64748b;
+  --neutral-500: #475569;
+  --neutral-600: #334155;
   --neutral-700: #374151;
   --neutral-800: #1f2937;
   --neutral-900: #111827;
@@ -72,7 +72,7 @@
   --secondary: var(--neutral-100);
   --secondary-foreground: var(--neutral-900);
   --muted: var(--neutral-100);
-  --muted-foreground: var(--neutral-500);
+  --muted-foreground: var(--neutral-600);
   --accent: var(--neutral-100);
   --accent-foreground: var(--neutral-900);
   --destructive: var(--error-500);
@@ -105,8 +105,8 @@
   --text-body-large: 17px;   /* Body Large */
   --text-callout: 15px;      /* Callout */
   --text-caption: 14px;      /* Caption: 12-14pt */
-  --text-caption-small: 12px;/* Caption 2 */
-  --text-label: 11px;        /* Label/Footnote */
+  --text-caption-small: 13px;/* Caption 2 — phone-readable minimum */
+  --text-label: 13px;        /* Label/Footnote — phone-readable minimum */
   
   /* Android Typography (sp) */
   --text-display-android: 32px;  /* Display: 32sp */
@@ -410,6 +410,105 @@
 
 html {
   font-size: var(--font-size);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-width: 320px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+a,
+input,
+select,
+textarea,
+[role='button'] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Authenticated app shell: compact enough for phones, never illegibly small. */
+.app-mobile-shell {
+  --app-mobile-muted: #475569;
+}
+
+.app-mobile-shell :focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 32%, transparent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 767px) {
+  .app-mobile-shell {
+    font-size: 16px;
+  }
+
+  .app-mobile-shell .text-sm {
+    font-size: 0.9375rem !important;
+    line-height: 1.45 !important;
+  }
+
+  .app-mobile-shell .text-xs {
+    font-size: 0.8125rem !important;
+    line-height: 1.35 !important;
+  }
+
+  .app-mobile-shell [class*='text-[8px]'],
+  .app-mobile-shell [class*='text-[9px]'],
+  .app-mobile-shell [class*='text-[10px]'],
+  .app-mobile-shell [class*='text-[11px]'] {
+    font-size: 0.75rem !important;
+    line-height: 1rem !important;
+  }
+
+  .app-mobile-shell [style*='font-size: 9px'],
+  .app-mobile-shell [style*='font-size: 10px'],
+  .app-mobile-shell [style*='font-size: 11px'] {
+    font-size: 0.75rem !important;
+    line-height: 1rem !important;
+  }
+
+  .app-mobile-shell [style*='font-size: 12px'] {
+    font-size: 0.8125rem !important;
+    line-height: 1.125rem !important;
+  }
+
+  .app-mobile-shell input,
+  .app-mobile-shell select,
+  .app-mobile-shell textarea {
+    font-size: 16px !important;
+  }
+
+  .app-mobile-shell button svg,
+  .app-mobile-shell a svg,
+  .app-mobile-shell [role='button'] svg {
+    stroke-width: 2.15;
+  }
+
+  .app-mobile-shell button svg,
+  .app-mobile-shell a svg,
+  .app-mobile-shell [role='button'] svg {
+    min-width: 18px;
+    min-height: 18px;
+  }
+
+  .app-mobile-shell .app-icon-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .app-mobile-shell .text-slate-400,
+  .app-mobile-shell .text-neutral-400 {
+    color: #64748b !important;
+  }
+
+  .app-mobile-shell .text-slate-500,
+  .app-mobile-shell .text-neutral-500 {
+    color: var(--app-mobile-muted) !important;
+  }
 }
 /* PWA Install Banner Animation */
 @keyframes slide-up {

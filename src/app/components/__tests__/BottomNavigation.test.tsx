@@ -17,6 +17,8 @@ describe('BottomNavigation', () => {
 
     expect(screen.getByRole('navigation', { name: 'Primary navigation' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Home' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByText('Home')).toBeVisible();
+    expect(screen.getByText('Prayer')).toBeVisible();
 
     await user.click(screen.getByRole('button', { name: 'Prayer' }));
     expect(onTabChange).toHaveBeenCalledWith('prayer');

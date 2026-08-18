@@ -66,6 +66,7 @@ export function LanguageSelector({
       {/* Borderless icon button */}
       <button
         onClick={() => setOpen(v => !v)}
+        className="app-icon-button"
         aria-label={t.language.select}
         aria-expanded={open}
         aria-haspopup="menu"
@@ -73,7 +74,7 @@ export function LanguageSelector({
           display: 'flex',
           alignItems: 'center',
           gap: 6,
-          padding: '6px 10px',
+          padding: '10px',
           borderRadius: 'var(--radius-full)',
           border: 'none',
           background: open ? 'var(--neutral-100)' : 'transparent',
@@ -86,8 +87,8 @@ export function LanguageSelector({
         onMouseLeave={e => { if (!open) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
       >
         <Globe
-          strokeWidth={1.6}
-          style={{ width: 'var(--icon-sm)', height: 'var(--icon-sm)', color: 'var(--muted-foreground)' }}
+          strokeWidth={2.1}
+          style={{ width: 'var(--icon-md)', height: 'var(--icon-md)', color: 'var(--neutral-700)' }}
         />
       </button>
 

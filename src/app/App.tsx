@@ -1270,14 +1270,14 @@ export default function App() {
   return (
     <LanguageProvider>
       <SEOHead />
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="app-mobile-shell min-h-screen bg-background flex flex-col">
         {/* SOLID OPAQUE HEADER TRUNK BAR CONTAINER */}
-        <header className="sticky top-0 left-0 right-0 h-14 z-50 flex items-center" style={{ background: 'var(--card)', borderBottom: '1px solid var(--border)', boxShadow: '0 1px 0 0 var(--border)' }}>
-          <div className="w-full max-w-2xl mx-auto px-4 flex items-center justify-between">
+        <header className="sticky top-0 left-0 right-0 z-50 flex min-h-16 items-center pt-[env(safe-area-inset-top,0px)]" style={{ background: 'var(--card)', borderBottom: '1px solid var(--border)', boxShadow: '0 1px 0 0 var(--border)' }}>
+          <div className="w-full max-w-2xl mx-auto px-4 flex min-h-16 items-center justify-between">
             {/* Platform Brand Title Identification */}
             <div className="flex items-center gap-2">
-              <Heart className="w-5 h-5 fill-rose-500 text-rose-500 animate-pulse" />
-              <span className="text-sm font-bold text-slate-900 tracking-tight">
+              <Heart className="h-6 w-6 fill-rose-500 text-rose-500 animate-pulse" />
+              <span className="text-base font-extrabold text-slate-950 tracking-tight">
                 TwoBeOne
               </span>
             </div>

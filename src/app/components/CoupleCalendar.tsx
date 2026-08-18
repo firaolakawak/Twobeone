@@ -297,9 +297,9 @@ export function CoupleCalendar({
     const selected = isSameLocalDay(day, selectedDay);
     const today = isSameLocalDay(day, new Date());
     const emoji = emojiForDay(day);
-    return <span className={`relative grid shrink-0 place-items-center rounded-full font-black transition-all ${compact ? 'h-7 w-7 text-[9px]' : 'h-9 w-9 text-xs sm:h-12 sm:w-12 sm:text-sm'} ${selected ? 'bg-rose-600 text-white shadow-md shadow-rose-200 ring-2 ring-rose-300 ring-offset-2' : marks.length ? 'bg-rose-50 text-slate-900 ring-2 ring-rose-500 ring-offset-1' : today ? 'bg-rose-50 text-rose-700 ring-1 ring-rose-300' : 'text-slate-700'}`}>
+    return <span className={`relative grid shrink-0 place-items-center rounded-full font-black transition-all ${compact ? 'h-8 w-8 text-xs' : 'h-10 w-10 text-sm sm:h-12 sm:w-12 sm:text-sm'} ${selected ? 'bg-rose-600 text-white shadow-md shadow-rose-200 ring-2 ring-rose-300 ring-offset-2' : marks.length ? 'bg-rose-50 text-slate-950 ring-2 ring-rose-500 ring-offset-1' : today ? 'bg-rose-50 text-rose-700 ring-1 ring-rose-300' : 'text-slate-800'}`}>
       {day.getDate()}
-      {emoji && <span aria-hidden="true" className={`pointer-events-none absolute z-10 drop-shadow-sm motion-safe:animate-[bounce_1.8s_ease-in-out_infinite] ${compact ? '-right-1.5 -top-1.5 text-[10px]' : '-right-2 -top-2 text-base'}`}>{emoji}</span>}
+      {emoji && <span aria-hidden="true" className={`pointer-events-none absolute z-10 drop-shadow-sm motion-safe:animate-[bounce_1.8s_ease-in-out_infinite] ${compact ? '-right-1.5 -top-1.5 text-xs' : '-right-2 -top-2 text-lg'}`}>{emoji}</span>}
     </span>;
   };
 
@@ -395,20 +395,20 @@ export function CoupleCalendar({
   const prayerPreview = buildPrayerFallback(draft.title, draft.category, language);
 
   return (
-    <div className="mx-auto min-h-screen w-full max-w-4xl pb-28">
+    <div className="couple-calendar-mobile mx-auto min-h-screen w-full max-w-4xl pb-32">
       <header className="relative isolate overflow-hidden rounded-[2rem] border border-rose-100 bg-gradient-to-br from-rose-50 via-white to-violet-50 px-5 py-6 shadow-[0_24px_70px_-45px_rgba(190,24,93,.5)] sm:px-8 sm:py-8">
         <div className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-violet-200/30 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-28 -left-16 h-64 w-64 rounded-full bg-rose-200/35 blur-3xl" />
         <div className="relative">
           <div className="flex items-center justify-between gap-3">
-            <button type="button" onClick={onBack} className="grid h-10 w-10 place-items-center rounded-full border border-white bg-white/80 text-slate-600 shadow-sm" aria-label={copy.back}><ArrowLeft className="h-5 w-5" /></button>
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[.14em] text-rose-700 shadow-sm ring-1 ring-rose-100"><Heart className="h-3.5 w-3.5 fill-rose-500" />{copy.eyebrow}</div>
-            <button type="button" onClick={() => openCreate()} className="grid h-10 w-10 place-items-center rounded-full bg-rose-600 text-white shadow-lg shadow-rose-200" aria-label={copy.newItem}><Plus className="h-5 w-5" /></button>
+            <button type="button" onClick={onBack} className="app-icon-button grid h-11 w-11 place-items-center rounded-full border border-white bg-white/90 text-slate-700 shadow-sm" aria-label={copy.back}><ArrowLeft className="h-6 w-6" /></button>
+            <div className="inline-flex min-h-9 items-center gap-2 rounded-full bg-white/90 px-3 py-2 text-xs font-extrabold uppercase tracking-[.12em] text-rose-700 shadow-sm ring-1 ring-rose-100"><Heart className="h-4 w-4 shrink-0 fill-rose-500" />{copy.eyebrow}</div>
+            <button type="button" onClick={() => openCreate()} className="app-icon-button grid h-11 w-11 place-items-center rounded-full bg-rose-600 text-white shadow-lg shadow-rose-200" aria-label={copy.newItem}><Plus className="h-6 w-6" /></button>
           </div>
           <div className="mt-7 max-w-2xl">
             <p className="text-sm font-semibold text-rose-600">{userName || copy.you} {partnerName ? `& ${partnerName}` : ''}</p>
             <h1 className="mt-1 text-3xl font-black tracking-[-.04em] text-slate-950 sm:text-4xl">{copy.title}</h1>
-            <p className="mt-3 max-w-xl text-sm leading-6 text-slate-600 sm:text-base">{copy.subtitle}</p>
+            <p className="mt-3 max-w-xl text-base leading-7 text-slate-700">{copy.subtitle}</p>
           </div>
           <div className="mt-7 grid grid-cols-3 gap-2 border-t border-rose-100 pt-5 sm:gap-4">
             <div><p className="text-2xl font-black text-slate-950">{weekCount}</p><p className="text-xs font-semibold text-slate-500">{copy.plansThisWeek}</p></div>
@@ -420,8 +420,8 @@ export function CoupleCalendar({
 
       <div className="mt-6 grid grid-cols-4 gap-2">
         {(['plan', 'event', 'reminder', 'routine'] as CalendarItemType[]).map(type => (
-          <button key={type} type="button" onClick={() => openCreate(type)} className={`flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-2xl border text-xs font-bold shadow-sm transition-all hover:-translate-y-0.5 ${itemAccent(type)}`}>
-            <span className="text-xl">{CALENDAR_TYPE_META[type].icon}</span>{copy[type]}
+          <button key={type} type="button" onClick={() => openCreate(type)} className={`flex min-h-24 flex-col items-center justify-center gap-2 rounded-2xl border text-sm font-extrabold shadow-sm transition-all hover:-translate-y-0.5 ${itemAccent(type)}`}>
+            <span className="text-2xl">{CALENDAR_TYPE_META[type].icon}</span>{copy[type]}
           </button>
         ))}
       </div>
@@ -430,7 +430,7 @@ export function CoupleCalendar({
         {([
           ['calendar', CalendarDays, copy.calendar], ['events', ListTodo, copy.events], ['prayers', Heart, copy.prayers],
         ] as const).map(([id, Icon, label]) => (
-          <button key={id} type="button" onClick={() => setView(id)} className={`flex min-h-11 items-center justify-center gap-2 rounded-xl px-2 text-xs font-bold transition-all sm:text-sm ${view === id ? 'bg-white text-rose-700 shadow-sm' : 'text-slate-500'}`}><Icon className="h-4 w-4" />{label}</button>
+          <button key={id} type="button" onClick={() => setView(id)} className={`flex min-h-12 items-center justify-center gap-2 rounded-xl px-2 text-sm font-extrabold transition-all ${view === id ? 'bg-white text-rose-700 shadow-sm' : 'text-slate-600'}`}><Icon className="h-5 w-5" />{label}</button>
         ))}
       </nav>
 
@@ -440,14 +440,14 @@ export function CoupleCalendar({
         <section className="mt-6 space-y-5">
           <div className="grid grid-cols-3 gap-1 rounded-2xl border border-rose-100 bg-rose-50/60 p-1.5">
             {([['weekly', copy.weekly], ['monthly', copy.monthlyView], ['yearly', copy.yearly]] as const).map(([id, label]) => (
-              <button key={id} type="button" onClick={() => setPeriod(id)} className={`min-h-10 rounded-xl px-3 text-xs font-black transition-all sm:text-sm ${period === id ? 'bg-white text-rose-700 shadow-sm ring-1 ring-rose-100' : 'text-slate-500 hover:text-slate-800'}`}>{label}</button>
+              <button key={id} type="button" onClick={() => setPeriod(id)} className={`min-h-12 rounded-xl px-3 text-sm font-black transition-all ${period === id ? 'bg-white text-rose-700 shadow-sm ring-1 ring-rose-100' : 'text-slate-600 hover:text-slate-900'}`}>{label}</button>
             ))}
           </div>
 
           <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
-            <button type="button" onClick={() => moveCalendar(-1)} className="grid h-10 w-10 place-items-center rounded-full text-slate-600 hover:bg-slate-100" aria-label="Previous"><ChevronLeft className="h-4 w-4" /></button>
-            <div className="text-center"><p className="text-sm font-black text-slate-900 sm:text-base">{periodTitle}</p><button type="button" onClick={() => { setCalendarAnchor(new Date()); setSelectedDay(new Date()); }} className="mt-0.5 text-[10px] font-black uppercase tracking-wider text-rose-600">{copy.today}</button></div>
-            <button type="button" onClick={() => moveCalendar(1)} className="grid h-10 w-10 place-items-center rounded-full text-slate-600 hover:bg-slate-100" aria-label="Next"><ChevronRight className="h-4 w-4" /></button>
+            <button type="button" onClick={() => moveCalendar(-1)} className="app-icon-button grid h-11 w-11 place-items-center rounded-full text-slate-700 hover:bg-slate-100" aria-label="Previous"><ChevronLeft className="h-5 w-5" /></button>
+            <div className="text-center"><p className="text-base font-black text-slate-950">{periodTitle}</p><button type="button" onClick={() => { setCalendarAnchor(new Date()); setSelectedDay(new Date()); }} className="mt-1 min-h-8 rounded-full px-3 text-xs font-black uppercase tracking-wider text-rose-700">{copy.today}</button></div>
+            <button type="button" onClick={() => moveCalendar(1)} className="app-icon-button grid h-11 w-11 place-items-center rounded-full text-slate-700 hover:bg-slate-100" aria-label="Next"><ChevronRight className="h-5 w-5" /></button>
           </div>
 
           {period === 'weekly' && (
@@ -455,7 +455,7 @@ export function CoupleCalendar({
               {weekDays.map(day => {
                 const marks = marksForDay(day);
                 return <button type="button" key={day.toISOString()} onClick={() => selectCalendarDay(day)} aria-label={`${new Intl.DateTimeFormat(locale, { dateStyle: 'full' }).format(day)}, ${marks.length} ${copy.items}`} className="relative flex min-h-28 flex-col items-center justify-center border-y border-rose-200/90 py-3 text-center transition-colors hover:bg-rose-50/50">
-                  <span className="mb-3 text-[9px] font-black uppercase text-slate-400">{new Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format(day)}</span>
+                  <span className="mb-3 text-xs font-black uppercase text-slate-600">{new Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format(day)}</span>
                   {renderDayCircle(day)}
                 </button>;
               })}
@@ -464,7 +464,7 @@ export function CoupleCalendar({
 
           {period === 'monthly' && (
             <div className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white px-4 py-4 shadow-sm sm:px-7 sm:py-6">
-              <div className="grid grid-cols-7 border-b-2 border-rose-300">{weekDays.map(day => <div key={day.getDay()} className="pb-3 text-center text-[9px] font-black uppercase text-slate-400 sm:text-[10px]">{new Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format(day)}</div>)}</div>
+              <div className="grid grid-cols-7 border-b-2 border-rose-300">{weekDays.map(day => <div key={day.getDay()} className="pb-3 text-center text-xs font-black uppercase text-slate-600">{new Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format(day)}</div>)}</div>
               <div className="grid grid-cols-7">
                 {monthDays.map(day => {
                   const inMonth = day.getMonth() === calendarAnchor.getMonth();
