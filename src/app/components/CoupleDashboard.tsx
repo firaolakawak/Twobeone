@@ -27,11 +27,7 @@ import {
   BarChart3,
   BookHeart,
   HandHeart,
-  Gift,
-  Star,
-  PartyPopper,
   Brain,
-  Trash2,
   ChevronDown,
   RefreshCw,
 } from 'lucide-react';
@@ -45,7 +41,6 @@ import { sendNotification } from '../utils/notifications';
 import { toast } from 'sonner';
 import type { User, JournalEntry, PrayerRequest, Progress as ProgressType, QuestionResponse } from '../types';
 import { moods as moodsApi, milestones as milestonesApi, questions as questionsApi } from '../utils/api';
-import { AddMilestoneDialog } from './AddMilestoneDialog';
 import { fetchAmharicChapter, getAmharicBookName } from '../utils/amharicBibleApi';
 import { ChampionsCard } from './ChampionsCard';
 import { coupleCalendarCopy } from '../data/couple-calendar';
@@ -347,37 +342,6 @@ const TimerDisplay = memo(function TimerDisplay({
   );
 });
 
-function MilestoneSparkles() {
-  const particles = [
-    { left: '4%', top: '8%', delay: '0s' },
-    { left: '18%', top: '72%', delay: '.12s' },
-    { left: '38%', top: '-8%', delay: '.2s' },
-    { left: '60%', top: '78%', delay: '.08s' },
-    { left: '78%', top: '4%', delay: '.28s' },
-    { left: '94%', top: '56%', delay: '.16s' },
-  ];
-  return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 overflow-visible">
-      <style>{`
-        @keyframes milestoneSparkle {
-          0% { transform: translateY(8px) scale(.2) rotate(0deg); opacity: 0; }
-          30% { opacity: 1; }
-          100% { transform: translateY(-22px) scale(1.15) rotate(100deg); opacity: 0; }
-        }
-        .milestone-sparkle { animation: milestoneSparkle 1.25s ease-out both; }
-        @media (prefers-reduced-motion: reduce) { .milestone-sparkle { animation: none; display: none; } }
-      `}</style>
-      {particles.map((particle, index) => (
-        <Sparkles
-          key={index}
-          className="milestone-sparkle absolute h-4 w-4 text-amber-400 drop-shadow-[0_2px_5px_rgba(251,191,36,.45)]"
-          style={{ left: particle.left, top: particle.top, animationDelay: particle.delay }}
-        />
-      ))}
-    </div>
-  );
-}
-
 export function CoupleDashboard({
   profile,
   partner,
@@ -400,8 +364,6 @@ export function CoupleDashboard({
   // timeTogether state moved into TimerDisplay to prevent 60 re-renders/min on this component
   const [showMoodDialog, setShowMoodDialog] = useState(false);
   const [todayMood, setTodayMood] = useState<string | null>(null);
-  const [showMilestoneDialog, setShowMilestoneDialog] = useState(false);
-  const [celebratingMilestoneId, setCelebratingMilestoneId] = useState<string | null>(null);
 
   const [showLocationSettings, setShowLocationSettings] = useState(false);
   const [userLocation, setUserLocation] = useState<any>(null);
@@ -641,41 +603,6 @@ export function CoupleDashboard({
       return () => { clearTimeout(t); clearInterval(interval); };
     }
   }, [profile?.id, partner?.id]);
-
-  // Delete a milestone by ID
-  const handleMilestoneDelete = async (milestoneId: string) => {
-    try {
-      await milestonesApi.delete(milestoneId);
-      setMilestones(prev => prev.filter(m => m.id !== milestoneId));
-      toast.success('Milestone removed');
-    } catch (error: any) {
-      console.error('Error deleting milestone:', error);
-      toast.error('Failed to remove milestone');
-    }
-  };
-
-  // Helper function to handle milestone addition and refetch
-  const handleMilestoneAdd = async (milestone: Milestone) => {
-    // Add to local state for immediate UI feedback
-    setMilestones(current => [milestone, ...current]);
-    setCelebratingMilestoneId(milestone.id);
-    window.setTimeout(() => setCelebratingMilestoneId(current => current === milestone.id ? null : current), 1800);
-    toast.success(t.dashboard.milestoneReached);
-    
-    // Refetch from backend to ensure consistency
-    try {
-      const { milestones: fetchedMilestones } = await milestonesApi.list();
-      setMilestones(fetchedMilestones.map((m: any) => ({
-        id: m.id,
-        title: m.title,
-        date: m.date || m.createdAt,
-        description: m.description || '',
-        icon: 'heart'
-      })));
-    } catch (error) {
-      console.error('Error refetching milestones:', error);
-    }
-  };
 
   useEffect(() => {
     // Fetch moods from backend
@@ -1694,127 +1621,6 @@ export function CoupleDashboard({
                 )}
               </div>
             </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* {t.dashboard.relationshipMilestones} */}
-      {partner && (
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <Star className="w-5 h-5 text-warning-500" />
-                {t.dashboard.relationshipMilestones}
-              </CardTitle>
-              <AddMilestoneDialog
-                onAddMilestone={handleMilestoneAdd}
-              />
-            </div>
-            <CardDescription>Celebrate your journey together</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {milestones.length > 0 ? (
-              <div className="space-y-3">
-                {milestones.slice(0, 3).map((milestone) => (
-                  <div
-                    key={milestone.id}
-                    className={celebratingMilestoneId === milestone.id ? 'ring-2 ring-amber-300/60 shadow-[0_10px_30px_-15px_rgba(245,158,11,.55)]' : ''}
-                    style={{
-                      display: 'flex', alignItems: 'flex-start', gap: 'var(--spacing-3)',
-                      padding: 'var(--spacing-3)',
-                      background: 'linear-gradient(to right, var(--primary-50), var(--secondary-50, #f0f9ff))',
-                      borderRadius: 'var(--radius-md)',
-                      border: '1px solid var(--primary-200, #ffc7d7)',
-                      position: 'relative',
-                      transition: 'box-shadow .35s ease, transform .35s ease',
-                    }}
-                  >
-                    {celebratingMilestoneId === milestone.id && <MilestoneSparkles />}
-                    <div style={{
-                      width: 40, height: 40, borderRadius: 'var(--radius-full)',
-                      backgroundColor: 'var(--primary-100, #ffe0e8)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                    }}>
-                      {milestone.icon === 'gift' && <Gift style={{ width: 18, height: 18, color: 'var(--primary-600)' }} />}
-                      {milestone.icon === 'party' && <PartyPopper style={{ width: 18, height: 18, color: 'var(--primary-600)' }} />}
-                      {milestone.icon === 'heart' && <Heart style={{ width: 18, height: 18, color: 'var(--primary-600)' }} />}
-                      {milestone.icon === 'star' && <Star style={{ width: 18, height: 18, color: 'var(--warning-500, #f59e0b)' }} />}
-                      {!['gift','party','heart','star'].includes(milestone.icon) && <Star style={{ width: 18, height: 18, color: 'var(--primary-600)' }} />}
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontSize: 'var(--text-callout)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--neutral-900)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {milestone.title}
-                      </p>
-                      {milestone.description && (
-                        <p style={{ fontSize: 'var(--text-label)', color: 'var(--neutral-500)', margin: '2px 0 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {milestone.description}
-                        </p>
-                      )}
-                      <p style={{ fontSize: 'var(--text-label)', color: 'var(--primary-600)', margin: 'var(--spacing-1) 0 0 0', fontWeight: 'var(--font-weight-medium)' }}>
-                        {new Date(milestone.date).toLocaleDateString('en-US', {
-                          month: 'long', day: 'numeric', year: 'numeric'
-                        })}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleMilestoneDelete(milestone.id)}
-                      title="Remove milestone"
-                      style={{
-                        flexShrink: 0, background: 'none', border: 'none', cursor: 'pointer',
-                        padding: 4, borderRadius: 'var(--radius-sm)',
-                        color: 'var(--neutral-400)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      }}
-                      onMouseEnter={e => (e.currentTarget.style.color = 'var(--error-500, #ef4444)')}
-                      onMouseLeave={e => (e.currentTarget.style.color = 'var(--neutral-400)')}
-                    >
-                      <Trash2 style={{ width: 14, height: 14 }} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-6">
-                <Star className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground mb-3">No milestones yet</p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={async () => {
-                    try {
-                      // Add first milestone via API
-                      const firstDate = profile?.relationshipStart || new Date().toISOString();
-                      const { milestone } = await milestonesApi.create({
-                        title: 'First Day Together',
-                        description: 'The beginning of your beautiful journey',
-                        date: firstDate,
-                        category: 'relationship'
-                      });
-                      
-                      // Add to local state
-                      const createdMilestone = {
-                        id: milestone.id,
-                        title: milestone.title,
-                        date: milestone.date,
-                        description: milestone.description || '',
-                        icon: 'heart'
-                      };
-                      setMilestones([createdMilestone]);
-                      setCelebratingMilestoneId(createdMilestone.id);
-                      window.setTimeout(() => setCelebratingMilestoneId(null), 1800);
-                      toast.success(t.dashboard.firstMilestoneReached);
-                    } catch (error) {
-                      console.error('Error adding first milestone:', error);
-                      toast.error('Failed to add milestone');
-                    }
-                  }}
-                >
-                  <Gift className="w-4 h-4 mr-2" />
-                  Add Your First Milestone
-                </Button>
-              </div>
-            )}
           </CardContent>
         </Card>
       )}
