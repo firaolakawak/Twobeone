@@ -47,6 +47,7 @@ import { Toaster } from "./components/ui/sonner";
 
 // ── Deferred — lazy-loaded after auth / on first navigation ───────────────
 const CoupleDashboard      = lazy(() => import("./components/CoupleDashboard").then(m => ({ default: m.CoupleDashboard })));
+const CoupleCalendar       = lazy(() => import("./components/CoupleCalendar").then(m => ({ default: m.CoupleCalendar })));
 const NotificationCenter   = lazy(() => import("./components/NotificationCenter").then(m => ({ default: m.NotificationCenter })));
 const QuizzesHub           = lazy(() => import("./components/QuizzesHub").then(m => ({ default: m.QuizzesHub })));
 const PreMarriageHub       = lazy(() => import("./components/PreMarriageHub").then(m => ({ default: m.PreMarriageHub })));
@@ -204,6 +205,13 @@ function initialTabFromNotification(): string {
   return PUSH_TABS.has(requestedTab) ? requestedTab : 'home';
 }
 
+function initialScreenFromNotification(): string {
+  if (typeof window === 'undefined') return 'dashboard';
+  return new URLSearchParams(window.location.search).get('screen') === 'couple-calendar'
+    ? 'couple-calendar'
+    : 'dashboard';
+}
+
 export default function App() {
   const [showLanding, setShowLanding] = useState(true);
   const [isPasswordRecovery, setIsPasswordRecovery] = useState(
@@ -219,7 +227,7 @@ export default function App() {
   const [activeTab, setActiveTabRaw] = useState(initialTabFromNotification);
   const [selectedScreen, setSelectedScreenRaw] = useState<
     string | null
-  >("dashboard");
+  >(initialScreenFromNotification);
 
   // Wrap navigation setters in startTransition so lazy-loaded screens
   // suspend gracefully instead of blocking synchronous input events.
@@ -1420,6 +1428,19 @@ export default function App() {
                       }
                     }}
                     user={user}
+                  />
+                )}
+
+              {activeTab === "home" &&
+                selectedScreen === "couple-calendar" &&
+                profile && accessToken && (
+                  <CoupleCalendar
+                    accessToken={accessToken}
+                    userId={profile.id}
+                    userName={profile.name}
+                    partnerName={partner?.name}
+                    onBack={() => setSelectedScreen("dashboard")}
+                    onPrayerChanged={loadUserData}
                   />
                 )}
 

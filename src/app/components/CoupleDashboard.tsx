@@ -48,6 +48,7 @@ import { moods as moodsApi, milestones as milestonesApi, questions as questionsA
 import { AddMilestoneDialog } from './AddMilestoneDialog';
 import { fetchAmharicChapter, getAmharicBookName } from '../utils/amharicBibleApi';
 import { ChampionsCard } from './ChampionsCard';
+import { coupleCalendarCopy } from '../data/couple-calendar';
 
 export interface CoupleDashboardProps {
   profile?: User;
@@ -395,6 +396,7 @@ export function CoupleDashboard({
   onStartQuestion,
 }: CoupleDashboardProps) {
   const { t, language } = useLanguage();
+  const calendarCopy = coupleCalendarCopy[language];
   // timeTogether state moved into TimerDisplay to prevent 60 re-renders/min on this component
   const [showMoodDialog, setShowMoodDialog] = useState(false);
   const [todayMood, setTodayMood] = useState<string | null>(null);
@@ -1332,6 +1334,28 @@ export function CoupleDashboard({
           </button>
         </div>
       </section>
+
+      {/* Couple Calendar — shared plans automatically carried into prayer */}
+      <button
+        type="button"
+        onClick={() => onScreenNavigate?.('couple-calendar')}
+        className="group relative w-full overflow-hidden rounded-[1.75rem] border border-rose-100 bg-gradient-to-br from-rose-50 via-white to-violet-50 p-5 text-left shadow-[0_16px_46px_rgba(83,45,67,0.08)] transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_52px_rgba(83,45,67,0.13)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
+      >
+        <div className="pointer-events-none absolute -right-8 -top-10 h-32 w-32 rounded-full bg-violet-200/30 blur-3xl" />
+        <div className="relative flex items-center gap-4">
+          <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-white text-rose-600 shadow-sm ring-1 ring-rose-100">
+            <Calendar className="h-6 w-6" aria-hidden="true" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[11px] font-black uppercase tracking-[.14em] text-rose-600">{calendarCopy.eyebrow}</span>
+            <span className="mt-1 block text-lg font-black text-slate-950">{calendarCopy.calendarCta}</span>
+            <span className="mt-0.5 block text-sm text-slate-500">{calendarCopy.calendarCtaHint}</span>
+          </span>
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-slate-950 text-white transition-transform group-hover:translate-x-0.5">
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </span>
+        </div>
+      </button>
 
       {/* Quick Stats Grid — neumorphic soft-shadow cards */}
       <div className="grid grid-cols-2 gap-3">

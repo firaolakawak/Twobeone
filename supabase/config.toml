@@ -56,6 +56,8 @@ max_client_conn = 100
 [db.vault]
 newsletter_project_url = "https://jhraxjlvmixhzvzbjjsw.supabase.co"
 newsletter_cron_secret = "env(NEWSLETTER_CRON_SECRET)"
+calendar_project_url = "https://jhraxjlvmixhzvzbjjsw.supabase.co"
+calendar_cron_secret = "env(CRON_SECRET)"
 
 [db.migrations]
 # If disabled, migrations will be skipped during a db push or reset.

@@ -9,6 +9,7 @@ import { webrtcRoutes } from './webrtc_routes.tsx';
 import pushRoutes from './push_routes.tsx';
 import newsletterRoutes from './newsletter_routes.tsx';
 import landingRoutes from './landing_routes.tsx';
+import calendarRoutes from './calendar_routes.tsx';
 import { setupAdminRoutes } from './admin_routes.tsx';
 import { setupRecoveryRoutes } from './recovery_routes.tsx';
 import { migrateSeederFlags, seedAllCategoryQuestions } from './seed_questions.tsx';
@@ -5848,6 +5849,7 @@ app.get('/make-server-6d579fee/devotions/:id/audio-url', async (c) => {
 // COMMUNITY ROUTES
 // ============================================
 app.route('/make-server-6d579fee', communityRoutes);
+app.route('/make-server-6d579fee', calendarRoutes);
 
 // ============================================
 // WEBRTC ROUTES
