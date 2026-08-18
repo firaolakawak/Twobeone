@@ -27,8 +27,60 @@ export interface Translations {
     tomorrow: string;
   };
 
+  // Language picker and global accessibility copy
+  language: {
+    select: string;
+    menu: string;
+    changedTo: string;
+  };
+
+  // Legal and account-management UI chrome
+  legal: {
+    documents: string;
+    documentsDescription: string;
+    privacyPolicy: string;
+    privacyDescription: string;
+    termsOfService: string;
+    termsDescription: string;
+    agreementRequired: string;
+    agreementDescription: string;
+    agreeTerms: string;
+    agreePrivacy: string;
+    viewTerms: string;
+    viewPrivacy: string;
+    importantNote: string;
+    partnerSharingNote: string;
+    continue: string;
+    mustAgree: string;
+  };
+
+  account: {
+    deleteAccount: string;
+    deleteDescription: string;
+    deleteWarning: string;
+    agreedDocuments: string;
+    connectedTitle: string;
+    connectedDescription: string;
+    disconnectFirst: string;
+    typeDeleteError: string;
+    deleteConfirmTitle: string;
+    deleteConfirmDescription: string;
+    journalData: string;
+    prayerData: string;
+    milestoneData: string;
+    progressData: string;
+    typeToConfirmPrefix: string;
+    typeToConfirmSuffix: string;
+    deletePlaceholder: string;
+    deleting: string;
+    deleteMyAccount: string;
+    deletedSuccess: string;
+    deletedError: string;
+  };
+
   // Navigation
   nav: {
+    primaryNavigation: string;
     home: string;
     devotions: string;
     journal: string;
@@ -437,7 +489,57 @@ export const translations: Record<Language, Translations> = {
       tomorrow: 'Tomorrow',
     },
 
+    language: {
+      select: 'Select language',
+      menu: 'Language options',
+      changedTo: 'Language set to',
+    },
+
+    legal: {
+      documents: 'Legal Documents',
+      documentsDescription: 'Review our privacy policy and terms of service',
+      privacyPolicy: 'Privacy Policy',
+      privacyDescription: 'How we collect, use, and protect your personal information',
+      termsOfService: 'Terms of Service',
+      termsDescription: 'Agreement and conditions for using the TwoBeOne app',
+      agreementRequired: 'Legal Agreement Required',
+      agreementDescription: 'Please read and agree to the following before continuing',
+      agreeTerms: 'I have read and agree to the Terms of Service',
+      agreePrivacy: 'I have read and agree to the Privacy Policy',
+      viewTerms: 'View Terms of Service',
+      viewPrivacy: 'View Privacy Policy',
+      importantNote: 'Important Note',
+      partnerSharingNote: 'By connecting with a partner, you agree that your partner will have access to your shared content. See the Privacy Policy for details.',
+      continue: 'Continue',
+      mustAgree: 'You must agree to both to continue',
+    },
+
+    account: {
+      deleteAccount: 'Delete Account',
+      deleteDescription: 'Permanently delete your account and all associated data',
+      deleteWarning: 'This action cannot be undone',
+      agreedDocuments: 'You agreed to these documents when you created your account.',
+      connectedTitle: 'Your account is connected to a partner',
+      connectedDescription: 'You must disconnect from your partner {partner} before you can delete your account. Go to the Partner section to disconnect.',
+      disconnectFirst: 'After disconnecting from your partner, you will be able to delete your account.',
+      typeDeleteError: 'Please type DELETE to confirm',
+      deleteConfirmTitle: 'Are you absolutely sure?',
+      deleteConfirmDescription: 'This permanently deletes your account and removes:',
+      journalData: 'All journal entries and events',
+      prayerData: 'All prayer requests',
+      milestoneData: 'All milestones and memories',
+      progressData: 'All progress and achievements',
+      typeToConfirmPrefix: 'Type ',
+      typeToConfirmSuffix: ' to confirm:',
+      deletePlaceholder: 'Type DELETE to confirm',
+      deleting: 'Deleting...',
+      deleteMyAccount: 'Delete My Account',
+      deletedSuccess: 'Account deleted successfully',
+      deletedError: 'Failed to delete account',
+    },
+
     nav: {
+      primaryNavigation: 'Primary navigation',
       home: 'Home',
       devotions: 'Devotions',
       journal: 'Journal',
@@ -862,7 +964,57 @@ export const translations: Record<Language, Translations> = {
       tomorrow: 'ነገ',
     },
 
+    language: {
+      select: 'ቋንቋ ይምረጡ',
+      menu: 'የቋንቋ አማራጮች',
+      changedTo: 'ቋንቋው ተቀይሯል ወደ',
+    },
+
+    legal: {
+      documents: 'ህጋዊ ሰነዶች',
+      documentsDescription: 'የግላዊነት ፖሊሲያችንን እና የአገልግሎት ውሎችን ይመልከቱ',
+      privacyPolicy: 'የግላዊነት ፖሊሲ',
+      privacyDescription: 'የግል መረጃዎን እንዴት እንሰበስባለን፣ እንጠቀማለን እና እንጠብቃለን',
+      termsOfService: 'የአገልግሎት ውሎች',
+      termsDescription: 'የTwoBeOne መተግበሪያን ለመጠቀም ስምምነት እና ሁኔታዎች',
+      agreementRequired: 'ህጋዊ ስምምነት ያስፈልጋል',
+      agreementDescription: 'እባክዎ ከመቀጠልዎ በፊት የሚከተሉትን ያንብቡ እና ይስማሙ',
+      agreeTerms: 'የአገልግሎት ውሎችን አንብቤ እስማማለሁ',
+      agreePrivacy: 'የግላዊነት ፖሊሲን አንብቤ እስማማለሁ',
+      viewTerms: 'የአገልግሎት ውሎችን ይመልከቱ',
+      viewPrivacy: 'የግላዊነት ፖሊሲን ይመልከቱ',
+      importantNote: 'አስፈላጊ ማስታወሻ',
+      partnerSharingNote: 'ከአጋር ጋር በመገናኘት አጋርዎ የተጋራ ይዘትዎን እንዲያገኝ ይስማማሉ። ለዝርዝሩ የግላዊነት ፖሊሲን ይመልከቱ።',
+      continue: 'ቀጥል',
+      mustAgree: 'ለመቀጠል ሁለቱንም መስማማት አለብዎ',
+    },
+
+    account: {
+      deleteAccount: 'መለያ ሰርዝ',
+      deleteDescription: 'መለያዎን እና ሁሉንም ተያያዥ ውሂብ በቋሚነት ይሰርዙ',
+      deleteWarning: 'ይህ እርምጃ ሊቀለበስ አይችልም',
+      agreedDocuments: 'መለያዎን ሲፈጥሩ በእነዚህ ሰነዶች ተስማምተዋል።',
+      connectedTitle: 'መለያዎ ከአጋርዎ ጋር ተገናኝቷል',
+      connectedDescription: 'መለያዎን ከመሰረዝዎ በፊት ከአጋርዎ {partner} ጋር መለያየት አለብዎት። ለመለያየት ወደ አጋር ክፍል ይሂዱ።',
+      disconnectFirst: 'ከአጋርዎ ከተለያዩ በኋላ መለያዎን መሰረዝ ይችላሉ።',
+      typeDeleteError: 'ለማረጋገጥ DELETE ይተይቡ',
+      deleteConfirmTitle: 'በእርግጠኝነት ይህን ማድረግ ይፈልጋሉ?',
+      deleteConfirmDescription: 'ይህ መለያዎን በቋሚነት ይሰርዛል እና የሚከተሉትን ያስወግዳል፦',
+      journalData: 'ሁሉም የማስታወሻ ግቤቶች እና ክስተቶች',
+      prayerData: 'ሁሉም የጸሎት ጥያቄዎች',
+      milestoneData: 'ሁሉም ምዕራፎች እና ትውስታዎች',
+      progressData: 'ሁሉም እድገቶች እና ስኬቶች',
+      typeToConfirmPrefix: 'ለማረጋገጥ ',
+      typeToConfirmSuffix: ' ይተይቡ፦',
+      deletePlaceholder: 'ለማረጋገጥ DELETE ይተይቡ',
+      deleting: 'በመሰረዝ ላይ...',
+      deleteMyAccount: 'መለያዬን ሰርዝ',
+      deletedSuccess: 'መለያ በተሳካ ሁኔታ ተሰርዟል',
+      deletedError: 'መለያ መሰረዝ አልተሳካም',
+    },
+
     nav: {
+      primaryNavigation: 'ዋና አሰሳ',
       home: 'መነሻ',
       devotions: 'የእምነት ጥናት',
       journal: 'ማስታወሻ',
@@ -1286,7 +1438,54 @@ export const translations: Record<Language, Translations> = {
       yesterday: 'Kaleessa',
       tomorrow: 'Boru',
     },
+    language: {
+      select: 'Afaan filadhu',
+      menu: 'Filannoowwan afaanii',
+      changedTo: 'Afaan jijjiirame gara',
+    },
+    legal: {
+      documents: 'Sanadoota Seeraa',
+      documentsDescription: 'Imaammata dhuunfaa fi haala tajaajilaa keenya ilaali',
+      privacyPolicy: 'Imaammata Dhuunfaa',
+      privacyDescription: 'Akkaataa odeeffannoo dhuunfaa kee walitti qabnu, itti fayyadamnu fi eegnu',
+      termsOfService: 'Haala Tajaajilaa',
+      termsDescription: 'Waliigaltee fi haala appii TwoBeOne itti fayyadamuu',
+      agreementRequired: 'Waliigalteen Seeraa Barbaachisa',
+      agreementDescription: 'Itti fufuu kee dura kanneen armaan gadii dubbisiitii irratti walii gali',
+      agreeTerms: 'Haala Tajaajilaa dubbisee irratti walii galeera',
+      agreePrivacy: 'Imaammata Dhuunfaa dubbisee irratti walii galeera',
+      viewTerms: 'Haala Tajaajilaa Ilaali',
+      viewPrivacy: 'Imaammata Dhuunfaa Ilaali',
+      importantNote: 'Yaadannoo Barbaachisaa',
+      partnerSharingNote: 'Michuu waliin wal qunnamsiisuun, michuun kee qabiyyee ati qoodde akka argatu irratti walii galta. Balʼinaaf Imaammata Dhuunfaa ilaali.',
+      continue: 'Itti fufi',
+      mustAgree: 'Itti fufuuf lamaanuu irratti walii galuu qabda',
+    },
+    account: {
+      deleteAccount: 'Herrega Haqi',
+      deleteDescription: 'Herrega kee fi odeeffannoo isa waliin walqabatu hunda guutumaan guutuutti haqi',
+      deleteWarning: 'Tarkaanfiin kun deebiʼuu hin dandaʼu',
+      agreedDocuments: 'Yeroo herrega kee uumte sanadoota kana irratti walii galteetta.',
+      connectedTitle: 'Herregni kee michuu waliin wal qunnameera',
+      connectedDescription: 'Herrega kee haquu kee dura michuu kee {partner} irraa addaan bahuu qabda. Addaan bahuuf gara kutaa Michuutti deemi.',
+      disconnectFirst: 'Erga michuu kee irraa addaan baatee booda herrega kee haquu dandeessa.',
+      typeDeleteError: 'Mirkaneessuuf DELETE barreessi',
+      deleteConfirmTitle: 'Dhugumaan kana gochuu barbaaddaa?',
+      deleteConfirmDescription: 'Kun herrega kee guutumaan guutuutti haqa; kanneen armaan gadiis ni balleessa:',
+      journalData: 'Galmeewwan yaadannoo fi taateewwan hunda',
+      prayerData: 'Gaaffilee kadhannaa hunda',
+      milestoneData: 'Milkaaʼinaawwan fi yaadannoowwan hunda',
+      progressData: 'Guddinaa fi galmawwan hunda',
+      typeToConfirmPrefix: 'Mirkaneessuuf ',
+      typeToConfirmSuffix: ' barreessi:',
+      deletePlaceholder: 'Mirkaneessuuf DELETE barreessi',
+      deleting: 'Haqamaa jira...',
+      deleteMyAccount: 'Herrega Koo Haqi',
+      deletedSuccess: 'Herregni milkaaʼinaan haqameera',
+      deletedError: 'Herrega haquun hin milkoofne',
+    },
     nav: {
+      primaryNavigation: 'Qajeelcha ijoo',
       home: 'Mana',
       devotions: 'Kaayyoo Amantii',
       journal: 'Yaadannoo',

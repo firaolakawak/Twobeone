@@ -26,7 +26,7 @@ export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTa
       style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)' }}
     >
       <nav
-        aria-label="Primary navigation"
+        aria-label={t.nav.primaryNavigation}
         className="pointer-events-auto mx-auto max-w-lg rounded-[1.75rem] border border-white/90 bg-white/88 px-1.5 shadow-[0_-2px_10px_rgba(83,45,67,0.03),0_16px_45px_rgba(83,45,67,0.18)] ring-1 ring-neutral-950/[0.04] backdrop-blur-2xl"
       >
         <div className="flex h-14 items-center justify-around px-1 py-1">

@@ -433,7 +433,7 @@ export function SettingsScreen({
 
   const handleDeleteAccount = async () => {
     if (deleteConfirmText !== 'DELETE') {
-      toast.error('Please type DELETE to confirm');
+      toast.error(t.account.typeDeleteError);
       return;
     }
 
@@ -454,12 +454,7 @@ export function SettingsScreen({
         
         // Check if user is connected to a partner
         if (errorData.code === 'PARTNER_CONNECTED') {
-          toast.error(
-            language === 'am' 
-              ? 'መለያዎን በአጋርዎ ከተገናኘ በኋላ መሰረዝ አይችሉም። በመጀመሪያ ከአጋርዎ ያላቀቁ።' 
-              : 'Cannot delete account while connected to a partner. Please disconnect from your partner first.',
-            { duration: 6000 }
-          );
+          toast.error(t.account.disconnectFirst, { duration: 6000 });
           setIsDeleting(false);
           setShowDeleteDialog(false);
           return;
@@ -468,14 +463,14 @@ export function SettingsScreen({
         throw new Error(errorData.error || 'Failed to delete account');
       }
 
-      toast.success(language === 'am' ? 'መለያ በተሳካ ሁኔታ ተሰርዟል' : 'Account deleted successfully');
+      toast.success(t.account.deletedSuccess);
       // Sign out and redirect
       setTimeout(() => {
         onSignOut();
       }, 1500);
     } catch (error) {
       console.error('Failed to delete account:', error);
-      toast.error(language === 'am' ? 'መለያ መሰረዝ አልተሳካም' : 'Failed to delete account');
+      toast.error(t.account.deletedError);
       setIsDeleting(false);
     }
   };
@@ -1455,12 +1450,10 @@ export function SettingsScreen({
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Scale className="w-5 h-5" />
-                  {language === 'am' ? 'ህጋዊ ሰነዶች' : 'Legal Documents'}
+                  {t.legal.documents}
                 </CardTitle>
                 <CardDescription>
-                  {language === 'am' 
-                    ? 'የግላዊነት መመሪያችንን እና የአገልግሎት ውሎቻችንን ይመልከቱ' 
-                    : 'View our Privacy Policy and Terms of Service'}
+                  {t.legal.documentsDescription}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -1470,7 +1463,7 @@ export function SettingsScreen({
                   onClick={() => setShowPrivacyPolicy(true)}
                 >
                   <FileText className="w-4 h-4 mr-2" />
-                  {language === 'am' ? 'የግላዊነት መመሪያ' : 'Privacy Policy'}
+                  {t.legal.privacyPolicy}
                 </Button>
                 
                 <Button 
@@ -1479,13 +1472,11 @@ export function SettingsScreen({
                   onClick={() => setShowTermsOfService(true)}
                 >
                   <Scale className="w-4 h-4 mr-2" />
-                  {language === 'am' ? 'የአገልግሎት ውሎች' : 'Terms of Service'}
+                  {t.legal.termsOfService}
                 </Button>
 
                 <div className="pt-2 text-xs text-muted-foreground">
-                  {language === 'am' 
-                    ? 'በመለያ ማቆያ ጊዜ እነዚህን ሰነዶች ተስማምተዋል።' 
-                    : 'You agreed to these documents when you created your account.'}
+                  {t.account.agreedDocuments}
                 </div>
               </CardContent>
             </Card>
@@ -1494,7 +1485,7 @@ export function SettingsScreen({
 
         {/* Legal Footer */}
         <div className="mt-8">
-          <LegalFooter />
+          <LegalFooter language={language} />
         </div>
       </div>
 
@@ -1504,7 +1495,7 @@ export function SettingsScreen({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-error-500">
               <AlertTriangle className="w-6 h-6" />
-              {language === 'am' ? 'መለያ ሰርዝ' : 'Delete Account'}
+              {t.account.deleteAccount}
             </DialogTitle>
             <DialogDescription className="space-y-2 pt-4">
               {profile?.partnerId ? (
@@ -1515,45 +1506,37 @@ export function SettingsScreen({
                       <AlertTriangle className="w-5 h-5 text-warning-700 mt-0.5 flex-shrink-0" />
                       <div className="space-y-2">
                         <p className="font-semibold text-warning-700">
-                          {language === 'am' 
-                            ? 'መለያዎ ከአጋርዎ ጋር ተገናኝቷል' 
-                            : 'Your account is connected to a partner'}
+                          {t.account.connectedTitle}
                         </p>
                         <p className="text-sm text-warning-700">
-                          {language === 'am' 
-                            ? `መለያዎን ከማጥፍዎ በፊት ከአጋርዎ ${partner?.name || ''} ጋር መለያየት አለብዎት። ከአጋርዎ ለመለያየት ወደ አጋር ማቆያ ክፍል ይሂዱ።`
-                            : `You must disconnect from your partner ${partner?.name || ''} before you can delete your account. Go to the Partner section to disconnect.`}
+                          {t.account.connectedDescription.replace('{partner}', partner?.name || '')}
                         </p>
                       </div>
                     </div>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {language === 'am' 
-                      ? 'ከአጋርዎ ከተለያዩ በኋላ መለያዎን መሰረዝ ይችላሉ።' 
-                      : 'After disconnecting from your partner, you will be able to delete your account.'}
+                    {t.account.disconnectFirst}
                   </p>
                 </div>
               ) : (
                 // Show normal delete warning if not connected
                 <>
                   <p className="font-medium text-foreground">
-                    {language === 'am' ? 'በእርግጠኝነት ይህንን ማድረግ ይፈልጋሉ?' : 'Are you absolutely sure?'}
+                    {t.account.deleteConfirmTitle}
                   </p>
                   <p>
-                    {language === 'am' 
-                      ? 'ይህ እርምጃ መለስ ሊል አይችልም። ይህ መለያዎን እና ሁሉንም መረጃዎን በቋሚነት ይሰርዛል፡-' 
-                      : 'This action cannot be undone. This will permanently delete your account and remove all your data including:'}
+                    {t.account.deleteConfirmDescription}
                   </p>
                   <ul className="list-disc list-inside space-y-1 text-sm">
-                    <li>{language === 'am' ? 'ሁሉም የማስታወሻ ግቤቶች እና ክስተቶች' : 'All journal entries and events'}</li>
-                    <li>{language === 'am' ? 'ሁሉም የጸሎት ጥያቄዎች' : 'All prayer requests'}</li>
-                    <li>{language === 'am' ? 'ሁሉም ማዕረግ እና ትውስታዎች' : 'All milestones and memories'}</li>
-                    <li>{language === 'am' ? 'ሁሉም እድገቶች እና ስኬቶች' : 'All progress and achievements'}</li>
+                    <li>{t.account.journalData}</li>
+                    <li>{t.account.prayerData}</li>
+                    <li>{t.account.milestoneData}</li>
+                    <li>{t.account.progressData}</li>
                   </ul>
                   <p className="mt-4 font-medium">
-                    {language === 'am' ? 'ለማረጋገጥ ' : 'Type '}
+                    {t.account.typeToConfirmPrefix}
                     <span className="font-bold text-error-500">DELETE</span>
-                    {language === 'am' ? ' ይተይቡ፡' : ' to confirm:'}
+                    {t.account.typeToConfirmSuffix}
                   </p>
                 </>
               )}
@@ -1564,7 +1547,7 @@ export function SettingsScreen({
               <Input
                 value={deleteConfirmText}
                 onChange={(e) => setDeleteConfirmText(e.target.value)}
-                placeholder={language === 'am' ? 'DELETE ይተይቡ' : 'Type DELETE to confirm'}
+                placeholder={t.account.deletePlaceholder}
                 className="border-error-500/50 focus:border-error-500"
               />
             </div>
@@ -1578,7 +1561,7 @@ export function SettingsScreen({
               }}
               disabled={isDeleting}
             >
-              {language === 'am' ? 'ሰርዝ' : 'Cancel'}
+              {t.common.cancel}
             </Button>
             {!profile?.partnerId && (
               <Button
@@ -1586,9 +1569,7 @@ export function SettingsScreen({
                 onClick={handleDeleteAccount}
                 disabled={deleteConfirmText !== 'DELETE' || isDeleting}
               >
-                {isDeleting 
-                  ? (language === 'am' ? 'በመሰረዝ ላይ...' : 'Deleting...') 
-                  : (language === 'am' ? 'መለያዬን ሰርዝ' : 'Delete My Account')}
+                {isDeleting ? t.account.deleting : t.account.deleteMyAccount}
               </Button>
             )}
           </DialogFooter>
@@ -1693,16 +1674,14 @@ export function SettingsScreen({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <FileText className="w-5 h-5" />
-              {language === 'am' ? 'የግላዊነት መመሪያ' : 'Privacy Policy'}
+              {t.legal.privacyPolicy}
             </DialogTitle>
             <DialogDescription>
-              {language === 'am' 
-                ? 'የግላዊ መረጃዎን እንዴት እንሰበስብ፣ እንጠቀም እና እንጠብቅ' 
-                : 'How we collect, use, and protect your personal information'}
+              {t.legal.privacyDescription}
             </DialogDescription>
           </DialogHeader>
           <div className="overflow-y-auto flex-1">
-            <PrivacyPolicy language={language as 'en' | 'am'} />
+            <PrivacyPolicy language={language} />
           </div>
         </DialogContent>
       </Dialog>
@@ -1713,16 +1692,14 @@ export function SettingsScreen({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Scale className="w-5 h-5" />
-              {language === 'am' ? 'የአገልግሎት ውሎች' : 'Terms of Service'}
+              {t.legal.termsOfService}
             </DialogTitle>
             <DialogDescription>
-              {language === 'am' 
-                ? 'የቱቤዎንን መተግበሪያ የመጠቀም ውል እና ሁኔታዎች' 
-                : 'Agreement and conditions for using TwoBeOne app'}
+              {t.legal.termsDescription}
             </DialogDescription>
           </DialogHeader>
           <div className="overflow-y-auto flex-1">
-            <TermsOfService language={language as 'en' | 'am'} />
+            <TermsOfService language={language} />
           </div>
         </DialogContent>
       </Dialog>

@@ -20,6 +20,7 @@ export function PushNotificationSetup({ userId, accessToken, onComplete, reminde
   const [showDialog, setShowDialog] = useState(false);
   const [notificationStatus, setNotificationStatus] = useState<'unknown' | 'granted' | 'denied' | 'prompt'>('unknown');
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [hasCheckedSubscription, setHasCheckedSubscription] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -27,7 +28,10 @@ export function PushNotificationSetup({ userId, accessToken, onComplete, reminde
   }, []);
 
   useEffect(() => {
-    if (!reminderOnly || notificationStatus === 'unknown' || isSubscribed) return;
+    // Wait for the full subscription check before deciding whether to remind.
+    // This allows a reminder for every genuinely disabled state without flashing
+    // a dialog while an enabled subscription is still loading.
+    if (!reminderOnly || !hasCheckedSubscription || notificationStatus === 'unknown' || isSubscribed) return;
     const reminderKey = `twobeone_push_reminder:${userId}`;
     if (sessionStorage.getItem(reminderKey)) return;
 
@@ -36,11 +40,12 @@ export function PushNotificationSetup({ userId, accessToken, onComplete, reminde
       setShowDialog(true);
     }, 1200);
     return () => window.clearTimeout(timer);
-  }, [isSubscribed, notificationStatus, reminderOnly, userId]);
+  }, [hasCheckedSubscription, isSubscribed, notificationStatus, reminderOnly, userId]);
 
   const checkNotificationStatus = async () => {
     if (!('Notification' in window)) {
       setNotificationStatus('denied');
+      setHasCheckedSubscription(true);
       return;
     }
 
@@ -80,6 +85,7 @@ export function PushNotificationSetup({ userId, accessToken, onComplete, reminde
         console.error('[PushNotification] Error checking subscription:', error);
       }
     }
+    setHasCheckedSubscription(true);
   };
 
   const handleEnableNotifications = async () => {
@@ -213,71 +219,14 @@ export function PushNotificationSetup({ userId, accessToken, onComplete, reminde
       } catch (apiError) {
         console.error('[PushNotification] API error:', apiError);
         // Continue anyway - subscription is local, backend can be updated later
-        toast.success(t.notifications.notificationsOn);
       }
 
       setIsSubscribed(true);
-      toast.success(t.notifications.notificationsOn);
-      
-      // Show a test notification
-      setTimeout(() => {
-        if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.ready.then(registration => {
-            registration.showNotification('TwoBeOne', {
-              body: 'Notifications are now enabled! Stay connected with your partner.',
-              icon: '/icons/icon-192x192.png',
-              badge: '/icons/icon-72x72.png',
-              tag: 'welcome-notification'
-            });
-          }).catch(err => {
-            console.error('[PushNotification] Test notification error:', err);
-          });
-        }
-      }, 1000);
 
       setShowDialog(false);
       onComplete?.();
     } catch (error) {
       console.error('[PushNotification] Setup error:', error);
-      toast.error(t.messages.errorOccurred);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDisableNotifications = async () => {
-    setIsLoading(true);
-
-    try {
-      // Unsubscribe from backend
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/push-subscription`,
-        {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${accessToken}`
-          }
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to remove subscription');
-      }
-
-      // Unsubscribe locally
-      if ('serviceWorker' in navigator) {
-        const registration = await navigator.serviceWorker.ready;
-        const subscription = await registration.pushManager.getSubscription();
-        if (subscription) {
-          await subscription.unsubscribe();
-        }
-      }
-
-      setIsSubscribed(false);
-      toast.success(t.notifications.notificationsOff);
-      setShowDialog(false);
-    } catch (error) {
-      console.error('[PushNotification] Disable error:', error);
       toast.error(t.messages.errorOccurred);
     } finally {
       setIsLoading(false);
@@ -408,19 +357,9 @@ export function PushNotificationSetup({ userId, accessToken, onComplete, reminde
             {/* Action Buttons */}
             <div className="flex gap-3 pt-4">
               {isSubscribed ? (
-                <>
-                  <Button variant="outline" className="flex-1" onClick={() => setShowDialog(false)}>
-                    {t.common.close}
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    className="flex-1"
-                    onClick={handleDisableNotifications}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? t.common.loading : t.notifications.disableNotifications}
-                  </Button>
-                </>
+                <Button variant="outline" className="w-full" onClick={() => setShowDialog(false)}>
+                  {t.common.close}
+                </Button>
               ) : notificationStatus === 'denied' ? (
                 <div className="w-full">
                   <p className="text-sm text-muted-foreground mb-3">
@@ -446,11 +385,6 @@ export function PushNotificationSetup({ userId, accessToken, onComplete, reminde
                 </>
               )}
             </div>
-
-            {/* Privacy note */}
-            <p className="text-xs text-muted-foreground text-center">
-              {t.notifications.disableNotifications}
-            </p>
           </div>
           )}
         </DialogContent>

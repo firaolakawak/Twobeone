@@ -302,10 +302,21 @@ export default function App() {
       partnerPreferences?.notificationSettings?.pushNotifications !== false,
   });
 
-  const currentLangCode =
-    localStorage.getItem("twobeone_language") || "en";
+  const [currentLangCode, setCurrentLangCode] = useState<"en" | "am" | "om">(() => {
+    const saved = typeof window === "undefined" ? null : window.localStorage.getItem("twobeone_language");
+    return saved === "am" || saved === "om" ? saved : "en";
+  });
   const vocabulary =
     APP_TRANSLATIONS[currentLangCode] || APP_TRANSLATIONS.en;
+
+  useEffect(() => {
+    const handleLanguageChange = (event: Event) => {
+      const next = (event as CustomEvent<string>).detail;
+      if (next === "en" || next === "am" || next === "om") setCurrentLangCode(next);
+    };
+    window.addEventListener("twobeone:language-change", handleLanguageChange);
+    return () => window.removeEventListener("twobeone:language-change", handleLanguageChange);
+  }, []);
 
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
@@ -341,21 +352,6 @@ export default function App() {
 
   useEffect(() => {
     warmUpServer();
-  }, []);
-
-  useEffect(() => {
-    const lang = localStorage.getItem("twobeone_language");
-    if (lang === "am" || lang === "om") {
-      const id = "ethiopic-font";
-      if (!document.getElementById(id)) {
-        const link = document.createElement("link");
-        link.id = id;
-        link.rel = "stylesheet";
-        link.href =
-          "https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wdth,wght@75..125,100..900&display=swap";
-        document.head.appendChild(link);
-      }
-    }
   }, []);
 
   const loadUserDataRef = useRef<
@@ -1769,9 +1765,7 @@ export default function App() {
             />
 
             <LegalFooter
-              language={
-                (profile?.language as "en" | "am") || "en"
-              }
+              language={currentLangCode}
             />
             </Suspense>
           </div>

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Globe, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { languages, Language } from '../utils/i18n';
+import { getTranslations, languages, Language } from '../utils/i18n';
 import { toast } from 'sonner';
 import { projectId } from '../utils/supabase/info';
 
@@ -17,7 +17,7 @@ export function LanguageSelector({
   accessToken,
   userId,
 }: LanguageSelectorProps) {
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -43,7 +43,7 @@ export function LanguageSelector({
     setOpen(false);
     setLanguage(code);
     const langName = languages.find(l => l.code === code)?.nativeName;
-    toast.success(`Language set to ${langName}`);
+    toast.success(`${getTranslations(code).language.changedTo} ${langName}`);
 
     if (accessToken && userId) {
       try {
@@ -66,8 +66,9 @@ export function LanguageSelector({
       {/* Borderless icon button */}
       <button
         onClick={() => setOpen(v => !v)}
-        aria-label="Select language"
+        aria-label={t.language.select}
         aria-expanded={open}
+        aria-haspopup="menu"
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -111,6 +112,7 @@ export function LanguageSelector({
               overflow: 'hidden',
             }}
             role="menu"
+            aria-label={t.language.menu}
           >
             {languages.map((lang) => {
               const isActive = language === lang.code;

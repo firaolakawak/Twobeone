@@ -1,9 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { ScrollArea } from '../components/ui/scroll-area';
 import { Shield, Mail, MapPin, Heart, Database, Lock } from 'lucide-react';
+import type { Language } from '../utils/i18n';
 
 interface PrivacyPolicyProps {
-  language?: 'en' | 'am';
+  language?: Language;
 }
 
 export function PrivacyPolicy({ language = 'en' }: PrivacyPolicyProps) {

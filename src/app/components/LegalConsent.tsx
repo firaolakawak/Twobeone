@@ -6,9 +6,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Shield, FileText, AlertCircle } from 'lucide-react';
 import { PrivacyPolicy } from '../legal/privacy-policy';
 import { TermsOfService } from '../legal/terms-of-service';
+import { getTranslations, Language } from '../utils/i18n';
 
 interface LegalConsentProps {
-  language?: 'en' | 'am';
+  language?: Language;
   onAccept: () => void;
   isLoading?: boolean;
 }
@@ -21,29 +22,7 @@ export function LegalConsent({ language = 'en', onAccept, isLoading = false }: L
 
   const canProceed = agreedToTerms && agreedToPrivacy;
 
-  const content = language === 'am' ? {
-    title: 'ህጋዊ ስምምነት ያስፈልጋል',
-    description: 'እባክዎ ከመቀጠልዎ በፊት የሚከተሉትን ይንብቡ እና ይስማሙ',
-    agreeTerms: 'የአገልግሎት ውሎችን አንብቤ እስማማለሁ',
-    agreePrivacy: 'የግላዊነት ፖሊሲን አንብቤ እስማማለሁ',
-    viewTerms: 'የአገልግሎት ውሎችን ይመልከቱ',
-    viewPrivacy: 'የግላዊነት ፖሊሲን ይመልከቱ',
-    importantNote: 'አስፈላጊ ማስታወሻ',
-    noteText: 'ከአጋር ጋር በመገናኘት፣ አጋርዎ የተጋራ ይዘትዎን እንደሚደርስ ይስማማሉ። ለበለጠ ዝርዝር የግላዊነት ፖሊሲን ይመልከቱ።',
-    continue: 'ቀጥል',
-    mustAgree: 'ለመቀጠል ሁለቱንም መስማማት አለብዎ'
-  } : {
-    title: 'Legal Agreement Required',
-    description: 'Please read and agree to the following before continuing',
-    agreeTerms: 'I have read and agree to the Terms of Service',
-    agreePrivacy: 'I have read and agree to the Privacy Policy',
-    viewTerms: 'View Terms of Service',
-    viewPrivacy: 'View Privacy Policy',
-    importantNote: 'Important Note',
-    noteText: 'By connecting with a partner, you agree that your partner will have access to your shared content. See Privacy Policy for details.',
-    continue: 'Continue',
-    mustAgree: 'You must agree to both to continue'
-  };
+  const content = getTranslations(language).legal;
 
   return (
     <>
@@ -54,7 +33,7 @@ export function LegalConsent({ language = 'en', onAccept, isLoading = false }: L
             <AlertCircle className="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" />
             <div>
               <h4 className="font-semibold text-primary-900 mb-1">{content.importantNote}</h4>
-              <p className="text-sm text-primary-800">{content.noteText}</p>
+              <p className="text-sm text-primary-800">{content.partnerSharingNote}</p>
             </div>
           </div>
         </div>
@@ -143,12 +122,10 @@ export function LegalConsent({ language = 'en', onAccept, isLoading = false }: L
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Shield className="w-5 h-5" />
-              {language === 'am' ? 'የግላዊነት ፖሊሲ' : 'Privacy Policy'}
+              {content.privacyPolicy}
             </DialogTitle>
             <DialogDescription>
-              {language === 'am' 
-                ? 'የግላዊ መረጃዎን እንዴት እንሰበስብ፣ እንጠቀም እና እንጠብቅ' 
-                : 'How we collect, use, and protect your personal information'}
+              {content.privacyDescription}
             </DialogDescription>
           </DialogHeader>
           <div className="overflow-y-auto flex-1">
@@ -163,12 +140,10 @@ export function LegalConsent({ language = 'en', onAccept, isLoading = false }: L
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <FileText className="w-5 h-5" />
-              {language === 'am' ? 'የአገልግሎት ውል' : 'Terms of Service'}
+              {content.termsOfService}
             </DialogTitle>
             <DialogDescription>
-              {language === 'am' 
-                ? 'የቱቤዎንን መተግበሪያ የመጠቀም ውል እና ሁኔታዎች' 
-                : 'Agreement and conditions for using TwoBeOne app'}
+              {content.termsDescription}
             </DialogDescription>
           </DialogHeader>
           <div className="overflow-y-auto flex-1">

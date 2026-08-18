@@ -13,6 +13,13 @@ vi.mock('../admin/ShabbatShalomConsole', () => ({
 describe('AdminPanel Shabbat Shalom navigation', () => {
   afterEach(cleanup);
 
+  it('does not render Shabbat Shalom on the Admin Dashboard home', () => {
+    render(<AdminPanel accessToken="admin-token" onSignOut={vi.fn()} />);
+
+    expect(screen.getByText('Admin dashboard content')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Dedicated Shabbat Shalom console' })).not.toBeInTheDocument();
+  });
+
   it('opens Shabbat Shalom from its dedicated sidebar item', async () => {
     render(<AdminPanel accessToken="admin-token" onSignOut={vi.fn()} />);
 

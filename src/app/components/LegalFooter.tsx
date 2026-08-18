@@ -4,14 +4,16 @@ import { FileText, Shield } from 'lucide-react';
 import { useState } from 'react';
 import { PrivacyPolicy } from '../legal/privacy-policy';
 import { TermsOfService } from '../legal/terms-of-service';
+import { getTranslations, Language } from '../utils/i18n';
 
 interface LegalFooterProps {
-  language?: 'en' | 'am';
+  language?: Language;
 }
 
 export function LegalFooter({ language = 'en' }: LegalFooterProps) {
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
+  const copy = getTranslations(language).legal;
 
   return (
     <>
@@ -23,12 +25,10 @@ export function LegalFooter({ language = 'en' }: LegalFooterProps) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Shield className="w-5 h-5" />
-              {language === 'am' ? 'የግላዊነት ፖሊሲ' : 'Privacy Policy'}
+              {copy.privacyPolicy}
             </DialogTitle>
             <DialogDescription>
-              {language === 'am' 
-                ? 'የግላዊ መረጃዎን እንዴት እንሰበስብ፣ እንጠቀም እና እንጠብቅ' 
-                : 'How we collect, use, and protect your personal information'}
+              {copy.privacyDescription}
             </DialogDescription>
           </DialogHeader>
           <div className="overflow-y-auto flex-1">
@@ -43,12 +43,10 @@ export function LegalFooter({ language = 'en' }: LegalFooterProps) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <FileText className="w-5 h-5" />
-              {language === 'am' ? 'የአገልግሎት ውል' : 'Terms of Service'}
+              {copy.termsOfService}
             </DialogTitle>
             <DialogDescription>
-              {language === 'am' 
-                ? 'የቱቤዎንን መተግበሪያ የመጠቀም ውል እና ሁኔታዎች' 
-                : 'Agreement and conditions for using TwoBeOne app'}
+              {copy.termsDescription}
             </DialogDescription>
           </DialogHeader>
           <div className="overflow-y-auto flex-1">

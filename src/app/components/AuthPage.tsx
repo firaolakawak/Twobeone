@@ -44,7 +44,7 @@ export function AuthPage({ onAuthSuccess }: AuthPageProps) {
     email: string; password: string; name: string;
   } | null>(null);
 
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const switchMode = (mode: AuthMode) => {
     setAuthMode(mode);
@@ -694,15 +694,15 @@ export function AuthPage({ onAuthSuccess }: AuthPageProps) {
           }}>
             <div style={{ padding: 'var(--spacing-6)', borderBottom: '1px solid var(--border)' }}>
               <h2 style={{ margin: 0, fontSize: 'var(--text-heading)', fontWeight: 'var(--font-weight-bold)', color: 'var(--foreground)' }}>
-                Legal Agreement Required
+                {t.legal.agreementRequired}
               </h2>
               <p style={{ margin: 'var(--spacing-1) 0 0', fontSize: 'var(--text-caption)', color: 'var(--muted-foreground)' }}>
-                Please review and accept our legal documents to continue
+                {t.legal.agreementDescription}
               </p>
             </div>
             <div style={{ flex: 1, overflowY: 'auto', padding: 'var(--spacing-6)' }}>
               <LegalConsent
-                language={t.currentLanguage as 'en' | 'am'}
+                language={language}
                 onAccept={handleLegalConsentAccepted}
                 isLoading={isLoading}
               />

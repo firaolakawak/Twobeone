@@ -1,9 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { ScrollArea } from '../components/ui/scroll-area';
 import { FileText, AlertTriangle, Heart, Shield, Users, Ban } from 'lucide-react';
+import type { Language } from '../utils/i18n';
 
 interface TermsOfServiceProps {
-  language?: 'en' | 'am';
+  language?: Language;
 }
 
 export function TermsOfService({ language = 'en' }: TermsOfServiceProps) {

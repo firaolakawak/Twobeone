@@ -19,6 +19,7 @@ describe("AdminDashboard", () => {
     expect(screen.getByRole("heading", { name: "Recent activity" })).toBeInTheDocument();
     expect(await screen.findByLabelText("Content workflow board")).toBeInTheDocument();
     expect(screen.getByRole("navigation", { name: "Quick actions" })).toBeInTheDocument();
+    expect(screen.queryByText("Shabbat Shalom")).not.toBeInTheDocument();
   });
 
   it("renders database KPI data even when recent activity fails", async () => {

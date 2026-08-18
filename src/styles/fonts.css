@@ -1,1 +1,1 @@
-/* Noto Sans Ethiopic loaded on-demand via JS when language = am or om (see App.tsx) */
+/* Noto Sans Ethiopic is loaded on demand by LanguageContext when the UI uses Amharic or Afaan Oromo. */
