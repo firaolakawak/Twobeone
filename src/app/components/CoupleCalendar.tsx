@@ -10,6 +10,7 @@ import {
   CalendarDraft, CalendarItemType, CalendarRecurrence, CoupleCalendarItem,
   coupleCalendarCopy, getMonthGridDays, getWeekDays, getYearMonths, isSameLocalDay, occursOnDay, startOfWeek,
 } from '../data/couple-calendar';
+import { createClient } from '../utils/supabase/client';
 import { projectId } from '../utils/supabase/info';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
@@ -348,13 +349,27 @@ export function CoupleCalendar({
     if (!draft.title.trim() || !draft.startsAt) return;
     setSaving(true);
     try {
-      const response = await fetch(editingItem ? `${apiUrl}/${editingItem.id}` : apiUrl, {
+      const url = editingItem ? `${apiUrl}/${editingItem.id}` : apiUrl;
+      const request: RequestInit = {
         method: editingItem ? 'PUT' : 'POST',
         headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...draft, startsAt: new Date(draft.startsAt).toISOString(), endsAt: draft.endsAt ? new Date(draft.endsAt).toISOString() : null }),
-      });
+      };
+      let response = await fetch(url, request);
+      if (response.status === 401) {
+        const { data: refreshed } = await createClient().auth.refreshSession();
+        const freshToken = refreshed.session?.access_token;
+        if (!freshToken) throw new Error(copy.sessionExpired);
+        response = await fetch(url, { ...request, headers: { ...request.headers, Authorization: `Bearer ${freshToken}` } });
+      }
       const data = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(data.error || 'Calendar save failed');
+      if (!response.ok) {
+        if (response.status === 401) throw new Error(copy.sessionExpired);
+        if (response.status === 400) throw new Error(copy.invalidPlan);
+        if (response.status === 404) throw new Error(copy.calendarUnavailable);
+        if (response.status >= 500) throw new Error(copy.serverUnavailable);
+        throw new Error(data.error || copy.failed);
+      }
       setItems(current => editingItem
         ? current.map(item => item.id === editingItem.id ? data.item : item)
         : [data.item, ...current]);
@@ -365,7 +380,10 @@ export function CoupleCalendar({
       await loadItems(true);
     } catch (error) {
       console.error('[CoupleCalendar] Save failed:', error);
-      toast.error(copy.failed);
+      const message = error instanceof TypeError
+        ? copy.connectionFailed
+        : error instanceof Error ? error.message : copy.failed;
+      toast.error(message);
     } finally {
       setSaving(false);
     }
