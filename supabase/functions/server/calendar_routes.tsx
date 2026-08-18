@@ -50,6 +50,11 @@ function resolveLanguage(value: unknown): Language {
   return value === 'am' || value === 'om' ? value : 'en';
 }
 
+function prayerDescription(text: string, scripture: string, language: Language) {
+  const label = language === 'am' ? 'ቅዱስ ቃል' : language === 'om' ? 'Caaffata Qulqulluu' : 'Scripture';
+  return `${text}\n\n${label}: ${scripture}`;
+}
+
 function parsePrayerJson(raw: string, fallback: ReturnType<typeof fallbackPrayer>) {
   const match = raw.replace(/```(?:json)?/gi, '').replace(/```/g, '').match(/\{[\s\S]*\}/);
   if (!match) return null;
@@ -347,7 +352,7 @@ app.post('/calendar', async (c) => {
     if (generated && prayerId) {
       prayer = {
         id: prayerId, userId, title: generated.title,
-        description: `${generated.text}\n\n${generated.scripture}`,
+        description: prayerDescription(generated.text, generated.scripture, language),
         category: category === 'faith' ? 'Spiritual Growth' : category === 'relationship' ? 'Relationship' : 'Guidance',
         reminderDate: startsAt.toISOString(), isSharedWithCommunity: false, isShared: false,
         isAnswered: false, youPrayed: false, partnerPrayed: false, prayerCount: 0,
@@ -368,6 +373,76 @@ app.post('/calendar', async (c) => {
   } catch (error) {
     console.error('[Couple Calendar] Create error:', error);
     return c.json({ error: 'Failed to create calendar item' }, 500);
+  }
+});
+
+// Owner-only backfill for calendar prayers created before Gemini generation
+// was wired to the app's configured AI provider.
+app.post('/calendar/:id/regenerate-prayer', async (c) => {
+  try {
+    const userId = await userIdFromRequest(c);
+    if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+    const resolved = await resolveOwnedItem(userId, c.req.param('id'));
+    if (!resolved) return c.json({ error: 'Calendar item not found' }, 404);
+    if (resolved.ownerId !== userId) return c.json({ error: 'Only the creator can regenerate this prayer' }, 403);
+    if (!resolved.item.prayerId) return c.json({ error: 'This calendar item has no linked prayer' }, 400);
+
+    const profile: any = await kv.get(`user:${userId}`).catch(() => null);
+    const language = resolveLanguage(profile?.language || resolved.item.prayerLanguage);
+    const category = (['faith', 'relationship', 'family', 'health', 'finance', 'service', 'other'].includes(resolved.item.category)
+      ? resolved.item.category
+      : 'other') as CalendarCategory;
+    const generated = await generatePrayer({
+      title: String(resolved.item.title || '').trim(),
+      description: String(resolved.item.description || ''),
+      type: String(resolved.item.type || 'plan'),
+      category,
+      language,
+    });
+
+    // Preserve the existing linked records when AI is unavailable; the client
+    // can safely retry on the next calendar visit.
+    if (generated.generationSource !== 'ai') {
+      return c.json({ error: 'AI prayer generation is temporarily unavailable', retryable: true }, 503);
+    }
+
+    const now = new Date().toISOString();
+    const prayerKey = `prayer:${userId}:${resolved.item.prayerId}`;
+    const currentPrayer: any = await kv.get(prayerKey).catch(() => null);
+    const updatedItem = {
+      ...resolved.item,
+      prayerTitle: generated.title,
+      prayerText: generated.text,
+      scripture: generated.scripture,
+      prayerLanguage: language,
+      prayerGenerationSource: 'ai',
+      updatedAt: now,
+    };
+    const updatedPrayer = {
+      ...(currentPrayer || {}),
+      id: resolved.item.prayerId,
+      userId,
+      title: generated.title,
+      description: prayerDescription(generated.text, generated.scripture, language),
+      scripture: generated.scripture,
+      language,
+      generationSource: 'ai',
+      source: 'couple-calendar',
+      sourcePlanId: resolved.item.id,
+      updatedAt: now,
+    };
+    const cacheBase = profile?.coupleId || (profile?.partnerId && profile.partnerId < userId ? profile.partnerId : userId);
+    await Promise.all([
+      kv.set(resolved.key, updatedItem),
+      kv.set(prayerKey, updatedPrayer),
+      kv.del(`marriage-readiness:v2:${cacheBase}`).catch(() => undefined),
+      profile ? kv.set(`user:${userId}`, { ...profile, updatedAt: now }) : Promise.resolve(),
+    ]);
+
+    return c.json({ success: true, item: updatedItem, prayer: updatedPrayer });
+  } catch (error) {
+    console.error('[Couple Calendar] Prayer regeneration error:', error);
+    return c.json({ error: 'Failed to regenerate calendar prayer' }, 500);
   }
 });
 

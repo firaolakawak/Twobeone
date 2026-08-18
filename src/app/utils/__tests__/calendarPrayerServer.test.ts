@@ -22,4 +22,12 @@ describe('calendar AI prayer generation', () => {
     expect(source).toContain("generationSource: 'fallback'");
     expect(source).toContain('language, generationSource: generated.generationSource');
   });
+
+  it('securely regenerates existing linked fallback prayers in place', () => {
+    expect(source).toContain("app.post('/calendar/:id/regenerate-prayer'");
+    expect(source).toContain("Only the creator can regenerate this prayer");
+    expect(source).toContain("generationSource !== 'ai'");
+    expect(source).toContain('kv.set(prayerKey, updatedPrayer)');
+    expect(source).toContain('prayerDescription(generated.text, generated.scripture, language)');
+  });
 });

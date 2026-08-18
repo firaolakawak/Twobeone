@@ -122,6 +122,7 @@ export function CoupleCalendar({
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const onDataRefreshRef = useRef(onDataRefresh);
+  const prayerUpgradeAttemptsRef = useRef(new Set<string>());
 
   const apiUrl = `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/calendar`;
 
@@ -133,7 +134,27 @@ export function CoupleCalendar({
       ]);
       if (!response.ok) throw new Error('Calendar request failed');
       const data = await response.json();
-      setItems(Array.isArray(data.items) ? data.items : []);
+      const loadedItems: CoupleCalendarItem[] = Array.isArray(data.items) ? data.items : [];
+      setItems(loadedItems);
+      const legacyPrayerItems = loadedItems.filter(item =>
+        item.userId === userId &&
+        Boolean(item.prayerId) &&
+        item.prayerGenerationSource !== 'ai' &&
+        !prayerUpgradeAttemptsRef.current.has(item.id)
+      ).slice(0, 3);
+      for (const legacyItem of legacyPrayerItems) {
+        prayerUpgradeAttemptsRef.current.add(legacyItem.id);
+        void fetch(`${apiUrl}/${legacyItem.id}/regenerate-prayer`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }).then(async upgradeResponse => {
+          if (!upgradeResponse.ok) return;
+          const upgraded = await upgradeResponse.json();
+          if (!upgraded.item) return;
+          setItems(current => current.map(item => item.id === upgraded.item.id ? upgraded.item : item));
+          await onPrayerChanged?.();
+        }).catch(error => console.warn('[CoupleCalendar] Legacy prayer upgrade deferred:', error));
+      }
       if (activityResponse.ok) {
         const activityData = await activityResponse.json();
         setRecordedActivities(Array.isArray(activityData.activities) ? activityData.activities : []);
