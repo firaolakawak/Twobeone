@@ -183,7 +183,7 @@ describe('CoupleCalendar', () => {
     await waitFor(() => expect(onPrayerChanged).toHaveBeenCalledOnce());
   });
 
-  it('offers edit, delete, and answered actions for an owned linked prayer', async () => {
+  it('keeps linked prayers on the dedicated prayer page instead of duplicating a calendar tab', async () => {
     const item = {
       id: 'cal-actions', userId: 'user-1', title: 'Church visit', description: 'Attend together',
       type: 'event', category: 'faith', emoji: '⛪', startsAt: '2026-09-20T18:00:00.000Z', allDay: false,
@@ -192,29 +192,16 @@ describe('CoupleCalendar', () => {
       scripture: 'Proverbs 3:5–6', prayerGenerationSource: 'ai',
       createdAt: '2026-08-18T12:00:00.000Z', updatedAt: '2026-08-18T12:00:00.000Z',
     };
-    const answeredItem = { ...item, status: 'completed', prayerAnsweredAt: '2026-09-20T19:00:00.000Z' };
-    const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+    const fetchMock = vi.fn(async (url: string) => {
       if (url.endsWith('/activity')) return { ok: true, json: async () => ({ activities: [] }) };
-      if (url.endsWith('/cal-actions/answer-prayer') && init?.method === 'POST') {
-        return { ok: true, json: async () => ({ item: answeredItem, prayer: { id: 'prayer-actions', isAnswered: true } }) };
-      }
       return { ok: true, json: async () => ({ items: [item] }) };
     });
     vi.stubGlobal('fetch', fetchMock);
-    const onPrayerChanged = vi.fn();
-    const user = userEvent.setup();
 
-    render(<LanguageProvider><CoupleCalendar accessToken="token" userId="user-1" onBack={vi.fn()} onPrayerChanged={onPrayerChanged} /></LanguageProvider>);
-    await user.click(await screen.findByRole('button', { name: 'Prayer list' }));
-    expect(screen.getByRole('button', { name: 'Edit' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Delete' })).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: 'Mark prayer answered' }));
-
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
-      expect.stringContaining('/cal-actions/answer-prayer'),
-      expect.objectContaining({ method: 'POST' }),
-    ));
-    expect(await screen.findByText('Answered')).toBeInTheDocument();
-    expect(onPrayerChanged).toHaveBeenCalledOnce();
+    render(<LanguageProvider><CoupleCalendar accessToken="token" userId="user-1" onBack={vi.fn()} /></LanguageProvider>);
+    expect(await screen.findByRole('button', { name: 'Calendar' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Event list' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Prayer list' })).not.toBeInTheDocument();
+    expect(screen.getByText('Prayer-linked')).toBeInTheDocument();
   });
 });

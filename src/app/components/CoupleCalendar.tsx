@@ -72,7 +72,7 @@ interface RecordedActivity {
   isPartner?: boolean;
 }
 
-type CalendarView = 'calendar' | 'events' | 'prayers';
+type CalendarView = 'calendar' | 'events';
 type CalendarPeriod = 'weekly' | 'monthly' | 'yearly';
 
 const localeByLanguage = { en: 'en-US', am: 'am-ET', om: 'om-ET' } as const;
@@ -371,17 +371,6 @@ export function CoupleCalendar({
     }
   };
 
-  const markPrayerAnswered = async (item: CoupleCalendarItem) => {
-    try {
-      const response = await fetch(`${apiUrl}/${item.id}/answer-prayer`, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}` } });
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(data.error || 'Answer failed');
-      setItems(current => current.map(entry => entry.id === item.id ? data.item : entry));
-      toast.success(copy.prayerAnswered);
-      await onPrayerChanged?.();
-    } catch { toast.error(copy.failed); }
-  };
-
   const updateStatus = async (item: CoupleCalendarItem) => {
     const status = item.status === 'completed' ? 'upcoming' : 'completed';
     try {
@@ -479,9 +468,9 @@ export function CoupleCalendar({
         ))}
       </div>
 
-      <nav className="mt-6 grid grid-cols-3 gap-1 rounded-2xl bg-slate-100 p-1.5" aria-label={copy.title}>
+      <nav className="mt-6 grid grid-cols-2 gap-1 rounded-2xl bg-slate-100 p-1.5" aria-label={copy.title}>
         {([
-          ['calendar', CalendarDays, copy.calendar], ['events', ListTodo, copy.events], ['prayers', Heart, copy.prayers],
+          ['calendar', CalendarDays, copy.calendar], ['events', ListTodo, copy.events],
         ] as const).map(([id, Icon, label]) => (
           <button key={id} type="button" onClick={() => setView(id)} className={`flex min-h-12 items-center justify-center gap-2 rounded-xl px-2 text-sm font-extrabold transition-all ${view === id ? 'bg-white text-rose-700 shadow-sm' : 'text-slate-600'}`}><Icon className="h-5 w-5" />{label}</button>
         ))}
@@ -571,15 +560,10 @@ export function CoupleCalendar({
             {selectedItems.length === 0 && selectedMilestones.length === 0 && selectedJournalEntries.length === 0 && selectedRecordedActivities.length === 0 && <Card className="rounded-[1.75rem] border-dashed border-rose-200 bg-gradient-to-br from-white to-rose-50/50"><CardContent className="p-9 text-center"><Sparkles className="mx-auto h-8 w-8 text-amber-400" /><h3 className="mt-3 font-black text-slate-900">{copy.emptyDay}</h3><p className="mt-1 text-sm text-slate-500">{copy.emptyDayHint}</p></CardContent></Card>}
           </div>
         </section>
-      ) : view === 'events' ? (
+      ) : (
         <section className="mt-6 space-y-4">
           <div><p className="text-xs font-bold uppercase tracking-[.14em] text-rose-600">{copy.upcoming}</p><h2 className="mt-1 text-2xl font-black text-slate-950">{copy.events}</h2></div>
           {upcomingItems.length ? upcomingItems.map(item => <div key={item.id}><p className="mb-2 ml-1 text-xs font-bold text-slate-400">{new Intl.DateTimeFormat(locale, { weekday: 'short', month: 'short', day: 'numeric' }).format(new Date(item.startsAt))}</p>{renderItem(item)}</div>) : <p className="rounded-2xl border border-dashed p-8 text-center text-sm text-slate-500">{copy.noUpcoming}</p>}
-        </section>
-      ) : (
-        <section className="mt-6 space-y-4">
-          <div><p className="text-xs font-bold uppercase tracking-[.14em] text-rose-600">{copy.linkedPrayers}</p><h2 className="mt-1 text-2xl font-black text-slate-950">{copy.prayers}</h2></div>
-          {linkedPrayerItems.length ? linkedPrayerItems.map(item => <article key={item.id} className={`rounded-[1.5rem] border p-5 shadow-sm ${item.prayerAnsweredAt ? 'border-emerald-100 bg-emerald-50/50' : 'border-rose-100 bg-gradient-to-br from-white to-rose-50/60'}`}><div className="flex items-start gap-3"><div className={`grid h-11 w-11 shrink-0 place-items-center rounded-full ${item.prayerAnsweredAt ? 'bg-emerald-100' : 'bg-rose-100'}`}>{item.prayerAnsweredAt ? '🙌' : '🙏'}</div><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><h3 className="font-black text-slate-900">{item.prayerTitle}</h3>{item.prayerAnsweredAt && <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">{copy.answered}</Badge>}</div><p className="mt-2 text-sm leading-6 text-slate-600">{item.prayerText}</p>{item.scripture && <p className="mt-3 text-xs font-bold text-rose-700">{copy.scripture}: {item.scripture}</p>}{!item.isPartner && <div className="mt-4 flex flex-wrap gap-2 border-t border-black/5 pt-3"><Button type="button" size="sm" variant="outline" onClick={() => openEdit(item)} className="rounded-full"><Pencil className="h-4 w-4" />{copy.edit}</Button>{!item.prayerAnsweredAt && <Button type="button" size="sm" onClick={() => void markPrayerAnswered(item)} className="rounded-full bg-emerald-600 text-white hover:bg-emerald-700"><Check className="h-4 w-4" />{copy.markAnswered}</Button>}<Button type="button" size="sm" variant="ghost" onClick={() => void deleteItem(item)} className="rounded-full text-red-600 hover:bg-red-50 hover:text-red-700"><Trash2 className="h-4 w-4" />{copy.delete}</Button></div>}</div></div></article>) : <p className="rounded-2xl border border-dashed p-8 text-center text-sm text-slate-500">{copy.noUpcoming}</p>}
         </section>
       )}
 
