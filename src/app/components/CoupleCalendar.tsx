@@ -6,7 +6,7 @@ import {
 import { toast } from 'sonner';
 import { useLanguage } from '../contexts/LanguageContext';
 import {
-  buildPrayerFallback, CALENDAR_CATEGORY_EMOJI, CALENDAR_TYPE_META, CalendarCategory,
+  buildPrayerFallback, CALENDAR_CATEGORY_EMOJI, CALENDAR_EVENT_EMOJIS, CALENDAR_TYPE_META, CalendarCategory,
   CalendarDraft, CalendarItemType, CalendarRecurrence, CoupleCalendarItem,
   coupleCalendarCopy, getMonthGridDays, getWeekDays, getYearMonths, isSameLocalDay, occursOnDay, startOfWeek,
 } from '../data/couple-calendar';
@@ -73,7 +73,7 @@ function initialDraft(language: 'en' | 'am' | 'om'): CalendarDraft {
   starts.setHours(starts.getHours() + 1);
   const ends = new Date(starts.getTime() + 60 * 60_000);
   return {
-    title: '', description: '', type: 'plan', category: 'faith',
+    title: '', description: '', type: 'plan', category: 'faith', emoji: '💕',
     startsAt: toLocalDateTimeInput(starts), endsAt: toLocalDateTimeInput(ends),
     allDay: false, recurrence: 'none', reminderMinutes: 60,
     location: '', createPrayer: true, language,
@@ -167,6 +167,7 @@ export function CoupleCalendar({
   const openCreate = (type: CalendarItemType = 'plan', day?: Date) => {
     const next = initialDraft(language);
     next.type = type;
+    next.emoji = type === 'event' ? '🎉' : type === 'reminder' ? '🔔' : type === 'routine' ? '🙏' : '💕';
     if (type === 'routine') next.recurrence = 'weekly';
     if (type === 'reminder') next.endsAt = '';
     if (day) {
@@ -208,6 +209,21 @@ export function CoupleCalendar({
     return Array.from(new Set(types));
   };
 
+  const emojiForDay = (day: Date) => {
+    const calendarItem = items.find(item => item.status !== 'completed' && occursOnDay(item, day));
+    if (calendarItem) return calendarItem.emoji || CALENDAR_CATEGORY_EMOJI[calendarItem.category];
+    const milestone = milestones.find(entry => {
+      const date = entry.date || entry.createdAt;
+      return Boolean(date) && isSameLocalDay(new Date(date!), day);
+    });
+    if (milestone) return milestone.icon && milestone.icon.length <= 4 ? milestone.icon : '🏆';
+    const journal = journalEntries.find(entry => {
+      const date = entry.createdAt || entry.created_at;
+      return Boolean(date) && isSameLocalDay(new Date(date!), day);
+    });
+    return journal?.emoji || (journal ? '📖' : '');
+  };
+
   const markerColor: Record<DayMark, string> = {
     plan: 'bg-rose-500', event: 'bg-violet-500', reminder: 'bg-amber-500', routine: 'bg-emerald-500',
     milestone: 'bg-fuchsia-500', journal: 'bg-sky-500',
@@ -218,6 +234,17 @@ export function CoupleCalendar({
     : period === 'monthly'
       ? new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' }).format(calendarAnchor)
       : `${new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(weekDays[0])} – ${new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric', year: 'numeric' }).format(weekDays[6])}`;
+
+  const renderDayCircle = (day: Date, compact = false) => {
+    const marks = marksForDay(day);
+    const selected = isSameLocalDay(day, selectedDay);
+    const today = isSameLocalDay(day, new Date());
+    const emoji = emojiForDay(day);
+    return <span className={`relative grid shrink-0 place-items-center rounded-full font-black transition-all ${compact ? 'h-7 w-7 text-[9px]' : 'h-9 w-9 text-xs sm:h-12 sm:w-12 sm:text-sm'} ${selected ? 'bg-rose-600 text-white shadow-md shadow-rose-200 ring-2 ring-rose-300 ring-offset-2' : marks.length ? 'bg-rose-50 text-slate-900 ring-2 ring-rose-500 ring-offset-1' : today ? 'bg-rose-50 text-rose-700 ring-1 ring-rose-300' : 'text-slate-700'}`}>
+      {day.getDate()}
+      {emoji && <span aria-hidden="true" className={`pointer-events-none absolute z-10 drop-shadow-sm motion-safe:animate-[bounce_1.8s_ease-in-out_infinite] ${compact ? '-right-1.5 -top-1.5 text-[10px]' : '-right-2 -top-2 text-base'}`}>{emoji}</span>}
+    </span>;
+  };
 
   const updateDraft = <K extends keyof CalendarDraft>(key: K, value: CalendarDraft[K]) => {
     setDraft(current => ({ ...current, [key]: value }));
@@ -280,7 +307,7 @@ export function CoupleCalendar({
   const renderItem = (item: CoupleCalendarItem) => (
     <article key={item.id} className={`group rounded-2xl border p-4 transition-all hover:-translate-y-0.5 hover:shadow-md ${itemAccent(item.type)} ${item.status === 'completed' ? 'opacity-60' : ''}`}>
       <div className="flex items-start gap-3">
-        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/80 text-lg shadow-sm">{CALENDAR_CATEGORY_EMOJI[item.category]}</div>
+        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/80 text-lg shadow-sm">{item.emoji || CALENDAR_CATEGORY_EMOJI[item.category]}</div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className={`font-bold text-slate-900 ${item.status === 'completed' ? 'line-through' : ''}`}>{item.title}</h3>
@@ -364,33 +391,26 @@ export function CoupleCalendar({
           </div>
 
           {period === 'weekly' && (
-            <div className="grid grid-cols-7 gap-1.5">
+            <div className="grid grid-cols-7 divide-x divide-slate-100 overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white px-2 shadow-sm">
               {weekDays.map(day => {
-                const selected = isSameLocalDay(day, selectedDay);
-                const today = isSameLocalDay(day, new Date());
                 const marks = marksForDay(day);
-                return <button type="button" key={day.toISOString()} onClick={() => selectCalendarDay(day)} aria-label={`${new Intl.DateTimeFormat(locale, { dateStyle: 'full' }).format(day)}, ${marks.length} ${copy.items}`} className={`relative flex min-h-24 flex-col items-center justify-center rounded-2xl border text-center transition-all ${selected ? 'border-rose-500 bg-rose-600 text-white shadow-lg shadow-rose-200' : 'border-slate-200 bg-white text-slate-600 hover:border-rose-200'}`}>
-                  <span className="text-[10px] font-bold uppercase">{new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(day)}</span>
-                  <span className="mt-1 text-xl font-black">{day.getDate()}</span>
-                  {marks.length > 0 && <span className="mt-2 flex h-2 items-center justify-center gap-0.5">{marks.slice(0, 4).map(type => <span key={type} className={`h-1.5 w-1.5 rounded-full ${selected ? 'bg-white' : markerColor[type]}`} />)}</span>}
-                  {today && !selected && <span className="absolute inset-x-1 bottom-1 text-[7px] font-black uppercase text-rose-600">{copy.today}</span>}
+                return <button type="button" key={day.toISOString()} onClick={() => selectCalendarDay(day)} aria-label={`${new Intl.DateTimeFormat(locale, { dateStyle: 'full' }).format(day)}, ${marks.length} ${copy.items}`} className="relative flex min-h-28 flex-col items-center justify-center border-y border-rose-200/90 py-3 text-center transition-colors hover:bg-rose-50/50">
+                  <span className="mb-3 text-[9px] font-black uppercase text-slate-400">{new Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format(day)}</span>
+                  {renderDayCircle(day)}
                 </button>;
               })}
             </div>
           )}
 
           {period === 'monthly' && (
-            <div className="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white p-2 shadow-sm sm:p-4">
-              <div className="grid grid-cols-7">{weekDays.map(day => <div key={day.getDay()} className="py-2 text-center text-[9px] font-black uppercase text-slate-400 sm:text-[10px]">{new Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format(day)}</div>)}</div>
-              <div className="grid grid-cols-7 gap-0.5 sm:gap-1">
+            <div className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white px-4 py-4 shadow-sm sm:px-7 sm:py-6">
+              <div className="grid grid-cols-7 border-b-2 border-rose-300">{weekDays.map(day => <div key={day.getDay()} className="pb-3 text-center text-[9px] font-black uppercase text-slate-400 sm:text-[10px]">{new Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format(day)}</div>)}</div>
+              <div className="grid grid-cols-7">
                 {monthDays.map(day => {
-                  const selected = isSameLocalDay(day, selectedDay);
-                  const today = isSameLocalDay(day, new Date());
                   const inMonth = day.getMonth() === calendarAnchor.getMonth();
                   const marks = marksForDay(day);
-                  return <button type="button" key={day.toISOString()} onClick={() => selectCalendarDay(day)} aria-label={`${new Intl.DateTimeFormat(locale, { dateStyle: 'full' }).format(day)}, ${marks.length} ${copy.items}`} className={`relative flex min-h-14 flex-col items-center justify-center rounded-xl text-xs font-bold transition-all sm:min-h-20 ${selected ? 'bg-rose-600 text-white shadow-md' : today ? 'bg-rose-50 text-rose-700 ring-1 ring-rose-200' : inMonth ? 'text-slate-700 hover:bg-slate-50' : 'text-slate-300 hover:bg-slate-50'}`}>
-                    <span>{day.getDate()}</span>
-                    {marks.length > 0 && <span className="mt-1.5 flex h-2 items-center justify-center gap-0.5">{marks.slice(0, 4).map(type => <span key={type} className={`h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2 ${selected ? 'bg-white' : markerColor[type]}`} />)}</span>}
+                  return <button type="button" key={day.toISOString()} onClick={() => selectCalendarDay(day)} aria-label={`${new Intl.DateTimeFormat(locale, { dateStyle: 'full' }).format(day)}, ${marks.length} ${copy.items}`} className={`flex min-h-16 items-center justify-center border-b-2 border-rose-200/90 py-2 transition-colors sm:min-h-20 ${inMonth ? 'hover:bg-rose-50/40' : 'opacity-35 hover:bg-slate-50'}`}>
+                    {renderDayCircle(day)}
                   </button>;
                 })}
               </div>
@@ -400,18 +420,14 @@ export function CoupleCalendar({
           {period === 'yearly' && (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {yearMonths.map(month => {
-                const firstWeekday = (new Date(month.getFullYear(), month.getMonth(), 1).getDay() + 6) % 7;
-                const dayCount = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
-                return <article key={month.getMonth()} className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
-                  <button type="button" onClick={() => { setCalendarAnchor(month); setPeriod('monthly'); }} className="mb-2 w-full text-left text-sm font-black text-slate-900 hover:text-rose-700">{new Intl.DateTimeFormat(locale, { month: 'long' }).format(month)}</button>
-                  <div className="grid grid-cols-7">{getWeekDays(month).map(day => <span key={day.getDay()} className="pb-1 text-center text-[8px] font-black uppercase text-slate-300">{new Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format(day)}</span>)}</div>
-                  <div className="grid grid-cols-7 gap-y-0.5">{Array.from({ length: firstWeekday }, (_, index) => <span key={`blank-${index}`} />)}{Array.from({ length: dayCount }, (_, index) => {
-                    const day = new Date(month.getFullYear(), month.getMonth(), index + 1);
+                return <article key={month.getMonth()} className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+                  <button type="button" onClick={() => { setCalendarAnchor(month); setPeriod('monthly'); }} className="mb-3 w-full text-left text-sm font-black text-slate-900 hover:text-rose-700">{new Intl.DateTimeFormat(locale, { month: 'long' }).format(month)}</button>
+                  <div className="grid grid-cols-7 border-b border-rose-300">{getWeekDays(month).map(day => <span key={day.getDay()} className="pb-1.5 text-center text-[8px] font-black uppercase text-slate-300">{new Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format(day)}</span>)}</div>
+                  <div className="grid grid-cols-7">{getMonthGridDays(month).map(day => {
+                    const inMonth = day.getMonth() === month.getMonth();
                     const marks = marksForDay(day);
-                    const selected = isSameLocalDay(day, selectedDay);
-                    const today = isSameLocalDay(day, new Date());
-                    return <button type="button" key={day.getDate()} onClick={() => selectCalendarDay(day)} aria-label={`${new Intl.DateTimeFormat(locale, { dateStyle: 'full' }).format(day)}, ${marks.length} ${copy.items}`} className={`relative grid aspect-square place-items-center rounded-full text-[9px] font-bold transition-all ${selected ? 'bg-rose-600 text-white' : today ? 'bg-rose-100 text-rose-700' : marks.length ? 'bg-slate-50 text-slate-800 hover:bg-rose-50' : 'text-slate-500 hover:bg-slate-50'}`}>
-                      {day.getDate()}{marks.length > 0 && <span className={`absolute bottom-0.5 h-1 w-1 rounded-full ${selected ? 'bg-white' : markerColor[marks[0]]}`} />}
+                    return <button type="button" key={day.toISOString()} disabled={!inMonth} onClick={() => selectCalendarDay(day)} aria-label={inMonth ? `${new Intl.DateTimeFormat(locale, { dateStyle: 'full' }).format(day)}, ${marks.length} ${copy.items}` : undefined} className={`flex aspect-square items-center justify-center border-b border-rose-200/80 transition-colors ${inMonth ? 'hover:bg-rose-50/50' : 'pointer-events-none'}`}>
+                      {inMonth && renderDayCircle(day, true)}
                     </button>;
                   })}</div>
                 </article>;
@@ -477,6 +493,7 @@ export function CoupleCalendar({
           </DialogHeader>
           <form onSubmit={handleCreate} className="space-y-5 p-6">
             <div className="space-y-2"><Label>{copy.itemType}</Label><div className="grid grid-cols-4 gap-2">{(['plan', 'event', 'reminder', 'routine'] as CalendarItemType[]).map(type => <button key={type} type="button" onClick={() => updateDraft('type', type)} className={`min-h-16 rounded-xl border px-2 text-xs font-bold ${draft.type === type ? itemAccent(type) + ' ring-2 ring-current/10' : 'border-slate-200 bg-white text-slate-500'}`}><span className="block text-lg">{CALENDAR_TYPE_META[type].icon}</span>{copy[type]}</button>)}</div></div>
+            <div className="space-y-2"><div><Label>{copy.chooseEmoji}</Label><p className="mt-1 text-xs text-slate-500">{copy.chooseEmojiHint}</p></div><div className="grid grid-cols-8 gap-2 rounded-2xl border border-rose-100 bg-rose-50/40 p-3">{CALENDAR_EVENT_EMOJIS.map(emoji => <button key={emoji} type="button" onClick={() => updateDraft('emoji', emoji)} aria-label={`${copy.chooseEmoji}: ${emoji}`} aria-pressed={draft.emoji === emoji} className={`grid aspect-square place-items-center rounded-full text-xl transition-all hover:-translate-y-0.5 ${draft.emoji === emoji ? 'bg-white shadow-md ring-2 ring-rose-500 ring-offset-2' : 'hover:bg-white/80'}`}>{emoji}</button>)}</div></div>
             <div className="space-y-2"><Label htmlFor="calendar-title">{copy.titleLabel}</Label><Input id="calendar-title" required value={draft.title} onChange={e => updateDraft('title', e.target.value)} placeholder={copy.titlePlaceholder} className="h-12 rounded-xl" /></div>
             <div className="space-y-2"><Label htmlFor="calendar-notes">{copy.descriptionLabel}</Label><Textarea id="calendar-notes" value={draft.description} onChange={e => updateDraft('description', e.target.value)} placeholder={copy.descriptionPlaceholder} className="min-h-24 rounded-xl" /></div>
             <div className="space-y-2"><Label>{copy.category}</Label><div className="grid grid-cols-4 gap-2 sm:grid-cols-7">{(['faith', 'relationship', 'family', 'health', 'finance', 'service', 'other'] as CalendarCategory[]).map(category => <button key={category} type="button" onClick={() => updateDraft('category', category)} className={`min-h-16 rounded-xl border px-1 text-[10px] font-bold ${draft.category === category ? 'border-rose-300 bg-rose-50 text-rose-800' : 'border-slate-200 bg-white text-slate-500'}`}><span className="block text-lg">{CALENDAR_CATEGORY_EMOJI[category]}</span>{copy[category]}</button>)}</div></div>

@@ -11,6 +11,7 @@ export interface CoupleCalendarItem {
   description: string;
   type: CalendarItemType;
   category: CalendarCategory;
+  emoji?: string;
   startsAt: string;
   endsAt?: string | null;
   allDay: boolean;
@@ -33,6 +34,7 @@ export interface CalendarDraft {
   description: string;
   type: CalendarItemType;
   category: CalendarCategory;
+  emoji: string;
   startsAt: string;
   endsAt: string;
   allDay: boolean;
@@ -53,6 +55,8 @@ export const CALENDAR_TYPE_META = {
 export const CALENDAR_CATEGORY_EMOJI: Record<CalendarCategory, string> = {
   faith: '🙏', relationship: '💕', family: '🏡', health: '🌿', finance: '🌱', service: '🤲', other: '✨',
 };
+
+export const CALENDAR_EVENT_EMOJIS = ['💕', '🙏', '💒', '🌹', '🎉', '💍', '🍽️', '✈️', '🏡', '📖', '🎵', '🌿', '⭐', '🎂', '🔔', '☕'] as const;
 
 export function startOfWeek(date: Date): Date {
   const result = new Date(date);
@@ -136,6 +140,7 @@ export const coupleCalendarCopy: Record<Language, CalendarCopy> = {
     newItem: 'Create together', calendar: 'Calendar', weekly: 'Weekly', monthlyView: 'Monthly', yearly: 'Yearly', events: 'Event list', prayers: 'Prayer list', today: 'Today',
     markedDays: 'Marked days', items: 'items', selectedAgenda: 'Selected day', milestone: 'Milestone', journal: 'Journal',
     relationshipMilestones: 'Relationship Milestones', recentJournalEntries: 'Recent Journal Entries', ourJourney: 'Our journey', sharedMemories: 'Shared memories', viewAll: 'View all', untitledJournal: 'A shared reflection', noMilestones: 'Your milestones will appear here.', noJournalEntries: 'Your recent journal entries will appear here.',
+    chooseEmoji: 'Choose an event emoji', chooseEmojiHint: 'This emoji will animate on the marked calendar day.',
     emptyDay: 'A quiet day', emptyDayHint: 'Create a plan or leave room to rest together.', upcoming: 'Coming up', noUpcoming: 'No upcoming plans yet',
     plansThisWeek: 'This week', linkedPrayers: 'Prayer-linked', routines: 'Routines', newTitle: 'Create a shared plan', newDescription: 'Add it once. We will place it in your planner and prepare a prayer for it.',
     itemType: 'What are you planning?', plan: 'Plan', event: 'Event', reminder: 'Reminder', routine: 'Routine',
@@ -153,6 +158,7 @@ export const coupleCalendarCopy: Record<Language, CalendarCopy> = {
     newItem: 'አብረን እንፍጠር', calendar: 'የቀን መቁጠሪያ', weekly: 'ሳምንታዊ', monthlyView: 'ወርሃዊ', yearly: 'ዓመታዊ', events: 'የክስተት ዝርዝር', prayers: 'የጸሎት ዝርዝር', today: 'ዛሬ',
     markedDays: 'ምልክት የተደረገባቸው ቀናት', items: 'እቅዶች', selectedAgenda: 'የተመረጠው ቀን', milestone: 'የግንኙነት ምዕራፍ', journal: 'ማስታወሻ',
     relationshipMilestones: 'የግንኙነት ምዕራፎች', recentJournalEntries: 'የቅርብ ጊዜ ማስታወሻዎች', ourJourney: 'የእኛ ጉዞ', sharedMemories: 'የጋራ ትውስታዎች', viewAll: 'ሁሉንም ይመልከቱ', untitledJournal: 'የጋራ ነጸብራቅ', noMilestones: 'የግንኙነት ምዕራፎቻችሁ እዚህ ይታያሉ።', noJournalEntries: 'የቅርብ ጊዜ ማስታወሻዎቻችሁ እዚህ ይታያሉ።',
+    chooseEmoji: 'የክስተት ኢሞጂ ይምረጡ', chooseEmojiHint: 'ይህ ኢሞጂ ምልክት በተደረገበት ቀን ይንቀሳቀሳል።',
     emptyDay: 'ጸጥ ያለ ቀን', emptyDayHint: 'እቅድ ይፍጠሩ ወይም አብራችሁ ለማረፍ ጊዜ ይተዉ።', upcoming: 'በቅርቡ', noUpcoming: 'ገና የሚመጣ እቅድ የለም',
     plansThisWeek: 'በዚህ ሳምንት', linkedPrayers: 'ከጸሎት ጋር', routines: 'ልምዶች', newTitle: 'የጋራ እቅድ ፍጠሩ', newDescription: 'አንድ ጊዜ ያክሉት፤ በእቅዳችሁ እናስቀምጠውና ጸሎት እናዘጋጃለን።',
     itemType: 'ምን እያቀዳችሁ ነው?', plan: 'እቅድ', event: 'ክስተት', reminder: 'ማስታወሻ', routine: 'መደበኛ ልምድ',
@@ -167,6 +173,7 @@ export const coupleCalendarCopy: Record<Language, CalendarCopy> = {
     newItem: 'Waliin uumi', calendar: 'Kaalaandarii', weekly: 'Torban', monthlyView: "Ji'a", yearly: 'Waggaa', events: 'Tarree taateewwanii', prayers: 'Tarree kadhannaa', today: "Har'a",
     markedDays: 'Guyyoota mallatteeffaman', items: 'karoorawwan', selectedAgenda: 'Guyyaa filatame', milestone: 'Milkaaʼina', journal: 'Galmee',
     relationshipMilestones: 'Milkaaʼina Hariiroo', recentJournalEntries: 'Galmeewwan Dhihoo', ourJourney: 'Imala keenya', sharedMemories: 'Yaadannoo waliin', viewAll: 'Hunda ilaali', untitledJournal: 'Yaada waliinii', noMilestones: 'Milkaaʼinoonni keessan asitti mulʼatu.', noJournalEntries: 'Galmeewwan keessan kan dhihoo asitti mulʼatu.',
+    chooseEmoji: 'Iimoojii taatee filadhu', chooseEmojiHint: 'Iimoojiin kun guyyaa kaalaandarii mallatteeffame irratti sochoʼa.',
     emptyDay: 'Guyyaa boqonnaa', emptyDayHint: 'Karoora uumi ykn waliin boqachuuf iddoo dhiisi.', upcoming: 'Dhufaa jira', noUpcoming: 'Karoorri dhufu hin jiru',
     plansThisWeek: 'Torban kana', linkedPrayers: 'Kadhannaatti hidhame', routines: 'Barmaatilee', newTitle: 'Karoora waliinii uumaa', newDescription: 'Yeroo tokko dabalaa; karoora keessan keessa kaaʼnee kadhannaa isaaf qopheessina.',
     itemType: 'Maal karoorfachaa jirtu?', plan: 'Karoora', event: 'Taatee', reminder: 'Yaadachiisa', routine: 'Barmaata',

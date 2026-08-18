@@ -53,6 +53,7 @@ describe('CoupleCalendar', () => {
     expect(await screen.findByRole('heading', { name: 'Couple Calendar' })).toBeInTheDocument();
     await user.click(screen.getAllByRole('button', { name: 'Create together' })[0]);
     await user.type(screen.getByLabelText('Title'), 'Marriage retreat');
+    await user.click(screen.getByRole('button', { name: 'Choose an event emoji: 🎉' }));
     expect(screen.getByRole('switch', { name: 'Create a prayer automatically' })).toBeChecked();
     await user.click(screen.getByRole('button', { name: 'Add to our calendar' }));
 
@@ -61,6 +62,7 @@ describe('CoupleCalendar', () => {
     expect(createCall).toBeTruthy();
     expect(JSON.parse(String(createCall?.[1]?.body))).toMatchObject({
       title: 'Marriage retreat',
+      emoji: '🎉',
       createPrayer: true,
       language: 'en',
     });

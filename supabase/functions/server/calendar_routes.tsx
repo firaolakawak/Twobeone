@@ -191,7 +191,7 @@ app.post('/calendar', async (c) => {
 
     const item = {
       id: itemId, userId, title, description: String(body.description || '').slice(0, 2000),
-      type, category, startsAt: startsAt.toISOString(),
+      type, category, emoji: String(body.emoji || '💕').slice(0, 16), startsAt: startsAt.toISOString(),
       endsAt: body.endsAt && Number.isFinite(new Date(body.endsAt).getTime()) ? new Date(body.endsAt).toISOString() : null,
       allDay: Boolean(body.allDay), recurrence,
       reminderMinutes: body.reminderMinutes == null
@@ -236,7 +236,7 @@ app.put('/calendar/:id', async (c) => {
     if (!resolved) return c.json({ error: 'Calendar item not found' }, 404);
     if (resolved.ownerId !== userId) return c.json({ error: 'Only the creator can update this item' }, 403);
     const body = await c.req.json();
-    const allowedUpdates = ['title', 'description', 'startsAt', 'endsAt', 'allDay', 'recurrence', 'reminderMinutes', 'location', 'status'];
+    const allowedUpdates = ['title', 'description', 'emoji', 'startsAt', 'endsAt', 'allDay', 'recurrence', 'reminderMinutes', 'location', 'status'];
     const updates = Object.fromEntries(Object.entries(body).filter(([key]) => allowedUpdates.includes(key)));
     const item = { ...resolved.item, ...updates, updatedAt: new Date().toISOString() };
     await kv.set(resolved.key, item);
