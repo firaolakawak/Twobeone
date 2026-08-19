@@ -102,6 +102,10 @@ import api, {
 import { registerServiceWorker } from "./utils/pwa";
 import { useEngagementTracking } from "./hooks/useEngagementTracking";
 import { usePartnerPresence } from "./hooks/usePartnerPresence";
+import {
+  isAppShellEnvironment,
+  ONBOARDING_STORAGE_KEY,
+} from "./utils/appShell";
 import type {
   JournalEntry,
   PrayerRequest,
@@ -199,38 +203,6 @@ const APP_TRANSLATIONS: Record<
 };
 
 const PUSH_TABS = new Set(['home', 'devotions', 'prayer', 'journal', 'questions']);
-const APP_SHELL_STORAGE_KEY = 'twobeone_app_shell';
-const ONBOARDING_STORAGE_KEY = 'twobeone_onboarding_complete';
-
-function detectAppShell(): boolean {
-  if (typeof window === 'undefined') return false;
-
-  const params = new URLSearchParams(window.location.search);
-  const appParameter = params.get('app');
-
-  try {
-    if (params.get('onboarding') === 'reset') {
-      window.localStorage.removeItem(ONBOARDING_STORAGE_KEY);
-    }
-    if (appParameter === '1') {
-      window.localStorage.setItem(APP_SHELL_STORAGE_KEY, '1');
-    } else if (appParameter === '0') {
-      window.localStorage.removeItem(APP_SHELL_STORAGE_KEY);
-    }
-  } catch {
-    // Some WebView wrappers can disable DOM storage. The URL flag still works.
-  }
-
-  const standalone = window.matchMedia?.('(display-mode: standalone)').matches === true;
-  let rememberedAppShell = false;
-  try {
-    rememberedAppShell = window.localStorage.getItem(APP_SHELL_STORAGE_KEY) === '1';
-  } catch {
-    // Keep using the URL/display-mode checks when storage is unavailable.
-  }
-
-  return appParameter === '1' || (appParameter !== '0' && (rememberedAppShell || standalone));
-}
 
 function hasCompletedOnboarding(): boolean {
   if (typeof window === 'undefined') return false;
@@ -255,7 +227,18 @@ function initialScreenFromNotification(): string {
 }
 
 export default function App() {
-  const [isAppShell] = useState(detectAppShell);
+  const [isAppShell] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        if (new URLSearchParams(window.location.search).get('onboarding') === 'reset') {
+          window.localStorage.removeItem(ONBOARDING_STORAGE_KEY);
+        }
+      } catch {
+        // Continue into onboarding for the current session when possible.
+      }
+    }
+    return isAppShellEnvironment();
+  });
   const [onboardingComplete, setOnboardingComplete] = useState(hasCompletedOnboarding);
   const [authInitialMode, setAuthInitialMode] = useState<'signin' | 'signup'>('signin');
   const [showLanding, setShowLanding] = useState(() => !isAppShell);

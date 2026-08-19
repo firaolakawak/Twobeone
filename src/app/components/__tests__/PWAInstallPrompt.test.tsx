@@ -9,6 +9,7 @@ describe('PWAInstallPrompt', () => {
 
   beforeEach(() => {
     localStorage.clear();
+    window.history.replaceState({}, '', '/');
     Object.defineProperty(window, 'innerWidth', { configurable: true, value: 390 });
   });
 
@@ -82,6 +83,21 @@ describe('PWAInstallPrompt', () => {
 
     render(<PWAInstallPrompt />);
     await act(async () => vi.advanceTimersByTime(1000));
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('never shows an install banner inside the URL-wrapped app', async () => {
+    vi.useFakeTimers();
+    window.history.replaceState({}, '', '/?app=1');
+    Object.defineProperty(navigator, 'userAgent', {
+      configurable: true,
+      value: 'Mozilla/5.0 (Linux; Android 15) AppleWebKit/537.36 Mobile Safari/537.36',
+    });
+
+    render(<PWAInstallPrompt />);
+    await act(async () => vi.advanceTimersByTime(1000));
+    window.dispatchEvent(new Event('twobeone:open-install'));
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });

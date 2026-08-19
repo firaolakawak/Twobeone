@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { Download, Heart, Plus, Share, Smartphone, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { getTranslations, type Language } from '../utils/i18n';
+import { isAppShellEnvironment } from '../utils/appShell';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -49,6 +50,7 @@ function isMobileDevice() {
 }
 
 export function PWAInstallPrompt() {
+  const [appShell] = useState(isAppShellEnvironment);
   const [language, setLanguage] = useState<Language>(() => {
     const saved = localStorage.getItem('twobeone_language');
     return saved === 'am' || saved === 'om' ? saved : 'en';
@@ -60,6 +62,7 @@ export function PWAInstallPrompt() {
   const [installed, setInstalled] = useState(false);
 
   useEffect(() => {
+    if (appShell) return;
     const alreadyInstalled = isInstalled();
     const ios = isIOSDevice();
     const android = isAndroidDevice();
@@ -115,7 +118,7 @@ export function PWAInstallPrompt() {
       document.removeEventListener('visibilitychange', recheckInstalledState);
       window.removeEventListener('twobeone:open-install', handleManualOpen);
     };
-  }, []);
+  }, [appShell]);
 
   useEffect(() => {
     const handleLanguageChange = (event: Event) => {
@@ -137,7 +140,7 @@ export function PWAInstallPrompt() {
     setShowPrompt(false);
   };
 
-  if (installed || !showPrompt) return null;
+  if (appShell || installed || !showPrompt) return null;
 
   return (
     <section

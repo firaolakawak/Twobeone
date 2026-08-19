@@ -2,6 +2,7 @@
   import { createRoot } from "react-dom/client";
   import App from "./app/App.tsx";
   import { PWAInstallPrompt } from "./app/components/PWAInstallPrompt.tsx";
+  import { isAppShellEnvironment } from "./app/utils/appShell.ts";
   import "./styles/index.css";
 
   const reloadForFreshAssets = (event: Event) => {
@@ -28,6 +29,6 @@
       <App />
       {/* Keep the mobile installer outside App's auth/landing routes so it is
           available as soon as any shared link is opened. */}
-      <PWAInstallPrompt />
+      {!isAppShellEnvironment() && <PWAInstallPrompt />}
     </>,
   );

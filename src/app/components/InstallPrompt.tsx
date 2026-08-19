@@ -4,6 +4,7 @@ import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { X, Download, Heart, Smartphone } from 'lucide-react';
 import { isInstalledPWA, isIOS, isAndroid, getDeviceType } from '../utils/pwa';
+import { isAppShellEnvironment } from '../utils/appShell';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -12,12 +13,14 @@ interface BeforeInstallPromptEvent extends Event {
 
 export function InstallPrompt() {
   const { t } = useLanguage();
+  const [appShell] = useState(isAppShellEnvironment);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [deviceType, setDeviceType] = useState<'ios' | 'android' | 'desktop' | 'unknown'>('unknown');
 
   useEffect(() => {
+    if (appShell) return;
     // Check if already installed
     setIsInstalled(isInstalledPWA());
     setDeviceType(getDeviceType());
@@ -54,7 +57,7 @@ export function InstallPrompt() {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
-  }, []);
+  }, [appShell]);
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) {
@@ -91,7 +94,7 @@ export function InstallPrompt() {
   };
 
   // Don't show if already installed
-  if (isInstalled) {
+  if (appShell || isInstalled) {
     return null;
   }
 
@@ -273,6 +276,7 @@ export function InstallPrompt() {
 // Compact Install Banner (shown in settings or header)
 export function InstallBanner() {
   const { t } = useLanguage();
+  const [appShell] = useState(isAppShellEnvironment);
   const [isInstalled, setIsInstalled] = useState(false);
   const [deviceType, setDeviceType] = useState<'ios' | 'android' | 'desktop' | 'unknown'>('unknown');
 
@@ -281,7 +285,7 @@ export function InstallBanner() {
     setDeviceType(getDeviceType());
   }, []);
 
-  if (isInstalled) {
+  if (appShell || isInstalled) {
     return null;
   }
 
