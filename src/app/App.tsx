@@ -15,6 +15,7 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 import { LanguageSelector } from "./components/LanguageSelector";
 import { SplashScreen } from "./components/SplashScreen";
 import { AuthPage } from "./components/AuthPage";
+import { OnboardingScreen } from "./components/OnboardingScreen";
 import { ResetPasswordPage } from "./components/ResetPasswordPage";
 import { NewsletterPreferencePage } from "./components/NewsletterPreferencePage";
 import { LandingPage } from "./components/LandingPage";
@@ -198,6 +199,47 @@ const APP_TRANSLATIONS: Record<
 };
 
 const PUSH_TABS = new Set(['home', 'devotions', 'prayer', 'journal', 'questions']);
+const APP_SHELL_STORAGE_KEY = 'twobeone_app_shell';
+const ONBOARDING_STORAGE_KEY = 'twobeone_onboarding_complete';
+
+function detectAppShell(): boolean {
+  if (typeof window === 'undefined') return false;
+
+  const params = new URLSearchParams(window.location.search);
+  const appParameter = params.get('app');
+
+  try {
+    if (params.get('onboarding') === 'reset') {
+      window.localStorage.removeItem(ONBOARDING_STORAGE_KEY);
+    }
+    if (appParameter === '1') {
+      window.localStorage.setItem(APP_SHELL_STORAGE_KEY, '1');
+    } else if (appParameter === '0') {
+      window.localStorage.removeItem(APP_SHELL_STORAGE_KEY);
+    }
+  } catch {
+    // Some WebView wrappers can disable DOM storage. The URL flag still works.
+  }
+
+  const standalone = window.matchMedia?.('(display-mode: standalone)').matches === true;
+  let rememberedAppShell = false;
+  try {
+    rememberedAppShell = window.localStorage.getItem(APP_SHELL_STORAGE_KEY) === '1';
+  } catch {
+    // Keep using the URL/display-mode checks when storage is unavailable.
+  }
+
+  return appParameter === '1' || (appParameter !== '0' && (rememberedAppShell || standalone));
+}
+
+function hasCompletedOnboarding(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    return window.localStorage.getItem(ONBOARDING_STORAGE_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
 
 function initialTabFromNotification(): string {
   if (typeof window === 'undefined') return 'home';
@@ -213,7 +255,10 @@ function initialScreenFromNotification(): string {
 }
 
 export default function App() {
-  const [showLanding, setShowLanding] = useState(true);
+  const [isAppShell] = useState(detectAppShell);
+  const [onboardingComplete, setOnboardingComplete] = useState(hasCompletedOnboarding);
+  const [authInitialMode, setAuthInitialMode] = useState<'signin' | 'signup'>('signin');
+  const [showLanding, setShowLanding] = useState(() => !isAppShell);
   const [isPasswordRecovery, setIsPasswordRecovery] = useState(
     () => typeof window !== 'undefined' && window.location.pathname === '/reset-password',
   );
@@ -1196,6 +1241,26 @@ export default function App() {
     );
   }
 
+  if (isAppShell && !user && !onboardingComplete) {
+    return (
+      <LanguageProvider>
+        <SEOHead />
+        <OnboardingScreen
+          onComplete={(destination) => {
+            try {
+              window.localStorage.setItem(ONBOARDING_STORAGE_KEY, '1');
+            } catch {
+              // The current session still continues even if WebView storage is disabled.
+            }
+            setAuthInitialMode(destination);
+            setOnboardingComplete(true);
+            setShowLanding(false);
+          }}
+        />
+      </LanguageProvider>
+    );
+  }
+
   if (showLanding && !user) {
     return (
       <LanguageProvider>
@@ -1213,6 +1278,7 @@ export default function App() {
       <LanguageProvider>
         <SEOHead />
         <AuthPage
+          initialMode={authInitialMode}
           onAuthSuccess={(token, userObj) => {
             startTransition(() => {
               setUser(userObj);

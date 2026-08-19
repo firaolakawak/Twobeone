@@ -10,6 +10,7 @@ import type { User } from '@supabase/supabase-js';
 
 interface AuthPageProps {
   onAuthSuccess: (accessToken: string, user: User) => void;
+  initialMode?: 'signin' | 'signup';
 }
 
 type AuthMode = 'signin' | 'signup' | 'forgot';
@@ -37,8 +38,8 @@ const FloatingOrb = ({ style }: { style: React.CSSProperties }) => (
   }} />
 );
 
-export function AuthPage({ onAuthSuccess }: AuthPageProps) {
-  const [authMode, setAuthMode] = useState<AuthMode>('signin');
+export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProps) {
+  const [authMode, setAuthMode] = useState<AuthMode>(initialMode);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
