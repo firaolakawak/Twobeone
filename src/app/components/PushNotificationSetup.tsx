@@ -7,6 +7,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { toast } from 'sonner@2.0.3';
 import { pushSubscriptionMatchesCurrentKey, requestNotificationPermission, subscribeToPushNotifications, VAPID_PUBLIC_KEY } from '../utils/pwa';
 import { projectId } from '../utils/supabase/info';
+import { isApkUrlEnvironment } from '../utils/appShell';
 
 interface PushNotificationSetupProps {
   userId: string;
@@ -17,6 +18,7 @@ interface PushNotificationSetupProps {
 
 export function PushNotificationSetup({ userId, accessToken, onComplete, reminderOnly = false }: PushNotificationSetupProps) {
   const { t } = useLanguage();
+  const isApkUrl = isApkUrlEnvironment();
   const [showDialog, setShowDialog] = useState(false);
   const [notificationStatus, setNotificationStatus] = useState<'unknown' | 'granted' | 'denied' | 'prompt'>('unknown');
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -24,14 +26,15 @@ export function PushNotificationSetup({ userId, accessToken, onComplete, reminde
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    if (isApkUrl) return;
     checkNotificationStatus();
-  }, []);
+  }, [isApkUrl]);
 
   useEffect(() => {
     // Wait for the full subscription check before deciding whether to remind.
     // This allows a reminder for every genuinely disabled state without flashing
     // a dialog while an enabled subscription is still loading.
-    if (!reminderOnly || !hasCheckedSubscription || notificationStatus === 'unknown' || isSubscribed) return;
+    if (isApkUrl || !reminderOnly || !hasCheckedSubscription || notificationStatus === 'unknown' || isSubscribed) return;
     const reminderKey = `twobeone_push_reminder:${userId}`;
     if (sessionStorage.getItem(reminderKey)) return;
 
@@ -40,7 +43,7 @@ export function PushNotificationSetup({ userId, accessToken, onComplete, reminde
       setShowDialog(true);
     }, 1200);
     return () => window.clearTimeout(timer);
-  }, [hasCheckedSubscription, isSubscribed, notificationStatus, reminderOnly, userId]);
+  }, [hasCheckedSubscription, isApkUrl, isSubscribed, notificationStatus, reminderOnly, userId]);
 
   const checkNotificationStatus = async () => {
     if (!('Notification' in window)) {
@@ -232,6 +235,8 @@ export function PushNotificationSetup({ userId, accessToken, onComplete, reminde
       setIsLoading(false);
     }
   };
+
+  if (isApkUrl) return null;
 
   return (
     <>

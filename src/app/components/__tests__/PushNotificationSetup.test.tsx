@@ -14,6 +14,8 @@ vi.mock('../../utils/pwa', () => ({
 describe('PushNotificationSetup', () => {
   beforeEach(() => {
     sessionStorage.clear();
+    localStorage.clear();
+    window.history.replaceState({}, '', '/');
     Object.defineProperty(window, 'Notification', {
       configurable: true,
       value: { permission: 'granted' },
@@ -22,9 +24,30 @@ describe('PushNotificationSetup', () => {
   });
 
   afterEach(() => {
+    window.history.replaceState({}, '', '/');
     vi.useRealTimers();
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
+  });
+
+  it('does not show or initialize web push for the APK URL wrapper', async () => {
+    window.history.replaceState({}, '', '/?app=1');
+    const serviceWorkerReady = vi.fn();
+    Object.defineProperty(navigator, 'serviceWorker', {
+      configurable: true,
+      value: { get ready() { serviceWorkerReady(); return Promise.resolve(); } },
+    });
+
+    const { container } = render(
+      <LanguageProvider>
+        <PushNotificationSetup userId="apk-user" accessToken="token" reminderOnly />
+      </LanguageProvider>,
+    );
+
+    await act(async () => Promise.resolve());
+    expect(container).toBeEmptyDOMElement();
+    expect(serviceWorkerReady).not.toHaveBeenCalled();
+    expect(fetch).not.toHaveBeenCalled();
   });
 
   it('does not flash the reminder dialog while an enabled subscription is still loading', async () => {
