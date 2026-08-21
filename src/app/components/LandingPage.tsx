@@ -20,6 +20,7 @@ import {
   Instagram,
   Facebook,
   CheckCircle2,
+  LockKeyhole,
 } from "lucide-react";
 import { toast } from "sonner";
 import { projectId } from "../utils/supabase/info";
@@ -29,7 +30,7 @@ import {
   type PublicStaticPage,
   type StaticPage,
 } from "../utils/publicRoutes";
-import appScreenshot from "figma:asset/d5fde893add01b8ea5bf3527897567c586c24a70.png";
+import "../styles/launch-hero.css";
 import {
   BlogPage,
   HelpCenterPage,
@@ -154,6 +155,9 @@ const WHY_ITEMS = [
   },
 ];
 
+const APP_STORE_URL = (import.meta as any).env?.VITE_APP_STORE_URL as string | undefined;
+const GOOGLE_PLAY_URL = (import.meta as any).env?.VITE_GOOGLE_PLAY_URL as string | undefined;
+
 /* ─────────────────────────────────────────────
    COMPONENT
 ───────────────────────────────────────────── */
@@ -169,6 +173,7 @@ export function LandingPage({ onGetStarted, initialPage = null }: LandingPagePro
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [activePage, setActivePage] = useState<StaticPage>(initialPage);
+  const [heroPreview, setHeroPreview] = useState<"devotional" | "prayer" | "sync">("devotional");
 
   useEffect(() => {
     const handlePopState = () => setActivePage(staticPageFromPath(window.location.pathname));
@@ -208,6 +213,14 @@ export function LandingPage({ onGetStarted, initialPage = null }: LandingPagePro
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const openStore = (url?: string) => {
+    if (url) {
+      window.open(url, "_blank", "noopener,noreferrer");
+      return;
+    }
+    onGetStarted();
   };
 
   /* ─── STATIC PAGE ROUTER ─── */
@@ -342,207 +355,183 @@ export function LandingPage({ onGetStarted, initialPage = null }: LandingPagePro
       {/* ═══════════════════════════════════════
           HERO
       ═══════════════════════════════════════ */}
-      <section className="relative pt-20 pb-28 md:pt-28 md:pb-36 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center">
+      <section className="launch-hero" aria-labelledby="launch-hero-title">
+        <div className="launch-hero__orb launch-hero__orb--one" aria-hidden="true" />
+        <div className="launch-hero__orb launch-hero__orb--two" aria-hidden="true" />
 
-          {/* LEFT — Text content */}
-          <div className="space-y-8 text-center lg:text-left">
-
-            {/* Faith badge */}
-            <div className="flex justify-center lg:justify-start">
-              <span
-                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold border"
-                style={{
-                  background: "var(--primary-50)",
-                  color: "var(--primary-700)",
-                  borderColor: "var(--primary-200)",
-                }}
-              >
-                <Sparkles className="w-3.5 h-3.5 fill-current" style={{ color: "var(--primary-500)" }} />
-                Where Faith Meets Love
-              </span>
+        <div className="launch-hero__inner">
+          <div className="launch-hero__copy">
+            <div className="launch-hero__eyebrow">
+              <span className="launch-hero__eyebrow-mark" aria-hidden="true">†</span>
+              Built for Christ-centered couples
             </div>
 
-            {/* Main headline */}
-            <h1
-              className="text-5xl sm:text-6xl lg:text-7xl leading-[1.08] tracking-tight font-bold"
-              style={{ color: "var(--neutral-900)" }}
-            >
-              Grow Together in{" "}
-              <span
-                className="bg-clip-text text-transparent block sm:inline"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(135deg, var(--primary-500) 0%, var(--primary-400) 40%, var(--secondary-500) 100%)",
-                }}
-              >
-                Christ-Centered Love
-              </span>
+            <h1 id="launch-hero-title">
+              Where Faith Meets Love —{" "}
+              <span className="launch-hero__headline-accent">In One Beautiful App</span>
             </h1>
 
-            {/* Subtitle */}
-            <p
-              className="text-lg leading-relaxed max-w-xl mx-auto lg:mx-0"
-              style={{ color: "var(--neutral-600)" }}
-            >
-              Strengthen your covenant bond through intentional daily devotions,
-              synchronized prayer tracking, and meaningful conversations built on
-              Biblical foundations.
+            <p className="launch-hero__subtext">
+              Strengthen your covenant bond through daily devotionals, shared prayer,
+              and meaningful conversations.
             </p>
 
-            {/* CTA buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              {/* Primary — glow effect */}
-              <button
-                onClick={onGetStarted}
-                className="group inline-flex items-center justify-center gap-2 h-12 px-8 rounded-2xl text-sm font-bold text-white transition-all"
-                style={{
-                  background: "linear-gradient(135deg, var(--primary-500), var(--primary-600))",
-                  boxShadow: "0 8px 25px rgba(244,63,94,0.40), 0 2px 6px rgba(244,63,94,0.2)",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = "0 12px 35px rgba(244,63,94,0.55), 0 2px 8px rgba(244,63,94,0.3)";
-                  e.currentTarget.style.transform = "translateY(-1px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = "0 8px 25px rgba(244,63,94,0.40), 0 2px 6px rgba(244,63,94,0.2)";
-                  e.currentTarget.style.transform = "translateY(0)";
-                }}
-              >
-                {t?.auth?.createAccount || "Create Account"}
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <div className="launch-hero__stores" aria-label="Download TwoBeOne">
+              <button className="launch-store-button" onClick={() => openStore(APP_STORE_URL)} type="button">
+                <svg className="launch-store-button__apple" viewBox="0 0 24 24" aria-hidden="true">
+                  <path fill="currentColor" d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.79 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.53 4.1ZM12.03 7.25C11.88 5.02 13.69 3.18 15.77 3c.29 2.58-2.34 4.5-3.74 4.25Z" />
+                </svg>
+                <span>
+                  <small>Download on the</small>
+                  <strong>App Store</strong>
+                </span>
               </button>
 
-              {/* Secondary — outline */}
-              <button
-                onClick={() => scrollTo("features")}
-                className="inline-flex items-center justify-center gap-2 h-12 px-8 rounded-2xl text-sm font-bold border-2 transition-all"
-                style={{
-                  borderColor: "var(--primary-200)",
-                  color: "var(--primary-700)",
-                  background: "rgba(255,255,255,0.7)",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "var(--primary-400)";
-                  e.currentTarget.style.background = "var(--primary-50)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "var(--primary-200)";
-                  e.currentTarget.style.background = "rgba(255,255,255,0.7)";
-                }}
-              >
-                Explore Features
+              <button className="launch-store-button" onClick={() => openStore(GOOGLE_PLAY_URL)} type="button">
+                <svg className="launch-store-button__play" viewBox="0 0 32 32" aria-hidden="true">
+                  <path d="M4.8 3.9 19 16 4.8 28.1c-.5-.5-.8-1.2-.8-2V5.9c0-.8.3-1.5.8-2Z" fill="#54c6f1" />
+                  <path d="m19 16 4-3.4 4.8 2.7c.9.5.9 1.9 0 2.4L23 20.4 19 16Z" fill="#ffd45a" />
+                  <path d="M4.8 3.9c.7-.7 1.7-.8 2.5-.3L23 12.6 19 16 4.8 3.9Z" fill="#72d68b" />
+                  <path d="M4.8 28.1 19 16l4 4.4-15.7 9c-.8.5-1.8.4-2.5-.3Z" fill="#f46f6f" />
+                </svg>
+                <span>
+                  <small>Get it on</small>
+                  <strong>Google Play</strong>
+                </span>
               </button>
             </div>
 
-            {/* Social proof — avatar stack + stars */}
-            <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-              {/* Stacked avatars */}
-              <div className="flex -space-x-3">
-                {["💑", "👫", "💏", "👩‍❤️‍👨"].map((emoji, i) => (
-                  <div
-                    key={i}
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-base border-2 border-white shadow-sm select-none"
-                    style={{ background: "linear-gradient(135deg, var(--primary-50), var(--primary-100))" }}
-                  >
-                    {emoji}
-                  </div>
-                ))}
-              </div>
-              <div className="text-left">
-                <div className="flex items-center gap-0.5 mb-0.5">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-current" style={{ color: "var(--warning-500)" }} />
-                  ))}
-                </div>
-                <p className="text-sm font-medium" style={{ color: "var(--neutral-600)" }}>
-                  Loved by{" "}
-                  <strong style={{ color: "var(--neutral-900)" }}>10,000+</strong>{" "}
-                  couples worldwide
-                </p>
-              </div>
+            <div className="launch-hero__free-note">
+              <LockKeyhole className="h-3.5 w-3.5" aria-hidden="true" />
+              Free to start · Private by design · Made for two
             </div>
 
-            {/* Scripture quote card — glassmorphic */}
-            <div
-              className="max-w-xl mx-auto lg:mx-0 p-5 rounded-2xl border"
-              style={{
-                background: "linear-gradient(135deg, var(--primary-50) 0%, rgba(255,255,255,0.85) 100%)",
-                borderColor: "var(--primary-200)",
-                backdropFilter: "blur(12px)",
-                boxShadow: "0 4px 24px rgba(244,63,94,0.08)",
-              }}
-            >
-              <div className="flex gap-3 items-start">
-                <div
-                  className="flex-shrink-0 w-1 self-stretch rounded-full"
-                  style={{ background: "linear-gradient(180deg, var(--primary-400), var(--primary-600))" }}
-                />
-                <div>
-                  <p
-                    className="text-sm italic font-medium leading-relaxed"
-                    style={{ color: "var(--neutral-800)" }}
-                  >
-                    "Therefore a man shall leave his father and his mother and hold
-                    fast to his wife, and they shall become one flesh."
-                  </p>
-                  <p className="text-xs font-bold mt-2" style={{ color: "var(--primary-600)" }}>
-                    — Genesis 2:24
-                  </p>
-                </div>
-              </div>
+            <div className="launch-hero__features" aria-label="Key features">
+              <span className="launch-feature-pill"><BookOpen aria-hidden="true" />Daily Devotionals</span>
+              <span className="launch-feature-pill"><Heart aria-hidden="true" />Shared Prayer</span>
+              <span className="launch-feature-pill"><MessageSquare aria-hidden="true" />Conversation Questions</span>
+            </div>
+
+            <div className="launch-hero__proof">
+              <span className="launch-hero__stars" aria-label="4.9 out of 5 stars">
+                {[...Array(5)].map((_, index) => <Star key={index} aria-hidden="true" />)}
+              </span>
+              <span><strong>4.9</strong> · Loved by <strong>10,000+</strong> Christian couples</span>
             </div>
           </div>
 
-          {/* RIGHT — Phone mockup */}
-          <div className="relative flex justify-center lg:justify-end">
-            {/* Radial glow behind phone */}
-            <div
-              className="absolute inset-0 rounded-full blur-3xl scale-90"
-              style={{
-                background:
-                  "radial-gradient(circle, var(--primary-200) 0%, var(--secondary-100) 55%, transparent 75%)",
-                opacity: 0.6,
-              }}
-            />
+          <div className="launch-device-stage" aria-label="Interactive preview of the TwoBeOne app">
+            <div className="launch-device-stage__ring" aria-hidden="true" />
 
-            <div className="relative w-full max-w-[290px]">
-              {/* Floating decoration — top-right */}
-              <div
-                className="absolute -top-5 -right-5 w-12 h-12 rounded-2xl flex items-center justify-center shadow-xl z-20"
-                style={{
-                  background: "linear-gradient(135deg, var(--primary-500), var(--primary-600))",
-                  animation: "bounce 3s infinite",
-                }}
-              >
-                <Heart className="w-6 h-6 text-white fill-white" />
-              </div>
-              {/* Floating decoration — bottom-left */}
-              <div
-                className="absolute -bottom-4 -left-5 w-12 h-12 rounded-2xl flex items-center justify-center shadow-xl z-20"
-                style={{
-                  background: "linear-gradient(135deg, var(--secondary-400), var(--secondary-600))",
-                  animation: "bounce 3s infinite",
-                  animationDelay: "1.2s",
-                }}
-              >
-                <Sparkles className="w-6 h-6 text-white" />
-              </div>
+            <div className="launch-heart-particle launch-heart-particle--one" aria-hidden="true"><Heart /></div>
+            <div className="launch-heart-particle launch-heart-particle--two" aria-hidden="true"><Heart /></div>
+            <div className="launch-heart-particle launch-heart-particle--three" aria-hidden="true"><Heart /></div>
 
-              {/* Phone frame */}
-              <div
-                className="relative rounded-[2.5rem] overflow-hidden border-[6px] z-10"
-                style={{
-                  borderColor: "var(--neutral-900)",
-                  boxShadow: "0 40px 80px rgba(0,0,0,0.25), 0 0 0 1px rgba(0,0,0,0.08)",
-                }}
-              >
-                <img
-                  src={appScreenshot}
-                  alt="TwoBeOne app dashboard showing devotional tracking and couple analytics"
-                  className="w-full block select-none"
-                  loading="eager"
-                />
+            <div className="launch-float-card launch-float-card--left" aria-hidden="true">
+              <div className="launch-float-card__top">
+                <span className="launch-float-card__icon"><Heart /></span>
+                <span><strong>Shared prayer</strong><small>Both prayed today</small></span>
+              </div>
+              <div className="launch-float-card__bar"><i /></div>
+            </div>
+
+            <div className="launch-float-card launch-float-card--right" aria-hidden="true">
+              <div className="launch-float-card__top">
+                <span className="launch-float-card__icon launch-float-card__icon--rose"><Users /></span>
+                <span><strong>Couple Sync</strong><small>Connected in real time</small></span>
+              </div>
+            </div>
+
+            <div className="launch-phone">
+              <div className="launch-phone__screen">
+                <div className="launch-phone__island" aria-hidden="true" />
+                <div className="launch-phone__status" aria-hidden="true">
+                  <span>9:41</span>
+                  <span className="launch-phone__status-icons">
+                    <span className="launch-phone__signal"><i /><i /><i /></span>
+                    <span>●</span><span>▰</span>
+                  </span>
+                </div>
+
+                <div className="launch-phone__topbar">
+                  <div className="launch-phone__brand">
+                    <span className="launch-phone__brand-mark"><Heart /></span>
+                    TwoBeOne
+                  </div>
+                  <span className="launch-phone__avatar" aria-label="Couple profile">A+B</span>
+                </div>
+
+                <div className="launch-phone__content">
+                  <span className="launch-phone__greeting">
+                    {heroPreview === "devotional" ? "Good morning, together" : heroPreview === "prayer" ? "Your shared prayer space" : "Growing closer every day"}
+                  </span>
+                  <h2 className="launch-phone__title">
+                    {heroPreview === "devotional" ? "Today’s Devotional" : heroPreview === "prayer" ? "Pray as One" : "Your Couple Sync"}
+                  </h2>
+
+                  {heroPreview === "devotional" && (
+                    <article className="launch-screen-card" key="devotional">
+                      <div className="launch-screen-card__art">
+                        <span className="launch-screen-card__label">Day 18 · Covenant Love</span>
+                        <h3>A Cord of Three Strands</h3>
+                      </div>
+                      <div className="launch-screen-card__body">
+                        <p className="launch-screen-card__verse">
+                          “A cord of three strands is not quickly broken.”
+                        </p>
+                        <span className="launch-screen-card__reference">ECCLESIASTES 4:12</span>
+                        <button className="launch-screen-card__button" type="button" onClick={onGetStarted}>Begin together →</button>
+                      </div>
+                    </article>
+                  )}
+
+                  {heroPreview === "prayer" && (
+                    <article className="launch-screen-card launch-prayer-card" key="prayer">
+                      <div className="launch-prayer-card__header">
+                        <span className="launch-prayer-card__icon"><Heart /></span>
+                        <span className="launch-prayer-card__live"><i />Partner is here</span>
+                      </div>
+                      <h3>Prayer for Our Future</h3>
+                      <p>Invite God into your hopes, decisions, and dreams—together.</p>
+                      <div className="launch-prayer-card__couple">
+                        <div className="launch-prayer-card__faces"><span>A</span><span>B</span></div>
+                        <span><strong>2 hearts, one prayer</strong><small>Synced just now</small></span>
+                      </div>
+                      <button className="launch-screen-card__button" type="button" onClick={onGetStarted}>Pray together →</button>
+                    </article>
+                  )}
+
+                  {heroPreview === "sync" && (
+                    <article className="launch-screen-card launch-sync-card" key="sync">
+                      <div className="launch-sync-card__visual">
+                        <span className="launch-sync-card__halo" />
+                        <div className="launch-sync-card__pair">
+                          <span>AB</span><span>JM</span>
+                          <i className="launch-sync-card__heart"><Heart /></i>
+                        </div>
+                      </div>
+                      <h3>Walking in Faith Together</h3>
+                      <p>Your shared spiritual rhythm, beautifully in sync.</p>
+                      <div className="launch-sync-card__stats">
+                        <span><strong>18</strong>day streak</span>
+                        <span><strong>42</strong>prayers</span>
+                        <span><strong>76%</strong>in sync</span>
+                      </div>
+                    </article>
+                  )}
+                </div>
+
+                <div className="launch-phone__tabs" role="tablist" aria-label="Preview app screens">
+                  <button className={`launch-preview-tab ${heroPreview === "devotional" ? "is-active" : ""}`} onClick={() => setHeroPreview("devotional")} type="button" role="tab" aria-selected={heroPreview === "devotional"}>
+                    <BookOpen />Devotional
+                  </button>
+                  <button className={`launch-preview-tab ${heroPreview === "prayer" ? "is-active" : ""}`} onClick={() => setHeroPreview("prayer")} type="button" role="tab" aria-selected={heroPreview === "prayer"}>
+                    <Heart />Prayer
+                  </button>
+                  <button className={`launch-preview-tab ${heroPreview === "sync" ? "is-active" : ""}`} onClick={() => setHeroPreview("sync")} type="button" role="tab" aria-selected={heroPreview === "sync"}>
+                    <Users />Couple Sync
+                  </button>
+                </div>
               </div>
             </div>
           </div>
