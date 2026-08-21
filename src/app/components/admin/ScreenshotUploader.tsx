@@ -158,6 +158,9 @@ export function ScreenshotUploader({ accessToken }: ScreenshotUploaderProps) {
   const getTypeColor = (type: string) => {
     switch (type) {
       case 'hero': return 'bg-primary-100 text-primary-700';
+      case 'devotional': return 'bg-violet-100 text-violet-700';
+      case 'prayer': return 'bg-rose-100 text-rose-700';
+      case 'sync': return 'bg-amber-100 text-amber-700';
       case 'feature': return 'bg-sky-100 text-sky-700';
       case 'testimonial': return 'bg-success-50 text-success-700';
       default: return 'bg-muted text-foreground';
@@ -201,6 +204,9 @@ export function ScreenshotUploader({ accessToken }: ScreenshotUploaderProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="hero">Hero Section</SelectItem>
+                  <SelectItem value="devotional">Mobile Mockup · Daily Devotional</SelectItem>
+                  <SelectItem value="prayer">Mobile Mockup · Shared Prayer</SelectItem>
+                  <SelectItem value="sync">Mobile Mockup · Couple Sync</SelectItem>
                   <SelectItem value="feature">Feature Showcase</SelectItem>
                   <SelectItem value="testimonial">Testimonial Section</SelectItem>
                   <SelectItem value="general">General</SelectItem>

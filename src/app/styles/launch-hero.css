@@ -272,6 +272,17 @@
   background: linear-gradient(180deg, #fff 0%, #fffafd 62%, #f8f2fb 100%);
 }
 
+.launch-phone__uploaded-screen {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: top center;
+  background: #f8f8fa;
+  animation: launch-screen-in .36s ease both;
+}
+
 .launch-phone__island {
   position: absolute;
   top: .62rem;
@@ -473,6 +484,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .launch-phone,.launch-device-stage__ring,.launch-float-card,.launch-heart-particle,.launch-screen-card { animation:none !important; }
+  .launch-phone,.launch-device-stage__ring,.launch-float-card,.launch-heart-particle,.launch-screen-card,.launch-phone__uploaded-screen { animation:none !important; }
   .launch-store-button { transition:none; }
 }

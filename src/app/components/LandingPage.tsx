@@ -23,7 +23,7 @@ import {
   LockKeyhole,
 } from "lucide-react";
 import { toast } from "sonner";
-import { projectId } from "../utils/supabase/info";
+import { projectId, publicAnonKey } from "../utils/supabase/info";
 import {
   STATIC_PAGE_PATHS,
   staticPageFromPath,
@@ -158,6 +158,16 @@ const WHY_ITEMS = [
 const APP_STORE_URL = (import.meta as any).env?.VITE_APP_STORE_URL as string | undefined;
 const GOOGLE_PLAY_URL = (import.meta as any).env?.VITE_GOOGLE_PLAY_URL as string | undefined;
 
+type HeroPreview = "devotional" | "prayer" | "sync";
+
+interface LandingScreenshot {
+  id: string;
+  filename: string;
+  url: string;
+  type: string;
+  uploadedAt: string;
+}
+
 /* ─────────────────────────────────────────────
    COMPONENT
 ───────────────────────────────────────────── */
@@ -173,13 +183,58 @@ export function LandingPage({ onGetStarted, initialPage = null }: LandingPagePro
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [activePage, setActivePage] = useState<StaticPage>(initialPage);
-  const [heroPreview, setHeroPreview] = useState<"devotional" | "prayer" | "sync">("devotional");
+  const [heroPreview, setHeroPreview] = useState<HeroPreview>("devotional");
+  const [heroScreenshots, setHeroScreenshots] = useState<LandingScreenshot[]>([]);
 
   useEffect(() => {
     const handlePopState = () => setActivePage(staticPageFromPath(window.location.pathname));
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
+
+  useEffect(() => {
+    if (activePage) return;
+
+    const controller = new AbortController();
+    const loadHeroScreenshots = async () => {
+      try {
+        const response = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/landing/screenshots`,
+          {
+            headers: { Authorization: `Bearer ${publicAnonKey}` },
+            signal: controller.signal,
+          },
+        );
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const screenshots = Array.isArray(data?.screenshots) ? data.screenshots : [];
+        setHeroScreenshots(
+          screenshots
+            .filter((screenshot: LandingScreenshot) => screenshot?.id && screenshot?.url)
+            .sort(
+              (a: LandingScreenshot, b: LandingScreenshot) =>
+                new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime(),
+            ),
+        );
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          console.warn("[LandingPage] Uploaded screenshots unavailable; using built-in preview.", error);
+        }
+      }
+    };
+
+    loadHeroScreenshots();
+    return () => controller.abort();
+  }, [activePage]);
+
+  const previewOrder: HeroPreview[] = ["devotional", "prayer", "sync"];
+  const previewIndex = previewOrder.indexOf(heroPreview);
+  const activeHeroScreenshot =
+    heroScreenshots.find((screenshot) => screenshot.type === heroPreview) ??
+    (heroScreenshots.length > 0
+      ? heroScreenshots[previewIndex % heroScreenshots.length]
+      : undefined);
 
   const handleNewsletterSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -445,81 +500,101 @@ export function LandingPage({ onGetStarted, initialPage = null }: LandingPagePro
             <div className="launch-phone">
               <div className="launch-phone__screen">
                 <div className="launch-phone__island" aria-hidden="true" />
-                <div className="launch-phone__status" aria-hidden="true">
-                  <span>9:41</span>
-                  <span className="launch-phone__status-icons">
-                    <span className="launch-phone__signal"><i /><i /><i /></span>
-                    <span>●</span><span>▰</span>
-                  </span>
-                </div>
 
-                <div className="launch-phone__topbar">
-                  <div className="launch-phone__brand">
-                    <span className="launch-phone__brand-mark"><Heart /></span>
-                    TwoBeOne
-                  </div>
-                  <span className="launch-phone__avatar" aria-label="Couple profile">A+B</span>
-                </div>
+                {activeHeroScreenshot && (
+                  <img
+                    key={activeHeroScreenshot.id}
+                    src={activeHeroScreenshot.url}
+                    alt={`${heroPreview === "sync" ? "Couple Sync" : heroPreview[0].toUpperCase() + heroPreview.slice(1)} screen in the TwoBeOne app`}
+                    className="launch-phone__uploaded-screen"
+                    loading="eager"
+                    onError={() => {
+                      setHeroScreenshots((screenshots) =>
+                        screenshots.filter((screenshot) => screenshot.id !== activeHeroScreenshot.id),
+                      );
+                    }}
+                  />
+                )}
 
-                <div className="launch-phone__content">
-                  <span className="launch-phone__greeting">
-                    {heroPreview === "devotional" ? "Good morning, together" : heroPreview === "prayer" ? "Your shared prayer space" : "Growing closer every day"}
-                  </span>
-                  <h2 className="launch-phone__title">
-                    {heroPreview === "devotional" ? "Today’s Devotional" : heroPreview === "prayer" ? "Pray as One" : "Your Couple Sync"}
-                  </h2>
+                {!activeHeroScreenshot && (
+                  <>
+                    <div className="launch-phone__status" aria-hidden="true">
+                      <span>9:41</span>
+                      <span className="launch-phone__status-icons">
+                        <span className="launch-phone__signal"><i /><i /><i /></span>
+                        <span>●</span><span>▰</span>
+                      </span>
+                    </div>
 
-                  {heroPreview === "devotional" && (
-                    <article className="launch-screen-card" key="devotional">
-                      <div className="launch-screen-card__art">
-                        <span className="launch-screen-card__label">Day 18 · Covenant Love</span>
-                        <h3>A Cord of Three Strands</h3>
+                    <div className="launch-phone__topbar">
+                      <div className="launch-phone__brand">
+                        <span className="launch-phone__brand-mark"><Heart /></span>
+                        TwoBeOne
                       </div>
-                      <div className="launch-screen-card__body">
-                        <p className="launch-screen-card__verse">
-                          “A cord of three strands is not quickly broken.”
-                        </p>
-                        <span className="launch-screen-card__reference">ECCLESIASTES 4:12</span>
-                        <button className="launch-screen-card__button" type="button" onClick={onGetStarted}>Begin together →</button>
-                      </div>
-                    </article>
-                  )}
+                      <span className="launch-phone__avatar" aria-label="Couple profile">A+B</span>
+                    </div>
 
-                  {heroPreview === "prayer" && (
-                    <article className="launch-screen-card launch-prayer-card" key="prayer">
-                      <div className="launch-prayer-card__header">
-                        <span className="launch-prayer-card__icon"><Heart /></span>
-                        <span className="launch-prayer-card__live"><i />Partner is here</span>
-                      </div>
-                      <h3>Prayer for Our Future</h3>
-                      <p>Invite God into your hopes, decisions, and dreams—together.</p>
-                      <div className="launch-prayer-card__couple">
-                        <div className="launch-prayer-card__faces"><span>A</span><span>B</span></div>
-                        <span><strong>2 hearts, one prayer</strong><small>Synced just now</small></span>
-                      </div>
-                      <button className="launch-screen-card__button" type="button" onClick={onGetStarted}>Pray together →</button>
-                    </article>
-                  )}
+                    <div className="launch-phone__content">
+                      <span className="launch-phone__greeting">
+                        {heroPreview === "devotional" ? "Good morning, together" : heroPreview === "prayer" ? "Your shared prayer space" : "Growing closer every day"}
+                      </span>
+                      <h2 className="launch-phone__title">
+                        {heroPreview === "devotional" ? "Today’s Devotional" : heroPreview === "prayer" ? "Pray as One" : "Your Couple Sync"}
+                      </h2>
 
-                  {heroPreview === "sync" && (
-                    <article className="launch-screen-card launch-sync-card" key="sync">
-                      <div className="launch-sync-card__visual">
-                        <span className="launch-sync-card__halo" />
-                        <div className="launch-sync-card__pair">
-                          <span>AB</span><span>JM</span>
-                          <i className="launch-sync-card__heart"><Heart /></i>
-                        </div>
-                      </div>
-                      <h3>Walking in Faith Together</h3>
-                      <p>Your shared spiritual rhythm, beautifully in sync.</p>
-                      <div className="launch-sync-card__stats">
-                        <span><strong>18</strong>day streak</span>
-                        <span><strong>42</strong>prayers</span>
-                        <span><strong>76%</strong>in sync</span>
-                      </div>
-                    </article>
-                  )}
-                </div>
+                      {heroPreview === "devotional" && (
+                        <article className="launch-screen-card" key="devotional">
+                          <div className="launch-screen-card__art">
+                            <span className="launch-screen-card__label">Day 18 · Covenant Love</span>
+                            <h3>A Cord of Three Strands</h3>
+                          </div>
+                          <div className="launch-screen-card__body">
+                            <p className="launch-screen-card__verse">
+                              “A cord of three strands is not quickly broken.”
+                            </p>
+                            <span className="launch-screen-card__reference">ECCLESIASTES 4:12</span>
+                            <button className="launch-screen-card__button" type="button" onClick={onGetStarted}>Begin together →</button>
+                          </div>
+                        </article>
+                      )}
+
+                      {heroPreview === "prayer" && (
+                        <article className="launch-screen-card launch-prayer-card" key="prayer">
+                          <div className="launch-prayer-card__header">
+                            <span className="launch-prayer-card__icon"><Heart /></span>
+                            <span className="launch-prayer-card__live"><i />Partner is here</span>
+                          </div>
+                          <h3>Prayer for Our Future</h3>
+                          <p>Invite God into your hopes, decisions, and dreams—together.</p>
+                          <div className="launch-prayer-card__couple">
+                            <div className="launch-prayer-card__faces"><span>A</span><span>B</span></div>
+                            <span><strong>2 hearts, one prayer</strong><small>Synced just now</small></span>
+                          </div>
+                          <button className="launch-screen-card__button" type="button" onClick={onGetStarted}>Pray together →</button>
+                        </article>
+                      )}
+
+                      {heroPreview === "sync" && (
+                        <article className="launch-screen-card launch-sync-card" key="sync">
+                          <div className="launch-sync-card__visual">
+                            <span className="launch-sync-card__halo" />
+                            <div className="launch-sync-card__pair">
+                              <span>AB</span><span>JM</span>
+                              <i className="launch-sync-card__heart"><Heart /></i>
+                            </div>
+                          </div>
+                          <h3>Walking in Faith Together</h3>
+                          <p>Your shared spiritual rhythm, beautifully in sync.</p>
+                          <div className="launch-sync-card__stats">
+                            <span><strong>18</strong>day streak</span>
+                            <span><strong>42</strong>prayers</span>
+                            <span><strong>76%</strong>in sync</span>
+                          </div>
+                        </article>
+                      )}
+                    </div>
+                  </>
+                )}
 
                 <div className="launch-phone__tabs" role="tablist" aria-label="Preview app screens">
                   <button className={`launch-preview-tab ${heroPreview === "devotional" ? "is-active" : ""}`} onClick={() => setHeroPreview("devotional")} type="button" role="tab" aria-selected={heroPreview === "devotional"}>
