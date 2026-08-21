@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLanguage } from "../contexts/LanguageContext";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -23,6 +23,12 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { projectId } from "../utils/supabase/info";
+import {
+  STATIC_PAGE_PATHS,
+  staticPageFromPath,
+  type PublicStaticPage,
+  type StaticPage,
+} from "../utils/publicRoutes";
 import appScreenshot from "figma:asset/d5fde893add01b8ea5bf3527897567c586c24a70.png";
 import {
   BlogPage,
@@ -33,16 +39,6 @@ import {
   PrivacyPolicyPage,
   TermsOfServicePage,
 } from "./StaticPages";
-
-type StaticPage =
-  | "blog"
-  | "help-center"
-  | "community"
-  | "contact"
-  | "privacy-policy"
-  | "terms-of-service"
-  | "cookie-policy"
-  | null;
 
 /* ─────────────────────────────────────────────
    DATA CONSTANTS
@@ -164,14 +160,21 @@ const WHY_ITEMS = [
 
 interface LandingPageProps {
   onGetStarted: () => void;
+  initialPage?: StaticPage;
 }
 
-export function LandingPage({ onGetStarted }: LandingPageProps) {
+export function LandingPage({ onGetStarted, initialPage = null }: LandingPageProps) {
   const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [activePage, setActivePage] = useState<StaticPage>(null);
+  const [activePage, setActivePage] = useState<StaticPage>(initialPage);
+
+  useEffect(() => {
+    const handlePopState = () => setActivePage(staticPageFromPath(window.location.pathname));
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
 
   const handleNewsletterSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -211,6 +214,9 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
   const sharedPageProps = {
     onBack: () => {
       setActivePage(null);
+      if (staticPageFromPath(window.location.pathname)) {
+        window.history.pushState({}, '', '/');
+      }
       window.scrollTo({ top: 0, behavior: "instant" });
     },
     onGetStarted,
@@ -224,8 +230,9 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
   if (activePage === "terms-of-service") return <TermsOfServicePage {...sharedPageProps} />;
   if (activePage === "cookie-policy") return <CookiePolicyPage {...sharedPageProps} />;
 
-  const navigate = (page: StaticPage) => {
+  const navigate = (page: PublicStaticPage) => {
     setActivePage(page);
+    window.history.pushState({}, '', STATIC_PAGE_PATHS[page]);
     window.scrollTo({ top: 0, behavior: "instant" });
   };
 
@@ -1083,21 +1090,25 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
               <h4 className="text-sm font-bold text-white">Resources</h4>
               <ul className="space-y-2.5">
                 {[
-                  { label: "Blog", page: "blog" as StaticPage },
-                  { label: "Help Center", page: "help-center" as StaticPage },
-                  { label: "Community", page: "community" as StaticPage },
-                  { label: "Contact Us", page: "contact" as StaticPage },
+                  { label: "Blog", page: "blog" as PublicStaticPage },
+                  { label: "Help Center", page: "help-center" as PublicStaticPage },
+                  { label: "Community", page: "community" as PublicStaticPage },
+                  { label: "Contact Us", page: "contact" as PublicStaticPage },
                 ].map((item) => (
                   <li key={item.label}>
-                    <button
-                      onClick={() => navigate(item.page)}
+                    <a
+                      href={STATIC_PAGE_PATHS[item.page]}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        navigate(item.page);
+                      }}
                       className="text-sm transition-colors"
                       style={{ color: "var(--neutral-400)" }}
                       onMouseEnter={(e) => (e.currentTarget.style.color = "white")}
                       onMouseLeave={(e) => (e.currentTarget.style.color = "var(--neutral-400)")}
                     >
                       {item.label}
-                    </button>
+                    </a>
                   </li>
                 ))}
               </ul>
@@ -1137,20 +1148,24 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
               <div className="pt-2 space-y-2.5">
                 <h4 className="text-sm font-bold text-white">Legal</h4>
                 {[
-                  { label: "Privacy Policy", page: "privacy-policy" as StaticPage },
-                  { label: "Terms of Service", page: "terms-of-service" as StaticPage },
-                  { label: "Cookie Policy", page: "cookie-policy" as StaticPage },
+                  { label: "Privacy Policy", page: "privacy-policy" as PublicStaticPage },
+                  { label: "Terms of Service", page: "terms-of-service" as PublicStaticPage },
+                  { label: "Cookie Policy", page: "cookie-policy" as PublicStaticPage },
                 ].map((item) => (
-                  <button
+                  <a
                     key={item.label}
-                    onClick={() => navigate(item.page)}
+                    href={STATIC_PAGE_PATHS[item.page]}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      navigate(item.page);
+                    }}
                     className="block text-sm transition-colors text-left"
                     style={{ color: "var(--neutral-400)" }}
                     onMouseEnter={(e) => (e.currentTarget.style.color = "white")}
                     onMouseLeave={(e) => (e.currentTarget.style.color = "var(--neutral-400)")}
                   >
                     {item.label}
-                  </button>
+                  </a>
                 ))}
               </div>
             </div>

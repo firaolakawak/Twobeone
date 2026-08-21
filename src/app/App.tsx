@@ -19,6 +19,7 @@ import { OnboardingScreen } from "./components/OnboardingScreen";
 import { ResetPasswordPage } from "./components/ResetPasswordPage";
 import { NewsletterPreferencePage } from "./components/NewsletterPreferencePage";
 import { LandingPage } from "./components/LandingPage";
+import { staticPageFromPath } from "./utils/publicRoutes";
 import { BottomNavigation } from "./components/BottomNavigation";
 import { OfflineIndicator } from "./components/OfflineIndicator";
 import { Button } from "./components/ui/button";
@@ -221,9 +222,15 @@ function initialTabFromNotification(): string {
 
 function initialScreenFromNotification(): string {
   if (typeof window === 'undefined') return 'dashboard';
+  if (window.location.pathname === '/admin') return 'admin';
   return new URLSearchParams(window.location.search).get('screen') === 'couple-calendar'
     ? 'couple-calendar'
     : 'dashboard';
+}
+
+function isDirectAppPath(): boolean {
+  if (typeof window === 'undefined') return false;
+  return window.location.pathname === '/admin';
 }
 
 export default function App() {
@@ -241,7 +248,9 @@ export default function App() {
   });
   const [onboardingComplete, setOnboardingComplete] = useState(hasCompletedOnboarding);
   const [authInitialMode, setAuthInitialMode] = useState<'signin' | 'signup'>('signin');
-  const [showLanding, setShowLanding] = useState(() => !isAppShell);
+  const [showLanding, setShowLanding] = useState(
+    () => !isAppShell && !isDirectAppPath(),
+  );
   const [isPasswordRecovery, setIsPasswordRecovery] = useState(
     () => typeof window !== 'undefined' && window.location.pathname === '/reset-password',
   );
@@ -252,6 +261,9 @@ export default function App() {
       : window.location.pathname === '/newsletter/unsubscribe'
         ? 'unsubscribe' as const
         : null;
+  const publicPage = typeof window === 'undefined'
+    ? null
+    : staticPageFromPath(window.location.pathname);
   const [activeTab, setActiveTabRaw] = useState(initialTabFromNotification);
   const [selectedScreen, setSelectedScreenRaw] = useState<
     string | null
@@ -1203,6 +1215,22 @@ export default function App() {
         <NewsletterPreferencePage
           action={newsletterAction}
           onComplete={() => { window.location.href = '/'; }}
+        />
+      </LanguageProvider>
+    );
+  }
+
+  if (publicPage) {
+    return (
+      <LanguageProvider>
+        <SEOHead />
+        <Toaster />
+        <LandingPage
+          initialPage={publicPage}
+          onGetStarted={() => {
+            window.history.replaceState({}, '', '/');
+            setShowLanding(false);
+          }}
         />
       </LanguageProvider>
     );
