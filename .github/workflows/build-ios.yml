@@ -1,0 +1,29 @@
+name: Build iOS App
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build iOS Artifact
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Capacitor iOS
+        run: npx cap sync ios
+
+      - name: Build Xcode Project
+        run: |
+          cd ios/App
+          xcodebuild -workspace App.xcworkspace -scheme App -destination 'generic/platform=iOS Simulator' -configuration Release build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
