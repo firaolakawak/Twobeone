@@ -3723,6 +3723,124 @@ app.post('/make-server-6d579fee/devotions/:devotionId/prayer-chat', async (c) =>
 });
 
 // ============================================
+// PRIVATE PARTNER CHAT
+// ============================================
+
+function partnerChatChannel(userId: string, partnerId: string) {
+  return [userId, partnerId].sort().join(':');
+}
+
+async function sendPartnerChatPush(partnerId: string, senderName: string, message: string) {
+  try {
+    const subscription: any = await kv.get(`push_subscription:${partnerId}`).catch(() => null);
+    if (!subscription?.endpoint) return;
+    const publicKey = Deno.env.get('VAPID_PUBLIC_KEY');
+    const privateKey = Deno.env.get('VAPID_PRIVATE_KEY');
+    if (!publicKey || !privateKey) return;
+    const webpush = await import('npm:web-push@3.6.7');
+    webpush.setVapidDetails('mailto:support@twobeone.app', publicKey, privateKey);
+    await webpush.sendNotification(subscription, JSON.stringify({
+      title: `💬 ${senderName}`,
+      body: message.slice(0, 120),
+      icon: '/icons/icon-192x192.png',
+      badge: '/icons/icon-72x72.png',
+      tag: 'partner-chat',
+      data: { type: 'chat', url: '/?tab=chat' },
+      url: '/?tab=chat',
+    }));
+  } catch (error: any) {
+    console.warn('[Partner Chat] Push failed:', error?.message || error);
+    if (error?.statusCode === 404 || error?.statusCode === 410) {
+      await kv.del(`push_subscription:${partnerId}`).catch(() => undefined);
+    }
+  }
+}
+
+app.get('/make-server-6d579fee/chat/messages', async (c) => {
+  try {
+    const userId = await getUserFromToken(c.req.header('Authorization'));
+    if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+    const profile: any = await kv.get(`user:${userId}`).catch(() => null);
+    if (!profile?.partnerId) return c.json({ messages: [], unreadCount: 0, hasPartner: false });
+
+    const channelId = partnerChatChannel(userId, String(profile.partnerId));
+    const [allMessages, readReceipt] = await Promise.all([
+      kv.getByPrefix(`couple-chat:${channelId}:`).catch(() => []),
+      kv.get(`couple-chat-read:${channelId}:${userId}`).catch(() => null),
+    ]);
+    const messages = (allMessages as any[])
+      .filter(message => message?.channelId === channelId && (message.senderId === userId || message.senderId === profile.partnerId))
+      .sort((left, right) => new Date(left.createdAt).getTime() - new Date(right.createdAt).getTime())
+      .slice(-300);
+    const lastReadAt = new Date((readReceipt as any)?.readAt || 0).getTime();
+    const unreadCount = messages.filter(message => message.senderId !== userId && new Date(message.createdAt).getTime() > lastReadAt).length;
+    return c.json({ messages, unreadCount, hasPartner: true });
+  } catch (error: any) {
+    console.error('[Partner Chat] Load failed:', error);
+    return c.json({ error: error.message || 'Failed to load chat' }, 500);
+  }
+});
+
+app.post('/make-server-6d579fee/chat/messages', async (c) => {
+  try {
+    const userId = await getUserFromToken(c.req.header('Authorization'));
+    if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+    const profile: any = await kv.get(`user:${userId}`).catch(() => null);
+    if (!profile?.partnerId) return c.json({ error: 'Connect with your partner before sending messages' }, 409);
+    const body = await c.req.json();
+    const text = String(body.message || '').trim();
+    if (!text) return c.json({ error: 'Message is required' }, 400);
+    if (text.length > 2000) return c.json({ error: 'Message is too long' }, 400);
+
+    const partnerId = String(profile.partnerId);
+    const partnerProfile: any = await kv.get(`user:${partnerId}`).catch(() => null);
+    if (!partnerProfile || String(partnerProfile.partnerId || '') !== userId) {
+      return c.json({ error: 'Partner connection is no longer active' }, 403);
+    }
+    const channelId = partnerChatChannel(userId, partnerId);
+    const messageId = generateId();
+    const now = new Date().toISOString();
+    const chatMessage = {
+      id: messageId,
+      channelId,
+      senderId: userId,
+      senderName: profile.name || profile.full_name || 'Partner',
+      message: text,
+      createdAt: now,
+    };
+    const notificationId = generateId();
+    await Promise.all([
+      kv.set(`couple-chat:${channelId}:${messageId}`, chatMessage),
+      kv.set(`couple-chat-read:${channelId}:${userId}`, { readAt: now }),
+      kv.set(`notification:${partnerId}:${notificationId}`, {
+        id: notificationId, recipientId: partnerId, senderId: userId, type: 'chat',
+        title: `New message from ${chatMessage.senderName}`, message: text.slice(0, 120),
+        data: { url: '/?tab=chat' }, isRead: false, createdAt: now,
+      }),
+    ]);
+    await sendPartnerChatPush(partnerId, chatMessage.senderName, text);
+    return c.json({ message: chatMessage }, 201);
+  } catch (error: any) {
+    console.error('[Partner Chat] Send failed:', error);
+    return c.json({ error: error.message || 'Failed to send message' }, 500);
+  }
+});
+
+app.post('/make-server-6d579fee/chat/read', async (c) => {
+  try {
+    const userId = await getUserFromToken(c.req.header('Authorization'));
+    if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+    const profile: any = await kv.get(`user:${userId}`).catch(() => null);
+    if (!profile?.partnerId) return c.json({ success: true });
+    const channelId = partnerChatChannel(userId, String(profile.partnerId));
+    await kv.set(`couple-chat-read:${channelId}:${userId}`, { readAt: new Date().toISOString() });
+    return c.json({ success: true });
+  } catch (error: any) {
+    return c.json({ error: error.message || 'Failed to mark chat read' }, 500);
+  }
+});
+
+// ============================================
 // ADMIN ROUTES
 // ============================================
 

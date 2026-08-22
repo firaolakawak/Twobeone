@@ -90,6 +90,7 @@ export interface Translations {
     settings: string;
     bible: string;
     community: string;
+    chat: string;
   };
 
   // Auth
@@ -549,6 +550,7 @@ export const translations: Record<Language, Translations> = {
       settings: 'Settings',
       bible: 'Bible',
       community: 'Community',
+      chat: 'Chat',
     },
 
     auth: {
@@ -1024,6 +1026,7 @@ export const translations: Record<Language, Translations> = {
       settings: 'ቅንብሮች',
       bible: 'መጽሐፍ ቅዱስ',
       community: 'ማህበረሰብ',
+      chat: 'ውይይት',
     },
 
     auth: {
@@ -1495,6 +1498,7 @@ export const translations: Record<Language, Translations> = {
       settings: "Qindaa'ina",
       bible: 'Macaafa Qulqulluu',
       community: 'Hawaasa',
+      chat: 'Haasaʼa',
     },
     auth: {
       signIn: 'Seeni',

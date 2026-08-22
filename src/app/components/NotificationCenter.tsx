@@ -28,6 +28,7 @@ interface Notification {
     | "partner_link"
     | "mood_report"
     | "mood_analysis"
+    | "chat"
     | "general";
   title: string;
   message: string;
@@ -258,6 +259,11 @@ export function NotificationCenter({
             <Users className={`${iconClass} text-amber-700`} />
           ),
           bg: "bg-amber-100 border border-amber-200",
+        };
+      case "chat":
+        return {
+          icon: <MessageSquareDot className={`${iconClass} text-rose-600`} />,
+          bg: "bg-rose-100 border border-rose-200",
         };
       default:
         return {

@@ -86,6 +86,7 @@ const PWADebugInfo         = lazy(() => import("./components/PWADebugInfo").then
 const IconsMissingNotice   = lazy(() => import("./components/IconsMissingNotice").then(m => ({ default: m.IconsMissingNotice })));
 const PWAUpdateAvailable   = lazy(() => import("./components/PWAUpdateAvailable").then(m => ({ default: m.PWAUpdateAvailable })));
 const LegalFooter          = lazy(() => import("./components/LegalFooter").then(m => ({ default: m.LegalFooter })));
+const PartnerChat          = lazy(() => import("./components/PartnerChat").then(m => ({ default: m.PartnerChat })));
 
 import { createClient } from "./utils/supabase/client";
 import {
@@ -204,7 +205,7 @@ const APP_TRANSLATIONS: Record<
   },
 };
 
-const PUSH_TABS = new Set(['home', 'devotions', 'prayer', 'journal', 'questions']);
+const PUSH_TABS = new Set(['home', 'devotions', 'prayer', 'journal', 'questions', 'chat']);
 
 function hasCompletedOnboarding(): boolean {
   if (typeof window === 'undefined') return false;
@@ -1414,6 +1415,8 @@ export default function App() {
                       setActiveTab("journal");
                     } else if (notification.type === "prayer") {
                       setActiveTab("prayer");
+                    } else if (notification.type === "chat") {
+                      setActiveTab("chat");
                     } else if (
                       notification.type === "question"
                     ) {
@@ -1732,6 +1735,19 @@ export default function App() {
                   onDeletePrayer={handleDeletePrayer}
                   onMarkPrayed={handleMarkPrayed}
                   onBackToHome={() => {
+                    setActiveTab("home");
+                    setSelectedScreen("dashboard");
+                  }}
+                />
+              )}
+
+              {activeTab === "chat" && accessToken && (
+                <PartnerChat
+                  accessToken={accessToken}
+                  currentUserId={profile?.id || user.id}
+                  partnerName={partnerPreferences?.name || partner?.full_name || "Partner"}
+                  partnerOnline={partnerOnline}
+                  onBack={() => {
                     setActiveTab("home");
                     setSelectedScreen("dashboard");
                   }}
