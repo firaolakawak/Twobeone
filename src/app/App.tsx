@@ -330,6 +330,7 @@ export default function App() {
     any | null
   >(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [chatUnreadCount, setChatUnreadCount] = useState(0);
 
   useEngagementTracking({
     activeTab,
@@ -351,6 +352,39 @@ export default function App() {
       partnerPreferences?.notificationSettings?.partnerActivity !== false &&
       partnerPreferences?.notificationSettings?.pushNotifications !== false,
   });
+
+  useEffect(() => {
+    if (!accessToken || !partner?.id) {
+      setChatUnreadCount(0);
+      return;
+    }
+    if (activeTab === "chat") {
+      setChatUnreadCount(0);
+      return;
+    }
+    let cancelled = false;
+    const loadUnreadCount = async () => {
+      try {
+        const response = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/chat/messages`,
+          { headers: { Authorization: `Bearer ${accessToken}` } },
+        );
+        if (!response.ok || cancelled) return;
+        const data = await response.json();
+        if (!cancelled) setChatUnreadCount(Math.max(0, Number(data.unreadCount) || 0));
+      } catch {
+        // Keep the last badge count and retry on the next poll.
+      }
+    };
+    void loadUnreadCount();
+    const interval = window.setInterval(loadUnreadCount, 10_000);
+    window.addEventListener("focus", loadUnreadCount);
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+      window.removeEventListener("focus", loadUnreadCount);
+    };
+  }, [accessToken, activeTab, partner?.id]);
 
   const [currentLangCode, setCurrentLangCode] = useState<"en" | "am" | "om">(() => {
     const saved = typeof window === "undefined" ? null : window.localStorage.getItem("twobeone_language");
@@ -1747,6 +1781,7 @@ export default function App() {
                   currentUserId={profile?.id || user.id}
                   partnerName={partnerPreferences?.name || partner?.full_name || "Partner"}
                   partnerOnline={partnerOnline}
+                  onUnreadChange={setChatUnreadCount}
                   onBack={() => {
                     setActiveTab("home");
                     setSelectedScreen("dashboard");
@@ -1834,6 +1869,7 @@ export default function App() {
 
             <BottomNavigation
               activeTab={activeTab}
+              chatUnreadCount={chatUnreadCount}
               onTabChange={(tab) => {
                 setActiveTab(tab);
                 if (tab === "home") {

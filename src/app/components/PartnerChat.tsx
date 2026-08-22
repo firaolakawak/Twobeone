@@ -20,6 +20,7 @@ interface PartnerChatProps {
   partnerName?: string;
   partnerOnline?: boolean;
   onBack: () => void;
+  onUnreadChange?: (count: number) => void;
 }
 
 const copy = {
@@ -38,7 +39,7 @@ export function hasNewPartnerMessage(previous: ChatMessage[], next: ChatMessage[
   return next.some(message => message.senderId !== currentUserId && !knownIds.has(message.id));
 }
 
-export function PartnerChat({ accessToken, currentUserId, partnerName = 'Partner', partnerOnline = false, onBack }: PartnerChatProps) {
+export function PartnerChat({ accessToken, currentUserId, partnerName = 'Partner', partnerOnline = false, onBack, onUnreadChange }: PartnerChatProps) {
   const { language } = useLanguage();
   const text = copy[language];
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -100,13 +101,16 @@ export function PartnerChat({ accessToken, currentUserId, partnerName = 'Partner
         return nextMessages;
       });
       setHasPartner(Boolean(data.hasPartner));
-      if (data.unreadCount > 0) await markRead();
+      if (data.unreadCount > 0) {
+        await markRead();
+        onUnreadChange?.(0);
+      }
     } catch (error) {
       if (!silent) toast.error(text.loadError);
     } finally {
       if (!silent) setLoading(false);
     }
-  }, [accessToken, apiUrl, currentUserId, markRead, playMessageSound, text.loadError]);
+  }, [accessToken, apiUrl, currentUserId, markRead, onUnreadChange, playMessageSound, text.loadError]);
 
   useEffect(() => {
     void loadMessages();

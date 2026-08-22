@@ -11,7 +11,7 @@ describe('BottomNavigation', () => {
 
     const { rerender } = render(
       <LanguageProvider>
-        <BottomNavigation activeTab="home" onTabChange={onTabChange} />
+        <BottomNavigation activeTab="home" onTabChange={onTabChange} chatUnreadCount={3} />
       </LanguageProvider>,
     );
 
@@ -19,11 +19,12 @@ describe('BottomNavigation', () => {
     expect(screen.getByRole('button', { name: 'Home' })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByText('Home')).toBeVisible();
     expect(screen.queryByText('Prayer')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Chat, 3 unread messages' })).toHaveTextContent('3');
 
     await user.click(screen.getByRole('button', { name: 'Prayer' }));
     expect(onTabChange).toHaveBeenCalledWith('prayer');
 
-    rerender(<LanguageProvider><BottomNavigation activeTab="prayer" onTabChange={onTabChange} /></LanguageProvider>);
+    rerender(<LanguageProvider><BottomNavigation activeTab="prayer" onTabChange={onTabChange} chatUnreadCount={3} /></LanguageProvider>);
     expect(screen.getByText('Prayer')).toBeVisible();
     expect(screen.queryByText('Home')).not.toBeInTheDocument();
   });

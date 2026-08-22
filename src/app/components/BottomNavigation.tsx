@@ -6,9 +6,10 @@ import { useLanguage } from '../contexts/LanguageContext';
 interface BottomNavigationProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
+  chatUnreadCount?: number;
 }
 
-export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTabChange }: BottomNavigationProps) {
+export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTabChange, chatUnreadCount = 0 }: BottomNavigationProps) {
   const { t } = useLanguage();
   const prefersReducedMotion = useReducedMotion();
 
@@ -34,13 +35,15 @@ export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTa
           {tabs.map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
+            const unreadCount = tab.id === 'chat' ? chatUnreadCount : 0;
+            const actionLabel = unreadCount > 0 ? `${tab.label}, ${unreadCount} unread ${unreadCount === 1 ? 'message' : 'messages'}` : tab.label;
 
             return (
               <motion.button
                 type="button"
                 key={tab.id}
                 onClick={() => onTabChange(tab.id)}
-                aria-label={tab.label}
+                aria-label={actionLabel}
                 aria-current={isActive ? 'page' : undefined}
                 whileTap={prefersReducedMotion ? undefined : { scale: 0.92 }}
                 transition={{ duration: 0.16 }}
@@ -60,6 +63,11 @@ export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTa
                     className={`h-[1.65rem] w-[1.65rem] transition-transform duration-200 ${isActive ? 'scale-105 fill-primary-100' : 'group-hover:scale-105'}`}
                     strokeWidth={isActive ? 2.4 : 1.9}
                   />
+                  {unreadCount > 0 && (
+                    <span className="absolute -right-1 -top-1 grid min-h-4 min-w-4 place-items-center rounded-full bg-rose-600 px-1 text-[9px] font-black leading-none text-white shadow-sm ring-2 ring-white" aria-hidden="true">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
                 </span>
                 {isActive && (
                   <motion.span
