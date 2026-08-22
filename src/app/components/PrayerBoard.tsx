@@ -28,6 +28,8 @@ import {
   Calendar,
   MessageCircle,
   X,
+  Lock,
+  UserRound,
 } from "lucide-react";
 import { toast } from "sonner@2.0.3";
 
@@ -48,6 +50,10 @@ interface Prayer {
   updatedAt: string;
   isPartner?: boolean;
   isCommunity?: boolean;
+  isSharedWithPartner?: boolean;
+  isSurprise?: boolean;
+  unlockAt?: string | null;
+  isLockedForPartner?: boolean;
 }
 
 interface PrayerBoardProps {
@@ -143,6 +149,9 @@ export function PrayerBoard({
   const [reminderDate, setReminderDate] = useState("");
   const [isSharedWithCommunity, setIsSharedWithCommunity] =
     useState(false);
+  const [isSharedWithPartner, setIsSharedWithPartner] = useState(true);
+  const [isSurprise, setIsSurprise] = useState(false);
+  const [unlockAt, setUnlockAt] = useState("");
 
   // Check if user has a partner (based on whether there are any partner prayers)
   const hasPartner = prayers.some(
@@ -155,6 +164,9 @@ export function PrayerBoard({
     setCategory("General");
     setReminderDate("");
     setIsSharedWithCommunity(false);
+    setIsSharedWithPartner(true);
+    setIsSurprise(false);
+    setUnlockAt("");
     setEditingPrayer(null);
   };
 
@@ -169,6 +181,9 @@ export function PrayerBoard({
         category,
         reminderDate: reminderDate || null,
         isSharedWithCommunity,
+        isSharedWithPartner,
+        isSurprise: isSharedWithPartner && isSurprise,
+        unlockAt: isSharedWithPartner && isSurprise && unlockAt ? new Date(`${unlockAt}T00:00:00`).toISOString() : null,
         youPrayed: true,
         partnerPrayed: false,
       };
@@ -198,6 +213,9 @@ export function PrayerBoard({
     setCategory(prayer.category);
     setReminderDate(prayer.reminderDate || "");
     setIsSharedWithCommunity(prayer.isSharedWithCommunity);
+    setIsSharedWithPartner(prayer.isSharedWithPartner !== false);
+    setIsSurprise(Boolean(prayer.isSurprise));
+    setUnlockAt(prayer.unlockAt ? prayer.unlockAt.slice(0, 10) : "");
     setIsOpen(true);
   };
 
@@ -209,6 +227,10 @@ export function PrayerBoard({
     if (prayer.isCommunity) return;
 
     try {
+      if (prayer.isPartner) {
+        await onUpdatePrayer(prayer.id, { partnerPrayed: !prayer.partnerPrayed });
+        return;
+      }
       if (isPrayer === "you") {
         await onUpdatePrayer(prayer.id, {
           youPrayed: !prayer.youPrayed,
@@ -449,7 +471,8 @@ export function PrayerBoard({
         ) : (
           filteredPrayers.map((prayer) => {
             const catData = getCategoryData(prayer.category);
-            const canEdit = !prayer.isCommunity; // Both partners can edit their shared prayers
+            const canTrack = !prayer.isCommunity && !prayer.isLockedForPartner;
+            const canManage = !prayer.isPartner && !prayer.isCommunity;
             const isExpanded = expandedCards.has(prayer.id);
             const prayerCount =
               (prayer.youPrayed ? 1 : 0) +
@@ -466,7 +489,7 @@ export function PrayerBoard({
                     <div
                       className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-rose-50 text-xl ring-1 ring-rose-100"
                     >
-                      {catData.icon}
+                      {prayer.isLockedForPartner ? <Lock className="h-5 w-5 text-violet-600" /> : catData.icon}
                     </div>
 
                     <div className="min-w-0 flex-1">
@@ -482,6 +505,11 @@ export function PrayerBoard({
                             Answered
                           </Badge>
                         )}
+                        {!prayer.isPartner && (
+                          <Badge variant="outline" className="border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] text-slate-600">
+                            {prayer.isSharedWithPartner === false ? <><UserRound className="mr-1 h-3 w-3" />Private</> : prayer.isSurprise ? <><Lock className="mr-1 h-3 w-3" />Surprise</> : <><Users className="mr-1 h-3 w-3" />Shared</>}
+                          </Badge>
+                        )}
                       </div>
                       <h3 className="mb-1.5 text-base font-bold leading-snug text-slate-900 sm:text-lg">
                         {prayer.title}
@@ -491,11 +519,13 @@ export function PrayerBoard({
                           isExpanded ? "" : "line-clamp-2"
                         }`}
                       >
-                        {prayer.description}
+                        {prayer.isLockedForPartner
+                          ? `Surprise — locked until ${prayer.unlockAt ? formatDate(prayer.unlockAt) : "the reveal date"}.`
+                          : prayer.description}
                       </p>
                     </div>
 
-                    <button
+                    {!prayer.isLockedForPartner && <button
                       type="button"
                       onClick={() => toggleExpand(prayer.id)}
                       className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-slate-500 transition-colors hover:bg-rose-50 hover:text-rose-700"
@@ -503,26 +533,26 @@ export function PrayerBoard({
                       aria-expanded={isExpanded}
                     >
                       {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-                    </button>
+                    </button>}
                     </div>
 
                     <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-4">
                       <button
                         type="button"
                         onClick={() => handleTogglePrayed(prayer, "you")}
-                        disabled={!canEdit}
-                        aria-pressed={Boolean(prayer.youPrayed)}
-                        className={`flex min-h-10 items-center gap-2 rounded-full px-3.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${prayer.youPrayed ? "bg-rose-100 text-rose-700" : "bg-slate-50 text-slate-600 hover:bg-rose-50 hover:text-rose-700"}`}
+                        disabled={!canTrack}
+                        aria-pressed={Boolean(prayer.isPartner ? prayer.partnerPrayed : prayer.youPrayed)}
+                        className={`flex min-h-10 items-center gap-2 rounded-full px-3.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${(prayer.isPartner ? prayer.partnerPrayed : prayer.youPrayed) ? "bg-rose-100 text-rose-700" : "bg-slate-50 text-slate-600 hover:bg-rose-50 hover:text-rose-700"}`}
                       >
-                        <span className={`flex h-5 w-5 items-center justify-center rounded-full ${prayer.youPrayed ? "bg-rose-500 text-white" : "border border-slate-300 bg-white"}`}>
-                          {prayer.youPrayed && <Check className="h-3.5 w-3.5" aria-hidden="true" />}
+                        <span className={`flex h-5 w-5 items-center justify-center rounded-full ${(prayer.isPartner ? prayer.partnerPrayed : prayer.youPrayed) ? "bg-rose-500 text-white" : "border border-slate-300 bg-white"}`}>
+                          {(prayer.isPartner ? prayer.partnerPrayed : prayer.youPrayed) && <Check className="h-3.5 w-3.5" aria-hidden="true" />}
                         </span>
                         You prayed
                       </button>
-                      <button
+                      {!prayer.isPartner && <button
                         type="button"
                         onClick={() => handleTogglePrayed(prayer, "partner")}
-                        disabled={!canEdit}
+                        disabled={!canTrack}
                         aria-pressed={Boolean(prayer.partnerPrayed)}
                         className={`flex min-h-10 items-center gap-2 rounded-full px-3.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${prayer.partnerPrayed ? "bg-amber-100 text-amber-800" : "bg-slate-50 text-slate-600 hover:bg-amber-50 hover:text-amber-800"}`}
                       >
@@ -530,7 +560,7 @@ export function PrayerBoard({
                           {prayer.partnerPrayed && <Check className="h-3.5 w-3.5" aria-hidden="true" />}
                         </span>
                         Partner prayed
-                      </button>
+                      </button>}
                       <span className="ml-auto flex items-center gap-1.5 text-xs font-medium text-slate-500">
                         <Heart className="h-3.5 w-3.5 text-rose-500" aria-hidden="true" />
                         {prayerCount} praying
@@ -538,7 +568,7 @@ export function PrayerBoard({
                     </div>
                   </div>
 
-                  {isExpanded && canEdit && (
+                  {isExpanded && canManage && (
                     <div className="grid grid-cols-3 gap-2 border-t border-slate-100 bg-slate-50/70 p-3 sm:px-5">
                       <Button
                         variant="outline"
@@ -674,6 +704,28 @@ export function PrayerBoard({
               />
             </div>
 
+            <div className="space-y-3 rounded-2xl border border-violet-100 bg-violet-50/50 p-4">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <Label htmlFor="partner-sharing" className="cursor-pointer font-medium">Share with Partner</Label>
+                  <p className="mt-1 text-xs text-slate-500">Turn this off to keep the prayer in your private list.</p>
+                </div>
+                <Switch id="partner-sharing" checked={isSharedWithPartner} onCheckedChange={(checked) => { setIsSharedWithPartner(checked); if (!checked) { setIsSurprise(false); setIsSharedWithCommunity(false); } }} />
+              </div>
+              {isSharedWithPartner && (
+                <>
+                  <div className="flex items-center justify-between gap-4 border-t border-violet-100 pt-3">
+                    <div>
+                      <Label htmlFor="surprise-lock" className="cursor-pointer font-medium">Make it a surprise</Label>
+                      <p className="mt-1 text-xs text-slate-500">Your partner sees only a locked surprise until the date.</p>
+                    </div>
+                    <Switch id="surprise-lock" checked={isSurprise} onCheckedChange={setIsSurprise} />
+                  </div>
+                  {isSurprise && <div className="space-y-2"><Label htmlFor="prayer-unlock">Unlock date</Label><Input id="prayer-unlock" type="date" required value={unlockAt} min={new Date().toISOString().slice(0, 10)} onChange={(event) => setUnlockAt(event.target.value)} className="h-11 rounded-xl bg-white" /></div>}
+                </>
+              )}
+            </div>
+
             {/* Community Sharing */}
             <div className="flex items-center justify-between rounded-2xl border border-rose-100 bg-gradient-to-r from-rose-50 to-amber-50 p-4">
               <div className="flex-1">
@@ -691,6 +743,7 @@ export function PrayerBoard({
               <Switch
                 id="community"
                 checked={isSharedWithCommunity}
+                disabled={!isSharedWithPartner}
                 onCheckedChange={setIsSharedWithCommunity}
               />
             </div>

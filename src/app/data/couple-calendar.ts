@@ -30,6 +30,10 @@ export interface CoupleCalendarItem {
   createdAt: string;
   updatedAt: string;
   isPartner?: boolean;
+  isSharedWithPartner: boolean;
+  isSurprise: boolean;
+  unlockAt?: string | null;
+  isLockedForPartner?: boolean;
 }
 
 export interface CalendarDraft {
@@ -46,6 +50,8 @@ export interface CalendarDraft {
   location: string;
   createPrayer: boolean;
   language: Language;
+  isSharedWithPartner: boolean;
+  isSurprise: boolean;
 }
 
 export const CALENDAR_TYPE_META = {
@@ -156,6 +162,7 @@ export const coupleCalendarCopy: Record<Language, CalendarCopy> = {
     cancel: 'Cancel', create: 'Add to our calendar', creating: 'Creating…', edit: 'Edit', editTitle: 'Edit shared plan', update: 'Save changes', updating: 'Saving…', updated: 'Plan and prayer updated', complete: 'Complete', completed: 'Completed', delete: 'Delete', deleteConfirm: 'Delete this plan and its linked prayer?', partner: 'Partner', you: 'You',
     answered: 'Answered', markAnswered: 'Mark prayer answered', prayerAnswered: 'Prayer marked answered', created: 'Plan and prayer created', failed: 'Could not save this plan', sessionExpired: 'Your session expired. Please sign in again.', invalidPlan: 'Check the title and date, then try again.', calendarUnavailable: 'Calendar service needs an update. Please try again shortly.', serverUnavailable: 'The server could not save this plan. Please try again.', connectionFailed: 'No connection. Check your internet and try again.', loadFailed: 'Could not load your couple calendar', prayerReady: 'Prayer prepared from this plan',
     calendarCta: 'Couple Calendar', calendarCtaHint: 'Plans, reminders, routines & prayer', openPlanner: 'Open planner', allDay: 'All day', back: 'Back',
+    shareWithPartner: 'Share with partner', shareWithPartnerHint: 'Turn off to keep this only on your calendar.', makeSurprise: 'Lock as a surprise', makeSurpriseHint: 'Your partner sees a locked placeholder until the start date.', private: 'Private', shared: 'Shared', surprise: 'Surprise', lockedUntil: 'Surprise — locked until',
   },
   am: {
     eyebrow: 'በእምነት አብረን እናቅድ', title: 'የጥንዶች የቀን መቁጠሪያ', subtitle: 'የጋራ ሕይወታችሁን አቅዱ፣ እያንዳንዱንም እቅድ በጸሎት አቅርቡ።',
@@ -172,6 +179,7 @@ export const coupleCalendarCopy: Record<Language, CalendarCopy> = {
     reminderLabel: 'አስታውሰን', atTime: 'በክስተቱ ሰዓት', fifteen: 'ከ15 ደቂቃ በፊት', hour: 'ከ1 ሰዓት በፊት', day: 'ከ1 ቀን በፊት', noReminder: 'ማስታወሻ የለም', prayerLink: 'ጸሎት በራስ-ሰር ፍጠር', prayerLinkHint: 'AI ከርዕሱና ከክስተቱ ዓይነት የጥንዶች ጸሎት ያዘጋጃል።', prayerPreview: 'የጸሎት ቅድመ እይታ', scripture: 'ቅዱስ ቃል',
     cancel: 'ሰርዝ', create: 'ወደ ቀን መቁጠሪያችን ጨምር', creating: 'በመፍጠር ላይ…', edit: 'አስተካክል', editTitle: 'የጋራ እቅድ አስተካክል', update: 'ለውጦችን አስቀምጥ', updating: 'በማስቀመጥ ላይ…', updated: 'እቅድና ጸሎት ተሻሽለዋል', complete: 'ጨርስ', completed: 'ተጠናቋል', delete: 'ሰርዝ', deleteConfirm: 'ይህን እቅድና ተያያዥ ጸሎቱን ይሰርዙ?', partner: 'አጋር', you: 'እርስዎ', answered: 'ምላሽ አግኝቷል', markAnswered: 'ጸሎቱ ምላሽ እንዳገኘ ምልክት አድርግ', prayerAnswered: 'ጸሎቱ ምላሽ እንዳገኘ ተመዝግቧል', created: 'እቅድና ጸሎት ተፈጥረዋል', failed: 'እቅዱን ማስቀመጥ አልተቻለም', sessionExpired: 'የመግቢያ ጊዜዎ አልፏል። እንደገና ይግቡ።', invalidPlan: 'ርዕሱንና ቀኑን አረጋግጠው እንደገና ይሞክሩ።', calendarUnavailable: 'የቀን መቁጠሪያ አገልግሎቱ ማሻሻያ ይፈልጋል። ቆይተው ይሞክሩ።', serverUnavailable: 'አገልጋዩ እቅዱን ማስቀመጥ አልቻለም። እንደገና ይሞክሩ።', connectionFailed: 'ግንኙነት የለም። ኢንተርኔትዎን አረጋግጠው ይሞክሩ።', loadFailed: 'የጥንዶችን ቀን መቁጠሪያ መጫን አልተቻለም', prayerReady: 'ከዚህ እቅድ ጸሎት ተዘጋጅቷል',
     calendarCta: 'የጥንዶች ቀን መቁጠሪያ', calendarCtaHint: 'እቅዶች፣ ማስታወሻዎች፣ ልምዶች እና ጸሎት', openPlanner: 'እቅድ ክፈት', allDay: 'ቀኑን ሙሉ', back: 'ተመለስ',
+    shareWithPartner: 'ከአጋር ጋር አጋራ', shareWithPartnerHint: 'በግል ቀን መቁጠሪያዎ ላይ ብቻ ለማቆየት ያጥፉት።', makeSurprise: 'እንደ ድንገተኛ ስጦታ ቆልፍ', makeSurpriseHint: 'እስከ መጀመሪያው ቀን ድረስ አጋርዎ የተቆለፈ ምልክት ብቻ ያያል።', private: 'የግል', shared: 'የጋራ', surprise: 'ድንገተኛ', lockedUntil: 'ድንገተኛ — እስከዚህ ቀን ተቆልፏል',
   },
   om: {
     eyebrow: 'Amanannaadhaan waliin karoorfachuu', title: 'Kaalaandarii Hiriyootaa', subtitle: 'Jireenya waliinii keessan karoorfadhaa; waadaa hundas kadhannaatti fidaa.',
@@ -188,5 +196,6 @@ export const coupleCalendarCopy: Record<Language, CalendarCopy> = {
     reminderLabel: 'Nu yaadachiisi', atTime: 'Yeroo taateetti', fifteen: 'Daqiiqaa 15 dura', hour: "Sa'aatii 1 dura", day: 'Guyyaa 1 dura', noReminder: 'Yaadachiisni hin jiru', prayerLink: 'Kadhannaa ofumaan uumi', prayerLinkHint: 'AI mata duree fi gosa taatee irraa kadhannaa hiriyootaa qopheessa.', prayerPreview: 'Kadhannaa dursee ilaali', scripture: 'Caaffata Qulqulluu',
     cancel: 'Dhiisi', create: 'Kaalaandarii keenyatti dabali', creating: 'Uumamaa jira…', edit: 'Gulaali', editTitle: 'Karoora waliinii gulaali', update: 'Jijjiirama kuusi', updating: 'Kuusamaa jira…', updated: 'Karooraa fi kadhannaan haaromfameera', complete: 'Xumuri', completed: 'Xumurame', delete: 'Haqi', deleteConfirm: 'Karoora kanaa fi kadhannaa isaatti hidhame haqtaa?', partner: 'Hiriyyaa', you: 'Ati', answered: 'Deebii argate', markAnswered: 'Kadhannaan deebii akka argate mallatteessi', prayerAnswered: 'Kadhannaan deebii akka argate galmaaʼeera', created: 'Karooraa fi kadhannaan uumameera', failed: 'Karoora kana kuusuun hin dandaʼamne', sessionExpired: 'Yeroon seensaa kee darbeera. Maaloo deebiʼii seeni.', invalidPlan: 'Mata duree fi guyyaa mirkaneessii irra deebiʼii yaali.', calendarUnavailable: 'Tajaajilli kaalaandarii haaromsa barbaada. Booda irra deebiʼii yaali.', serverUnavailable: 'Sarvarri karoora kana kuusuu hin dandeenye. Irra deebiʼii yaali.', connectionFailed: 'Walqunnamtiin hin jiru. Intarneetii kee mirkaneessii irra deebiʼii yaali.', loadFailed: 'Kaalaandarii hiriyootaa feʼuun hin dandaʼamne', prayerReady: 'Kadhannaan karoora kana irraa qophaaʼeera',
     calendarCta: 'Kaalaandarii Hiriyootaa', calendarCtaHint: 'Karoora, yaadachiisa, barmaata fi kadhannaa', openPlanner: 'Karoora bani', allDay: 'Guyyaa guutuu', back: "Deebi'i",
+    shareWithPartner: 'Hiriyyaa waliin qoodi', shareWithPartnerHint: 'Kaalaandarii dhuunfaa kee irratti qofa tursiisuuf dhaamsi.', makeSurprise: 'Akka ajaaʼibaatti cufi', makeSurpriseHint: 'Hanga guyyaa jalqabaatti hiriyyaan kee mallattoo cufame qofa arga.', private: 'Dhuunfaa', shared: 'Qoodame', surprise: 'Ajaaʼiba', lockedUntil: 'Ajaaʼiba — hanga guyyaa kanaatti cufameera',
   },
 };

@@ -185,6 +185,28 @@ function calendarItemIsFulfilled(item: any, now = new Date()) {
   return Number.isFinite(due.getTime()) && due.getTime() <= now.getTime();
 }
 
+function sharedWithPartner(item: any) {
+  return item?.isSharedWithPartner ?? true;
+}
+
+function lockedForPartner(item: any, now = new Date()) {
+  if (!item?.isSurprise || !item?.unlockAt) return false;
+  const unlockAt = new Date(item.unlockAt);
+  return Number.isFinite(unlockAt.getTime()) && unlockAt.getTime() > now.getTime();
+}
+
+function calendarItemForPartner(item: any, now = new Date()) {
+  if (!lockedForPartner(item, now)) return { ...item, isPartner: true };
+  return {
+    id: item.id, userId: item.userId, title: 'Surprise', description: '', type: item.type,
+    category: 'other', emoji: '🔒', startsAt: item.startsAt, endsAt: item.endsAt,
+    allDay: item.allDay, recurrence: item.recurrence, reminderMinutes: null, location: '',
+    status: item.status, createPrayer: false, isSharedWithPartner: true, isSurprise: true,
+    unlockAt: item.unlockAt, isLockedForPartner: true, isPartner: true,
+    createdAt: item.createdAt, updatedAt: item.updatedAt,
+  };
+}
+
 async function answerLinkedCalendarPrayer(ownerId: string, item: any, itemKey: string, answeredAt = new Date().toISOString()) {
   if (!item?.prayerId || item.prayerAnsweredAt) return { item, prayer: null };
   const prayerKey = `prayer:${ownerId}:${item.prayerId}`;
@@ -220,7 +242,9 @@ app.get('/calendar', async (c) => {
     if (profile?.partnerId) {
       const raw: any[] = await kv.getByPrefix(`calendar:${profile.partnerId}:`).catch(() => []);
       const reconciled = await Promise.all(raw.map(item => reconcileFulfilledItem(profile.partnerId, item, now)));
-      partnerItems = reconciled.map(item => ({ ...item, isPartner: true }));
+      partnerItems = reconciled
+        .filter(sharedWithPartner)
+        .map(item => calendarItemForPartner(item, now));
     }
     const items = [...ownItems, ...partnerItems]
       .sort((left, right) => new Date(left.startsAt).getTime() - new Date(right.startsAt).getTime())
@@ -262,11 +286,15 @@ app.get('/calendar/activity', async (c) => {
 
     for (const data of ownerData) {
       const common = { userId: data.owner.id, isPartner: data.owner.isPartner };
-      for (const prayer of data.prayers) add({
+      for (const prayer of data.prayers) {
+        if (data.owner.isPartner && (!sharedWithPartner(prayer) || lockedForPartner(prayer))) continue;
+        add({
         ...common, id: `prayer-${prayer.id}`, sourceId: prayer.id, type: 'prayer', emoji: '🙏',
         title: prayer.title || 'Prayer', description: prayer.description || '', date: prayer.createdAt || prayer.created_at,
-      });
+        });
+      }
       for (const prayer of data.prayers) {
+        if (data.owner.isPartner && (!sharedWithPartner(prayer) || lockedForPartner(prayer))) continue;
         if (!prayer.youPrayed && !prayer.partnerPrayed && !prayer.you_prayed && !prayer.partner_prayed) continue;
         add({
           ...common, id: `prayer-prayed-${prayer.id}`, sourceId: prayer.id, type: 'prayer', emoji: '🙌',
@@ -359,6 +387,9 @@ app.post('/calendar', async (c) => {
     const now = new Date().toISOString();
     const itemId = generateId('cal');
     const createPrayer = body.createPrayer !== false;
+    const isSharedWithPartner = body.isSharedWithPartner !== false;
+    const isSurprise = isSharedWithPartner && Boolean(body.isSurprise);
+    const unlockAt = isSurprise ? startsAt.toISOString() : null;
     const generated = createPrayer
       ? await generatePrayer({ title, description: String(body.description || ''), type, category, language })
       : null;
@@ -375,6 +406,7 @@ app.post('/calendar', async (c) => {
           ? Math.max(0, Math.min(43_200, Number(body.reminderMinutes)))
           : null,
       location: String(body.location || '').slice(0, 240), status: 'upcoming', createPrayer,
+      isSharedWithPartner, isSurprise, unlockAt,
       prayerId, prayerTitle: generated?.title, prayerText: generated?.text, scripture: generated?.scripture,
       prayerLanguage: generated ? language : undefined, prayerGenerationSource: generated?.generationSource,
       createdAt: now, updatedAt: now,
@@ -387,6 +419,7 @@ app.post('/calendar', async (c) => {
         description: prayerDescription(generated.text, generated.scripture, language),
         category: category === 'faith' ? 'Spiritual Growth' : category === 'relationship' ? 'Relationship' : 'Guidance',
         reminderDate: startsAt.toISOString(), isSharedWithCommunity: false, isShared: false,
+        isSharedWithPartner, isSurprise, unlockAt,
         isAnswered: false, youPrayed: false, partnerPrayed: false, prayerCount: 0,
         source: 'couple-calendar', sourcePlanId: itemId, scripture: generated.scripture,
         language, generationSource: generated.generationSource,
@@ -486,10 +519,13 @@ app.put('/calendar/:id', async (c) => {
     if (!resolved) return c.json({ error: 'Calendar item not found' }, 404);
     if (resolved.ownerId !== userId) return c.json({ error: 'Only the creator can update this item' }, 403);
     const body = await c.req.json();
-    const allowedUpdates = ['title', 'description', 'type', 'category', 'emoji', 'startsAt', 'endsAt', 'allDay', 'recurrence', 'reminderMinutes', 'location', 'status'];
+    const allowedUpdates = ['title', 'description', 'type', 'category', 'emoji', 'startsAt', 'endsAt', 'allDay', 'recurrence', 'reminderMinutes', 'location', 'status', 'isSharedWithPartner', 'isSurprise'];
     const updates = Object.fromEntries(Object.entries(body).filter(([key]) => allowedUpdates.includes(key)));
     const now = new Date().toISOString();
     let item = { ...resolved.item, ...updates, updatedAt: now };
+    item.isSharedWithPartner = item.isSharedWithPartner !== false;
+    item.isSurprise = item.isSharedWithPartner && Boolean(item.isSurprise);
+    item.unlockAt = item.isSurprise ? new Date(item.startsAt).toISOString() : null;
     let prayer: any = null;
     const prayerTopicChanged = Boolean(item.prayerId) && ['title', 'description', 'type', 'category']
       .some(key => Object.prototype.hasOwnProperty.call(updates, key));
@@ -503,6 +539,14 @@ app.put('/calendar/:id', async (c) => {
         const currentPrayer: any = await kv.get(prayerKey).catch(() => null);
         item = { ...item, prayerTitle: generated.title, prayerText: generated.text, scripture: generated.scripture, prayerLanguage: language, prayerGenerationSource: 'ai' };
         prayer = { ...(currentPrayer || {}), id: item.prayerId, userId, title: generated.title, description: prayerDescription(generated.text, generated.scripture, language), scripture: generated.scripture, language, generationSource: 'ai', source: 'couple-calendar', sourcePlanId: item.id, reminderDate: item.startsAt, updatedAt: now };
+        await kv.set(prayerKey, prayer);
+      }
+    }
+    if (item.prayerId) {
+      const prayerKey = `prayer:${userId}:${item.prayerId}`;
+      const currentPrayer: any = prayer || await kv.get(prayerKey).catch(() => null);
+      if (currentPrayer) {
+        prayer = { ...currentPrayer, isSharedWithPartner: item.isSharedWithPartner, isSurprise: item.isSurprise, unlockAt: item.unlockAt, reminderDate: item.startsAt, updatedAt: now };
         await kv.set(prayerKey, prayer);
       }
     }
@@ -578,7 +622,10 @@ app.post('/cron/calendar-reminders', async (c) => {
       const sentKey = `calendar-reminder-sent:${item.id}:${occurrenceKey}`;
       if (await kv.get(sentKey)) continue;
       const profile: any = await kv.get(`user:${item.userId}`).catch(() => null);
-      const recipients = [item.userId, profile?.partnerId].filter(Boolean);
+      const recipients = [
+        item.userId,
+        sharedWithPartner(item) && !lockedForPartner(item, now) ? profile?.partnerId : null,
+      ].filter(Boolean);
       const results = await Promise.all(recipients.map((id: string) =>
         sendCalendarPush(id, `💕 ${item.title}`, item.description || 'A shared couple plan is coming up.', item.id)
       ));

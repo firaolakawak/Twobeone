@@ -1916,6 +1916,35 @@ app.delete('/make-server-6d579fee/journal/:id', async (c) => {
 // PRAYER REQUESTS
 // ============================================
 
+function prayerSharedWithPartner(prayer: any) {
+  return prayer?.isSharedWithPartner ?? prayer?.is_shared_with_partner ?? true;
+}
+
+function prayerLockedForPartner(prayer: any, now = new Date()) {
+  if (!prayer?.isSurprise || !prayer?.unlockAt) return false;
+  const unlockAt = new Date(prayer.unlockAt);
+  return Number.isFinite(unlockAt.getTime()) && unlockAt.getTime() > now.getTime();
+}
+
+function prayerForPartner(prayer: any) {
+  if (!prayerLockedForPartner(prayer)) return { ...prayer, isPartner: true };
+  return {
+    id: prayer.id,
+    userId: prayer.userId,
+    title: 'Surprise',
+    description: '',
+    category: 'General',
+    isAnswered: false,
+    isSharedWithPartner: true,
+    isSurprise: true,
+    unlockAt: prayer.unlockAt,
+    isLockedForPartner: true,
+    isPartner: true,
+    createdAt: prayer.createdAt,
+    updatedAt: prayer.updatedAt,
+  };
+}
+
 app.get('/make-server-6d579fee/prayer', async (c) => {
   try {
     const userId = await getUserFromToken(c.req.header('Authorization'));
@@ -1938,7 +1967,9 @@ app.get('/make-server-6d579fee/prayer', async (c) => {
     if ((profile as any)?.partnerId) {
       try {
         const raw: any[] = await kv.getByPrefix(`prayer:${(profile as any).partnerId}:`);
-        partnerPrayers = raw.map((p: any) => ({ ...p, isPartner: true }));
+        partnerPrayers = raw
+          .filter((prayer: any) => prayerSharedWithPartner(prayer))
+          .map(prayerForPartner);
       } catch {
         console.warn('[GET /prayer] Partner prayers fetch failed, continuing');
       }
@@ -1978,8 +2009,13 @@ app.post('/make-server-6d579fee/prayer', async (c) => {
       description: description || '',
       category: category || 'General',
       reminderDate: reminderDate || null,
-      isSharedWithCommunity: isSharedWithCommunity ?? isShared ?? false,
-      isShared: isSharedWithCommunity ?? isShared ?? false,
+      isSharedWithCommunity: body.isSharedWithPartner !== false && (isSharedWithCommunity ?? isShared ?? false),
+      isShared: body.isSharedWithPartner !== false && (isSharedWithCommunity ?? isShared ?? false),
+      isSharedWithPartner: body.isSharedWithPartner !== false,
+      isSurprise: body.isSharedWithPartner !== false && Boolean(body.isSurprise),
+      unlockAt: body.isSharedWithPartner !== false && body.isSurprise && Number.isFinite(new Date(body.unlockAt).getTime())
+        ? new Date(body.unlockAt).toISOString()
+        : null,
       isAnswered: false,
       youPrayed: youPrayed ?? true,
       partnerPrayed: partnerPrayed ?? false,
@@ -2010,16 +2046,19 @@ app.put('/make-server-6d579fee/prayer/:id', async (c) => {
     const prayerId = c.req.param('id');
     const updates = await c.req.json();
 
-    // Try current user's prayer first; fall back to partner's prayer
+    // Try current user's prayer first; shared partner prayers only allow prayer-tracking updates.
     let prayer = await kv.get(`prayer:${userId}:${prayerId}`);
     let ownerKey = `prayer:${userId}:${prayerId}`;
+    let isOwner = Boolean(prayer);
 
     if (!prayer) {
       const profile: any = await kv.get(`user:${userId}`).catch(() => null);
       if (profile?.partnerId) {
         prayer = await kv.get(`prayer:${profile.partnerId}:${prayerId}`);
-        if (prayer) {
+        if (prayer && prayerSharedWithPartner(prayer) && !prayerLockedForPartner(prayer)) {
           ownerKey = `prayer:${profile.partnerId}:${prayerId}`;
+        } else {
+          prayer = null;
         }
       }
     }
@@ -2028,15 +2067,32 @@ app.put('/make-server-6d579fee/prayer/:id', async (c) => {
       return c.json({ error: 'Prayer not found' }, 404);
     }
 
+    const safeUpdates = isOwner
+      ? Object.fromEntries(Object.entries(updates).filter(([key]) => [
+          'title', 'description', 'category', 'reminderDate', 'isSharedWithCommunity', 'isShared',
+          'isSharedWithPartner', 'isSurprise', 'unlockAt', 'isAnswered', 'youPrayed', 'partnerPrayed',
+        ].includes(key)))
+      : Object.fromEntries(Object.entries(updates).filter(([key]) => key === 'partnerPrayed'));
+    if (isOwner && safeUpdates.isSharedWithPartner === false) {
+      safeUpdates.isSurprise = false;
+      safeUpdates.unlockAt = null;
+      safeUpdates.isSharedWithCommunity = false;
+      safeUpdates.isShared = false;
+    }
+    if (isOwner && safeUpdates.unlockAt) {
+      safeUpdates.unlockAt = Number.isFinite(new Date(safeUpdates.unlockAt as any).getTime())
+        ? new Date(safeUpdates.unlockAt as any).toISOString()
+        : null;
+    }
     const updatedPrayer = {
       ...prayer,
-      ...updates,
+      ...safeUpdates,
       updatedAt: new Date().toISOString()
     };
 
     await kv.set(ownerKey, updatedPrayer);
     await invalidateMarriageReadiness(userId);
-    if (updates.isAnswered && !(prayer as any).isAnswered) {
+    if (safeUpdates.isAnswered && !(prayer as any).isAnswered) {
       await logAudit('prayer.answered', userId, { prayerId, title: (prayer as any).title });
     }
 
@@ -2057,19 +2113,12 @@ app.delete('/make-server-6d579fee/prayer/:id', async (c) => {
     const prayerId = c.req.param('id');
     const userKey = `prayer:${userId}:${prayerId}`;
 
-    // Check if it's the user's own prayer; if not, check partner's
+    // Prayer ownership is personal, even when the prayer is shared.
     const ownPrayer = await kv.get(userKey);
     if (ownPrayer) {
       await kv.del(userKey);
     } else {
-      const profile: any = await kv.get(`user:${userId}`).catch(() => null);
-      if (profile?.partnerId) {
-        const partnerKey = `prayer:${profile.partnerId}:${prayerId}`;
-        const partnerPrayer = await kv.get(partnerKey);
-        if (partnerPrayer) {
-          await kv.del(partnerKey);
-        }
-      }
+      return c.json({ error: 'Only the creator can delete this prayer' }, 403);
     }
 
     await invalidateMarriageReadiness(userId);

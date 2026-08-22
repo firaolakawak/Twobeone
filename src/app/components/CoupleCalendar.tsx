@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowLeft, Bell, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3,
-  BookHeart, Heart, ListTodo, Loader2, MapPin, Pencil, Plus, Repeat2, Sparkles, Trophy, Trash2,
+  BookHeart, Heart, ListTodo, Loader2, Lock, MapPin, Pencil, Plus, Repeat2, Sparkles, Trophy, Trash2, UserRound, Users,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -92,7 +92,7 @@ function initialDraft(language: 'en' | 'am' | 'om'): CalendarDraft {
     title: '', description: '', type: 'plan', category: 'faith', emoji: '💕',
     startsAt: toLocalDateTimeInput(starts), endsAt: toLocalDateTimeInput(ends),
     allDay: false, recurrence: 'none', reminderMinutes: 60,
-    location: '', createPrayer: true, language,
+    location: '', createPrayer: true, language, isSharedWithPartner: true, isSurprise: false,
   };
 }
 
@@ -254,6 +254,7 @@ export function CoupleCalendar({
       endsAt: item.endsAt ? toLocalDateTimeInput(new Date(item.endsAt)) : '', allDay: item.allDay,
       recurrence: item.recurrence, reminderMinutes: item.reminderMinutes, location: item.location || '',
       createPrayer: Boolean(item.prayerId || item.createPrayer), language,
+      isSharedWithPartner: item.isSharedWithPartner !== false, isSurprise: Boolean(item.isSurprise),
     });
     setDialogOpen(true);
   };
@@ -426,11 +427,12 @@ export function CoupleCalendar({
   const renderItem = (item: CoupleCalendarItem) => (
     <article key={item.id} className={`group rounded-2xl border p-4 transition-all hover:-translate-y-0.5 hover:shadow-md ${itemAccent(item.type)} ${item.status === 'completed' ? 'opacity-60' : ''}`}>
       <div className="flex items-start gap-3">
-        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/80 text-lg shadow-sm">{item.emoji || CALENDAR_CATEGORY_EMOJI[item.category]}</div>
+        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/80 text-lg shadow-sm">{item.isLockedForPartner ? <Lock className="h-5 w-5 text-violet-600" /> : item.emoji || CALENDAR_CATEGORY_EMOJI[item.category]}</div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className={`font-bold text-slate-900 ${item.status === 'completed' ? 'line-through' : ''}`}>{item.title}</h3>
             {item.isPartner && <Badge variant="outline" className="border-white/80 bg-white/70 text-[10px]">{copy.partner}</Badge>}
+            {!item.isPartner && <Badge variant="outline" className="border-white/80 bg-white/70 text-[10px]">{item.isSharedWithPartner === false ? <><UserRound className="mr-1 h-3 w-3" />{copy.private}</> : item.isSurprise ? <><Lock className="mr-1 h-3 w-3" />{copy.surprise}</> : <><Users className="mr-1 h-3 w-3" />{copy.shared}</>}</Badge>}
             {item.recurrence !== 'none' && <Repeat2 className="h-3.5 w-3.5" aria-label={copy.repeats} />}
           </div>
           <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-medium opacity-80">
@@ -438,7 +440,7 @@ export function CoupleCalendar({
             {item.location && <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{item.location}</span>}
             {item.reminderMinutes !== null && <span className="flex items-center gap-1"><Bell className="h-3.5 w-3.5" />{copy.reminderLabel}</span>}
           </p>
-          {item.description && <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{item.description}</p>}
+          {item.isLockedForPartner ? <p className="mt-2 text-sm font-semibold leading-6 text-violet-700">{copy.lockedUntil} {new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(item.unlockAt || item.startsAt))}</p> : item.description && <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{item.description}</p>}
           {item.prayerId && <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/75 px-2.5 py-1 text-[11px] font-bold text-rose-700"><Heart className="h-3 w-3 fill-rose-500" />{copy.prayerReady}</div>}
         </div>
         {!item.isPartner && (
@@ -626,6 +628,10 @@ export function CoupleCalendar({
             <label className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-700"><span className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-rose-500" />{copy.allDay}</span><Switch checked={draft.allDay} onCheckedChange={checked => updateDraft('allDay', checked)} /></label>
             <div className="grid gap-4 sm:grid-cols-2"><div className="space-y-2"><Label htmlFor="calendar-repeat">{copy.repeats}</Label><select id="calendar-repeat" value={draft.recurrence} onChange={e => updateDraft('recurrence', e.target.value as CalendarRecurrence)} className="h-12 w-full rounded-xl border border-input bg-white px-3 text-sm"><option value="none">{copy.none}</option><option value="daily">{copy.daily}</option><option value="weekly">{copy.weeklyRepeat}</option><option value="monthly">{copy.monthly}</option></select></div><div className="space-y-2"><Label htmlFor="calendar-reminder">{copy.reminderLabel}</Label><select id="calendar-reminder" value={draft.reminderMinutes ?? 'none'} onChange={e => updateDraft('reminderMinutes', e.target.value === 'none' ? null : Number(e.target.value))} className="h-12 w-full rounded-xl border border-input bg-white px-3 text-sm"><option value="none">{copy.noReminder}</option><option value="0">{copy.atTime}</option><option value="15">{copy.fifteen}</option><option value="60">{copy.hour}</option><option value="1440">{copy.day}</option></select></div></div>
             <div className="space-y-2"><Label htmlFor="calendar-location">{copy.location}</Label><Input id="calendar-location" value={draft.location} onChange={e => updateDraft('location', e.target.value)} placeholder={copy.locationPlaceholder} className="h-12 rounded-xl" /></div>
+            <div className="space-y-3 rounded-2xl border border-violet-100 bg-violet-50/60 p-4">
+              <label className="flex items-center justify-between gap-4 text-sm font-bold text-slate-800"><span><span className="flex items-center gap-2"><Users className="h-4 w-4 text-violet-600" />{copy.shareWithPartner}</span><span className="mt-1 block text-xs font-normal text-slate-500">{copy.shareWithPartnerHint}</span></span><Switch checked={draft.isSharedWithPartner} onCheckedChange={checked => setDraft(current => ({ ...current, isSharedWithPartner: checked, isSurprise: checked ? current.isSurprise : false }))} /></label>
+              {draft.isSharedWithPartner && <label className="flex items-center justify-between gap-4 border-t border-violet-100 pt-3 text-sm font-bold text-slate-800"><span><span className="flex items-center gap-2"><Lock className="h-4 w-4 text-violet-600" />{copy.makeSurprise}</span><span className="mt-1 block text-xs font-normal text-slate-500">{copy.makeSurpriseHint}</span></span><Switch checked={draft.isSurprise} onCheckedChange={checked => updateDraft('isSurprise', checked)} /></label>}
+            </div>
             <div className="rounded-2xl border border-rose-100 bg-gradient-to-br from-rose-50 to-amber-50 p-4"><div className="flex items-start justify-between gap-4"><div><p className="flex items-center gap-2 font-black text-slate-900"><Sparkles className="h-4 w-4 text-amber-500" />{copy.prayerLink}</p><p className="mt-1 text-xs leading-5 text-slate-600">{copy.prayerLinkHint}</p></div><Switch checked={draft.createPrayer} disabled={Boolean(editingItem?.prayerId)} onCheckedChange={checked => updateDraft('createPrayer', checked)} aria-label={copy.prayerLink} /></div>{draft.createPrayer && <div className="mt-4 rounded-xl bg-white/80 p-4 ring-1 ring-rose-100"><p className="text-[10px] font-black uppercase tracking-[.14em] text-rose-600">{copy.prayerPreview}</p><p className="mt-2 text-sm font-bold text-slate-900">{prayerPreview.title}</p><p className="mt-1 text-xs leading-5 text-slate-600">{prayerPreview.text}</p><p className="mt-2 text-[11px] font-bold text-rose-700">{prayerPreview.scripture}</p></div>}</div>
             <div className="flex gap-3 pt-1"><Button type="button" variant="outline" className="h-12 flex-1 rounded-xl" onClick={() => { setDialogOpen(false); setEditingItem(null); }}>{copy.cancel}</Button><Button type="submit" disabled={saving || !draft.title.trim()} className="h-12 flex-[1.4] rounded-xl bg-rose-600 font-bold text-white hover:bg-rose-700">{saving ? <><Loader2 className="h-4 w-4 animate-spin" />{editingItem ? copy.updating : copy.creating}</> : editingItem ? <><Pencil className="h-4 w-4" />{copy.update}</> : <><Plus className="h-4 w-4" />{copy.create}</>}</Button></div>
           </form>

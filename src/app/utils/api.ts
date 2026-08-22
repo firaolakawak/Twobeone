@@ -325,6 +325,9 @@ export const prayer = {
     title: string;
     description?: string;
     isShared?: boolean;
+    isSharedWithPartner?: boolean;
+    isSurprise?: boolean;
+    unlockAt?: string | null;
   }) => {
     return apiCall<{ success: boolean; prayer: any }>('/prayer', {
       method: 'POST',

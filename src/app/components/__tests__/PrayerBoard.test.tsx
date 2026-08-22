@@ -92,4 +92,18 @@ describe('PrayerBoard', () => {
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'New Prayer Request' })).toBeInTheDocument();
   });
+
+  it('lets the creator choose a private or date-locked partner prayer', () => {
+    renderPrayerBoard();
+    fireEvent.click(screen.getByRole('button', { name: 'New Request' }));
+
+    const partnerSharing = screen.getByRole('switch', { name: 'Share with Partner' });
+    expect(partnerSharing).toBeChecked();
+    fireEvent.click(screen.getByRole('switch', { name: 'Make it a surprise' }));
+    expect(screen.getByLabelText('Unlock date')).toBeInTheDocument();
+
+    fireEvent.click(partnerSharing);
+    expect(partnerSharing).not.toBeChecked();
+    expect(screen.queryByRole('switch', { name: 'Make it a surprise' })).not.toBeInTheDocument();
+  });
 });

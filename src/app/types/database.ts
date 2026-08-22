@@ -148,6 +148,10 @@ export interface PrayerRequest {
   answered_at: string | null; // TIMESTAMP
   created_at: string; // TIMESTAMP
   updated_at: string | null; // TIMESTAMP
+  isSharedWithPartner?: boolean;
+  isSurprise?: boolean;
+  unlockAt?: string | null;
+  isLockedForPartner?: boolean;
 }
 
 export interface PrayerUpdate {
