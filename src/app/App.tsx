@@ -22,6 +22,7 @@ import { LandingPage } from "./components/LandingPage";
 import { staticPageFromPath } from "./utils/publicRoutes";
 import { BottomNavigation } from "./components/BottomNavigation";
 import { OfflineIndicator } from "./components/OfflineIndicator";
+import { CalendarAlarmManager } from "./components/CalendarAlarmManager";
 import { Button } from "./components/ui/button";
 import {
   Heart,
@@ -1347,6 +1348,15 @@ export default function App() {
   return (
     <LanguageProvider>
       <SEOHead />
+      {accessToken && (
+        <CalendarAlarmManager
+          accessToken={accessToken}
+          onOpenCalendar={() => {
+            setActiveTab("home");
+            setSelectedScreen("couple-calendar");
+          }}
+        />
+      )}
       <div className="app-mobile-shell min-h-screen bg-background flex flex-col">
         {/* SOLID OPAQUE HEADER TRUNK BAR CONTAINER */}
         <header className="sticky top-0 left-0 right-0 z-50 flex min-h-16 items-center pt-[env(safe-area-inset-top,0px)]" style={{ background: 'var(--card)', borderBottom: '1px solid var(--border)', boxShadow: '0 1px 0 0 var(--border)' }}>

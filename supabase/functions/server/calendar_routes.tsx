@@ -89,7 +89,7 @@ function reminderOccurrence(item: any, now: Date): Date | null {
   return first;
 }
 
-async function sendCalendarPush(userId: string, title: string, body: string, itemId: string) {
+async function sendCalendarPush(userId: string, title: string, body: string, itemId: string, alarm = false) {
   const subscription: any = await kv.get(`push_subscription:${userId}`).catch(() => null);
   if (!subscription?.endpoint) return false;
   const publicKey = Deno.env.get('VAPID_PUBLIC_KEY');
@@ -100,7 +100,7 @@ async function sendCalendarPush(userId: string, title: string, body: string, ite
     webpush.setVapidDetails('mailto:support@twobeone.app', publicKey, privateKey);
     await webpush.sendNotification(subscription, JSON.stringify({
       title, body, icon: '/icons/icon-192x192.png', badge: '/icons/icon-72x72.png',
-      tag: `calendar-${itemId}`, data: { url: '/?tab=home&screen=couple-calendar', itemId }, url: '/?tab=home&screen=couple-calendar',
+      tag: `calendar-${itemId}`, alarm, data: { url: '/?tab=home&screen=couple-calendar', itemId, alarm }, url: '/?tab=home&screen=couple-calendar',
     }));
     return true;
   } catch (error: any) {
@@ -626,9 +626,14 @@ app.post('/cron/calendar-reminders', async (c) => {
         item.userId,
         sharedWithPartner(item) && !lockedForPartner(item, now) ? profile?.partnerId : null,
       ].filter(Boolean);
-      const results = await Promise.all(recipients.map((id: string) =>
-        sendCalendarPush(id, `💕 ${item.title}`, item.description || 'A shared couple plan is coming up.', item.id)
-      ));
+      const isOneHourAlarm = Number(item.reminderMinutes) === 60 && (item.type === 'event' || item.type === 'plan');
+      const results = await Promise.all(recipients.map((id: string) => sendCalendarPush(
+        id,
+        isOneHourAlarm ? `⏰ Event in one hour: ${item.title}` : `💕 ${item.title}`,
+        isOneHourAlarm ? 'Your plan starts in one hour. Open TwoBeOne for the loud alarm.' : item.description || 'A shared couple plan is coming up.',
+        item.id,
+        isOneHourAlarm,
+      )));
       sent += results.filter(Boolean).length;
       await kv.set(sentKey, { sentAt: now.toISOString(), recipients });
     }

@@ -1,9 +1,5 @@
--- Prerequisites are mapped into Vault by supabase/config.toml:
---   calendar_project_url  = the linked Supabase project URL
---   calendar_cron_secret = the same CRON_SECRET configured on the Edge Function
-create extension if not exists pg_cron with schema pg_catalog;
-create extension if not exists pg_net with schema extensions;
-
+-- Upgrade existing projects from five-minute reminder checks to minutely
+-- checks so one-hour alarms arrive as close to the target time as possible.
 do $$
 declare
   existing_job_id bigint;
@@ -14,8 +10,6 @@ begin
   end if;
 end $$;
 
--- Check every minute. The endpoint has per-event occurrence idempotency,
--- so retries or overlapping calls cannot create duplicate reminders.
 select cron.schedule(
   'twobeone-couple-calendar-reminders',
   '* * * * *',
