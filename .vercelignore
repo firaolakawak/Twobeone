@@ -1,0 +1,5 @@
+# Ignore local build artifacts and dependencies for Vercel deployment
+node_modules
+dist
+.vscode
+**/*.log

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TwoBeOne Icon Generator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .container {
+      max-width: 900px;
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    h1 {
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+    
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+    }
+    
+    .section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 12px;
+    }
+    
+    .section-title {
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #333;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    
+    input[type="text"],
+    input[type="file"],
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 15px;
+    }
+    
+    input[type="color"] {
+      width: 100%;
+      height: 60px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 15px;
+    }
+    
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    
+    button:hover {
+      background: #5568d3;
+    }
+    
+    button.secondary {
+      background: #6b7280;
+    }
+    
+    button.secondary:hover {
+      background: #4b5563;
+    }
+    
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    
+    .preview-item {
+      text-align: center;
+    }
+    
+    .preview-item canvas {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 8px;
+    }
+    
+    .size-label {
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .progress {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e0f2fe;
+      border-left: 4px solid #0ea5e9;
+      border-radius: 4px;
+      display: none;
+    }
+    
+    .instructions {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    
+    .instructions strong {
+      color: #d97706;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎨 TwoBeOne PWA Icon Generator</h1>
+    <p class="subtitle">Generate all 8 required icon sizes for your Progressive Web App</p>
+    
+    <div class="instructions">
+      <strong>📌 Quick Start:</strong> Choose a design method below, customize the colors, and click "Generate All Icons". 
+      Then download each icon or use "Download All as ZIP" (if available in your browser).
+    </div>
+    
+    <!-- Design Method -->
+    <div class="section">
+      <div class="section-title">1. Choose Design Method</div>
+      
+      <label for="design-method">Design Method:</label>
+      <select id="design-method" onchange="updateMethod()">
+        <option value="emoji">Emoji Icon (💑 couple emoji)</option>
+        <option value="text">Text Logo ("2B1")</option>
+        <option value="hearts">Hearts (❤️)</option>
+        <option value="upload">Upload Your Own Image</option>
+      </select>
+      
+      <div id="text-input-section" style="display: none;">
+        <label for="icon-text">Icon Text:</label>
+        <input type="text" id="icon-text" value="2B1" maxlength="3">
+      </div>
+      
+      <div id="upload-section" style="display: none;">
+        <label for="image-upload">Upload Image (512x512 recommended):</label>
+        <input type="file" id="image-upload" accept="image/*" onchange="handleImageUpload(event)">
+      </div>
+    </div>
+    
+    <!-- Color Customization -->
+    <div class="section">
+      <div class="section-title">2. Customize Colors</div>
+      
+      <label for="bg-color-1">Gradient Start Color:</label>
+      <input type="color" id="bg-color-1" value="#667eea">
+      
+      <label for="bg-color-2">Gradient End Color:</label>
+      <input type="color" id="bg-color-2" value="#764ba2">
+      
+      <label for="icon-color">Icon/Text Color:</label>
+      <input type="color" id="icon-color" value="#ffffff">
+    </div>
+    
+    <!-- Generate Button -->
+    <div class="section">
+      <div class="section-title">3. Generate Icons</div>
+      <button onclick="generateAllIcons()">🎨 Generate All Icons</button>
+      <button class="secondary" onclick="previewIcons()">👁️ Preview</button>
+    </div>
+    
+    <!-- Preview -->
+    <div id="preview-section" class="section" style="display: none;">
+      <div class="section-title">Icon Preview</div>
+      <div id="preview-grid" class="preview-grid"></div>
+    </div>
+    
+    <!-- Download Section -->
+    <div id="download-section" class="section" style="display: none;">
+      <div class="section-title">4. Download Icons</div>
+      <p style="margin-bottom: 15px; color: #666;">Click each icon to download individually:</p>
+      <div id="download-buttons"></div>
+    </div>
+    
+    <div id="progress" class="progress"></div>
+  </div>
+  
+  <script>
+    const ICON_SIZES = [72, 96, 128, 144, 152, 192, 384, 512];
+    let uploadedImage = null;
+    let generatedIcons = {};
+    
+    function updateMethod() {
+      const method = document.getElementById('design-method').value;
+      document.getElementById('text-input-section').style.display = method === 'text' ? 'block' : 'none';
+      document.getElementById('upload-section').style.display = method === 'upload' ? 'block' : 'none';
+    }
+    
+    function handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            uploadedImage = img;
+            showProgress('Image uploaded successfully!');
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    
+    function showProgress(message) {
+      const progress = document.getElementById('progress');
+      progress.textContent = message;
+      progress.style.display = 'block';
+      setTimeout(() => {
+        progress.style.display = 'none';
+      }, 3000);
+    }
+    
+    function createIcon(size) {
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      
+      // Get colors
+      const color1 = document.getElementById('bg-color-1').value;
+      const color2 = document.getElementById('bg-color-2').value;
+      const iconColor = document.getElementById('icon-color').value;
+      
+      // Draw gradient background
+      const gradient = ctx.createLinearGradient(0, 0, size, size);
+      gradient.addColorStop(0, color1);
+      gradient.addColorStop(1, color2);
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, size, size);
+      
+      // Get design method
+      const method = document.getElementById('design-method').value;
+      
+      if (method === 'upload' && uploadedImage) {
+        // Draw uploaded image (centered and scaled)
+        const scale = Math.min(size / uploadedImage.width, size / uploadedImage.height) * 0.8;
+        const w = uploadedImage.width * scale;
+        const h = uploadedImage.height * scale;
+        const x = (size - w) / 2;
+        const y = (size - h) / 2;
+        ctx.drawImage(uploadedImage, x, y, w, h);
+      } else {
+        // Draw text or emoji
+        ctx.fillStyle = iconColor;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        let content = '';
+        let fontSize = size * 0.5;
+        
+        if (method === 'emoji') {
+          content = '💑';
+          fontSize = size * 0.6;
+        } else if (method === 'text') {
+          content = document.getElementById('icon-text').value || '2B1';
+          fontSize = size * 0.35;
+          ctx.font = `bold ${fontSize}px Arial`;
+        } else if (method === 'hearts') {
+          content = '❤️';
+          fontSize = size * 0.6;
+        }
+        
+        ctx.font = `${fontSize}px Arial`;
+        ctx.fillText(content, size / 2, size / 2);
+      }
+      
+      return canvas;
+    }
+    
+    function previewIcons() {
+      const previewGrid = document.getElementById('preview-grid');
+      const previewSection = document.getElementById('preview-section');
+      
+      previewGrid.innerHTML = '';
+      previewSection.style.display = 'block';
+      
+      ICON_SIZES.forEach(size => {
+        const canvas = createIcon(size);
+        const item = document.createElement('div');
+        item.className = 'preview-item';
+        
+        const clonedCanvas = canvas.cloneNode(true);
+        const label = document.createElement('div');
+        label.className = 'size-label';
+        label.textContent = `${size}x${size}`;
+        
+        item.appendChild(clonedCanvas);
+        item.appendChild(label);
+        previewGrid.appendChild(item);
+      });
+      
+      showProgress('Preview generated!');
+    }
+    
+    function generateAllIcons() {
+      generatedIcons = {};
+      const downloadButtons = document.getElementById('download-buttons');
+      const downloadSection = document.getElementById('download-section');
+      
+      downloadButtons.innerHTML = '';
+      downloadSection.style.display = 'block';
+      
+      ICON_SIZES.forEach(size => {
+        const canvas = createIcon(size);
+        generatedIcons[size] = canvas;
+        
+        // Create download button
+        const btn = document.createElement('button');
+        btn.textContent = `Download ${size}x${size}`;
+        btn.onclick = () => downloadIcon(canvas, size);
+        downloadButtons.appendChild(btn);
+      });
+      
+      // Also show preview
+      previewIcons();
+      
+      showProgress('All icons generated! Click buttons to download.');
+    }
+    
+    function downloadIcon(canvas, size) {
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `icon-${size}x${size}.png`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showProgress(`Downloaded icon-${size}x${size}.png`);
+      });
+    }
+    
+    // Initialize
+    updateMethod();
+  </script>
+</body>
+</html>

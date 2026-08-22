@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TwoBeOne Icon Generator</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+      min-height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #7c3aed;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 18px;
+    }
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 16px;
+      margin: 30px 0;
+    }
+    .icon-item {
+      text-align: center;
+      padding: 12px;
+      background: #f9fafb;
+      border-radius: 12px;
+      border: 2px solid #e5e7eb;
+      transition: all 0.2s;
+    }
+    .icon-item:hover {
+      border-color: #7c3aed;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+    }
+    .icon-preview {
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100px;
+    }
+    .icon-size {
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 4px;
+    }
+    .icon-desc {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-bottom: 8px;
+    }
+    button {
+      background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      transition: all 0.2s;
+      margin: 4px;
+    }
+    button:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+    }
+    button.secondary {
+      background: #ec4899;
+    }
+    button.small {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+    .instructions {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+    .instructions h3 {
+      margin-top: 0;
+      color: #1e40af;
+      font-size: 16px;
+    }
+    .instructions ol {
+      margin: 0;
+      padding-left: 20px;
+    }
+    .instructions li {
+      margin: 8px 0;
+      line-height: 1.6;
+    }
+    .instructions code {
+      background: #dbeafe;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+    }
+    canvas {
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    #status {
+      padding: 16px;
+      border-radius: 8px;
+      margin: 16px 0;
+      display: none;
+      font-weight: 500;
+    }
+    #status.success {
+      background: #d1fae5;
+      color: #065f46;
+      border-left: 4px solid #10b981;
+      display: block;
+    }
+    #status.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border-left: 4px solid #ef4444;
+      display: block;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎨 TwoBeOne Icon Generator</h1>
+    <p class="subtitle">Generate PWA icons for all platforms</p>
+
+    <div class="instructions">
+      <h3>📋 How to Use</h3>
+      <ol>
+        <li>Click <strong>"Generate All Icons"</strong> below (auto-generates on page load)</li>
+        <li>Click <strong>"Download All as ZIP"</strong> to save all icons at once</li>
+        <li>Extract the ZIP file to get all 10 PNG icons</li>
+        <li>Upload all PNG files to <code>/public/icons/</code> directory in your project</li>
+        <li>Test by adding the app to your phone's home screen!</li>
+      </ol>
+    </div>
+
+    <div class="action-buttons">
+      <button onclick="generateAllIcons()">
+        🚀 Generate All Icons
+      </button>
+      <button class="secondary" onclick="downloadAllAsZip()">
+        📦 Download All as ZIP
+      </button>
+    </div>
+
+    <div id="status"></div>
+
+    <div id="iconGrid" class="icon-grid"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script>
+    // SVG source - the TwoBeOne icon
+    const svgSource = `
+      <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="512" height="512" rx="115" fill="url(#gradient)"/>
+        <g transform="translate(256, 256)">
+          <path d="M-60 -20 C-60 -60, -90 -80, -120 -60 C-150 -40, -150 0, -120 30 L-60 80 L-60 -20 Z" fill="white" opacity="0.9"/>
+          <path d="M60 -20 C60 -60, 90 -80, 120 -60 C150 -40, 150 0, 120 30 L60 80 L60 -20 Z" fill="white" opacity="0.9"/>
+          <path d="M0 -30 C0 -70, -30 -90, -60 -70 C-75 -60, -80 -40, -80 -20 C-80 10, -60 40, 0 90 C60 40, 80 10, 80 -20 C80 -40, 75 -60, 60 -70 C30 -90, 0 -70, 0 -30 Z" fill="white"/>
+        </g>
+        <defs>
+          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#ec4899;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+      </svg>
+    `;
+
+    const iconSizes = [
+      { size: 72, name: 'icon-72x72.png', desc: 'Android low' },
+      { size: 96, name: 'icon-96x96.png', desc: 'Android med' },
+      { size: 128, name: 'icon-128x128.png', desc: 'Favicon' },
+      { size: 144, name: 'icon-144x144.png', desc: 'Windows' },
+      { size: 152, name: 'icon-152x152.png', desc: 'iPad' },
+      { size: 180, name: 'icon-180x180.png', desc: 'iPhone' },
+      { size: 192, name: 'icon-192x192.png', desc: 'PWA std' },
+      { size: 384, name: 'icon-384x384.png', desc: 'Android lg' },
+      { size: 512, name: 'icon-512x512.png', desc: 'Splash' },
+      { size: 1024, name: 'icon-1024x1024.png', desc: 'High-res' },
+    ];
+
+    const generatedIcons = {};
+
+    function showStatus(message, type) {
+      const status = document.getElementById('status');
+      status.textContent = message;
+      status.className = type;
+    }
+
+    function generateAllIcons() {
+      const grid = document.getElementById('iconGrid');
+      grid.innerHTML = '';
+      showStatus('Generating icons...', 'success');
+
+      let completed = 0;
+
+      iconSizes.forEach(({ size, name, desc }) => {
+        const item = document.createElement('div');
+        item.className = 'icon-item';
+
+        const sizeLabel = document.createElement('div');
+        sizeLabel.className = 'icon-size';
+        sizeLabel.textContent = `${size}×${size}`;
+
+        const descLabel = document.createElement('div');
+        descLabel.className = 'icon-desc';
+        descLabel.textContent = desc;
+
+        const preview = document.createElement('div');
+        preview.className = 'icon-preview';
+
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const displaySize = Math.min(size, 90);
+        canvas.style.width = `${displaySize}px`;
+        canvas.style.height = `${displaySize}px`;
+
+        const downloadBtn = document.createElement('button');
+        downloadBtn.className = 'small';
+        downloadBtn.textContent = '⬇️ Download';
+        downloadBtn.onclick = () => downloadIcon(canvas, name);
+
+        // Convert SVG to canvas
+        const img = new Image();
+        const blob = new Blob([svgSource], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+
+        img.onload = () => {
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, size, size);
+          URL.revokeObjectURL(url);
+
+          // Store for ZIP download
+          canvas.toBlob((blob) => {
+            generatedIcons[name] = blob;
+            completed++;
+            if (completed === iconSizes.length) {
+              showStatus(`✓ Successfully generated all ${iconSizes.length} icons!`, 'success');
+            }
+          }, 'image/png', 1.0);
+        };
+
+        img.src = url;
+
+        preview.appendChild(canvas);
+        item.appendChild(sizeLabel);
+        item.appendChild(descLabel);
+        item.appendChild(preview);
+        item.appendChild(downloadBtn);
+        grid.appendChild(item);
+      });
+    }
+
+    function downloadIcon(canvas, filename) {
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showStatus(`✓ Downloaded ${filename}`, 'success');
+      }, 'image/png', 1.0);
+    }
+
+    async function downloadAllAsZip() {
+      if (Object.keys(generatedIcons).length === 0) {
+        showStatus('⚠️ Please generate icons first!', 'error');
+        return;
+      }
+
+      try {
+        showStatus('📦 Creating ZIP file...', 'success');
+
+        const zip = new JSZip();
+
+        for (const [name, blob] of Object.entries(generatedIcons)) {
+          zip.file(name, blob);
+        }
+
+        const zipBlob = await zip.generateAsync({ 
+          type: 'blob',
+          compression: 'DEFLATE',
+          compressionOptions: { level: 9 }
+        });
+        
+        const url = URL.createObjectURL(zipBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'twobeone-icons.zip';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        showStatus(`✓ Downloaded twobeone-icons.zip with ${Object.keys(generatedIcons).length} icons!`, 'success');
+      } catch (error) {
+        showStatus(`✗ Error creating ZIP: ${error.message}`, 'error');
+        console.error('Error creating ZIP:', error);
+      }
+    }
+
+    // Auto-generate on page load
+    window.addEventListener('load', () => {
+      setTimeout(generateAllIcons, 300);
+    });
+  </script>
+</body>
+</html>

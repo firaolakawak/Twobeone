@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Icon Generator - TwoBeOne</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+      min-height: 100vh;
+    }
+    .container {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #7c3aed;
+      margin-bottom: 24px;
+    }
+    button {
+      background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 8px;
+    }
+    button:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    .preview {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .preview-item {
+      text-align: center;
+      padding: 16px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+    }
+    .preview-item img {
+      max-width: 100%;
+      height: auto;
+    }
+    .preview-item p {
+      margin: 8px 0 0;
+      font-size: 12px;
+      color: #6b7280;
+    }
+    .instructions {
+      background: #f3f4f6;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 24px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .instructions code {
+      background: #e5e7eb;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+    #status {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 8px;
+      display: none;
+    }
+    #status.success {
+      background: #d1fae5;
+      color: #065f46;
+      display: block;
+    }
+    #status.error {
+      background: #fee2e2;
+      color: #991b1b;
+      display: block;
+    }
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .icon-grid-item {
+      text-align: center;
+      padding: 16px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+    }
+    .icon-grid-item img {
+      max-width: 100%;
+      height: auto;
+    }
+    .icon-grid-item p {
+      margin: 8px 0 0;
+      font-size: 12px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎨 TwoBeOne Icon Generator</h1>
+    <p>Generate all required PWA icons from the TwoBeOne SVG logo</p>
+    
+    <div>
+      <button onclick="generateAllIcons()" style="padding: 12px 24px; font-size: 16px; margin-bottom: 20px;">
+        🚀 Generate All Icons
+      </button>
+
+      <button onclick="downloadAllAsZip()" style="padding: 12px 24px; font-size: 16px; margin-bottom: 20px; margin-left: 10px; background: #ec4899;">
+        📦 Download All as ZIP
+      </button>
+    </div>
+
+    <div id="status" style="display: none; padding: 12px; margin-bottom: 20px; border-radius: 6px;"></div>
+
+    <div id="iconGrid" class="icon-grid"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script>
+    const iconSizes = [72, 96, 128, 144, 152, 180, 192, 384, 512, 1024];
+    const generatedIcons = {};
+
+    // TwoBeOne SVG content
+    const svgContent = `<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="115" fill="url(#gradient)"/>
+  <g transform="translate(256, 256)">
+    <path d="M-60 -20 C-60 -60, -90 -80, -120 -60 C-150 -40, -150 0, -120 30 L-60 80 L-60 -20 Z" fill="white" opacity="0.9"/>
+    <path d="M60 -20 C60 -60, 90 -80, 120 -60 C150 -40, 150 0, 120 30 L60 80 L60 -20 Z" fill="white" opacity="0.9"/>
+    <path d="M0 -30 C0 -70, -30 -90, -60 -70 C-75 -60, -80 -40, -80 -20 C-80 10, -60 40, 0 90 C60 40, 80 10, 80 -20 C80 -40, 75 -60, 60 -70 C30 -90, 0 -70, 0 -30 Z" fill="white"/>
+  </g>
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ec4899;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>`;
+
+    function showStatus(message, type) {
+      const status = document.getElementById('status');
+      status.textContent = message;
+      status.className = type;
+    }
+
+    function generateIcon(size) {
+      return new Promise((resolve, reject) => {
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+
+        const img = new Image();
+        const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, size, size);
+          URL.revokeObjectURL(url);
+          
+          canvas.toBlob((blob) => {
+            resolve({
+              size: size,
+              blob: blob,
+              dataUrl: canvas.toDataURL('image/png')
+            });
+          }, 'image/png', 1.0);
+        };
+
+        img.onerror = () => {
+          URL.revokeObjectURL(url);
+          reject(new Error(`Failed to load image for size ${size}`));
+        };
+
+        img.src = url;
+      });
+    }
+
+    async function generateAllIcons() {
+      try {
+        showStatus('Generating icons...', 'success');
+        const preview = document.getElementById('iconGrid');
+        preview.innerHTML = '';
+
+        for (const size of iconSizes) {
+          const icon = await generateIcon(size);
+          generatedIcons[size] = icon;
+
+          // Add to preview
+          const previewItem = document.createElement('div');
+          previewItem.className = 'icon-grid-item';
+          previewItem.innerHTML = `
+            <img src="${icon.dataUrl}" alt="${size}x${size} icon" style="width: ${Math.min(size, 96)}px; height: ${Math.min(size, 96)}px;">
+            <p>${size}x${size}</p>
+          `;
+          preview.appendChild(previewItem);
+        }
+
+        showStatus(`✓ Successfully generated ${iconSizes.length} icons!`, 'success');
+      } catch (error) {
+        showStatus(`✗ Error: ${error.message}`, 'error');
+        console.error('Error generating icons:', error);
+      }
+    }
+
+    async function downloadAllAsZip() {
+      if (Object.keys(generatedIcons).length === 0) {
+        showStatus('Please generate icons first!', 'error');
+        return;
+      }
+
+      try {
+        showStatus('Preparing download...', 'success');
+
+        const zip = new JSZip();
+
+        for (const [size, icon] of Object.entries(generatedIcons)) {
+          zip.file(`icon-${size}x${size}.png`, icon.blob);
+        }
+
+        const zipBlob = await zip.generateAsync({ type: 'blob' });
+        const url = URL.createObjectURL(zipBlob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'twobeone-icons.zip';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        showStatus('✓ Icons downloaded successfully!', 'success');
+      } catch (error) {
+        showStatus(`✗ Error: ${error.message}`, 'error');
+        console.error('Error downloading icons:', error);
+      }
+    }
+
+    // Auto-generate on load
+    window.addEventListener('load', () => {
+      setTimeout(generateAllIcons, 500);
+    });
+  </script>
+</body>
+</html>

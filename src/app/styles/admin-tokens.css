@@ -1,0 +1,66 @@
+:root {
+  color-scheme: light;
+
+  --admin-color-primary: #4338ca;
+  --admin-color-primary-hover: #3730a3;
+  --admin-color-primary-soft: #eef2ff;
+  --admin-color-action: #4338ca;
+  --admin-color-action-hover: #3730a3;
+  --admin-color-accent: #0f766e;
+  --admin-color-canvas: #f6f7fb;
+  --admin-color-surface: #ffffff;
+  --admin-color-surface-muted: #f1f5f9;
+  --admin-color-text: #172033;
+  --admin-color-text-muted: #526077;
+  --admin-color-border: #d8deea;
+  --admin-color-success: #087443;
+  --admin-color-success-soft: #e7f8ef;
+  --admin-color-warning: #9a4d08;
+  --admin-color-warning-soft: #fff4df;
+  --admin-color-danger: #b42318;
+  --admin-color-danger-soft: #fff0ee;
+  --admin-color-info: #0369a1;
+
+  --admin-space-1: 6px;
+  --admin-space-2: 12px;
+  --admin-space-3: 18px;
+  --admin-space-4: 24px;
+  --admin-space-5: 32px;
+  --admin-space-6: 48px;
+
+  --admin-radius-sm: 10px;
+  --admin-radius-md: 16px;
+  --admin-radius-lg: 24px;
+  --admin-radius-pill: 999px;
+
+  --admin-shadow-sm: 0 1px 2px rgb(15 23 42 / 0.05);
+  --admin-shadow-md: 0 10px 30px rgb(42 51 75 / 0.08);
+  --admin-shadow-lg: 0 20px 50px rgb(42 51 75 / 0.14);
+  --admin-focus: 0 0 0 3px rgb(67 56 202 / 0.28);
+  --admin-ease: 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --admin-sidebar-expanded: 264px;
+  --admin-sidebar-collapsed: 80px;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --admin-color-primary: #a5b4fc;
+  --admin-color-primary-hover: #c7d2fe;
+  --admin-color-primary-soft: #252950;
+  --admin-color-action: #4f46e5;
+  --admin-color-action-hover: #4338ca;
+  --admin-color-accent: #5eead4;
+  --admin-color-canvas: #0c1220;
+  --admin-color-surface: #121a2b;
+  --admin-color-surface-muted: #1b2538;
+  --admin-color-text: #f8fafc;
+  --admin-color-text-muted: #c4cede;
+  --admin-color-border: #354159;
+  --admin-color-success: #6ee7a5;
+  --admin-color-success-soft: #123a2a;
+  --admin-color-warning: #fbbf6b;
+  --admin-color-warning-soft: #422b14;
+  --admin-color-danger: #fda4a4;
+  --admin-color-danger-soft: #441f24;
+  --admin-color-info: #7dd3fc;
+}

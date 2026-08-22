@@ -1,0 +1,10 @@
+/*\n  # Fix User Signup RLS Completely\n\n  1. Problem\n    - User profile INSERT fails during signup because JWT context is not yet available\n    - The `auth.uid()` check in WITH CHECK fails during initial registration\n    \n  2. Solution\n    - Use a trigger function to create user profile automatically after auth.users insert\n    - Remove the INSERT policy requirement for direct inserts\n    - Alternative: Allow service role or authenticated users to insert matching ID\n    \n  3. Approach\n    - Create a database trigger that automatically creates user_profiles\n    - This happens server-side after Supabase Auth creates the user\n    - No RLS policy needed for INSERT since it's done by trigger\n*/\n\n-- Drop existing INSERT policy\nDROP POLICY IF EXISTS "Users can create own profile on signup" ON user_profiles;
+\n\n-- Create function to handle new user profile creation\nCREATE OR REPLACE FUNCTION public.handle_new_user()\nRETURNS trigger AS $$\nBEGIN\n  INSERT INTO public.user_profiles (id, full_name, preferred_language, created_at)\n  VALUES (\n    NEW.id,\n    COALESCE(NEW.raw_user_meta_data->>'full_name', ''),\n    COALESCE(NEW.raw_user_meta_data->>'preferred_language', 'en'),\n    NOW()\n  );
+\n  RETURN NEW;
+\nEND;
+\n$$ LANGUAGE plpgsql SECURITY DEFINER;
+\n\n-- Create trigger on auth.users table\nDROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+\n\nCREATE TRIGGER on_auth_user_created\n  AFTER INSERT ON auth.users\n  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+\n\n-- Allow authenticated users to update their profile details via INSERT if trigger didn't work\nCREATE POLICY "Users can create own profile with matching ID"\n  ON user_profiles\n  FOR INSERT\n  TO authenticated\n  WITH CHECK (\n    auth.uid() = id\n  );
+\n\n-- Also allow authenticated users to update missing profiles\nCREATE POLICY "Allow profile upsert for authenticated users"\n  ON user_profiles\n  FOR INSERT\n  TO authenticated\n  WITH CHECK (\n    EXISTS (\n      SELECT 1 FROM auth.users\n      WHERE auth.users.id = user_profiles.id\n      AND auth.users.id = auth.uid()\n    )\n  );
+\n;
