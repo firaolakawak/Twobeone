@@ -9,7 +9,7 @@ describe('BottomNavigation', () => {
     const onTabChange = vi.fn();
     const user = userEvent.setup();
 
-    render(
+    const { rerender } = render(
       <LanguageProvider>
         <BottomNavigation activeTab="home" onTabChange={onTabChange} />
       </LanguageProvider>,
@@ -18,9 +18,13 @@ describe('BottomNavigation', () => {
     expect(screen.getByRole('navigation', { name: 'Primary navigation' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Home' })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByText('Home')).toBeVisible();
-    expect(screen.getByText('Prayer')).toBeVisible();
+    expect(screen.queryByText('Prayer')).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Prayer' }));
     expect(onTabChange).toHaveBeenCalledWith('prayer');
+
+    rerender(<LanguageProvider><BottomNavigation activeTab="prayer" onTabChange={onTabChange} /></LanguageProvider>);
+    expect(screen.getByText('Prayer')).toBeVisible();
+    expect(screen.queryByText('Home')).not.toBeInTheDocument();
   });
 });

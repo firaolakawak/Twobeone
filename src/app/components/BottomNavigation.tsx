@@ -28,9 +28,9 @@ export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTa
     >
       <nav
         aria-label={t.nav.primaryNavigation}
-        className="pointer-events-auto mx-auto max-w-lg rounded-[1.75rem] border border-white/90 bg-white/88 px-1.5 shadow-[0_-2px_10px_rgba(83,45,67,0.03),0_16px_45px_rgba(83,45,67,0.18)] ring-1 ring-neutral-950/[0.04] backdrop-blur-2xl"
+        className="pointer-events-auto mx-auto max-w-lg rounded-[1.75rem] border border-white/90 bg-white/90 px-2 shadow-[0_-2px_10px_rgba(83,45,67,0.03),0_16px_45px_rgba(83,45,67,0.18)] ring-1 ring-neutral-950/[0.04] backdrop-blur-2xl"
       >
-        <div className="flex h-[4.5rem] items-center justify-around px-0.5 py-1">
+        <div className="flex h-16 items-center justify-between gap-0.5 py-1.5">
           {tabs.map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -44,25 +44,30 @@ export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTa
                 aria-current={isActive ? 'page' : undefined}
                 whileTap={prefersReducedMotion ? undefined : { scale: 0.92 }}
                 transition={{ duration: 0.16 }}
-                className={`group relative flex h-16 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl px-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 ${isActive ? 'text-primary-700' : 'text-neutral-600 hover:text-neutral-900'}`}
+                title={tab.label}
+                className={`group relative flex h-12 items-center justify-center overflow-hidden rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 ${isActive ? 'min-w-[5.5rem] flex-[1.45] gap-2 px-3 text-primary-700' : 'w-12 shrink-0 px-0 text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'}`}
               >
-                <span className="relative flex h-9 w-12 items-center justify-center sm:w-14">
-                  {isActive && (
-                    <motion.span
-                      layoutId="bottom-navigation-active"
-                      className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary-50 to-primary-100/80 shadow-[inset_0_0_0_1px_rgba(190,68,112,0.10)]"
-                      transition={prefersReducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 430, damping: 34 }}
-                    />
-                  )}
+                {isActive && (
+                  <motion.span
+                    layoutId="bottom-navigation-active"
+                    className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary-50 to-primary-100/90 shadow-[inset_0_0_0_1px_rgba(190,68,112,0.14)]"
+                    transition={prefersReducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 430, damping: 34 }}
+                  />
+                )}
+                <span className="relative flex h-9 w-9 shrink-0 items-center justify-center">
                   <Icon
                     aria-hidden="true"
-                    className={`relative h-[1.625rem] w-[1.625rem] transition-transform duration-200 ${isActive ? 'scale-105 fill-primary-100' : 'group-hover:-translate-y-0.5'}`}
+                    className={`h-[1.65rem] w-[1.65rem] transition-transform duration-200 ${isActive ? 'scale-105 fill-primary-100' : 'group-hover:scale-105'}`}
                     strokeWidth={isActive ? 2.4 : 1.9}
                   />
                 </span>
-                <span className={`relative max-w-full truncate text-[11px] font-bold leading-none ${isActive ? 'text-primary-700' : 'text-neutral-600'}`}>
-                  {tab.label}
-                </span>
+                {isActive && (
+                  <motion.span
+                    className="relative truncate text-xs font-extrabold leading-none text-primary-700"
+                  >
+                    {tab.label}
+                  </motion.span>
+                )}
               </motion.button>
             );
           })}
