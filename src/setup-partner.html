@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Setup Partner - TwoBeOne</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 min-h-screen flex items-center justify-center p-4">
+  <div class="max-w-md w-full">
+    <div class="bg-white rounded-2xl shadow-xl p-8">
+      <div class="text-center mb-8">
+        <div class="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mx-auto mb-4">
+          <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">Setup Partner Connection</h1>
+        <p class="text-gray-600">Connect Lensa as your partner</p>
+      </div>
+
+      <div id="form-container">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Your Email</label>
+            <input 
+              type="email" 
+              id="userEmail" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              placeholder="your@email.com"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Your Password</label>
+            <input 
+              type="password" 
+              id="userPassword" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              placeholder="Enter your password"
+            />
+          </div>
+
+          <div class="border-t pt-4">
+            <h3 class="font-semibold text-gray-900 mb-3">Partner Details</h3>
+            
+            <div class="mb-3">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Partner's Name</label>
+              <input 
+                type="text" 
+                id="partnerName" 
+                value="Lensa"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+            </div>
+
+            <div class="mb-3">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Partner's Email</label>
+              <input 
+                type="email" 
+                id="partnerEmail" 
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="lensa@example.com"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Relationship Started</label>
+              <input 
+                type="date" 
+                id="relationshipStart" 
+                value="2023-06-04"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+
+          <button 
+            onclick="setupPartner()" 
+            class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium py-3 px-4 rounded-lg transition-all transform hover:scale-105"
+          >
+            <span id="button-text">Connect with Lensa 💕</span>
+          </button>
+
+          <div id="status-message" class="hidden mt-4 p-4 rounded-lg"></div>
+        </div>
+      </div>
+
+      <div id="success-container" class="hidden text-center">
+        <div class="w-20 h-20 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center mx-auto mb-6">
+          <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-bold mb-2">All Set! 💕</h2>
+        <p class="text-gray-600 mb-4" id="success-message">You're now connected with Lensa</p>
+        <p class="text-sm text-gray-500" id="relationship-date"></p>
+        <button 
+          onclick="window.location.reload()" 
+          class="mt-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium py-2 px-6 rounded-lg"
+        >
+          Return to Setup
+        </button>
+      </div>
+    </div>
+
+    <p class="text-center text-sm text-gray-600 mt-4">
+      TwoBeOne - Strengthening Christian Relationships
+    </p>
+  </div>
+
+  <script>
+    // Get project details from the app
+    const projectId = 'bzsswcdkmtwxwrckdssp';
+    const publicAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6c3N3Y2RrbXR3eHdyY2tkc3NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzEyNzY4MTUsImV4cCI6MjA0Njg1MjgxNX0.KAF-ESnqsLxXP8zRQXyeW9dE3u89nIGlcZ1k_xyBdnc';
+
+    function showStatus(message, isError = false) {
+      const statusEl = document.getElementById('status-message');
+      statusEl.textContent = message;
+      statusEl.className = isError 
+        ? 'mt-4 p-4 rounded-lg bg-red-50 border border-red-200 text-red-800' 
+        : 'mt-4 p-4 rounded-lg bg-blue-50 border border-blue-200 text-blue-800';
+      statusEl.classList.remove('hidden');
+    }
+
+    function showSuccess(partnerName, relationshipStart) {
+      document.getElementById('form-container').classList.add('hidden');
+      document.getElementById('success-container').classList.remove('hidden');
+      
+      const date = new Date(relationshipStart);
+      document.getElementById('relationship-date').textContent = 
+        'Relationship started: ' + date.toLocaleDateString('en-US', { 
+          month: 'long', 
+          day: 'numeric', 
+          year: 'numeric' 
+        });
+    }
+
+    async function setupPartner() {
+      const userEmail = document.getElementById('userEmail').value;
+      const userPassword = document.getElementById('userPassword').value;
+      const partnerName = document.getElementById('partnerName').value;
+      const partnerEmail = document.getElementById('partnerEmail').value;
+      const relationshipStart = document.getElementById('relationshipStart').value;
+
+      if (!userEmail || !userPassword) {
+        showStatus('Please enter your email and password', true);
+        return;
+      }
+
+      if (!partnerEmail) {
+        showStatus('Please enter partner email', true);
+        return;
+      }
+
+      const buttonText = document.getElementById('button-text');
+      buttonText.textContent = 'Connecting...';
+
+      try {
+        // Step 1: Sign in to get access token
+        showStatus('Signing in...');
+        const signInResponse = await fetch(`https://${projectId}.supabase.co/auth/v1/token?grant_type=password`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': publicAnonKey
+          },
+          body: JSON.stringify({
+            email: userEmail,
+            password: userPassword
+          })
+        });
+
+        if (!signInResponse.ok) {
+          throw new Error('Failed to sign in. Please check your email and password.');
+        }
+
+        const signInData = await signInResponse.json();
+        const accessToken = signInData.access_token;
+
+        // Step 2: Create partner account (if doesn't exist)
+        showStatus('Creating partner account...');
+        const createPartnerResponse = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/signup`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: partnerEmail,
+              password: 'TempPassword123!',
+              name: partnerName,
+              partnerEmail: userEmail
+            })
+          }
+        );
+
+        // It's okay if account already exists
+        if (!createPartnerResponse.ok) {
+          const errorData = await createPartnerResponse.json();
+          if (!errorData.error?.includes('already registered')) {
+            console.warn('Partner account creation warning:', errorData.error);
+          }
+        }
+
+        // Step 3: Connect with partner
+        showStatus('Connecting with partner...');
+        const connectResponse = await fetch(
+          `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/profile/connect-partner`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify({
+              partnerEmail,
+              relationshipStart
+            })
+          }
+        );
+
+        if (!connectResponse.ok) {
+          throw new Error('Failed to connect with partner');
+        }
+
+        const result = await connectResponse.json();
+        
+        showSuccess(partnerName, relationshipStart);
+        
+      } catch (error) {
+        console.error('Setup error:', error);
+        showStatus(error.message || 'An error occurred during setup', true);
+        buttonText.textContent = 'Connect with Lensa 💕';
+      }
+    }
+  </script>
+</body>
+</html>
