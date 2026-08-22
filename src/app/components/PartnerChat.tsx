@@ -33,6 +33,11 @@ function dayKey(value: string) {
   return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
 }
 
+export function hasNewPartnerMessage(previous: ChatMessage[], next: ChatMessage[], currentUserId: string) {
+  const knownIds = new Set(previous.map(message => message.id));
+  return next.some(message => message.senderId !== currentUserId && !knownIds.has(message.id));
+}
+
 export function PartnerChat({ accessToken, currentUserId, partnerName = 'Partner', partnerOnline = false, onBack }: PartnerChatProps) {
   const { language } = useLanguage();
   const text = copy[language];
@@ -42,7 +47,39 @@ export function PartnerChat({ accessToken, currentUserId, partnerName = 'Partner
   const [sending, setSending] = useState(false);
   const [hasPartner, setHasPartner] = useState(Boolean(partnerName && partnerName !== 'Partner'));
   const endRef = useRef<HTMLDivElement>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const messagesInitializedRef = useRef(false);
   const apiUrl = `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/chat`;
+
+  const primeMessageSound = useCallback(() => {
+    const AudioContextConstructor = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContextConstructor) return;
+    audioContextRef.current ||= new AudioContextConstructor();
+    void audioContextRef.current.resume();
+  }, []);
+
+  const playMessageSound = useCallback(() => {
+    if (document.visibilityState !== 'visible') return;
+    const context = audioContextRef.current;
+    if (!context) return;
+    void context.resume();
+    [
+      { offset: 0, frequency: 660 },
+      { offset: 0.14, frequency: 880 },
+    ].forEach(({ offset, frequency }) => {
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      oscillator.type = 'sine';
+      oscillator.frequency.value = frequency;
+      gain.gain.setValueAtTime(0.0001, context.currentTime + offset);
+      gain.gain.exponentialRampToValueAtTime(0.18, context.currentTime + offset + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + offset + 0.18);
+      oscillator.connect(gain).connect(context.destination);
+      oscillator.start(context.currentTime + offset);
+      oscillator.stop(context.currentTime + offset + 0.2);
+    });
+    navigator.vibrate?.([80, 40, 120]);
+  }, []);
 
   const markRead = useCallback(async () => {
     if (document.visibilityState !== 'visible') return;
@@ -54,7 +91,14 @@ export function PartnerChat({ accessToken, currentUserId, partnerName = 'Partner
       const response = await fetch(`${apiUrl}/messages`, { headers: { Authorization: `Bearer ${accessToken}` } });
       if (!response.ok) throw new Error('Chat request failed');
       const data = await response.json();
-      setMessages(Array.isArray(data.messages) ? data.messages : []);
+      const nextMessages: ChatMessage[] = Array.isArray(data.messages) ? data.messages : [];
+      setMessages(current => {
+        if (messagesInitializedRef.current && hasNewPartnerMessage(current, nextMessages, currentUserId)) {
+          playMessageSound();
+        }
+        messagesInitializedRef.current = true;
+        return nextMessages;
+      });
       setHasPartner(Boolean(data.hasPartner));
       if (data.unreadCount > 0) await markRead();
     } catch (error) {
@@ -62,7 +106,7 @@ export function PartnerChat({ accessToken, currentUserId, partnerName = 'Partner
     } finally {
       if (!silent) setLoading(false);
     }
-  }, [accessToken, apiUrl, markRead, text.loadError]);
+  }, [accessToken, apiUrl, currentUserId, markRead, playMessageSound, text.loadError]);
 
   useEffect(() => {
     void loadMessages();
@@ -111,7 +155,7 @@ export function PartnerChat({ accessToken, currentUserId, partnerName = 'Partner
   };
 
   return (
-    <section className="mx-auto flex min-h-[calc(100dvh-10rem)] w-full max-w-2xl flex-col overflow-hidden rounded-[2rem] border border-rose-100 bg-white shadow-[0_24px_70px_-48px_rgba(190,24,93,.6)]" aria-label={text.title}>
+    <section onPointerDown={primeMessageSound} onKeyDown={primeMessageSound} className="mx-auto flex min-h-[calc(100dvh-10rem)] w-full max-w-2xl flex-col overflow-hidden rounded-[2rem] border border-rose-100 bg-white shadow-[0_24px_70px_-48px_rgba(190,24,93,.6)]" aria-label={text.title}>
       <header className="relative overflow-hidden border-b border-rose-100 bg-gradient-to-br from-rose-600 via-pink-600 to-violet-600 px-5 py-5 text-white">
         <div className="absolute -right-10 -top-14 h-36 w-36 rounded-full bg-white/10 blur-2xl" />
         <div className="relative flex items-center gap-3">

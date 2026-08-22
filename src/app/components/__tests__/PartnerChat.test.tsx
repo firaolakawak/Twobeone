@@ -2,7 +2,7 @@ import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LanguageProvider } from '../../contexts/LanguageContext';
-import { PartnerChat } from '../PartnerChat';
+import { hasNewPartnerMessage, PartnerChat } from '../PartnerChat';
 
 describe('PartnerChat', () => {
   beforeEach(() => {
@@ -28,5 +28,12 @@ describe('PartnerChat', () => {
     await user.click(screen.getByRole('button', { name: 'Send message' }));
     expect(await screen.findByText('See you soon')).toBeInTheDocument();
     await waitFor(() => expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/chat/messages'), expect.objectContaining({ method: 'POST' })));
+  });
+
+  it('detects only newly arrived partner messages for the sound alert', () => {
+    const original = [{ id: 'one', channelId: 'a:b', senderId: 'a', senderName: 'Alex', message: 'Hello', createdAt: '2026-08-22T15:00:00.000Z' }];
+    expect(hasNewPartnerMessage(original, [...original, { ...original[0], id: 'two', senderId: 'b' }], 'a')).toBe(true);
+    expect(hasNewPartnerMessage(original, [...original, { ...original[0], id: 'two', senderId: 'a' }], 'a')).toBe(false);
+    expect(hasNewPartnerMessage([], original, 'a')).toBe(false);
   });
 });
