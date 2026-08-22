@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { BookOpen, HandHeart, Home, MessageCircleHeart, User, Users } from 'lucide-react';
+import { BookOpen, Globe2, HandHeart, Home, MessageCircleHeart, User } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -17,7 +17,7 @@ export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTa
     { id: 'devotions', label: t.nav.devotions, icon: BookOpen },
     { id: 'prayer', label: t.nav.prayer, icon: HandHeart },
     { id: 'chat', label: t.nav.chat, icon: MessageCircleHeart },
-    { id: 'community', label: t.nav.community, icon: Users },
+    { id: 'community', label: t.nav.community, icon: Globe2 },
     { id: 'profile', label: t.nav.profile, icon: User },
   ];
 
