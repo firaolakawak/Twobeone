@@ -48,19 +48,12 @@ export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTa
                 whileTap={prefersReducedMotion ? undefined : { scale: 0.92 }}
                 transition={{ duration: 0.16 }}
                 title={tab.label}
-                className={`group relative flex h-14 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 overflow-hidden rounded-2xl px-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 ${isActive ? 'text-primary-700' : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'}`}
+                className={`group relative flex h-14 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 ${isActive ? 'text-primary-600' : 'text-neutral-600 hover:text-neutral-900'}`}
               >
-                {isActive && (
-                  <motion.span
-                    layoutId="bottom-navigation-active"
-                    className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary-50 to-primary-100/90 shadow-[inset_0_0_0_1px_rgba(190,68,112,0.14)]"
-                    transition={prefersReducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 430, damping: 34 }}
-                  />
-                )}
                 <span className="relative flex h-7 w-9 shrink-0 items-center justify-center">
                   <Icon
                     aria-hidden="true"
-                    className={`h-6 w-6 transition-transform duration-200 ${isActive ? 'scale-105 fill-primary-100' : 'group-hover:scale-105'}`}
+                    className={`h-6 w-6 transition-transform duration-200 ${isActive ? 'scale-105 text-primary-600' : 'group-hover:scale-105'}`}
                     strokeWidth={isActive ? 2.4 : 1.9}
                   />
                   {unreadCount > 0 && (
@@ -70,7 +63,7 @@ export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTa
                   )}
                 </span>
                 {isActive && (
-                  <span className="relative w-full break-words text-center text-[9px] font-extrabold leading-[1.05] text-primary-700">
+                  <span className="relative w-full break-words text-center text-[9px] font-extrabold leading-[1.05] text-primary-600">
                     {tab.label}
                   </span>
                 )}
