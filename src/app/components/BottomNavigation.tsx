@@ -69,11 +69,11 @@ export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTa
                     </span>
                   )}
                 </span>
-                <span
-                  className={`relative w-full break-words text-center text-[9px] leading-[1.05] ${isActive ? 'font-extrabold text-primary-700' : 'font-semibold'}`}
-                >
-                  {tab.label}
-                </span>
+                {isActive && (
+                  <span className="relative w-full break-words text-center text-[9px] font-extrabold leading-[1.05] text-primary-700">
+                    {tab.label}
+                  </span>
+                )}
               </motion.button>
             );
           })}

@@ -17,9 +17,8 @@ describe('BottomNavigation', () => {
 
     expect(screen.getByRole('navigation', { name: 'Primary navigation' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Home' })).toHaveAttribute('aria-current', 'page');
-    for (const label of ['Home', 'Devotions', 'Prayer', 'Chat', 'Community', 'Profile']) {
-      expect(screen.getByText(label)).toBeVisible();
-    }
+    expect(screen.getByText('Home')).toBeVisible();
+    expect(screen.queryByText('Prayer')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Chat, 3 unread messages' })).toHaveTextContent('3');
 
     await user.click(screen.getByRole('button', { name: 'Prayer' }));
@@ -27,7 +26,7 @@ describe('BottomNavigation', () => {
 
     rerender(<LanguageProvider><BottomNavigation activeTab="prayer" onTabChange={onTabChange} chatUnreadCount={3} /></LanguageProvider>);
     expect(screen.getByText('Prayer')).toBeVisible();
-    expect(screen.getByText('Home')).toBeVisible();
+    expect(screen.queryByText('Home')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Prayer' })).toHaveAttribute('aria-current', 'page');
   });
 });
