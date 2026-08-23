@@ -306,6 +306,8 @@ export default function App() {
     partner: QuestionResponse[];
   }>({ user: [], partner: [] });
   const [devotionalStreak, setDevotionalStreak] = useState(0);
+  const [devotionalCompletedCount, setDevotionalCompletedCount] = useState(0);
+  const [devotionalCompletionVersion, setDevotionalCompletionVersion] = useState(0);
   const [
     isDevotionalCompletedToday,
     setIsDevotionalCompletedToday,
@@ -763,6 +765,7 @@ export default function App() {
         responsesResult,
         devotionalsResult,
         streaksResult,
+        devotionalCompletionsResult,
       ] = await Promise.allSettled([
         api.journal.list(),
         api.prayer.list(),
@@ -770,6 +773,7 @@ export default function App() {
         api.questions.getResponses(),
         api.devotionals.list(),
         api.streaks.get(),
+        api.devotionals.getCompletions(),
       ]);
 
       if (journalResult.status === "fulfilled")
@@ -796,6 +800,13 @@ export default function App() {
           );
         setDevotionalStreak(
           devotionalStreakData?.current_streak || 0,
+        );
+      }
+
+      if (devotionalCompletionsResult.status === "fulfilled") {
+        const completionData = devotionalCompletionsResult.value;
+        setDevotionalCompletedCount(
+          completionData.stats?.totalCompleted ?? completionData.completions?.length ?? 0,
         );
       }
     } catch (error: any) {
@@ -1187,7 +1198,29 @@ export default function App() {
 
       if (!response.ok)
         throw new Error("Failed to complete devotional");
+      const completionData = await response.json();
       setIsDevotionalCompletedToday(true);
+
+      const [completionsResult, streaksResult] = await Promise.allSettled([
+        api.devotionals.getCompletions(),
+        api.streaks.get(),
+      ]);
+      if (completionsResult.status === "fulfilled") {
+        setDevotionalCompletedCount(
+          completionsResult.value.stats?.totalCompleted
+            ?? completionsResult.value.completions?.length
+            ?? 0,
+        );
+      } else if (!completionData.alreadyCompleted) {
+        setDevotionalCompletedCount((count) => count + 1);
+      }
+      if (streaksResult.status === "fulfilled") {
+        const devotional = streaksResult.value.streaks?.find(
+          (streak: any) => streak.streak_type === "devotional",
+        );
+        setDevotionalStreak(devotional?.current_streak || 0);
+      }
+      setDevotionalCompletionVersion((version) => version + 1);
 
       toast.success("Devotional completed! 🎉");
     } catch (error) {
@@ -1534,6 +1567,7 @@ export default function App() {
                     onScreenNavigate={setSelectedScreen}
                     accessToken={accessToken || undefined}
                     devotionalStreak={devotionalStreak}
+                    devotionalCompletedCount={devotionalCompletedCount}
                     userOnline={userOnline}
                     partnerOnline={partnerOnline}
                     devotionals={devotionals}
@@ -1736,6 +1770,7 @@ export default function App() {
                   }}
                   accessToken={accessToken || undefined}
                   projectId={projectId}
+                  completionVersion={devotionalCompletionVersion}
                   onBackToHome={() => {
                     setActiveTab("home");
                     setSelectedScreen("dashboard");

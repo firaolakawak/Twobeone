@@ -48,7 +48,7 @@ export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTa
                 whileTap={prefersReducedMotion ? undefined : { scale: 0.92 }}
                 transition={{ duration: 0.16 }}
                 title={tab.label}
-                className={`group relative flex h-12 items-center justify-center overflow-hidden rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 ${isActive ? 'min-w-[5.5rem] flex-[1.45] gap-2 px-3 text-primary-700' : 'w-12 shrink-0 px-0 text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'}`}
+                className={`group relative flex h-14 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 overflow-hidden rounded-2xl px-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 ${isActive ? 'text-primary-700' : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'}`}
               >
                 {isActive && (
                   <motion.span
@@ -57,10 +57,10 @@ export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTa
                     transition={prefersReducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 430, damping: 34 }}
                   />
                 )}
-                <span className="relative flex h-9 w-9 shrink-0 items-center justify-center">
+                <span className="relative flex h-7 w-9 shrink-0 items-center justify-center">
                   <Icon
                     aria-hidden="true"
-                    className={`h-[1.65rem] w-[1.65rem] transition-transform duration-200 ${isActive ? 'scale-105 fill-primary-100' : 'group-hover:scale-105'}`}
+                    className={`h-6 w-6 transition-transform duration-200 ${isActive ? 'scale-105 fill-primary-100' : 'group-hover:scale-105'}`}
                     strokeWidth={isActive ? 2.4 : 1.9}
                   />
                   {unreadCount > 0 && (
@@ -69,13 +69,11 @@ export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTa
                     </span>
                   )}
                 </span>
-                {isActive && (
-                  <motion.span
-                    className="relative truncate text-xs font-extrabold leading-none text-primary-700"
-                  >
-                    {tab.label}
-                  </motion.span>
-                )}
+                <span
+                  className={`relative w-full break-words text-center text-[9px] leading-[1.05] ${isActive ? 'font-extrabold text-primary-700' : 'font-semibold'}`}
+                >
+                  {tab.label}
+                </span>
               </motion.button>
             );
           })}

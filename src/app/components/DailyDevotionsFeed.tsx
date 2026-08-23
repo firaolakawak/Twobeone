@@ -41,9 +41,10 @@ interface DailyDevotionsFeedProps {
   accessToken?: string;
   projectId?: string;
   onBackToHome?: () => void;
+  completionVersion?: number;
 }
 
-export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, onBackToHome }: DailyDevotionsFeedProps) {
+export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, onBackToHome, completionVersion = 0 }: DailyDevotionsFeedProps) {
   const { t, language } = useLanguage();
   const [activeTab, setActiveTab] = useState('devotionals');
   const [searchQuery, setSearchQuery] = useState('');
@@ -141,7 +142,7 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
     };
 
     loadCompletions();
-  }, [accessToken, projectId]);
+  }, [accessToken, projectId, completionVersion]);
 
   // Load saved highlights from backend
   useEffect(() => {

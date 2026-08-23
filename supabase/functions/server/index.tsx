@@ -3164,6 +3164,28 @@ app.get('/make-server-6d579fee/devotions/today', async (c) => {
   }
 });
 
+const getDevotionalCompletionStats = (completions: any[]) => {
+  const today = new Date().toISOString().split('T')[0];
+  const completionDates = completions
+    .map((completion: any) => completion.completedAt)
+    .filter(Boolean)
+    .flatMap((completedAt: string) => {
+      const parsedDate = new Date(completedAt);
+      return Number.isNaN(parsedDate.getTime())
+        ? []
+        : [parsedDate.toISOString().split('T')[0]];
+    });
+
+  return {
+    totalCompleted: completions.length,
+    uniqueDevotionals: new Set(
+      completions.map((completion: any) => completion.devotionId || completion.devotion_id).filter(Boolean)
+    ).size,
+    completionDays: new Set(completionDates).size,
+    completedToday: completionDates.filter((date: string) => date === today).length,
+  };
+};
+
 app.post('/make-server-6d579fee/devotional-completions', async (c) => {
   try {
     const userId = await getUserFromToken(c.req.header('Authorization'));
@@ -3179,7 +3201,13 @@ app.post('/make-server-6d579fee/devotional-completions', async (c) => {
     const existingCompletion = await kv.get(`completion:${userId}:${today}:${devotion_id}`);
     if (existingCompletion) {
       console.log('[Devotional Completion] Already completed today, skipping streak update');
-      return c.json({ success: true, completion: existingCompletion, alreadyCompleted: true });
+      const completions = await kv.getByPrefix(`completion:${userId}:`);
+      return c.json({
+        success: true,
+        completion: existingCompletion,
+        alreadyCompleted: true,
+        stats: getDevotionalCompletionStats(completions),
+      });
     }
 
     const completionId = generateId();
@@ -3260,7 +3288,8 @@ app.post('/make-server-6d579fee/devotional-completions', async (c) => {
 
     await logAudit('devotional.completed', userId, { devotionId: devotion_id });
 
-    return c.json({ success: true, completion });
+    const completions = await kv.getByPrefix(`completion:${userId}:`);
+    return c.json({ success: true, completion, stats: getDevotionalCompletionStats(completions) });
   } catch (error: any) {
     console.error('Completion save error:', error);
     return c.json({ error: error.message }, 500);
@@ -3275,7 +3304,7 @@ app.get('/make-server-6d579fee/devotional-completions', async (c) => {
     }
 
     const completions = await kv.getByPrefix(`completion:${userId}:`);
-    return c.json({ completions });
+    return c.json({ completions, stats: getDevotionalCompletionStats(completions) });
   } catch (error: any) {
     console.error('Completions fetch error:', error);
     return c.json({ error: error.message }, 500);

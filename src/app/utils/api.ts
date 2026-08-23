@@ -517,16 +517,28 @@ export const devotionals = {
   },
 
   markComplete: async (devotionId: string, notes?: string) => {
-    return apiCall<{ success: boolean; completion: any }>('/devotional-completions', {
+    return apiCall<{
+      success: boolean;
+      completion: any;
+      alreadyCompleted?: boolean;
+      stats?: DevotionalCompletionStats;
+    }>('/devotional-completions', {
       method: 'POST',
       body: JSON.stringify({ devotion_id: devotionId, notes }),
     });
   },
 
   getCompletions: async () => {
-    return apiCall<{ completions: any[] }>('/devotional-completions');
+    return apiCall<{ completions: any[]; stats?: DevotionalCompletionStats }>('/devotional-completions');
   },
 };
+
+export interface DevotionalCompletionStats {
+  totalCompleted: number;
+  uniqueDevotionals: number;
+  completionDays: number;
+  completedToday: number;
+}
 
 // ============================================
 // STREAKS

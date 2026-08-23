@@ -105,6 +105,62 @@ describe('DailyDevotionsFeed', () => {
     });
   });
 
+  it('refreshes the read count after a devotional is completed', async () => {
+    let isCompleted = false;
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      const url = String(input);
+      if (url.endsWith('/devotions')) {
+        return {
+          ok: true,
+          json: async () => ({
+            devotions: [{
+              id: 'dev-1',
+              title: 'Faithful Steps',
+              verse: 'Walk by faith.',
+              reference: '2 Corinthians 5:7',
+              language: 'en',
+            }],
+          }),
+        } as Response;
+      }
+      if (url.endsWith('/devotional-completions')) {
+        return {
+          ok: true,
+          json: async () => ({
+            completions: isCompleted ? [{ devotionId: 'dev-1' }] : [],
+          }),
+        } as Response;
+      }
+      return { ok: true, json: async () => ({ highlights: [] }) } as Response;
+    });
+
+    const { rerender } = render(
+      <LanguageProvider>
+        <DailyDevotionsFeed
+          onDevotionalClick={vi.fn()}
+          accessToken="token"
+          projectId="project"
+          completionVersion={0}
+        />
+      </LanguageProvider>,
+    );
+
+    expect(await screen.findByText('0/1 read')).toBeInTheDocument();
+    isCompleted = true;
+    rerender(
+      <LanguageProvider>
+        <DailyDevotionsFeed
+          onDevotionalClick={vi.fn()}
+          accessToken="token"
+          projectId="project"
+          completionVersion={1}
+        />
+      </LanguageProvider>,
+    );
+
+    expect(await screen.findByText('1/1 read')).toBeInTheDocument();
+  });
+
   it('searches devotionals by their content and clears the search', async () => {
     vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
       const url = String(input);

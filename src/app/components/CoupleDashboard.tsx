@@ -56,6 +56,7 @@ export interface CoupleDashboardProps {
   onScreenNavigate?: (screen: string) => void;
   accessToken?: string;
   devotionalStreak?: number;
+  devotionalCompletedCount?: number;
   userOnline?: boolean;
   partnerOnline?: boolean;
   devotionals?: DashboardDevotional[];
@@ -353,6 +354,7 @@ export function CoupleDashboard({
   onScreenNavigate,
   accessToken,
   devotionalStreak,
+  devotionalCompletedCount = 0,
   userOnline,
   partnerOnline,
   devotionals = [],
@@ -1279,9 +1281,9 @@ export function CoupleDashboard({
       <div className="grid grid-cols-2 gap-3">
         {[
           {
-            label: t.dashboard.devotionalStreak,
-            value: devotionalStreakValue,
-            sub: devotionalStreakValue === 1 ? 'day' : 'days',
+            label: 'Devotionals Read',
+            value: devotionalCompletedCount,
+            sub: `${devotionalStreakValue} day${devotionalStreakValue === 1 ? '' : 's'} streak`,
             icon: Calendar,
             onClick: () => onNavigate?.('devotions'),
             surface: 'border-rose-100 bg-gradient-to-br from-white to-rose-50/70',
@@ -1618,7 +1620,9 @@ export function CoupleDashboard({
             >
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Daily Devotionals</span>
-                <span className="font-medium">{devotionalStreakValue} {devotionalStreakValue === 1 ? 'day' : 'days'}</span>
+                <span className="font-medium">
+                  {devotionalCompletedCount} read · {devotionalStreakValue} {devotionalStreakValue === 1 ? 'day' : 'days'} streak
+                </span>
               </div>
               <Progress value={Math.min((devotionalStreakValue / 30) * 100, 100)} className="h-2" />
             </div>

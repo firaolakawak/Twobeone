@@ -1,5 +1,5 @@
-const CACHE_NAME = 'twobeone-shell-v5';
-const RUNTIME_CACHE = 'twobeone-runtime-v5';
+const CACHE_NAME = 'twobeone-shell-v6';
+const RUNTIME_CACHE = 'twobeone-runtime-v6';
 const OFFLINE_URL = '/offline.html';
 
 // Files to cache immediately on install
@@ -142,7 +142,9 @@ self.addEventListener('push', (event) => {
     body: notificationData.body || 'New update available',
     icon: '/icons/icon-192x192.png',
     badge: '/icons/icon-72x72.png',
-    vibrate: [200, 100, 200],
+    vibrate: notificationData.alarm
+      ? [500, 150, 500, 150, 500, 300, 800]
+      : [200, 100, 200],
     requireInteraction: true,
     renotify: true,
     data: notificationData,
