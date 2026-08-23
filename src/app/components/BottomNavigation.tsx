@@ -48,12 +48,12 @@ export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTa
                 whileTap={prefersReducedMotion ? undefined : { scale: 0.92 }}
                 transition={{ duration: 0.16 }}
                 title={tab.label}
-                className={`group relative flex h-14 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 ${isActive ? 'text-primary-600' : 'text-neutral-600 hover:text-neutral-900'}`}
+                className={`group relative flex h-14 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${isActive ? 'text-primary' : 'text-neutral-600 hover:text-neutral-900'}`}
               >
                 <span className="relative flex h-7 w-9 shrink-0 items-center justify-center">
                   <Icon
                     aria-hidden="true"
-                    className={`h-6 w-6 transition-transform duration-200 ${isActive ? 'scale-105 text-primary-600' : 'group-hover:scale-105'}`}
+                    className={`h-6 w-6 transition-transform duration-200 ${isActive ? 'scale-105 text-primary' : 'group-hover:scale-105'}`}
                     strokeWidth={isActive ? 2.4 : 1.9}
                   />
                   {unreadCount > 0 && (
@@ -63,7 +63,7 @@ export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTa
                   )}
                 </span>
                 {isActive && (
-                  <span className="relative w-full break-words text-center text-[9px] font-extrabold leading-[1.05] text-primary-600">
+                  <span className="relative w-full break-words text-center text-[9px] font-extrabold leading-[1.05] text-primary">
                     {tab.label}
                   </span>
                 )}
