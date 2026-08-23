@@ -26,7 +26,7 @@ import {
   TrendingUp
 } from 'lucide-react';
 import { compatibility as compatibilityApi } from '../utils/api';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { createClient } from '../utils/supabase/client';
 import { DynamicQuestionPrompt } from './DynamicQuestionPrompt';

@@ -34,7 +34,7 @@ import {
   X,
   ArrowLeft
 } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { createClient } from '../utils/supabase/client';
 import { createBroadcaster, createViewer, type WebRTCBroadcaster, type WebRTCViewer } from '../utils/webrtc';

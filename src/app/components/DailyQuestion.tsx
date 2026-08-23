@@ -5,7 +5,7 @@ import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { ScrollArea } from './ui/scroll-area';
 import { Badge } from './ui/badge';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { sendNotification } from '../utils/notifications';
 import { QuestionChatDialog } from './QuestionChatDialog';
 import { QAResultsView } from './QAResultsView';

@@ -23,7 +23,7 @@ import {
   registerServiceWorker,
   requestNotificationPermission
 } from '../utils/pwa';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { InstallHelp } from './InstallHelp';
 
 export function PWAStatus() {

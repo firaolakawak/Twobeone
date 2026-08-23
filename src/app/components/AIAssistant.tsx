@@ -3,7 +3,7 @@ import { Sparkles, Loader2, BookOpen, MessageCircle, Lightbulb, X } from 'lucide
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { ScrollArea } from './ui/scroll-area';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { projectId } from '../utils/supabase/info';
 import { createClient } from '../utils/supabase/client';
 import { useLanguage } from '../contexts/LanguageContext';

@@ -97,7 +97,7 @@ import {
   getDevotionalNotificationId,
   sendNotification,
 } from "./utils/notifications";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 import api, {
   warmUpServer,
   admin as adminApi,

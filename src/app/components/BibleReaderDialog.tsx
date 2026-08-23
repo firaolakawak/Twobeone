@@ -17,7 +17,7 @@ import {
   X,
   Menu
 } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { bibleChapters } from '../data/bible-chapters';
 import { useLanguage } from '../contexts/LanguageContext';
 

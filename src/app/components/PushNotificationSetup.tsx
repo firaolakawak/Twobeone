@@ -4,7 +4,7 @@ import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { Bell, BellOff, Check, X, Smartphone } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { pushSubscriptionMatchesCurrentKey, requestNotificationPermission, subscribeToPushNotifications, VAPID_PUBLIC_KEY } from '../utils/pwa';
 import { projectId } from '../utils/supabase/info';
 import { isApkUrlEnvironment } from '../utils/appShell';

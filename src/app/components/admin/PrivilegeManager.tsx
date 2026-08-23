@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
 import { PrivilegeWorkspace } from './privileges/PrivilegeWorkspace';
 import '../../styles/privileges-console.css';
