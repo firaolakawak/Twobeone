@@ -54,28 +54,30 @@ async function apiCall<T>(
     ...options.headers,
   };
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
   try {
     // Add a client-side timeout to prevent hanging requests
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-    
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
       headers,
       signal: controller.signal,
     });
     
-    clearTimeout(timeoutId);
-
     if (!response.ok) {
       // Handle 401 Unauthorized — try refreshing the session and retry once
-      if (response.status === 401 && retries === 0) {
+      if (response.status === 401) {
         const supabase = createClient();
         const { data: refreshed } = await supabase.auth.refreshSession();
         const newToken = refreshed?.session?.access_token;
         if (newToken) {
           const retryHeaders = { ...options.headers, 'Authorization': `Bearer ${newToken}`, 'Content-Type': 'application/json' };
-          const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, { ...options, headers: retryHeaders });
+          const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, {
+            ...options,
+            headers: retryHeaders,
+            signal: controller.signal,
+          });
           if (retryResponse.ok) {
             const data = await retryResponse.json();
             notifyActivityRecorded(endpoint, String(options.method || 'GET').toUpperCase());
@@ -84,10 +86,6 @@ async function apiCall<T>(
         }
         throw new Error('Unauthorized');
       }
-      if (response.status === 401) {
-        throw new Error('Unauthorized');
-      }
-      
       // Handle 504 Gateway Timeout - retry if we have attempts left
       if (response.status === 504 && retries > 0) {
         const waitTime = (3 - retries) * 1000; // Exponential backoff
@@ -126,6 +124,48 @@ async function apiCall<T>(
       throw new Error('Unable to connect to server. Please check your internet connection.');
     }
     throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+// Public Edge Function calls still need the project's anon key, but must not
+// require a user session. This is intentionally separate from apiCall so a
+// protected endpoint cannot accidentally become public.
+async function publicApiCall<T>(
+  endpoint: string,
+  options: RequestInit = {},
+  timeout = 20000,
+): Promise<T> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${publicAnonKey}`,
+    ...options.headers,
+  };
+
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      ...options,
+      headers,
+      signal: controller.signal,
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data.error || `API Error: ${response.status}`);
+    }
+    return data as T;
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      throw new Error('Request timeout. The server is taking too long to respond. Please try again.');
+    }
+    if (error.message === 'Failed to fetch') {
+      throw new Error('Unable to connect to server. Please check your internet connection.');
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 
@@ -191,8 +231,10 @@ export const auth = {
   signup: async (email: string, password: string, name: string) => {
     const supabase = createClient();
     
-    // Create user via backend
-    const { user, inviteCode } = await apiCall<any>('/signup', {
+    // Signup happens before a user session exists. Authenticate the Edge
+    // Function invocation with the public anon key instead of apiCall(), which
+    // correctly requires an authenticated user for every protected route.
+    const { user, inviteCode } = await publicApiCall<any>('/signup', {
       method: 'POST',
       body: JSON.stringify({ email, password, name }),
     });
@@ -700,6 +742,8 @@ export const api = {
   engagement,
   health,
   partner: partnerApi,
+  marriageReadiness,
+  compatibility,
 };
 
 export default api;

@@ -173,7 +173,7 @@ export const NotificationTemplates = {
   
   journalEntry: (partnerName: string) => ({
     title: `${partnerName} shared a journal entry`,
-    body: 'See what's on their heart',
+    body: "See what's on their heart",
     data: { type: 'journal_entry', url: '/?tab=journal' }
   }),
   
