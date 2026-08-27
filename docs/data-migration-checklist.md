@@ -23,13 +23,21 @@ Last updated: 2026-08-27 UTC
 - [x] Deploy the updated Edge Function and confirm HTTP 200 health.
 - [x] Confirm anonymous requests receive HTTP 401 for private tables and
   migration views.
+- [x] Create designated partitions for questions/responses, notifications,
+  devotionals/highlights, chats, invitations, community, newsletter, calendar,
+  progress, AI caches, audit logs, rate limits, deduplication, and realtime state.
+- [x] Backfill all 1,110 remaining classified KV records.
+- [x] Confirm zero missing, stale, orphaned, or unclassified remaining records.
+- [x] Install database-level insert/update/delete mirroring on the KV table.
 
 ## Live Configuration
 
 - `RELATIONAL_PRIMARY_READS=true`
 - `RELATIONAL_SHADOW_WRITES=true`
-- Core reads: relational first, KV fallback on missing rows or query errors.
-- Core writes: KV plus relational mirror during the rollback window.
+- All classified reads: designated relational table first, KV fallback on
+  missing rows or query errors.
+- All writes: KV plus a database-level relational mirror during the rollback
+  window, including writes made directly by database functions.
 - Engagement reads/writes: `engagement_daily` and `record_engagement_daily`.
 
 ## Daily Checks (First 48 Hours)
@@ -40,6 +48,8 @@ Last updated: 2026-08-27 UTC
   `[Relational Shadow]` warnings.
 - [ ] Query `core_migration_parity`; every eligible domain must have
   `missing_count = 0`, `stale_count = 0`, and `orphan_count = 0`.
+- [ ] Query `remaining_kv_migration_parity`; all error counts and
+  `unclassified_count` must remain zero.
 - [ ] Confirm `kv_migration_quarantine` remains limited to the six deleted-user
   mood records.
 - [ ] Confirm engagement summaries load and new `engagement_daily.updated_at`
@@ -80,11 +90,18 @@ subscription KV keys until every item below is complete.
 - [ ] Keep operational KV families such as rate limits, leases, caches, audit
   records, realtime state, and deduplication keys in bounded retention storage.
 
-## KV Families Intentionally Retained
+## Designated Remaining-Data Tables
 
-The remaining KV records are not part of the core-table cutover. They include
-dynamic questions/content, notifications, chats, newsletter delivery state,
-community data, temporary realtime/location state, AI caches, rate limits,
-leases, audit logs, and deduplication records. Move these only with their own
-schema, RLS, API compatibility, backfill, and parity migration; do not place
-them into unrelated legacy tables merely to make those tables non-empty.
+- `app_questions`, `app_question_responses`
+- `app_notifications`
+- `app_devotionals`, `app_highlights`
+- `app_couple_chats`, `app_prayer_chats`
+- `app_invitations`, `app_community`
+- `app_newsletter_state`
+- `app_calendar`, `app_progress`
+- `app_ai_cache`, `app_audit_logs`, `app_rate_limits`
+- `app_deduplication`, `app_realtime_state`
+
+`app_unclassified` is a safety partition for future unknown key families. It
+must remain empty; any row appearing there requires an explicit classification
+before KV retirement.

@@ -315,6 +315,7 @@ app.get('/make-server-6d579fee/health', (c) => {
     message: 'TwoBeOne API is running',
     storage: {
       coreReads: Deno.env.get('RELATIONAL_PRIMARY_READS') === 'true' ? 'relational-primary' : 'kv-primary',
+      designatedReads: Deno.env.get('RELATIONAL_PRIMARY_READS') === 'true' ? 'relational-primary' : 'kv-primary',
       coreWrites: Deno.env.get('RELATIONAL_SHADOW_WRITES') === 'false' ? 'kv-only' : 'dual-write',
     },
     timestamp: new Date().toISOString()

@@ -101,6 +101,38 @@ async function getCorePayloadsByPrefix(
   return { handled: true, values: data?.map((row) => row.kv_payload) ?? [] };
 }
 
+async function getDesignatedPayload(key: string): Promise<{ handled: boolean; value?: any }> {
+  if (!relationalReadsEnabled() || coreDomain(key)) return { handled: false };
+  const { data, error } = await client()
+    .from('app_records')
+    .select('payload')
+    .eq('source_key', key)
+    .maybeSingle();
+  if (error) {
+    console.warn(`[Designated Read] lookup failed for ${key}; using KV:`, error.message);
+    return { handled: false };
+  }
+  if (!data?.payload) return { handled: false };
+  return { handled: true, value: data.payload };
+}
+
+async function getDesignatedPayloadsByPrefix(
+  prefix: string,
+  limit: number,
+): Promise<{ handled: boolean; values?: any[] }> {
+  if (!relationalReadsEnabled() || corePrefixDomain(prefix)) return { handled: false };
+  const { data, error } = await client()
+    .from('app_records')
+    .select('payload')
+    .like('source_key', `${prefix}%`)
+    .limit(limit);
+  if (error) {
+    console.warn(`[Designated Read] list failed for ${prefix}; using KV:`, error.message);
+    return { handled: false };
+  }
+  return { handled: true, values: data?.map((row) => row.payload) ?? [] };
+}
+
 async function mirrorCoreSet(key: string, value: any): Promise<void> {
   if (Deno.env.get('RELATIONAL_SHADOW_WRITES') === 'false' || !value || typeof value !== 'object') return;
   const domain = coreDomain(key);
@@ -268,6 +300,8 @@ export const set = async (key: string, value: any): Promise<void> => {
 export const get = async (key: string): Promise<any> => {
   const relational = await getCorePayload(key);
   if (relational.handled) return relational.value;
+  const designated = await getDesignatedPayload(key);
+  if (designated.handled) return designated.value;
   const supabase = client()
   const { data, error } = await supabase.from("kv_store_6d579fee").select("value").eq("key", key).maybeSingle();
   if (error) {
@@ -325,6 +359,8 @@ export const getByPrefix = async (prefix: string, limit = MAX_PREFIX_RESULTS): P
   const boundedLimit = Math.max(1, Math.min(MAX_PREFIX_RESULTS, Math.floor(limit)));
   const relational = await getCorePayloadsByPrefix(prefix, boundedLimit);
   if (relational.handled) return relational.values ?? [];
+  const designated = await getDesignatedPayloadsByPrefix(prefix, boundedLimit);
+  if (designated.handled) return designated.values ?? [];
   const supabase = client()
   const { data, error } = await supabase
     .from("kv_store_6d579fee")
@@ -372,6 +408,22 @@ export const getByPrefixPage = async (
     }
     console.warn(`[Relational Read] ${domain} page failed for ${prefix}; using KV:`, error.message);
   }
+  if (relationalReadsEnabled() && !domain) {
+    let designatedQuery = client()
+      .from('app_records')
+      .select('payload, created_at')
+      .like('source_key', `${prefix}%`)
+      .order('created_at', { ascending: options.ascending ?? false })
+      .limit(limit + 1);
+    if (options.before) designatedQuery = designatedQuery.lt('created_at', options.before);
+    if (options.after) designatedQuery = designatedQuery.gt('created_at', options.after);
+    const { data, error } = await designatedQuery;
+    if (!error) {
+      const values = data?.map((row) => row.payload) ?? [];
+      return { items: values.slice(0, limit), hasMore: values.length > limit };
+    }
+    console.warn(`[Designated Read] page failed for ${prefix}; using KV:`, error.message);
+  }
   const selector = `value->>${field}`;
   let query = client()
     .from("kv_store_6d579fee")
@@ -396,6 +448,30 @@ export const getAllByPrefix = async (
   maxRecords = 10_000,
   pageSize = 500,
 ): Promise<any[]> => {
+  if (relationalReadsEnabled() && !corePrefixDomain(prefix)) {
+    const values: any[] = [];
+    const boundedPageSize = Math.max(1, Math.min(MAX_PREFIX_RESULTS, Math.floor(pageSize)));
+    const boundedMax = Math.max(1, Math.min(50_000, Math.floor(maxRecords)));
+    let offset = 0;
+    while (values.length < boundedMax) {
+      const requested = Math.min(boundedPageSize, boundedMax - values.length);
+      const { data, error } = await client()
+        .from('app_records')
+        .select('payload')
+        .like('source_key', `${prefix}%`)
+        .order('source_key', { ascending: true })
+        .range(offset, offset + requested - 1);
+      if (error) {
+        console.warn(`[Designated Read] full scan failed for ${prefix}; using KV:`, error.message);
+        break;
+      }
+      if (!data?.length) return values;
+      values.push(...data.map((row) => row.payload));
+      if (data.length < requested) return values;
+      offset += data.length;
+    }
+    if (values.length) return values;
+  }
   const supabase = client();
   const boundedPageSize = Math.max(1, Math.min(MAX_PREFIX_RESULTS, Math.floor(pageSize)));
   const boundedMax = Math.max(1, Math.min(50_000, Math.floor(maxRecords)));
