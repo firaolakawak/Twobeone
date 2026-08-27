@@ -13,10 +13,10 @@ Last updated: 2026-08-27 UTC
 - [x] Backfill all core records belonging to live Auth users.
 - [x] Quarantine six historical mood rows belonging to a deleted Auth user.
 - [x] Enable owner/partner RLS and remove anonymous core-table access.
-- [x] Enable KV-first dual writes with relational shadow writes.
+- [x] Use dual writes during the compatibility window.
 - [x] Pass the database parity gate with zero eligible missing, stale, or
   orphaned records.
-- [x] Enable relational-primary reads with automatic KV fallback.
+- [x] Enable relational-primary reads during the compatibility window.
 - [x] Aggregate 1,983 engagement events into 112 daily rows.
 - [x] Switch engagement writes to the atomic idempotent aggregate function.
 - [x] Remove all raw `engagement:*` KV rows after the receipt-backed delta pass.
@@ -28,28 +28,36 @@ Last updated: 2026-08-27 UTC
   progress, AI caches, audit logs, rate limits, deduplication, and realtime state.
 - [x] Backfill all 1,110 remaining classified KV records.
 - [x] Confirm zero missing, stale, orphaned, or unclassified remaining records.
-- [x] Install database-level insert/update/delete mirroring on the KV table.
+- [x] Install and verify database-side relational writers for rate limits,
+  generation leases, idempotency claims, and all designated CRUD.
+- [x] Switch Edge Function version 359 to relational-only mode.
+- [x] Pass the final coverage gate with all legacy rows represented in core
+  tables, designated partitions, or quarantine.
+- [x] Drop `kv_store_6d579fee` with `RESTRICT` and remove its trigger/views.
+- [x] Deploy Edge Function version 361 with all KV runtime branches removed.
+- [x] Run the production create/read/update/delete probe successfully and
+  remove its temporary notification record.
+- [x] Confirm all 17 designated partitions remain available and
+  `app_unclassified` contains zero rows.
 
 ## Live Configuration
 
-- `RELATIONAL_PRIMARY_READS=true`
-- `RELATIONAL_SHADOW_WRITES=true`
-- All classified reads: designated relational table first, KV fallback on
-  missing rows or query errors.
-- All writes: KV plus a database-level relational mirror during the rollback
-  window, including writes made directly by database functions.
+- All core reads and writes: relational-only.
+- All other CRUD: routed through `app_records` to its designated physical
+  partition.
+- KV fallback: disabled in configuration and removed from runtime code.
+- Legacy KV table: removed from production.
 - Engagement reads/writes: `engagement_daily` and `record_engagement_daily`.
 
 ## Daily Checks (First 48 Hours)
 
-- [ ] Confirm `/functions/v1/make-server-6d579fee/health` reports
-  `relational-primary` and `dual-write`.
-- [ ] Check Edge Function logs for `[Relational Read]` or
-  `[Relational Shadow]` warnings.
-- [ ] Query `core_migration_parity`; every eligible domain must have
-  `missing_count = 0`, `stale_count = 0`, and `orphan_count = 0`.
-- [ ] Query `remaining_kv_migration_parity`; all error counts and
-  `unclassified_count` must remain zero.
+- [ ] Confirm the authenticated health endpoint reports `relational-only` for
+  core and designated reads/writes and `kvFallbackReads: false`.
+- [ ] Check Edge Function logs for relational read/write errors.
+- [ ] Query `designated_storage_health` and confirm expected domains continue
+  receiving updates.
+- [ ] Confirm `to_regclass('public.kv_store_6d579fee')` remains `NULL` and
+  `app_unclassified` remains empty.
 - [ ] Confirm `kv_migration_quarantine` remains limited to the six deleted-user
   mood records.
 - [ ] Confirm engagement summaries load and new `engagement_daily.updated_at`
@@ -58,37 +66,13 @@ Last updated: 2026-08-27 UTC
   query calls, and long-running queries with the pre-migration snapshot.
 - [ ] Review Supabase Database Health after 24 and 48 hours.
 
-## Immediate Rollback
+## Recovery
 
-- [ ] Set `RELATIONAL_PRIMARY_READS=false` to return core reads to KV.
-- [ ] Keep `RELATIONAL_SHADOW_WRITES=true` so relational rows continue syncing.
-- [ ] Confirm the health endpoint reports `kv-primary` and `dual-write`.
-- [ ] Investigate parity/log errors before re-enabling relational reads.
-- [ ] Do not roll the Edge Function back to a pre-aggregation version; engagement
-  is now stored as daily aggregates and must be repaired by a forward deploy.
-
-Command:
-
-```bash
-npx supabase secrets set RELATIONAL_PRIMARY_READS=false RELATIONAL_SHADOW_WRITES=true
-```
-
-## Core KV Retirement Gate
-
-Do not delete the remaining profile, couple, journal, prayer, mood, or push
-subscription KV keys until every item below is complete.
-
-- [ ] At least 48 hours of clean parity checks.
-- [ ] No relational fallback or shadow-write warnings for 24 hours.
-- [ ] A current database backup is available and restoration is tested.
-- [ ] Account creation, partner linking, journal CRUD, prayer CRUD, mood CRUD,
-  push subscription, export, and account deletion are smoke-tested.
-- [ ] Change core writes from dual-write to relational-only.
-- [ ] Observe relational-only writes for another 24 hours.
-- [ ] Archive quarantined deleted-user payloads according to the retention policy.
-- [ ] Delete only the core KV key families covered by `core_migration_parity`.
-- [ ] Keep operational KV families such as rate limits, leases, caches, audit
-  records, realtime state, and deduplication keys in bounded retention storage.
+KV rollback is intentionally unavailable after retirement. Recover by a forward
+database or Edge fix; use the Supabase point-in-time/database backup only for a
+confirmed data-loss incident. Never redeploy an older Edge version because it
+still references the removed table. The six deleted-user mood payloads remain
+preserved in `kv_migration_quarantine` pending the retention decision.
 
 ## Designated Remaining-Data Tables
 
@@ -103,5 +87,5 @@ subscription KV keys until every item below is complete.
 - `app_deduplication`, `app_realtime_state`
 
 `app_unclassified` is a safety partition for future unknown key families. It
-must remain empty; any row appearing there requires an explicit classification
-before KV retirement.
+must remain empty; any row appearing there requires a new explicit domain
+classification and migration.

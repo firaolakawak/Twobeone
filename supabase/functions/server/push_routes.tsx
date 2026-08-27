@@ -44,7 +44,7 @@ pushRoutes.post('/push-subscription', async (c) => {
       return c.json({ error: 'Missing subscription data' }, 400);
     }
 
-    // Store subscription in KV store
+    // Store subscription in the designated web push table.
     await kv.set(`push_subscription:${userId}`, subscription);
     
     console.log('[Push] Subscription saved for user:', userId);
@@ -188,7 +188,7 @@ pushRoutes.post('/send-push-to-partner', async (c) => {
     }
 
     // Get user's profile to find partner
-    const userProfile = await kv.get(`profile:${userId}`);
+    const userProfile = await kv.get(`user:${userId}`);
     
     if (!userProfile || !userProfile.partnerId) {
       return c.json({ 

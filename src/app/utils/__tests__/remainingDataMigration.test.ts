@@ -43,11 +43,12 @@ describe('remaining KV domain migration', () => {
     expect(migration).toContain("raise exception 'Remaining KV migration blocked");
   });
 
-  it('uses designated relational reads with KV fallback', () => {
+  it('uses designated relational reads without KV fallback', () => {
     expect(kvSource).toContain('async function getDesignatedPayload(key: string)');
     expect(kvSource).toContain(".from('app_records')");
     expect(kvSource).toContain('if (designated.handled) return designated.value');
-    expect(kvSource).toContain('[Designated Read]');
-    expect(serverSource).toContain('designatedReads: Deno.env.get');
+    expect(kvSource).not.toContain('.from("kv_store_6d579fee")');
+    expect(serverSource).toContain("designatedReads: 'relational-only'");
+    expect(serverSource).toContain('kvFallbackReads: false');
   });
 });

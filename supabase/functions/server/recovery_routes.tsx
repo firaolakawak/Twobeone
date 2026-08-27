@@ -3,7 +3,7 @@ import * as kv from './kv_store.tsx';
 import { createClient } from 'jsr:@supabase/supabase-js@2.49.8';
 import { getSupabase, isAdminUser, getUserFromToken, logAudit } from './auth_helpers.tsx';
 
-// Returns both key and value — kv.getByPrefix drops the key, which breaks migration
+// Returns both source identity and payload from the designated relational store.
 async function getByPrefixWithKeys(prefix: string): Promise<{ key: string; value: any }[]> {
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL') ?? '',
@@ -11,11 +11,11 @@ async function getByPrefixWithKeys(prefix: string): Promise<{ key: string; value
     { auth: { autoRefreshToken: false, persistSession: false } }
   );
   const { data, error } = await supabase
-    .from('kv_store_6d579fee')
-    .select('key, value')
-    .like('key', prefix + '%');
+    .from('app_records')
+    .select('source_key, payload')
+    .like('source_key', prefix + '%');
   if (error) throw new Error(error.message);
-  return data ?? [];
+  return (data ?? []).map((row) => ({ key: row.source_key, value: row.payload }));
 }
 
 export function setupRecoveryRoutes(app: Hono<any>) {
@@ -364,11 +364,11 @@ export function setupRecoveryRoutes(app: Hono<any>) {
       if (!fromUserId || !toUserId) return c.json({ error: 'fromUserId and toUserId are required' }, 400);
       if (fromUserId === toUserId) return c.json({ error: 'fromUserId and toUserId must be different' }, 400);
 
-      // oldProfile may be missing (deleted) — treat as empty, still migrate KV data keys
+      // oldProfile may be missing (deleted); still migrate designated records.
       const oldProfile: any = (await kv.get(`user:${fromUserId}`)) ?? {};
       const newProfile: any = await kv.get(`user:${toUserId}`);
       if (!newProfile) return c.json({
-        error: 'Destination user profile not found in KV. Ask the user to log in once with their new account first.',
+        error: 'Destination user profile not found. Ask the user to log in once with their new account first.',
       }, 404);
 
       const migrated: Record<string, number> = {};

@@ -49,14 +49,10 @@ describe('core relational shadow migration', () => {
     expect(migrationSource).toContain('create policy web_push_owner_all');
   });
 
-  it('mirrors core writes only after the KV write succeeds', () => {
-    const kvUpsert = kvSource.indexOf('.from("kv_store_6d579fee").upsert');
-    const mirrorCall = kvSource.indexOf('await mirrorCoreSet(key, value);');
-
-    expect(kvUpsert).toBeGreaterThan(-1);
-    expect(mirrorCall).toBeGreaterThan(kvUpsert);
-    expect(kvSource).toContain("Deno.env.get('RELATIONAL_SHADOW_WRITES') === 'false'");
-    expect(kvSource).toContain("console.warn(`[Relational Shadow] ${domain} write failed");
+  it('writes core records directly to relational tables', () => {
+    expect(kvSource).not.toContain('.from("kv_store_6d579fee")');
+    expect(kvSource).toContain('await mirrorCoreSet(key, value, true)');
+    expect(kvSource).toContain(".from(CORE_TABLES[domain]).delete().eq('source_key', key)");
   });
 
   it('replays quarantined records only for identities verified by Auth', () => {
@@ -74,13 +70,12 @@ describe('core relational shadow migration', () => {
     expect(paritySource).toContain('revoke all on public.core_kv_source');
   });
 
-  it('supports relational-primary reads with transparent KV fallback', () => {
-    expect(kvSource).toContain("Deno.env.get('RELATIONAL_PRIMARY_READS') === 'true'");
+  it('uses relational-only reads with no legacy fallback', () => {
     expect(kvSource).toContain('async function getCorePayload(key: string)');
     expect(kvSource).toContain('if (relational.handled) return relational.value');
-    expect(kvSource).toContain('using KV');
+    expect(kvSource).not.toContain('using KV');
     expect(kvSource).toContain(".select('kv_payload, created_at')");
-    expect(serverSource).toContain("coreReads: Deno.env.get('RELATIONAL_PRIMARY_READS')");
-    expect(serverSource).toContain("coreWrites: Deno.env.get('RELATIONAL_SHADOW_WRITES')");
+    expect(serverSource).toContain("coreReads: 'relational-only'");
+    expect(serverSource).toContain("coreWrites: 'relational-only'");
   });
 });

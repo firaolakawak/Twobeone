@@ -29,7 +29,7 @@ app.use('*', cors({
 }));
 app.use('*', logger(console.log));
 
-// ── Rate limiter (KV-backed sliding window) ────────────────────────────────
+// ── Rate limiter (relational atomic window) ────────────────────────────────
 async function checkRateLimit(key: string, maxRequests: number, windowMs: number): Promise<boolean> {
   try {
     const now = Date.now();
@@ -194,16 +194,14 @@ function engagementPromptContext(summary: Awaited<ReturnType<typeof getEngagemen
   return `Intentional app time together in the last 7 days: ${mins(summary.week.totalSeconds)} minutes total (reading ${mins(activity.reading)}, answering ${mins(activity.answering)}, journaling ${mins(activity.journaling)}, praying ${mins(activity.praying)}).`;
 }
 
-// Atomically reserves an idempotency key. The KV table's primary key makes
-// simultaneous requests from both partners or multiple devices safe.
+// Atomically reserves an idempotency key in the designated deduplication table.
 async function claimIdempotencyKey(key: string, value: Record<string, unknown>): Promise<boolean> {
-  const { error } = await getSupabase()
-    .from('kv_store_6d579fee')
-    .insert({ key, value });
-
-  if (!error) return true;
-  if (error.code === '23505') return false;
-  throw new Error(`Failed to claim notification idempotency key: ${error.message}`);
+  const { data, error } = await getSupabase().rpc('claim_designated_record', {
+    p_key: key,
+    p_payload: value,
+  });
+  if (error) throw new Error(`Failed to claim notification idempotency key: ${error.message}`);
+  return data === true;
 }
 
 // Generate invite code
@@ -314,9 +312,11 @@ app.get('/make-server-6d579fee/health', (c) => {
     status: 'ok',
     message: 'TwoBeOne API is running',
     storage: {
-      coreReads: Deno.env.get('RELATIONAL_PRIMARY_READS') === 'true' ? 'relational-primary' : 'kv-primary',
-      designatedReads: Deno.env.get('RELATIONAL_PRIMARY_READS') === 'true' ? 'relational-primary' : 'kv-primary',
-      coreWrites: Deno.env.get('RELATIONAL_SHADOW_WRITES') === 'false' ? 'kv-only' : 'dual-write',
+      coreReads: 'relational-only',
+      designatedReads: 'relational-only',
+      coreWrites: 'relational-only',
+      designatedWrites: 'relational-only',
+      kvFallbackReads: false,
     },
     timestamp: new Date().toISOString()
   });
@@ -451,7 +451,7 @@ app.post('/make-server-6d579fee/signup', async (c) => {
     const userId = authData.user.id;
     const inviteCode = generateInviteCode();
 
-    // Create user profile in KV store
+    // Create the user profile in its designated relational table.
     const userProfile = {
       id: userId,
       email,
@@ -1666,8 +1666,8 @@ app.delete('/make-server-6d579fee/profile/delete-account', async (c) => {
       }
     }
 
-    // Delete all user data from KV store
-    console.log('[DELETE /profile/delete-account] Deleting user data from KV store...');
+    // Delete all user data from designated relational tables.
+    console.log('[DELETE /profile/delete-account] Deleting user relational data...');
     
     // Delete profile
     await kv.del(`user:${userId}`);
@@ -5438,12 +5438,11 @@ app.delete('/make-server-6d579fee/debug/clear-responses', async (c) => {
     console.log(`[Debug] Clearing all question responses...`);
     
     const supabase = getSupabase();
-    
-    // Query directly to get keys AND values
     const { data, error } = await supabase
-      .from('kv_store_6d579fee')
-      .select('key, value')
-      .like('key', 'question-response:%');
+      .from('app_records')
+      .select('source_key')
+      .eq('domain', 'question_responses')
+      .like('source_key', 'question-response:%');
     
     if (error) {
       console.error('[Debug] Error fetching responses:', error);
@@ -5454,7 +5453,7 @@ app.delete('/make-server-6d579fee/debug/clear-responses', async (c) => {
     
     if (data && data.length > 0) {
       // Extract all keys
-      const keys = data.map((row: any) => row.key);
+      const keys = data.map((row: any) => row.source_key);
       console.log(`[Debug] Deleting keys:`, keys);
       
       // Delete all at once using mdel
@@ -6087,10 +6086,10 @@ app.post('/make-server-6d579fee/admin/devotionals/:id/audio', async (c) => {
     console.log('[Audio] Signed URL created successfully');
 
     // Update devotional with audio URL
-    console.log(`[Audio] Looking up devotional in KV store: devotional:${devotionalId}`);
+    console.log(`[Audio] Looking up devotional: devotional:${devotionalId}`);
     const devotional = await kv.get(`devotional:${devotionalId}`);
     if (!devotional) {
-      console.error(`[Audio] ⚠️ Devotional not found in KV store: devotional:${devotionalId}`);
+      console.error(`[Audio] ⚠️ Devotional not found: devotional:${devotionalId}`);
       console.error(`[Audio] ⚠️ This devotional may not have been created yet. Please create the devotional first in the Admin Panel.`);
       // Still return success since the file was uploaded successfully
       // The frontend will need to refresh to see the audio
@@ -7330,7 +7329,7 @@ app.post('/make-server-6d579fee/update-location', async (c) => {
       return c.json({ error: 'Invalid location type' }, 400);
     }
 
-    // Store location in KV store
+    // Store location in the realtime-state table.
     const locationData = {
       userId: user.id,
       latitude: location.latitude,
@@ -7369,7 +7368,7 @@ app.get('/make-server-6d579fee/couple-locations', async (c) => {
 
     console.log('[Location] Getting locations for user:', user.id, 'partner:', partnerId);
 
-    // Get user location from KV store
+    // Get user location from the realtime-state table.
     const userLocationData = await kv.get(`location:${user.id}`);
 
     // Get partner location if partner exists
@@ -7427,7 +7426,7 @@ app.delete('/make-server-6d579fee/update-location', async (c) => {
       return c.json({ error: 'Unauthorized' }, 401);
     }
 
-    // Delete location from KV store
+    // Delete location from the realtime-state table.
     await kv.del(`location:${user.id}`);
 
     console.log('[Location] Location removed for user:', user.id);
@@ -7670,7 +7669,7 @@ async function seedTravelAdventureQuestions() {
 
 console.log('🚀 TwoBeOne API Server starting...');
 console.log('📍 Base URL: /make-server-6d579fee');
-console.log('🔑 Using KV Store for data persistence');
+console.log('🔑 Using designated relational tables for data persistence');
 console.log('✅ All routes configured');
 console.log('👥 Community features enabled');
 console.log('🌍 Location tracking enabled');
