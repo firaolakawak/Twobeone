@@ -17,7 +17,7 @@ vi.mock('../supabase/info', () => ({
   publicAnonKey: 'test-anon-key',
 }));
 
-import api, { auth } from '../api';
+import api, { auth, warmUpServer } from '../api';
 
 describe('API request wiring', () => {
   beforeEach(() => {
@@ -56,6 +56,23 @@ describe('API request wiring', () => {
   it('exposes the AI APIs through the default client facade', () => {
     expect(api.marriageReadiness).toBeDefined();
     expect(api.compatibility).toBeDefined();
+  });
+
+  it('authorizes the public health warm-up with the anon key', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(
+      JSON.stringify({ status: 'ok' }),
+      { status: 200, headers: { 'Content-Type': 'application/json' } },
+    ));
+
+    await warmUpServer();
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://test-project.supabase.co/functions/v1/make-server-6d579fee/health',
+      expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({ Authorization: 'Bearer test-anon-key' }),
+      }),
+    );
   });
 
   it('refreshes an expired session even when the endpoint has network retries', async () => {

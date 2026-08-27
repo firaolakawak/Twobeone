@@ -22,7 +22,7 @@ import {
   CheckCircle2,
   LockKeyhole,
 } from "lucide-react";
-import { toast } from "sonner";
+import { toa
 import { projectId, publicAnonKey } from "../utils/supabase/info";
 import {
   STATIC_PAGE_PATHS,

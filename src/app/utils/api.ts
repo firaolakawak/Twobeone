@@ -175,7 +175,10 @@ async function publicApiCall<T>(
 
 export async function warmUpServer(): Promise<void> {
   try {
-    await fetch(`${API_BASE_URL}/health`, { method: 'GET' });
+    await fetch(`${API_BASE_URL}/health`, {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${publicAnonKey}` },
+    });
   } catch {
     // Ignore — warm-up is best-effort
   }
@@ -654,7 +657,9 @@ export const milestones = {
 
 export const health = {
   check: async () => {
-    return fetch(`${API_BASE_URL}/health`).then(r => r.json());
+    return fetch(`${API_BASE_URL}/health`, {
+      headers: { Authorization: `Bearer ${publicAnonKey}` },
+    }).then(r => r.json());
   },
 };
 

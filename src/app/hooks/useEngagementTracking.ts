@@ -3,7 +3,9 @@ import { engagement } from '../utils/api';
 import { getEngagementCategory } from '../utils/engagement';
 
 const IDLE_AFTER_MS = 2 * 60 * 1000;
-const FLUSH_EVERY_MS = 30 * 1000;
+// One write every two minutes is enough for useful engagement reporting and
+// keeps each slice within the server's 120-second cap.
+const FLUSH_EVERY_MS = 2 * 60 * 1000;
 
 export function useEngagementTracking({
   activeTab,

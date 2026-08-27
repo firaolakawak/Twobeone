@@ -127,7 +127,10 @@ async function getEngagementSummary(userIds: string[], now = new Date()) {
   const startOfToday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())).getTime();
   const weekStart = startOfToday - (6 * 86_400_000);
   const monthStart = startOfToday - (29 * 86_400_000);
-  const events = (await Promise.all(userIds.filter(Boolean).map(id => kv.getByPrefix(`engagement:${id}:`))))
+  const monthStartIso = new Date(monthStart).toISOString();
+  const events = (await Promise.all(userIds.filter(Boolean).map(id =>
+    kv.getByPrefixSince(`engagement:${id}:`, monthStartIso)
+  )))
     .flat() as any[];
 
   for (const event of events) {

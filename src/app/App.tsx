@@ -379,7 +379,9 @@ export default function App() {
       }
     };
     void loadUnreadCount();
-    const interval = window.setInterval(loadUnreadCount, 10_000);
+    const interval = window.setInterval(() => {
+      if (document.visibilityState === "visible") void loadUnreadCount();
+    }, 60_000);
     window.addEventListener("focus", loadUnreadCount);
     return () => {
       cancelled = true;
@@ -730,9 +732,10 @@ export default function App() {
     checkForProfileUpdates();
 
     const interval = setInterval(() => {
+      if (document.visibilityState !== "visible") return;
       checkForNewNotifications();
       checkForProfileUpdates();
-    }, 15000);
+    }, 60000);
     return () => clearInterval(interval);
   }, [user, accessToken, selectedScreen]);
 

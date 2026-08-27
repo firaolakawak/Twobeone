@@ -95,7 +95,9 @@ export function CalendarAlarmManager({ accessToken, onOpenCalendar }: CalendarAl
       }
     };
     void load();
-    const refreshInterval = window.setInterval(load, 30_000);
+    const refreshInterval = window.setInterval(() => {
+      if (document.visibilityState === 'visible') void load();
+    }, 5 * 60_000);
     const clockInterval = window.setInterval(() => setNow(new Date()), 15_000);
     return () => {
       cancelled = true;

@@ -85,3 +85,23 @@ export const getByPrefix = async (prefix: string): Promise<any[]> => {
   }
   return data?.map((d) => d.value) ?? [];
 };
+
+// Fetch time-stamped KV records without reading the user's entire history.
+// ISO-8601 timestamps compare lexically, so PostgREST can use the matching
+// expression index created by the resource-pressure migration.
+export const getByPrefixSince = async (
+  prefix: string,
+  createdAt: string,
+  limit = 5000,
+): Promise<any[]> => {
+  const supabase = client();
+  const { data, error } = await supabase
+    .from("kv_store_6d579fee")
+    .select("value")
+    .like("key", prefix + "%")
+    .gte("value->>createdAt", createdAt)
+    .order("value->>createdAt", { ascending: false })
+    .limit(limit);
+  if (error) throw new Error(error.message);
+  return data?.map((d) => d.value) ?? [];
+};

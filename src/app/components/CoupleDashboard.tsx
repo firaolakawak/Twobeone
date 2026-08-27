@@ -599,9 +599,11 @@ export function CoupleDashboard({
       // Defer 1s so it doesn't compete with the critical first render
       const t = setTimeout(() => {
         fetchMilestones();
-        // Poll for partner milestone updates every 30 seconds (reduced from 15s)
+        // Polling is deliberately infrequent; writes already update the local UI.
       }, 1000);
-      const interval = setInterval(fetchMilestones, 30000);
+      const interval = setInterval(() => {
+        if (document.visibilityState === 'visible') void fetchMilestones();
+      }, 5 * 60_000);
       return () => { clearTimeout(t); clearInterval(interval); };
     }
   }, [profile?.id, partner?.id]);
@@ -655,8 +657,9 @@ export function CoupleDashboard({
     if (profile?.id) {
       // Defer 1.5s — mood data is non-critical for initial render
       setTimeout(() => fetchMoods(), 1500);
-      // Poll for partner mood updates every 60 seconds (reduced from 10s to ease cold-start pressure)
-      const interval = setInterval(fetchMoods, 60000);
+      const interval = setInterval(() => {
+        if (document.visibilityState === 'visible') void fetchMoods();
+      }, 5 * 60_000);
       return () => clearInterval(interval);
     }
   }, [profile?.id, partner?.id]);

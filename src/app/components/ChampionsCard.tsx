@@ -23,7 +23,9 @@ export function ChampionsCard() {
     let mounted = true;
     const load = () => engagement.summary().then(result => mounted && setSummary(result.summary)).catch(() => undefined);
     void load();
-    const timer = window.setInterval(load, 60_000);
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === 'visible') void load();
+    }, 5 * 60_000);
     return () => { mounted = false; window.clearInterval(timer); };
   }, []);
 

@@ -1,10 +1,14 @@
--- Keep reminder checks frequent enough for the ten-minute delivery window
--- without running a global calendar scan every minute.
+-- Reduce database and Edge Function pressure from background work.
+
+-- Replace the minutely global calendar scan with a five-minute schedule.
 do $$
 declare
   existing_job_id bigint;
 begin
-  select jobid into existing_job_id from cron.job where jobname = 'twobeone-couple-calendar-reminders';
+  select jobid into existing_job_id
+  from cron.job
+  where jobname = 'twobeone-couple-calendar-reminders';
+
   if existing_job_id is not null then
     perform cron.unschedule(existing_job_id);
   end if;
@@ -34,3 +38,10 @@ select cron.schedule(
     );
   $job$
 );
+
+-- Engagement summaries filter by createdAt and only need the latest 30 days.
+-- Pair the existing prefix index with the JSON timestamp expression used by
+-- the bounded query in kv_store.tsx.
+create index if not exists idx_kv_store_key_created_at
+  on public.kv_store_6d579fee
+  using btree (key text_pattern_ops, (value->>'createdAt') desc);
