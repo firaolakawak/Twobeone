@@ -33,14 +33,38 @@ app.use('*', logger(console.log));
 async function checkRateLimit(key: string, maxRequests: number, windowMs: number): Promise<boolean> {
   try {
     const now = Date.now();
-    const windowKey = `ratelimit:${key}:${Math.floor(now / windowMs)}`;
-    const current: number = (await kv.get(windowKey) as number) || 0;
-    if (current >= maxRequests) return false;
-    await kv.set(windowKey, current + 1);
-    return true;
-  } catch {
-    return true; // fail open on KV error — don't block legitimate traffic
+    const windowNumber = Math.floor(now / windowMs);
+    const windowKey = `ratelimit:${key}:${windowNumber}`;
+    const { data, error } = await getSupabase().rpc('consume_rate_limit', {
+      p_key: windowKey,
+      p_max_requests: maxRequests,
+      p_expires_at: new Date((windowNumber + 1) * windowMs + 86_400_000).toISOString(),
+    });
+    if (error) throw error;
+    return data === true;
+  } catch (error) {
+    console.warn('[Rate Limit] Database check failed:', error);
+    return true; // Fail open so a limiter outage does not block legitimate traffic.
   }
+}
+
+function listLimit(c: any, fallback: number, maximum = 200): number {
+  const parsed = Number.parseInt(c.req.query('limit') || '', 10);
+  return Number.isFinite(parsed) ? Math.max(1, Math.min(maximum, parsed)) : fallback;
+}
+
+function isoQuery(c: any, name: string): string | undefined {
+  const value = c.req.query(name);
+  if (!value) return undefined;
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? date.toISOString() : undefined;
+}
+
+function nextTimestampCursor(items: any[], field: 'createdAt' | 'timestamp' = 'createdAt'): string | null {
+  const value = items.at(-1)?.[field];
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? date.toISOString() : null;
 }
 
 // Initialize Supabase client
@@ -127,17 +151,22 @@ async function getEngagementSummary(userIds: string[], now = new Date()) {
   const startOfToday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())).getTime();
   const weekStart = startOfToday - (6 * 86_400_000);
   const monthStart = startOfToday - (29 * 86_400_000);
-  const monthStartIso = new Date(monthStart).toISOString();
-  const events = (await Promise.all(userIds.filter(Boolean).map(id =>
-    kv.getByPrefixSince(`engagement:${id}:`, monthStartIso)
-  )))
-    .flat() as any[];
+  const ids = [...new Set(userIds.filter(Boolean))];
+  if (!ids.length) return { ...periods, champion: { level: 'starting', progress: 0, nextTargetSeconds: 30 * 60 } };
+  const monthStartDate = new Date(monthStart).toISOString().slice(0, 10);
+  const { data: rows, error } = await getSupabase()
+    .from('engagement_daily')
+    .select('activity_date, category, total_seconds')
+    .in('user_id', ids)
+    .gte('activity_date', monthStartDate)
+    .lte('activity_date', now.toISOString().slice(0, 10));
+  if (error) throw new Error(`Failed to load engagement aggregates: ${error.message}`);
 
-  for (const event of events) {
-    const timestamp = new Date(event?.createdAt || 0).getTime();
-    const category = event?.category as EngagementCategory;
-    const seconds = Math.max(0, Math.min(120, Number(event?.seconds) || 0));
-    if (!ENGAGEMENT_CATEGORIES.includes(category) || timestamp < monthStart || timestamp > now.getTime() + 60_000) continue;
+  for (const row of rows ?? []) {
+    const timestamp = new Date(`${row.activity_date}T00:00:00.000Z`).getTime();
+    const category = row.category as EngagementCategory;
+    const seconds = Math.max(0, Number(row.total_seconds) || 0);
+    if (!ENGAGEMENT_CATEGORIES.includes(category) || timestamp < monthStart) continue;
     const targets = [periods.month];
     if (timestamp >= weekStart) targets.push(periods.week);
     if (timestamp >= startOfToday) targets.push(periods.today);
@@ -284,6 +313,10 @@ app.get('/make-server-6d579fee/health', (c) => {
   return c.json({
     status: 'ok',
     message: 'TwoBeOne API is running',
+    storage: {
+      coreReads: Deno.env.get('RELATIONAL_PRIMARY_READS') === 'true' ? 'relational-primary' : 'kv-primary',
+      coreWrites: Deno.env.get('RELATIONAL_SHADOW_WRITES') === 'false' ? 'kv-only' : 'dual-write',
+    },
     timestamp: new Date().toISOString()
   });
 });
@@ -544,7 +577,6 @@ app.get('/make-server-6d579fee/profile', async (c) => {
     if (!userId) {
       return c.json({ error: 'Unauthorized' }, 401);
     }
-
     console.log(`[GET /profile] Fetching profile for user: ${userId}`);
     const startTime = Date.now();
 
@@ -625,7 +657,6 @@ app.post('/make-server-6d579fee/profile', async (c) => {
     if (!userId) {
       return c.json({ error: 'Unauthorized' }, 401);
     }
-
     const rawUpdates = await c.req.json();
     const updates = sanitizeProfileUpdates(rawUpdates);
     const profile = await kv.get(`user:${userId}`);
@@ -1713,20 +1744,25 @@ app.get('/make-server-6d579fee/journal', async (c) => {
 
     console.log(`[GET /journal] Loading journal for user: ${userId}`);
 
-    // Fetch profile + user entries in parallel (independent KV calls)
-    const [profile, userEntries] = await Promise.all([
+    const limit = listLimit(c, 50, 100);
+    const before = isoQuery(c, 'before');
+    // Fetch profile + one database page of user entries in parallel.
+    const [profile, userPage] = await Promise.all([
       kv.get(`user:${userId}`).catch(() => null),
-      kv.getByPrefix(`journal:${userId}:`).catch(() => [] as any[]),
+      kv.getByPrefixPage(`journal:${userId}:`, { limit, before }).catch(() => ({ items: [] as any[], hasMore: false })),
     ]);
+    const userEntries = userPage.items;
 
     console.log(`[GET /journal] Found ${(userEntries as any[]).length} user entries`);
 
     // Partner entries need partnerId from profile — one more KV call
     let partnerEntries: any[] = [];
+    let partnerHasMore = false;
     if ((profile as any)?.partnerId) {
       try {
-        const allPartnerEntries: any[] = await kv.getByPrefix(`journal:${(profile as any).partnerId}:`);
-        partnerEntries = allPartnerEntries
+        const partnerPage = await kv.getByPrefixPage(`journal:${(profile as any).partnerId}:`, { limit, before });
+        partnerHasMore = partnerPage.hasMore;
+        partnerEntries = partnerPage.items
           .filter((e: any) => e.isShared)
           .map((e: any) => ({ ...e, isPartner: true }));
         console.log(`[GET /journal] Found ${partnerEntries.length} partner entries`);
@@ -1738,10 +1774,11 @@ app.get('/make-server-6d579fee/journal', async (c) => {
     // Combine and limit
     const entries = [...userEntries, ...partnerEntries]
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 100);
+      .slice(0, limit);
 
     console.log(`[GET /journal] ✅ Returning ${entries.length} entries`);
-    return c.json({ entries });
+    const hasMore = userPage.hasMore || partnerHasMore || userEntries.length + partnerEntries.length > limit;
+    return c.json({ entries, nextBefore: hasMore ? nextTimestampCursor(entries) : null });
   } catch (error: any) {
     console.error('[GET /journal] Error:', error);
     
@@ -1957,20 +1994,25 @@ app.get('/make-server-6d579fee/prayer', async (c) => {
 
     console.log(`[GET /prayer] Loading prayers for user: ${userId}`);
 
-    // Profile + user prayers in parallel
-    const [profile, userPrayers] = await Promise.all([
+    const limit = listLimit(c, 100, 200);
+    const before = isoQuery(c, 'before');
+    // Profile + one database page of user prayers in parallel.
+    const [profile, userPage] = await Promise.all([
       kv.get(`user:${userId}`).catch(() => null),
-      kv.getByPrefix(`prayer:${userId}:`).catch(() => [] as any[]),
+      kv.getByPrefixPage(`prayer:${userId}:`, { limit, before }).catch(() => ({ items: [] as any[], hasMore: false })),
     ]);
+    const userPrayers = userPage.items;
 
     console.log(`[GET /prayer] Profile partnerId: ${(profile as any)?.partnerId || 'none'}, user prayers: ${(userPrayers as any[]).length}`);
 
     // Partner prayers need partnerId — one more KV call
     let partnerPrayers: any[] = [];
+    let partnerHasMore = false;
     if ((profile as any)?.partnerId) {
       try {
-        const raw: any[] = await kv.getByPrefix(`prayer:${(profile as any).partnerId}:`);
-        partnerPrayers = raw
+        const partnerPage = await kv.getByPrefixPage(`prayer:${(profile as any).partnerId}:`, { limit, before });
+        partnerHasMore = partnerPage.hasMore;
+        partnerPrayers = partnerPage.items
           .filter((prayer: any) => prayerSharedWithPartner(prayer))
           .map(prayerForPartner);
       } catch {
@@ -1980,10 +2022,11 @@ app.get('/make-server-6d579fee/prayer', async (c) => {
 
     const prayers = [...(userPrayers as any[]), ...partnerPrayers]
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 200);
+      .slice(0, limit);
 
     console.log(`[GET /prayer] Returning ${prayers.length} total prayers`);
-    return c.json({ prayers, hasCoupleConnection: !!(profile as any)?.partnerId });
+    const hasMore = userPage.hasMore || partnerHasMore || userPrayers.length + partnerPrayers.length > limit;
+    return c.json({ prayers, hasCoupleConnection: !!(profile as any)?.partnerId, nextBefore: hasMore ? nextTimestampCursor(prayers) : null });
   } catch (error: any) {
     console.error('[GET /prayer] Error:', error.message);
     return c.json({ error: error.message || 'Failed to fetch prayers' }, 500);
@@ -2172,18 +2215,27 @@ app.get('/make-server-6d579fee/moods', async (c) => {
       return c.json({ error: 'Unauthorized' }, 401);
     }
 
-    // Profile + user moods in parallel
-    const [profile, userMoods] = await Promise.all([
+    const limit = listLimit(c, 100, 200);
+    const requestedDays = Number.parseInt(c.req.query('days') || '30', 10);
+    const days = Number.isFinite(requestedDays) ? Math.max(1, Math.min(365, requestedDays)) : 30;
+    const after = new Date(Date.now() - days * 86_400_000).toISOString();
+    const before = isoQuery(c, 'before');
+    // Mood history is date-bounded and paged in the database.
+    const [profile, userPage] = await Promise.all([
       kv.get(`user:${userId}`).catch(() => null),
-      kv.getByPrefix(`mood:${userId}:`).catch(() => [] as any[]),
+      kv.getByPrefixPage(`mood:${userId}:`, { limit, before, after }).catch(() => ({ items: [] as any[], hasMore: false })),
     ]);
+    const userMoods = userPage.items;
 
     console.log(`[GET /moods] User moods: ${(userMoods as any[]).length}, partnerId: ${(profile as any)?.partnerId || 'none'}`);
 
     let partnerMoods: any[] = [];
+    let partnerHasMore = false;
     if ((profile as any)?.partnerId) {
       try {
-        partnerMoods = await kv.getByPrefix(`mood:${(profile as any).partnerId}:`);
+        const partnerPage = await kv.getByPrefixPage(`mood:${(profile as any).partnerId}:`, { limit, before, after });
+        partnerMoods = partnerPage.items;
+        partnerHasMore = partnerPage.hasMore;
       } catch {
         console.warn('[GET /moods] Partner moods fetch failed, continuing');
       }
@@ -2191,9 +2243,10 @@ app.get('/make-server-6d579fee/moods', async (c) => {
 
     const allMoods = [...(userMoods as any[]), ...partnerMoods]
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 500);
+      .slice(0, limit);
 
-    return c.json({ moods: allMoods });
+    const hasMore = userPage.hasMore || partnerHasMore || userMoods.length + partnerMoods.length > limit;
+    return c.json({ moods: allMoods, nextBefore: hasMore ? nextTimestampCursor(allMoods) : null });
   } catch (error: any) {
     console.error('[GET /moods] Error:', error);
     if (error.message?.includes('timeout')) {
@@ -2217,9 +2270,14 @@ app.post('/make-server-6d579fee/engagement/time', async (c) => {
       return c.json({ error: 'Invalid engagement time' }, 400);
     }
     if (!/^[a-zA-Z0-9._:-]{8,160}$/.test(eventId)) return c.json({ error: 'Invalid event ID' }, 400);
-    const createdAt = new Date().toISOString();
-    const key = `engagement:${userId}:${eventId}`;
-    const claimed = await claimIdempotencyKey(key, { userId, category, seconds, createdAt, eventId });
+    const { data: claimed, error } = await getSupabase().rpc('record_engagement_daily', {
+      p_user_id: userId,
+      p_event_id: eventId,
+      p_category: category,
+      p_seconds: seconds,
+      p_created_at: new Date().toISOString(),
+    });
+    if (error) throw new Error(error.message);
     return c.json({ success: true, duplicate: !claimed });
   } catch (error: any) {
     console.error('Engagement tracking error:', error);
@@ -2269,6 +2327,9 @@ app.post('/make-server-6d579fee/moods/analyze', async (c) => {
       if (ageHours < 6) {
         return c.json({ analysis: cached });
       }
+    }
+    if (!await checkRateLimit(`ai:mood-analysis:${userId}`, 6, 3_600_000)) {
+      return c.json({ error: 'AI analysis limit reached. Try again later.' }, 429);
     }
 
     // Get moods from the last 7 days for both partners
@@ -2345,8 +2406,12 @@ Do not mention AI, data analysis, scores, algorithms, or that a report was gener
     let aiPowered = true;
     let fallbackReason: string | undefined;
     try {
-      analysis = cleanGeneratedReport(await callGemini(moodPrompt));
+      analysis = cleanGeneratedReport(await callGemini(moodPrompt, {
+        operation: 'mood-analysis',
+        maxOutputTokens: 700,
+      }));
     } catch (aiError: any) {
+      if (generationInProgress(aiError)) throw aiError;
       console.warn('[Mood Analysis] Gemini failed - Using fallback message:', aiError.message);
       analysis = buildFallbackAnalysis();
       aiPowered = false;
@@ -2395,6 +2460,7 @@ Do not mention AI, data analysis, scores, algorithms, or that a report was gener
   } catch (error: any) {
     console.error('Mood analysis error:', error);
     console.error('Error stack:', error.stack);
+    if (generationInProgress(error)) return c.json({ error: error.message, retryable: true }, 409);
     const errorMessage = error.message || 'Failed to generate mood analysis';
     return c.json({ error: errorMessage }, 500);
   }
@@ -2405,12 +2471,18 @@ app.get('/make-server-6d579fee/moods/test-openai', async (c) => {
   try {
     const userId = await getUserFromToken(c.req.header('Authorization'));
     if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+    if (!await checkRateLimit(`ai:mood-test:${userId}`, 3, 3_600_000)) {
+      return c.json({ configured: true, valid: false, message: 'AI test limit reached. Try again later.' }, 429);
+    }
 
     const apiKey = Deno.env.get('GEMINI_API_KEY');
     if (!apiKey) return c.json({ configured: false, message: 'GEMINI_API_KEY not configured' });
 
     try {
-      const result = await callGemini('Say "OK" in one word.');
+      const result = await callGemini('Say "OK" in one word.', {
+        operation: 'mood-test',
+        maxOutputTokens: 16,
+      });
       return c.json({ configured: true, valid: true, message: 'Gemini API is working!', sample: result });
     } catch (e: any) {
       return c.json({ configured: true, valid: false, message: e.message });
@@ -2428,12 +2500,14 @@ app.get('/make-server-6d579fee/moods/analysis', async (c) => {
       return c.json({ error: 'Unauthorized' }, 401);
     }
 
-    const analyses = await kv.getByPrefix(`mood-analysis:${userId}:`);
-    const sortedAnalyses = analyses.sort(
+    const limit = listLimit(c, 20, 50);
+    const before = isoQuery(c, 'before');
+    const page = await kv.getByPrefixPage(`mood-analysis:${userId}:`, { limit, before });
+    const sortedAnalyses = page.items.sort(
       (a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
 
-    return c.json({ analyses: sortedAnalyses });
+    return c.json({ analyses: sortedAnalyses, nextBefore: page.hasMore ? nextTimestampCursor(sortedAnalyses) : null });
   } catch (error: any) {
     console.error('Analysis fetch error:', error);
     return c.json({ error: error.message }, 500);
@@ -2534,7 +2608,10 @@ Write 3 or 4 short, flowing paragraphs as if a caring human counselor is speakin
 Do not mention AI, analysis, data, scores, algorithms, or report generation. Do not use Markdown, headings, labels, numbered lists, bullets, asterisks, hash symbols, or bold text. Keep it under 180 words and make it sound personal, gentle, and natural.`;
 
       try {
-        reflections.set(language, cleanGeneratedReport(await callGemini(weeklyPrompt)) || fallback);
+        reflections.set(language, cleanGeneratedReport(await callGemini(weeklyPrompt, {
+          operation: `weekly-mood-report-${language}`,
+          maxOutputTokens: 512,
+        })) || fallback);
       } catch (reflectionError: any) {
         console.warn(`[Weekly Report] Personalized reflection unavailable for ${language}:`, reflectionError.message);
         reflections.set(language, fallback);
@@ -2630,12 +2707,21 @@ app.get('/make-server-6d579fee/notifications', async (c) => {
       return c.json({ error: 'Unauthorized' }, 401);
     }
 
-    const notifications = await kv.getByPrefix(`notification:${userId}:`) || [];
+    const limit = listLimit(c, 50, 100);
+    const before = isoQuery(c, 'before');
+    const unreadOnly = c.req.query('unread') === 'true';
+    const after = new Date(Date.now() - 180 * 86_400_000).toISOString();
+    const page = await kv.getByPrefixPage(`notification:${userId}:`, {
+      limit: unreadOnly ? Math.min(200, limit * 4) : limit,
+      before,
+      after,
+    });
+    const notifications = page.items;
     console.log('[Notifications] Raw notifications:', notifications);
     
     // Ensure notifications is an array and has valid data
     const validNotifications = Array.isArray(notifications) 
-      ? notifications.filter(n => n && typeof n === 'object')
+      ? notifications.filter(n => n && typeof n === 'object' && (!unreadOnly || !(n.isRead ?? n.read)))
       : [];
     
     const sortedNotifications = validNotifications
@@ -2668,13 +2754,17 @@ app.get('/make-server-6d579fee/notifications', async (c) => {
         read: Boolean(notification.read ?? notification.isRead),
         isRead: Boolean(notification.isRead ?? notification.read),
       }))
-      .slice(0, 50); // cap to prevent unbounded memory use
+      .slice(0, limit);
 
     await Promise.allSettled(
       duplicateIds.map((id) => kv.del(`notification:${userId}:${id}`)),
     );
 
-    return c.json({ notifications: deduplicatedNotifications });
+    const hasMore = page.hasMore || validNotifications.length > limit;
+    return c.json({
+      notifications: deduplicatedNotifications,
+      nextBefore: hasMore ? nextTimestampCursor(deduplicatedNotifications) : null,
+    });
   } catch (error: any) {
     console.error('Notifications fetch error:', error);
     return c.json({ error: error.message || 'Failed to fetch notifications' }, 500);
@@ -3000,16 +3090,22 @@ app.get('/make-server-6d579fee/question-chat/:questionId', async (c) => {
     // Get all messages for this question chat
     const prefix = `question_chat:${questionId}:`;
     console.log('Searching with prefix:', prefix);
-    const messages = await kv.getByPrefix(prefix);
-    console.log('Raw messages from KV:', messages);
+    const limit = listLimit(c, 100, 200);
+    const before = isoQuery(c, 'before');
+    const after = new Date(Date.now() - 365 * 86_400_000).toISOString();
+    const page = await kv.getByPrefixPage(prefix, { limit, before, after, timestampField: 'timestamp' });
+    console.log('Raw messages from KV:', page.items);
     
-    const filteredMessages = messages
+    const filteredMessages = page.items
       .filter(msg => msg && msg.userId && msg.message) // Filter out any null or invalid messages
       .sort((a: any, b: any) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
     
     console.log('Filtered and sorted messages:', filteredMessages);
 
-    return c.json({ messages: filteredMessages });
+    return c.json({
+      messages: filteredMessages,
+      nextBefore: page.hasMore ? nextTimestampCursor([...filteredMessages].reverse(), 'timestamp') : null,
+    });
   } catch (error: any) {
     console.error('Get question chat error:', error);
     return c.json({ error: error.message }, 500);
@@ -3796,17 +3892,24 @@ app.get('/make-server-6d579fee/chat/messages', async (c) => {
     if (!profile?.partnerId) return c.json({ messages: [], unreadCount: 0, hasPartner: false });
 
     const channelId = partnerChatChannel(userId, String(profile.partnerId));
-    const [allMessages, readReceipt] = await Promise.all([
-      kv.getByPrefix(`couple-chat:${channelId}:`).catch(() => []),
+    const limit = listLimit(c, 100, 200);
+    const before = isoQuery(c, 'before');
+    const after = new Date(Date.now() - 365 * 86_400_000).toISOString();
+    const [messagePage, readReceipt] = await Promise.all([
+      kv.getByPrefixPage(`couple-chat:${channelId}:`, { limit, before, after }).catch(() => ({ items: [] as any[], hasMore: false })),
       kv.get(`couple-chat-read:${channelId}:${userId}`).catch(() => null),
     ]);
-    const messages = (allMessages as any[])
+    const messages = (messagePage.items as any[])
       .filter(message => message?.channelId === channelId && (message.senderId === userId || message.senderId === profile.partnerId))
-      .sort((left, right) => new Date(left.createdAt).getTime() - new Date(right.createdAt).getTime())
-      .slice(-300);
+      .sort((left, right) => new Date(left.createdAt).getTime() - new Date(right.createdAt).getTime());
     const lastReadAt = new Date((readReceipt as any)?.readAt || 0).getTime();
     const unreadCount = messages.filter(message => message.senderId !== userId && new Date(message.createdAt).getTime() > lastReadAt).length;
-    return c.json({ messages, unreadCount, hasPartner: true });
+    return c.json({
+      messages,
+      unreadCount,
+      hasPartner: true,
+      nextBefore: messagePage.hasMore ? nextTimestampCursor([...messages].reverse()) : null,
+    });
   } catch (error: any) {
     console.error('[Partner Chat] Load failed:', error);
     return c.json({ error: error.message || 'Failed to load chat' }, 500);
@@ -6151,23 +6254,53 @@ app.route('/make-server-6d579fee/newsletter', newsletterRoutes);
 // GEMINI AI HELPER
 // ============================================
 
-async function callGemini(prompt: string): Promise<string> {
+type GeminiCallOptions = {
+  operation: string;
+  maxOutputTokens: number;
+  responseMimeType?: 'application/json';
+};
+
+class GenerationInProgressError extends Error {
+  code = 'AI_GENERATION_IN_PROGRESS';
+
+  constructor() {
+    super('An identical AI generation is already in progress.');
+  }
+}
+
+function generationInProgress(error: any): boolean {
+  return error?.code === 'AI_GENERATION_IN_PROGRESS';
+}
+
+const MAX_GEMINI_PROMPT_CHARS = 24_000;
+
+function clipAiText(value: unknown, maxChars = 1_500): string {
+  return String(value ?? '').trim().slice(0, maxChars);
+}
+
+async function generationLeaseKey(prompt: string, operation: string): Promise<string> {
+  const bytes = new TextEncoder().encode(`${operation}\n${prompt}`);
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  const hash = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
+  return `ai-lease:${operation}:${hash}`;
+}
+
+async function callGeminiWithRetries(prompt: string, options: GeminiCallOptions): Promise<string> {
   const apiKey = Deno.env.get('GEMINI_API_KEY');
   if (!apiKey) throw new Error('GEMINI_API_KEY not configured');
+  if (prompt.length > MAX_GEMINI_PROMPT_CHARS) throw new Error('AI prompt exceeds the allowed size');
 
-  // Models tried in order. 429 = rate limit — move to next model immediately.
-  // Ordered by free-tier quota generosity (most permissive first).
+  // The primary model gets one transient retry; the fallback gets one attempt.
   const MODELS = [
-    'gemini-3.1-flash-lite',   // stable, efficient default
-    'gemini-3.5-flash-lite',   // stable, high-throughput fallback
-    'gemini-3.6-flash',        // stable, higher-capability fallback
-    'gemini-3.5-flash',        // stable final fallback
+    'gemini-3.1-flash-lite',
+    'gemini-3.5-flash-lite',
   ];
   const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
   let lastError: Error | null = null;
 
-  for (const model of MODELS) {
-    for (let attempt = 0; attempt <= 1; attempt++) {  // max 1 retry per model
+  for (const [modelIndex, model] of MODELS.entries()) {
+    const attempts = modelIndex === 0 ? 2 : 1;
+    for (let attempt = 0; attempt < attempts; attempt++) {
       try {
         if (attempt > 0) await sleep(2000); // 2s before retry
 
@@ -6178,8 +6311,12 @@ async function callGemini(prompt: string): Promise<string> {
             headers: { 'Content-Type': 'application/json', 'X-goog-api-key': apiKey },
             body: JSON.stringify({
               contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: { maxOutputTokens: 2048 },
+              generationConfig: {
+                maxOutputTokens: options.maxOutputTokens,
+                ...(options.responseMimeType ? { responseMimeType: options.responseMimeType } : {}),
+              },
             }),
+            signal: AbortSignal.timeout(20_000),
           }
         );
 
@@ -6213,6 +6350,14 @@ async function callGemini(prompt: string): Promise<string> {
         const data = await response.json();
         const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
         if (!text) { lastError = new Error('Empty response'); continue; }
+        const usage = data?.usageMetadata || {};
+        console.log('[Gemini Usage]', JSON.stringify({
+          operation: options.operation,
+          model,
+          promptTokens: usage.promptTokenCount || 0,
+          outputTokens: usage.candidatesTokenCount || 0,
+          totalTokens: usage.totalTokenCount || 0,
+        }));
         return text;
 
       } catch (err: any) {
@@ -6225,6 +6370,29 @@ async function callGemini(prompt: string): Promise<string> {
   throw lastError || new Error('All Gemini models unavailable');
 }
 
+async function callGemini(prompt: string, options: GeminiCallOptions): Promise<string> {
+  if (prompt.length > MAX_GEMINI_PROMPT_CHARS) throw new Error('AI prompt exceeds the allowed size');
+  const leaseKey = await generationLeaseKey(prompt, options.operation);
+  const leaseToken = crypto.randomUUID();
+  const { data: acquired, error } = await getSupabase().rpc('acquire_generation_lease', {
+    p_key: leaseKey,
+    p_token: leaseToken,
+    p_expires_at: new Date(Date.now() + 120_000).toISOString(),
+  });
+  if (error) throw new Error(`AI generation lease failed: ${error.message}`);
+  if (acquired !== true) throw new GenerationInProgressError();
+
+  try {
+    return await callGeminiWithRetries(prompt, options);
+  } finally {
+    const { error: releaseError } = await getSupabase().rpc('release_generation_lease', {
+      p_key: leaseKey,
+      p_token: leaseToken,
+    });
+    if (releaseError) console.warn('[Gemini] Failed to release generation lease:', releaseError.message);
+  }
+}
+
 // ============================================
 // AI ASSISTANT ROUTES (Gemini-powered)
 // ============================================
@@ -6233,8 +6401,17 @@ app.post('/make-server-6d579fee/ai/analyze', async (c) => {
   try {
     const userId = await getUserFromToken(c.req.header('Authorization'));
     if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+    if (!await checkRateLimit(`ai:assistant:${userId}`, 10, 3_600_000)) {
+      return c.json({ error: 'AI assistant limit reached. Try again later.' }, 429);
+    }
 
     const { feature, questions, customPrompt } = await c.req.json();
+    if (!Array.isArray(questions) && feature !== 'custom' && feature !== 'generate') {
+      return c.json({ error: 'Invalid questions payload' }, 400);
+    }
+    if (feature === 'custom' && (!customPrompt || String(customPrompt).length > 2_000)) {
+      return c.json({ error: 'Custom prompt must be between 1 and 2,000 characters' }, 400);
+    }
 
     let prompt = '';
 
@@ -6268,20 +6445,20 @@ Return only the 3 questions, no preamble.`;
       }
       const formatAnswer = (value: any) => {
         const answer = value && typeof value === 'object' && 'response' in value ? value.response : value;
-        if (Array.isArray(answer)) return answer.join(', ');
-        return String(answer ?? 'No answer');
+        if (Array.isArray(answer)) return clipAiText(answer.join(', '));
+        return clipAiText(answer ?? 'No answer');
       };
       const summaryData = answered.slice(0, 10).map((q: any) => {
         if (q.userAnswer && q.partnerAnswer) {
-          return `Topic: ${q.title}\nYour answer: ${q.userAnswer}\nPartner's answer: ${q.partnerAnswer}`;
+          return `Topic: ${clipAiText(q.title, 300)}\nYour answer: ${clipAiText(q.userAnswer)}\nPartner's answer: ${clipAiText(q.partnerAnswer)}`;
         }
         const promptLines = (q.prompts || []).map((questionPrompt: any, index: number) => {
           const promptId = typeof questionPrompt === 'string' ? String(index) : questionPrompt.id;
           const promptText = typeof questionPrompt === 'string' ? questionPrompt : questionPrompt.text;
-          return `Prompt: ${promptText}\nYour answer: ${formatAnswer(q.userAnswers?.[promptId] ?? q.userAnswers?.[index])}\nPartner's answer: ${formatAnswer(q.partnerAnswers?.[promptId] ?? q.partnerAnswers?.[index])}`;
+          return `Prompt: ${clipAiText(promptText, 500)}\nYour answer: ${formatAnswer(q.userAnswers?.[promptId] ?? q.userAnswers?.[index])}\nPartner's answer: ${formatAnswer(q.partnerAnswers?.[promptId] ?? q.partnerAnswers?.[index])}`;
         }).join('\n');
         return `Topic: ${q.title}\n${promptLines}`;
-      }).join('\n\n');
+      }).join('\n\n').slice(0, 18_000);
 
       prompt = `You are a compassionate Christian relationship counselor for the TwoBeOne app.
 Analyze these couple discussion answers and provide an encouraging summary.
@@ -6299,7 +6476,7 @@ Keep the tone warm, faith-centered, and under 300 words.`;
     } else if (feature === 'verse') {
       const recentTopics = (questions || [])
         .slice(0, 5)
-        .map((q: any) => q.title || q.category)
+        .map((q: any) => clipAiText(q.title || q.category, 300))
         .filter(Boolean)
         .join(', ');
 
@@ -6328,7 +6505,7 @@ Format your response as:
 
     } else if (feature === 'custom' && customPrompt) {
       prompt = `You are a compassionate Christian relationship counselor for the TwoBeOne couples app.
-A couple has asked: "${customPrompt}"
+A couple has asked: "${clipAiText(customPrompt, 2_000)}"
 
 Provide a thoughtful, faith-centered response that:
 - Addresses their question with Biblical wisdom
@@ -6340,11 +6517,15 @@ Provide a thoughtful, faith-centered response that:
       return c.json({ error: 'Invalid feature or missing prompt' }, 400);
     }
 
-    const result = await callGemini(prompt);
+    const result = await callGemini(prompt, {
+      operation: `assistant-${feature}`,
+      maxOutputTokens: feature === 'summarize' ? 900 : 700,
+    });
     return c.json({ result, aiPowered: true });
 
   } catch (error: any) {
     console.error('[AI Analyze] Error:', error.message);
+    if (generationInProgress(error)) return c.json({ error: error.message, retryable: true }, 409);
     return c.json({ error: error.message || 'AI analysis failed' }, 500);
   }
 });
@@ -6385,8 +6566,11 @@ app.post('/make-server-6d579fee/ai/compatibility', async (c) => {
       if (cached) return c.json({ ...cached, cached: true });
     }
 
-    if (!userAnswers || !partnerAnswers || !prompts?.length) {
+    if (!userAnswers || !partnerAnswers || !Array.isArray(prompts) || !prompts.length || prompts.length > 20) {
       return c.json({ error: 'Missing answer data' }, 400);
+    }
+    if (!await checkRateLimit(`ai:question-compatibility:${userId}`, 20, 3_600_000)) {
+      return c.json({ error: 'Compatibility analysis limit reached. Try again later.' }, 429);
     }
 
     // Build a readable summary of both partners' answers
@@ -6395,16 +6579,16 @@ app.post('/make-server-6d579fee/ai/compatibility', async (c) => {
       const partnerAns = partnerAnswers[prompt.id];
       const formatAns = (a: any) => {
         if (!a && a !== 0) return 'no answer';
-        if (Array.isArray(a)) return a.join(', ');
-        return String(a);
+        if (Array.isArray(a)) return clipAiText(a.join(', '));
+        return clipAiText(a);
       };
-      return `Prompt: "${prompt.text}"\n  ${userName || 'Partner A'}: ${formatAns(userAns)}\n  ${partnerName || 'Partner B'}: ${formatAns(partnerAns)}`;
-    }).join('\n\n');
+      return `Prompt: "${clipAiText(prompt.text, 500)}"\n  ${clipAiText(userName || 'Partner A', 100)}: ${formatAns(userAns)}\n  ${clipAiText(partnerName || 'Partner B', 100)}: ${formatAns(partnerAns)}`;
+    }).join('\n\n').slice(0, 18_000);
 
     const prompt = `You are a compassionate Christian relationship counselor analyzing a couple's compatibility.
 
-Question Category: ${questionCategory}
-Question: ${questionTitle}
+Question Category: ${clipAiText(questionCategory, 200)}
+Question: ${clipAiText(questionTitle, 500)}
 
 Their answers:
 ${answerSummary}
@@ -6434,11 +6618,16 @@ Return ONLY valid JSON, no markdown fences.`;
 
     let analysis: any;
     try {
-      const raw = await callGemini(prompt);
+      const raw = await callGemini(prompt, {
+        operation: 'question-compatibility',
+        maxOutputTokens: 600,
+        responseMimeType: 'application/json',
+      });
       // Strip markdown fences if present
       const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
       analysis = JSON.parse(cleaned);
     } catch (aiErr: any) {
+      if (generationInProgress(aiErr)) throw aiErr;
       console.error('[Compatibility] Gemini or parse error:', aiErr.message);
       // Fallback: compute simple score
       return c.json({
@@ -6465,6 +6654,7 @@ Return ONLY valid JSON, no markdown fences.`;
     return c.json({ ...result, cached: false });
   } catch (error: any) {
     console.error('[Compatibility] Error:', error.message);
+    if (generationInProgress(error)) return c.json({ error: error.message, retryable: true }, 409);
     return c.json({ error: error.message }, 500);
   }
 });
@@ -6489,6 +6679,9 @@ app.get('/make-server-6d579fee/ai/marriage-readiness', async (c) => {
         const age = Date.now() - new Date(cached.generatedAt).getTime();
         if (age < 24 * 60 * 60 * 1000) return c.json({ result: cached, cached: true });
       }
+    }
+    if (!await checkRateLimit(`ai:marriage-readiness:${userId}`, 4, 3_600_000)) {
+      return c.json({ error: 'Marriage readiness generation limit reached. Try again later.' }, 429);
     }
 
     const partnerProfile = partnerId ? await kv.get(`user:${partnerId}`) as any : null;
@@ -6613,10 +6806,15 @@ Return ONLY valid JSON. Keep each field concise but meaningful.`;
 
     let aiReport: any = null;
     try {
-      const raw = await callGemini(prompt);
+      const raw = await callGemini(prompt, {
+        operation: 'marriage-readiness',
+        maxOutputTokens: 1_200,
+        responseMimeType: 'application/json',
+      });
       const jsonMatch = raw.match(/\{[\s\S]*\}/);
       if (jsonMatch) aiReport = JSON.parse(jsonMatch[0]);
     } catch (aiErr: any) {
+      if (generationInProgress(aiErr)) throw aiErr;
       console.error('[MarriageReadiness] Gemini failed:', aiErr.message);
     }
 
@@ -6639,6 +6837,7 @@ Return ONLY valid JSON. Keep each field concise but meaningful.`;
     return c.json({ result, cached: false });
   } catch (error: any) {
     console.error('[MarriageReadiness] Error:', error);
+    if (generationInProgress(error)) return c.json({ error: error.message, retryable: true }, 409);
     return c.json({ error: error.message }, 500);
   }
 });
@@ -6678,20 +6877,29 @@ app.post('/make-server-6d579fee/ai/compatibility/overall', async (c) => {
       if (cached) return c.json({ ...(cached as object), cached: true });
     }
 
-    if (!questionPairs || questionPairs.length === 0) {
+    const totalQuestionPairs = Array.isArray(questionPairs)
+      ? questionPairs.reduce((sum: number, category: any) => sum + (Array.isArray(category?.questions) ? category.questions.length : 0), 0)
+      : 0;
+    if (!Array.isArray(questionPairs) || questionPairs.length === 0 || questionPairs.length > 12 || totalQuestionPairs > 100) {
       return c.json({ error: 'No answered question pairs provided' }, 400);
+    }
+    if (!Array.isArray(completedCategories)) {
+      return c.json({ error: 'Invalid completed categories' }, 400);
+    }
+    if (!await checkRateLimit(`ai:overall-compatibility:${userId}`, 4, 3_600_000)) {
+      return c.json({ error: 'Overall compatibility generation limit reached. Try again later.' }, 429);
     }
 
     // Build the comprehensive Gemini prompt
     const pairsText = (questionPairs as any[]).map((cat: any) => {
-      const qs = (cat.questions as any[]).map((q: any) => {
-        const prompts = (q.prompts as any[]).map((p: any) =>
-          `  Q: "${p.text}"\n    ${userName}: ${p.userAnswer}\n    ${partnerName}: ${p.partnerAnswer}`
+      const qs = (Array.isArray(cat?.questions) ? cat.questions : []).map((q: any) => {
+        const prompts = (Array.isArray(q?.prompts) ? q.prompts : []).slice(0, 20).map((p: any) =>
+          `  Q: "${clipAiText(p.text, 500)}"\n    ${clipAiText(userName, 100)}: ${clipAiText(p.userAnswer)}\n    ${clipAiText(partnerName, 100)}: ${clipAiText(p.partnerAnswer)}`
         ).join('\n');
-        return `  Question: "${q.title}"\n${prompts}`;
+        return `  Question: "${clipAiText(q.title, 500)}"\n${prompts}`;
       }).join('\n\n');
-      return `CATEGORY: ${cat.categoryLabel}\n${qs}`;
-    }).join('\n\n---\n\n');
+      return `CATEGORY: ${clipAiText(cat.categoryLabel, 200)}\n${qs}`;
+    }).join('\n\n---\n\n').slice(0, 18_000);
 
     const prompt = `You are a compassionate Christian relationship counselor analyzing a couple's overall compatibility across multiple life categories.
 
@@ -6715,10 +6923,15 @@ Base everything on what they ACTUALLY said. Return ONLY valid JSON, no markdown.
 
     let analysis: any;
     try {
-      const raw = await callGemini(prompt);
+      const raw = await callGemini(prompt, {
+        operation: 'overall-compatibility',
+        maxOutputTokens: 1_000,
+        responseMimeType: 'application/json',
+      });
       const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
       analysis = JSON.parse(cleaned);
     } catch (aiErr: any) {
+      if (generationInProgress(aiErr)) throw aiErr;
       console.warn('[Overall Compatibility] Gemini failed, using fallback:', aiErr.message);
       // Compute a simple average from per-question cached scores
       const allCached = await Promise.all(
@@ -6758,6 +6971,7 @@ Base everything on what they ACTUALLY said. Return ONLY valid JSON, no markdown.
     return c.json({ ...result, cached: false });
   } catch (error: any) {
     console.error('[Overall Compatibility] Error:', error.message);
+    if (generationInProgress(error)) return c.json({ error: error.message, retryable: true }, 409);
     return c.json({ error: error.message }, 500);
   }
 });
@@ -6766,11 +6980,17 @@ app.get('/make-server-6d579fee/ai/test', async (c) => {
   try {
     const userId = await getUserFromToken(c.req.header('Authorization'));
     if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+    if (!await checkRateLimit(`ai:test:${userId}`, 3, 3_600_000)) {
+      return c.json({ configured: true, valid: false, message: 'AI test limit reached. Try again later.' }, 429);
+    }
 
     const apiKey = Deno.env.get('GEMINI_API_KEY');
     if (!apiKey) return c.json({ configured: false, message: 'GEMINI_API_KEY not configured' });
 
-    const result = await callGemini('Say "Gemini connected" in 3 words or less.');
+    const result = await callGemini('Say "Gemini connected" in 3 words or less.', {
+      operation: 'ai-test',
+      maxOutputTokens: 16,
+    });
     return c.json({ configured: true, valid: true, message: 'Gemini API is working!', sample: result });
   } catch (error: any) {
     return c.json({ configured: true, valid: false, message: error.message });

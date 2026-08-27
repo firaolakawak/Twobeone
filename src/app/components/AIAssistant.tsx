@@ -48,6 +48,11 @@ export function hasAnswers(answers?: Record<string, unknown>): boolean {
 async function callAI(feature: string, questions: Question[], customPrompt?: string): Promise<AIResponse> {
   const token = await getAccessToken();
   if (!token) throw new Error('Please sign in again to use AI analysis.');
+  const questionPayload = feature === 'summarize'
+    ? questions
+    : feature === 'verse'
+      ? questions.slice(0, 5).map(({ title, category }) => ({ title, category }))
+      : undefined;
   const response = await fetch(
     `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/ai/analyze`,
     {
@@ -56,7 +61,7 @@ async function callAI(feature: string, questions: Question[], customPrompt?: str
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({ feature, questions, customPrompt }),
+      body: JSON.stringify({ feature, questions: questionPayload, customPrompt }),
     }
   );
 

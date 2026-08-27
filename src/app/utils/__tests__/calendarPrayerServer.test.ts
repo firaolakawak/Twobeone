@@ -11,8 +11,8 @@ describe('calendar AI prayer generation', () => {
   it('uses the configured Gemini stack with the title and description', () => {
     expect(source).toContain("Deno.env.get('GEMINI_API_KEY')");
     expect(source).not.toContain("Deno.env.get('OPENAI_API_KEY')");
-    expect(source).toContain('Plan title: ${input.title}');
-    expect(source).toContain("Plan description: ${input.description || 'No description provided'}");
+    expect(source).toContain('Plan title: ${input.title.slice(0, 240)}');
+    expect(source).toContain("Plan description: ${input.description.slice(0, 1_000) || 'No description provided'}");
     expect(source).toContain('Write 25-45 words');
   });
 

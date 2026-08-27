@@ -320,9 +320,13 @@ export const profile = {
 // ============================================
 
 export const journal = {
-  list: async () => {
-    return deduplicateRequest('journal-list', () =>
-      apiCall<{ entries: any[] }>('/journal', {}, 2, 25000)
+  list: async (options: { limit?: number; before?: string } = {}) => {
+    const query = new URLSearchParams();
+    if (options.limit) query.set('limit', String(options.limit));
+    if (options.before) query.set('before', options.before);
+    const suffix = query.size ? `?${query}` : '';
+    return deduplicateRequest(`journal-list-${suffix}`, () =>
+      apiCall<{ entries: any[]; nextBefore?: string | null }>(`/journal${suffix}`, {}, 2, 25000)
     );
   },
 
@@ -358,11 +362,15 @@ export const journal = {
 // ============================================
 
 export const prayer = {
-  list: async () => {
+  list: async (options: { limit?: number; before?: string } = {}) => {
+    const query = new URLSearchParams();
+    if (options.limit) query.set('limit', String(options.limit));
+    if (options.before) query.set('before', options.before);
+    const suffix = query.size ? `?${query}` : '';
     // Prayer list gets 2 retries with 15 second timeout (increased for reliability)
     // Deduplicate to prevent multiple simultaneous prayer requests
-    return deduplicateRequest('prayer-list', () =>
-      apiCall<{ prayers: any[] }>('/prayer', {}, 2, 15000)
+    return deduplicateRequest(`prayer-list-${suffix}`, () =>
+      apiCall<{ prayers: any[]; nextBefore?: string | null }>(`/prayer${suffix}`, {}, 2, 15000)
     );
   },
 
@@ -413,9 +421,12 @@ export const moods = {
     });
   },
 
-  list: async (days: number = 30) => {
+  list: async (days: number = 30, options: { limit?: number; before?: string } = {}) => {
+    const query = new URLSearchParams({ days: String(days) });
+    if (options.limit) query.set('limit', String(options.limit));
+    if (options.before) query.set('before', options.before);
     // Moods list gets 1 retry with 10 second timeout
-    return apiCall<{ moods: any[] }>(`/moods?days=${days}`, {}, 1, 10000);
+    return apiCall<{ moods: any[]; nextBefore?: string | null }>(`/moods?${query}`, {}, 1, 10000);
   },
 
   analyze: async (language: 'en' | 'am' | 'om' = 'en') => {
@@ -478,14 +489,15 @@ export const engagement = {
 // ============================================
 
 export const notifications = {
-  list: async (limit: number = 50, unreadOnly: boolean = false) => {
+  list: async (limit: number = 50, unreadOnly: boolean = false, before?: string) => {
     const query = new URLSearchParams({
       limit: limit.toString(),
       unread: unreadOnly.toString(),
     });
+    if (before) query.set('before', before);
     // Deduplicate notification requests with longer timeout (20 seconds)
     return deduplicateRequest(`notifications-list-${limit}-${unreadOnly}`, () =>
-      apiCall<{ notifications: any[] }>(`/notifications?${query}`, {}, 2, 20000) // 2 retries, 20 second timeout
+      apiCall<{ notifications: any[]; nextBefore?: string | null }>(`/notifications?${query}`, {}, 2, 20000) // 2 retries, 20 second timeout
     );
   },
 
@@ -710,8 +722,8 @@ export const marriageReadiness = {
     apiCall<{ result: any; cached: boolean }>(
       `/ai/marriage-readiness${force ? '?force=true' : ''}`,
       {},
-      1,   // 1 retry
-      90000 // 90s — Gemini cold start + 5 model attempts
+      0,   // Generation requests must not be replayed automatically.
+      60000
     ),
 };
 

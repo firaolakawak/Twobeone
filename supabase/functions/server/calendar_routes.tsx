@@ -16,11 +16,40 @@ function generateId(prefix: string) {
   return `${prefix}_${Date.now()}_${crypto.randomUUID().slice(0, 8)}`;
 }
 
+function listLimit(c: any, fallback: number, maximum = 200) {
+  const parsed = Number.parseInt(c.req.query('limit') || '', 10);
+  return Number.isFinite(parsed) ? Math.max(1, Math.min(maximum, parsed)) : fallback;
+}
+
+function isoQuery(c: any, name: string) {
+  const value = c.req.query(name);
+  if (!value) return undefined;
+  const parsed = new Date(value);
+  return Number.isFinite(parsed.getTime()) ? parsed.toISOString() : undefined;
+}
+
 async function userIdFromRequest(c: any): Promise<string | null> {
   const token = c.req.header('Authorization')?.replace(/^Bearer\s+/i, '');
   if (!token) return null;
   const { data: { user }, error } = await supabase.auth.getUser(token);
   return error || !user?.id ? null : user.id;
+}
+
+async function consumeAiQuota(userId: string): Promise<boolean> {
+  try {
+    const windowMs = 3_600_000;
+    const windowNumber = Math.floor(Date.now() / windowMs);
+    const { data, error } = await supabase.rpc('consume_rate_limit', {
+      p_key: `ratelimit:ai:calendar-prayer:${userId}:${windowNumber}`,
+      p_max_requests: 12,
+      p_expires_at: new Date((windowNumber + 1) * windowMs + 86_400_000).toISOString(),
+    });
+    if (error) throw error;
+    return data === true;
+  } catch (error) {
+    console.warn('[Couple Calendar] Rate limit check failed:', error);
+    return true;
+  }
 }
 
 const scriptureByCategory: Record<CalendarCategory, string> = {
@@ -110,11 +139,12 @@ async function sendCalendarPush(userId: string, title: string, body: string, ite
   }
 }
 
-async function generatePrayer(input: { title: string; description: string; type: string; category: CalendarCategory; language: Language }) {
+async function generatePrayer(input: { userId: string; title: string; description: string; type: string; category: CalendarCategory; language: Language }) {
   const fallback = fallbackPrayer(input.title, input.category, input.language);
   const fallbackResult = { ...fallback, generationSource: 'fallback' as const };
   const apiKey = Deno.env.get('GEMINI_API_KEY');
   if (!apiKey) return fallbackResult;
+  if (!await consumeAiQuota(input.userId)) return fallbackResult;
 
   const languageInstruction = input.language === 'am'
     ? 'Write in natural modern Amharic.'
@@ -129,11 +159,11 @@ Use both the plan title and description as the prayer topic.
 Write 25-45 words, ending naturally with Amen. Do not promise an outcome or claim to speak for God.
 Return JSON only: {"title":"...","text":"...","scripture":"Bible reference only"}.
 
-Calendar type: ${input.type}
-Plan title: ${input.title}
-Plan description: ${input.description || 'No description provided'}
+Calendar type: ${input.type.slice(0, 40)}
+Plan title: ${input.title.slice(0, 240)}
+Plan description: ${input.description.slice(0, 1_000) || 'No description provided'}
 Life area: ${input.category}`;
-    const models = ['gemini-3.1-flash-lite', 'gemini-3.5-flash-lite', 'gemini-3.6-flash'];
+    const models = ['gemini-3.1-flash-lite', 'gemini-3.5-flash-lite'];
     for (const model of models) {
       try {
         const response = await fetch(
@@ -154,6 +184,14 @@ Life area: ${input.category}`;
         );
         if (!response.ok) continue;
         const data = await response.json();
+        const usage = data?.usageMetadata || {};
+        console.log('[Gemini Usage]', JSON.stringify({
+          operation: 'calendar-prayer',
+          model,
+          promptTokens: usage.promptTokenCount || 0,
+          outputTokens: usage.candidatesTokenCount || 0,
+          totalTokens: usage.totalTokenCount || 0,
+        }));
         const raw = data?.candidates?.[0]?.content?.parts?.map((part: any) => part?.text || '').join('') || '';
         const generated = parsePrayerJson(raw, fallback);
         if (generated) return generated;
@@ -234,22 +272,32 @@ app.get('/calendar', async (c) => {
   try {
     const userId = await userIdFromRequest(c);
     if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+    const limit = listLimit(c, 100, 200);
+    const after = isoQuery(c, 'after') || new Date(Date.now() - 365 * 86_400_000).toISOString();
     const profile: any = await kv.get(`user:${userId}`).catch(() => null);
-    const ownRaw: any[] = await kv.getByPrefix(`calendar:${userId}:`).catch(() => []);
+    const ownPage = await kv.getByPrefixPage(`calendar:${userId}:`, {
+      limit, after, timestampField: 'startsAt', ascending: true,
+    }).catch(() => ({ items: [] as any[], hasMore: false }));
+    const ownRaw = ownPage.items;
     const now = new Date();
     const ownItems = await Promise.all(ownRaw.map(item => reconcileFulfilledItem(userId, item, now)));
     let partnerItems: any[] = [];
+    let partnerHasMore = false;
     if (profile?.partnerId) {
-      const raw: any[] = await kv.getByPrefix(`calendar:${profile.partnerId}:`).catch(() => []);
-      const reconciled = await Promise.all(raw.map(item => reconcileFulfilledItem(profile.partnerId, item, now)));
+      const partnerPage = await kv.getByPrefixPage(`calendar:${profile.partnerId}:`, {
+        limit, after, timestampField: 'startsAt', ascending: true,
+      }).catch(() => ({ items: [] as any[], hasMore: false }));
+      partnerHasMore = partnerPage.hasMore;
+      const reconciled = await Promise.all(partnerPage.items.map(item => reconcileFulfilledItem(profile.partnerId, item, now)));
       partnerItems = reconciled
         .filter(sharedWithPartner)
         .map(item => calendarItemForPartner(item, now));
     }
     const items = [...ownItems, ...partnerItems]
       .sort((left, right) => new Date(left.startsAt).getTime() - new Date(right.startsAt).getTime())
-      .slice(0, 500);
-    return c.json({ items });
+      .slice(0, limit);
+    const hasMore = ownPage.hasMore || partnerHasMore || ownItems.length + partnerItems.length > limit;
+    return c.json({ items, nextAfter: hasMore ? items.at(-1)?.startsAt || null : null });
   } catch (error) {
     console.error('[Couple Calendar] Load error:', error);
     return c.json({ error: 'Failed to load calendar' }, 500);
@@ -263,16 +311,18 @@ app.get('/calendar/activity', async (c) => {
     const profile: any = await kv.get(`user:${userId}`).catch(() => null);
     const partnerId = profile?.partnerId ? String(profile.partnerId) : null;
     const owners = [{ id: userId, isPartner: false }, ...(partnerId ? [{ id: partnerId, isPartner: true }] : [])];
+    const activityAfter = isoQuery(c, 'after') || new Date(Date.now() - 365 * 86_400_000).toISOString();
+    const activityLimit = listLimit(c, 200, 500);
 
     const ownerData = await Promise.all(owners.map(async owner => {
       const [prayers, completions, legacyResponses, currentResponses, journals, moods, highlights] = await Promise.all([
-        kv.getByPrefix(`prayer:${owner.id}:`).catch(() => []),
-        kv.getByPrefix(`completion:${owner.id}:`).catch(() => []),
-        kv.getByPrefix(`response:${owner.id}:`).catch(() => []),
-        kv.getByPrefix(`question-response:${owner.id}:`).catch(() => []),
-        kv.getByPrefix(`journal:${owner.id}:`).catch(() => []),
-        kv.getByPrefix(`mood:${owner.id}:`).catch(() => []),
-        kv.getByPrefix(`highlight:${owner.id}:`).catch(() => []),
+        kv.getByPrefixPage(`prayer:${owner.id}:`, { limit: activityLimit, after: activityAfter }).then(page => page.items).catch(() => []),
+        kv.getByPrefixPage(`completion:${owner.id}:`, { limit: activityLimit, after: activityAfter, timestampField: 'completedAt' }).then(page => page.items).catch(() => []),
+        kv.getByPrefixPage(`response:${owner.id}:`, { limit: activityLimit, after: activityAfter }).then(page => page.items).catch(() => []),
+        kv.getByPrefixPage(`question-response:${owner.id}:`, { limit: activityLimit, after: activityAfter }).then(page => page.items).catch(() => []),
+        kv.getByPrefixPage(`journal:${owner.id}:`, { limit: activityLimit, after: activityAfter }).then(page => page.items).catch(() => []),
+        kv.getByPrefixPage(`mood:${owner.id}:`, { limit: activityLimit, after: activityAfter }).then(page => page.items).catch(() => []),
+        kv.getByPrefixPage(`highlight:${owner.id}:`, { limit: activityLimit, after: activityAfter }).then(page => page.items).catch(() => []),
       ]);
       return { owner, prayers, completions, legacyResponses, currentResponses, journals, moods, highlights } as any;
     }));
@@ -356,7 +406,7 @@ app.get('/calendar/activity', async (c) => {
 
     const unique = Array.from(new Map(activities.map(activity => [activity.id, activity])).values())
       .sort((left: any, right: any) => new Date(right.date).getTime() - new Date(left.date).getTime())
-      .slice(0, 1000);
+      .slice(0, activityLimit);
     return c.json({ activities: unique });
   } catch (error) {
     console.error('[Couple Calendar] Activity load error:', error);
@@ -391,7 +441,7 @@ app.post('/calendar', async (c) => {
     const isSurprise = isSharedWithPartner && Boolean(body.isSurprise);
     const unlockAt = isSurprise ? startsAt.toISOString() : null;
     const generated = createPrayer
-      ? await generatePrayer({ title, description: String(body.description || ''), type, category, language })
+      ? await generatePrayer({ userId, title, description: String(body.description || ''), type, category, language })
       : null;
     const prayerId = generated ? generateId('prayer') : null;
 
@@ -458,6 +508,7 @@ app.post('/calendar/:id/regenerate-prayer', async (c) => {
       ? resolved.item.category
       : 'other') as CalendarCategory;
     const generated = await generatePrayer({
+      userId,
       title: String(resolved.item.title || '').trim(),
       description: String(resolved.item.description || ''),
       type: String(resolved.item.type || 'plan'),
@@ -533,7 +584,7 @@ app.put('/calendar/:id', async (c) => {
       const profile: any = await kv.get(`user:${userId}`).catch(() => null);
       const language = resolveLanguage(profile?.language || item.prayerLanguage);
       const category = (['faith', 'relationship', 'family', 'health', 'finance', 'service', 'other'].includes(item.category) ? item.category : 'other') as CalendarCategory;
-      const generated = await generatePrayer({ title: String(item.title || '').trim(), description: String(item.description || ''), type: String(item.type || 'plan'), category, language });
+      const generated = await generatePrayer({ userId, title: String(item.title || '').trim(), description: String(item.description || ''), type: String(item.type || 'plan'), category, language });
       if (generated.generationSource === 'ai') {
         const prayerKey = `prayer:${userId}:${item.prayerId}`;
         const currentPrayer: any = await kv.get(prayerKey).catch(() => null);
@@ -606,7 +657,7 @@ app.post('/cron/calendar-reminders', async (c) => {
   try {
     const now = new Date();
     const windowStart = now.getTime() - 10 * 60_000;
-    const items: any[] = await kv.getByPrefix('calendar:').catch(() => []);
+    const items: any[] = await kv.getAllByPrefix('calendar:', 10_000, 500).catch(() => []);
     let sent = 0;
     for (const item of items) {
       if (calendarItemIsFulfilled(item, now)) {
