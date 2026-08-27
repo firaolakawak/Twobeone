@@ -23,7 +23,11 @@ import {
   Lock,
   RefreshCw,
   CheckCircle2,
-  TrendingUp
+  TrendingUp,
+  Trophy,
+  Sprout,
+  Lightbulb,
+  CalendarDays
 } from 'lucide-react';
 import { compatibility as compatibilityApi } from '../utils/api';
 import { toast } from 'sonner';
@@ -31,6 +35,7 @@ import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { createClient } from '../utils/supabase/client';
 import { DynamicQuestionPrompt } from './DynamicQuestionPrompt';
 import { AIAssistant } from './AIAssistant';
+import { getQACategoryVisual } from './qaCategoryVisuals';
 
 const supabase = createClient();
 
@@ -185,18 +190,18 @@ export function QADiscussionHub({
   };
 
   const categories = [
-    { id: 'all', label: t.questions.title, icon: '💬' },
-    { id: 'daily-life', label: t.questions.categories.daily, icon: '☀️' },
-    { id: 'intimacy', label: t.questions.categories.intimacy, icon: '💕' },
-    { id: 'love-balance', label: t.questions.categories.values, icon: '⚖️' },
-    { id: 'dream-wedding', label: t.questions.categories.dreams, icon: '💒' },
-    { id: 'travel', label: t.questions.categories.values, icon: '✈️' },
-    { id: 'boundaries', label: t.questions.categories.conflict, icon: '🛡️' },
-    { id: 'trust', label: t.questions.categories.faith, icon: '🤝' },
-    { id: 'kids-future', label: t.questions.categories.family, icon: '👶' },
-    { id: 'finance', label: t.questions.categories.finance, icon: '💰' },
-    { id: 'family', label: t.questions.categories.family, icon: '👨‍👩‍👧‍👦' },
-    { id: 'bible', label: t.questions.categories.faith, icon: '📖' },
+    { id: 'all', label: t.questions.title },
+    { id: 'daily-life', label: t.questions.categories.daily },
+    { id: 'intimacy', label: t.questions.categories.intimacy },
+    { id: 'love-balance', label: t.questions.categories.values },
+    { id: 'dream-wedding', label: t.questions.categories.dreams },
+    { id: 'travel', label: t.questions.categories.values },
+    { id: 'boundaries', label: t.questions.categories.conflict },
+    { id: 'trust', label: t.questions.categories.faith },
+    { id: 'kids-future', label: t.questions.categories.family },
+    { id: 'finance', label: t.questions.categories.finance },
+    { id: 'family', label: t.questions.categories.family },
+    { id: 'bible', label: t.questions.categories.faith },
   ];
 
   useEffect(() => {
@@ -359,13 +364,15 @@ export function QADiscussionHub({
     : 0;
   const remainingQuestions = Math.max(filteredQuestions.length - answeredQuestions, 0);
   const activeCategoryDetails = categories.find(category => category.id === activeCategory) || categories[0];
+  const activeCategoryVisual = getQACategoryVisual(activeCategoryDetails.id);
+  const ActiveCategoryIcon = activeCategoryVisual.icon;
 
   return (
-    <div className="space-y-5 pb-8">
+    <div className="space-y-5 pb-10">
       <motion.section
         initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-[2rem] border border-primary-100 bg-gradient-to-br from-primary-50 via-white to-sky-50/80 p-5 shadow-[0_20px_60px_rgba(83,45,67,0.10)] sm:p-7"
+        className="relative overflow-hidden rounded-[2rem] border border-primary-100/80 bg-gradient-to-br from-primary-50/70 via-white to-sky-50/45 p-5 shadow-[0_18px_50px_rgba(83,45,67,0.08)] sm:p-7"
       >
         <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary-200/25 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-20 -left-10 h-44 w-44 rounded-full bg-sky-200/25 blur-3xl" />
@@ -377,14 +384,14 @@ export function QADiscussionHub({
                 <ChevronLeft className="h-4 w-4" /> Back
               </button>
             ) : <span />}
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary-100 bg-white/70 px-3 py-2 text-xs font-semibold text-primary-700 shadow-sm backdrop-blur">
-              <span aria-hidden="true">{activeCategoryDetails.icon}</span>
+            <div className={`inline-flex items-center gap-2 rounded-full border ${activeCategoryVisual.border} bg-white/80 px-3 py-2 text-xs font-semibold ${activeCategoryVisual.text} shadow-sm`}>
+              <ActiveCategoryIcon className="h-4 w-4" strokeWidth={1.9} aria-hidden="true" />
               {activeCategoryDetails.label}
             </div>
           </div>
 
           <div className="max-w-xl">
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/80 text-primary-600 shadow-[0_10px_25px_rgba(190,68,112,0.14)]">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-100 text-primary-700 ring-1 ring-primary-200/60">
               <MessageSquare className="h-6 w-6" />
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">A conversation worth having</h1>
@@ -418,7 +425,7 @@ export function QADiscussionHub({
         </div>
       </motion.section>
 
-      <button type="button" aria-expanded={showAIAssistant} onClick={() => setShowAIAssistant(!showAIAssistant)} className="group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary-600 to-primary-700 px-5 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(190,68,112,0.22)] transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(190,68,112,0.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 motion-reduce:transform-none">
+      <button type="button" aria-expanded={showAIAssistant} onClick={() => setShowAIAssistant(!showAIAssistant)} className="group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-primary-700 px-5 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(125,55,82,0.18)] transition-all hover:-translate-y-0.5 hover:bg-primary-800 hover:shadow-[0_14px_30px_rgba(125,55,82,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 motion-reduce:transform-none">
         <Sparkles className="h-4 w-4 transition-transform group-hover:rotate-12" />
         {showAIAssistant ? 'Close AI companion' : 'Open AI companion'}
       </button>
@@ -530,6 +537,8 @@ export function QADiscussionHub({
                 {ALL_CATEGORY_IDS.map(catId => {
                   const eng = categoryEngagement.find(c => c.id === catId);
                   const cat = categories.find(c => c.id === catId);
+                  const visual = getQACategoryVisual(catId);
+                  const CategoryIcon = visual.icon;
                   return (
                     <div key={catId} style={{
                       display: 'flex', alignItems: 'center', gap: 4,
@@ -541,11 +550,12 @@ export function QADiscussionHub({
                       border: `1.5px solid ${eng?.complete ? 'var(--success-500)' : 'var(--border)'}`,
                       color: eng?.complete ? 'var(--success-700)' : 'var(--muted-foreground)',
                     }}>
-                      {eng?.complete
-                        ? <CheckCircle2 className="w-3 h-3" style={{ color: 'var(--success-500)' }} />
-                        : <Lock className="w-3 h-3" />
-                      }
-                      {cat?.icon} {cat?.label}
+                      {eng?.complete ? (
+                        <CheckCircle2 className="w-3 h-3" style={{ color: 'var(--success-500)' }} />
+                      ) : (
+                        <CategoryIcon className="w-3 h-3" aria-hidden="true" />
+                      )}
+                      {cat?.label}
                       {eng && eng.total > 0 && (
                         <span style={{ opacity: 0.7 }}>({eng.bothAnswered}/{eng.total})</span>
                       )}
@@ -607,25 +617,25 @@ export function QADiscussionHub({
                     </p>
                   </div>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-3)' }}>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div style={{ background: 'var(--success-50)', borderRadius: 'var(--radius-md)', padding: 'var(--spacing-3)' }}>
-                    <p style={{ fontSize: 'var(--text-label)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--success-700)', marginBottom: 'var(--spacing-2)' }}>✅ Strengths</p>
+                    <p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-success-700"><Trophy className="h-4 w-4" />Strengths</p>
                     {(overallResult.strengths || []).map((s: string, i: number) => (
                       <p key={i} style={{ fontSize: 'var(--text-caption)', color: 'var(--foreground)', marginBottom: 4 }}>• {s}</p>
                     ))}
                   </div>
                   <div style={{ background: 'var(--warning-50)', borderRadius: 'var(--radius-md)', padding: 'var(--spacing-3)' }}>
-                    <p style={{ fontSize: 'var(--text-label)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--warning-700)', marginBottom: 'var(--spacing-2)' }}>🌱 Grow Together</p>
+                    <p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-warning-700"><Sprout className="h-4 w-4" />Grow Together</p>
                     {(overallResult.growthAreas || []).map((g: string, i: number) => (
                       <p key={i} style={{ fontSize: 'var(--text-caption)', color: 'var(--foreground)', marginBottom: 4 }}>• {g}</p>
                     ))}
                   </div>
                 </div>
                 <div style={{ background: 'var(--card)', border: '1px solid var(--primary-200)', borderRadius: 'var(--radius-md)', padding: 'var(--spacing-4)' }}>
-                  <p style={{ fontSize: 'var(--text-callout)', color: 'var(--foreground)', fontStyle: 'italic', lineHeight: 1.6 }}>💡 {overallResult.insight}</p>
+                  <p className="flex items-start gap-2 text-sm italic leading-relaxed text-foreground"><Lightbulb className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary-600" />{overallResult.insight}</p>
                 </div>
                 <div style={{ background: 'var(--primary-50)', borderRadius: 'var(--radius-md)', padding: 'var(--spacing-3)', display: 'flex', gap: 'var(--spacing-3)' }}>
-                  <span style={{ fontSize: '1.25rem', flexShrink: 0 }}>📅</span>
+                  <CalendarDays className="h-5 w-5 flex-shrink-0 text-primary-600" />
                   <div>
                     <p style={{ fontSize: 'var(--text-label)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--primary-700)', marginBottom: 4 }}>30-Day Challenge</p>
                     <p style={{ fontSize: 'var(--text-caption)', color: 'var(--foreground)', lineHeight: 1.5 }}>{overallResult.challenge}</p>
@@ -640,9 +650,11 @@ export function QADiscussionHub({
                     <div style={{ marginTop: 'var(--spacing-3)', display: 'flex', flexDirection: 'column', gap: 'var(--spacing-2)' }}>
                       {Object.entries(overallResult.categoryHighlights).map(([catId, note]: [string, any]) => {
                         const cat = categories.find(c => c.id === catId);
+                        const visual = getQACategoryVisual(catId);
+                        const CategoryIcon = visual.icon;
                         return (
                           <div key={catId} style={{ display: 'flex', gap: 'var(--spacing-2)', padding: 'var(--spacing-2) var(--spacing-3)', background: 'var(--card)', borderRadius: 'var(--radius-sm)' }}>
-                            <span>{cat?.icon}</span>
+                            <CategoryIcon className={`mt-0.5 h-4 w-4 flex-shrink-0 ${visual.iconColor}`} aria-hidden="true" />
                             <div>
                               <span style={{ fontSize: 'var(--text-label)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--foreground)' }}>{cat?.label}: </span>
                               <span style={{ fontSize: 'var(--text-caption)', color: 'var(--muted-foreground)' }}>{note}</span>
