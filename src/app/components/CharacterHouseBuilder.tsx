@@ -9,7 +9,9 @@ import {
   Home,
   Layers3,
   Minus,
+  Paintbrush,
   Plus,
+  Scan,
   Sparkles,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -18,8 +20,20 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Progress } from './ui/progress';
 
 export type HomeType = 'house' | 'villa' | 'townhouse' | 'apartment' | 'duplex' | 'penthouse';
-type InteriorStyle = 'warm-modern' | 'ethiopian-heritage' | 'peaceful-minimalist';
+export type InteriorStyle = 'warm-modern' | 'ethiopian-heritage' | 'peaceful-minimalist';
 type ViewerMode = 'current' | 'blueprint';
+type SceneView = 'house' | 'room';
+
+export interface HouseFinishes {
+  wallPaint: string;
+  sofaFabric: string;
+  livingAccent: string;
+  diningWood: string;
+  kitchenCabinet: string;
+  bathroomTile: string;
+  masterBedding: string;
+  guestBedding: string;
+}
 
 interface HomeDefinition {
   id: HomeType;
@@ -40,6 +54,7 @@ interface HouseConfig {
   interiorStyle: InteriorStyle;
   homeName: string;
   completedDays: number;
+  finishes: HouseFinishes;
   lastBlockDate?: string;
 }
 
@@ -68,6 +83,19 @@ const INTERIOR_STYLES: Array<{ id: InteriorStyle; name: string; colors: string[]
   { id: 'peaceful-minimalist', name: 'Peaceful Minimalist', colors: ['#eeeae2', '#c8c2b7', '#8f9692', '#4d5b58'] },
 ];
 
+export const FINISH_PRESETS: Record<InteriorStyle, HouseFinishes> = {
+  'warm-modern': { wallPaint: '#fff8e9', sofaFabric: '#9b5960', livingAccent: '#d3a65f', diningWood: '#87532f', kitchenCabinet: '#72836d', bathroomTile: '#c9e0df', masterBedding: '#b87979', guestBedding: '#7c8e73' },
+  'ethiopian-heritage': { wallPaint: '#fff1d2', sofaFabric: '#9d4432', livingAccent: '#d9a227', diningWood: '#6e3b22', kitchenCabinet: '#a85a31', bathroomTile: '#d8c0a0', masterBedding: '#b64a35', guestBedding: '#d4a43b' },
+  'peaceful-minimalist': { wallPaint: '#f3f0e8', sofaFabric: '#788580', livingAccent: '#b7ab98', diningWood: '#817563', kitchenCabinet: '#a5aaa2', bathroomTile: '#dce5e2', masterBedding: '#8b9791', guestBedding: '#b1a99d' },
+};
+
+const FINISH_FIELDS: Array<{ key: keyof HouseFinishes; label: string }> = [
+  { key: 'wallPaint', label: 'Wall paint' }, { key: 'sofaFabric', label: 'Sofas' },
+  { key: 'livingAccent', label: 'Living room' }, { key: 'diningWood', label: 'Dining table' },
+  { key: 'kitchenCabinet', label: 'Kitchen' }, { key: 'bathroomTile', label: 'Bathroom' },
+  { key: 'masterBedding', label: 'Master bedroom' }, { key: 'guestBedding', label: 'Guest room' },
+];
+
 const STAGES = [
   { end: 40, name: 'Foundation', verse: 'Psalm 127:1' },
   { end: 70, name: 'Floors', verse: 'Luke 6:48' },
@@ -91,6 +119,7 @@ const DEFAULT_CONFIG: HouseConfig = {
   interiorStyle: 'warm-modern',
   homeName: 'House of Grace',
   completedDays: 14,
+  finishes: FINISH_PRESETS['warm-modern'],
 };
 
 export function clampToRange(value: number, range: [number, number]) {
@@ -108,13 +137,14 @@ export function createFloorRooms(config: Pick<HouseConfig, 'floors' | 'bedrooms'
   const add = (floor: number, room: Room) => floors[Math.min(floors.length - 1, floor)].push(room);
 
   add(0, { id: 'living', name: 'Living Room', meaning: 'Fellowship and communication', kind: 'living', span: 2 });
+  add(0, { id: 'dining', name: 'Dining Room', meaning: 'Gratitude and hospitality', kind: 'living' });
   add(0, { id: 'kitchen', name: 'Kitchen', meaning: 'Service and daily provision', kind: 'service' });
   add(0, { id: 'prayer', name: config.homeType === 'apartment' ? 'Prayer Corner' : 'Prayer Room', meaning: 'Worship and dependence on God', kind: 'faith' });
   if (config.homeType !== 'apartment') add(0, { id: 'entry', name: 'Welcome', meaning: 'Hospitality and openness', kind: 'outdoor' });
 
   for (let index = 0; index < config.bedrooms; index += 1) {
     const floor = config.floors === 1 ? 0 : 1 + (index % (config.floors - 1));
-    add(floor, { id: `bed-${index}`, name: index === 0 ? 'Primary Bedroom' : `Bedroom ${index + 1}`, meaning: 'Trust, rest, and care', kind: 'bedroom' });
+    add(floor, { id: `bed-${index}`, name: index === 0 ? 'Master Bedroom' : index === 1 ? 'Guest Room' : `Bedroom ${index + 1}`, meaning: 'Trust, rest, and care', kind: 'bedroom' });
   }
   for (let index = 0; index < config.bathrooms; index += 1) {
     const floor = index % config.floors;
@@ -138,7 +168,7 @@ function loadConfig(): HouseConfig {
   try {
     const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
     if (!parsed || !HOME_DEFINITIONS.some(home => home.id === parsed.homeType)) return DEFAULT_CONFIG;
-    return { ...DEFAULT_CONFIG, ...parsed, completedDays: clampToRange(Number(parsed.completedDays) || 0, [0, 365]) };
+    return { ...DEFAULT_CONFIG, ...parsed, finishes: { ...DEFAULT_CONFIG.finishes, ...(parsed.finishes || {}) }, completedDays: clampToRange(Number(parsed.completedDays) || 0, [0, 365]) };
   } catch {
     return DEFAULT_CONFIG;
   }
@@ -180,6 +210,7 @@ export function CharacterHouseBuilder({ onBack }: { onBack: () => void }) {
   const [floor, setFloor] = useState(() => Math.max(0, loadConfig().floors - 1));
   const [showRoof, setShowRoof] = useState(false);
   const [mode, setMode] = useState<ViewerMode>('blueprint');
+  const [sceneView, setSceneView] = useState<SceneView>('house');
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const selectedHome = HOME_DEFINITIONS.find(home => home.id === config.homeType) || HOME_DEFINITIONS[0];
   const floors = useMemo(() => createFloorRooms(config), [config]);
@@ -199,6 +230,7 @@ export function CharacterHouseBuilder({ onBack }: { onBack: () => void }) {
     setConfig(current => ({ ...current, homeType: home.id, ...home.defaults }));
     setFloor(home.defaults.floors - 1);
     setSelectedRoom(null);
+    setSceneView('house');
   };
 
   const placeBlock = () => {
@@ -236,7 +268,11 @@ export function CharacterHouseBuilder({ onBack }: { onBack: () => void }) {
             <Counter label="Bedrooms" icon={BedDouble} value={config.bedrooms} range={selectedHome.bedroomRange} onChange={value => setConfig(current => ({ ...current, bedrooms: value }))} />
             <Counter label="Bathrooms" icon={Bath} value={config.bathrooms} range={selectedHome.bathroomRange} onChange={value => setConfig(current => ({ ...current, bathrooms: value }))} />
           </div>
-          <div><p className="mb-2 text-sm font-black text-stone-800">Interior design</p><div className="grid gap-2 sm:grid-cols-3">{INTERIOR_STYLES.map(style => <button key={style.id} type="button" onClick={() => setConfig(current => ({ ...current, interiorStyle: style.id }))} className={`rounded-2xl border p-3 text-left ${config.interiorStyle === style.id ? 'border-amber-500 bg-amber-50 ring-2 ring-amber-200' : 'border-stone-200'}`}><div className="mb-2 flex gap-1">{style.colors.map(color => <span key={color} className="h-6 flex-1 rounded-md" style={{ backgroundColor: color }} />)}</div><span className="text-xs font-bold text-stone-800">{style.name}</span></button>)}</div></div>
+          <div><p className="mb-2 text-sm font-black text-stone-800">Interior design</p><div className="grid gap-2 sm:grid-cols-3">{INTERIOR_STYLES.map(style => <button key={style.id} type="button" onClick={() => setConfig(current => ({ ...current, interiorStyle: style.id, finishes: FINISH_PRESETS[style.id] }))} className={`rounded-2xl border p-3 text-left ${config.interiorStyle === style.id ? 'border-amber-500 bg-amber-50 ring-2 ring-amber-200' : 'border-stone-200'}`}><div className="mb-2 flex gap-1">{style.colors.map(color => <span key={color} className="h-6 flex-1 rounded-md" style={{ backgroundColor: color }} />)}</div><span className="text-xs font-bold text-stone-800">{style.name}</span></button>)}</div></div>
+          <div className="rounded-2xl border border-stone-200 bg-stone-50/75 p-4">
+            <p className="mb-3 flex items-center gap-2 text-sm font-black text-stone-800"><Paintbrush className="h-4 w-4 text-rose-700" /> Customize colors</p>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{FINISH_FIELDS.map(field => <label key={field.key} className="flex cursor-pointer items-center gap-2 rounded-xl border border-stone-200 bg-white p-2.5 shadow-sm"><input type="color" value={config.finishes[field.key]} onChange={event => setConfig(current => ({ ...current, finishes: { ...current.finishes, [field.key]: event.target.value } }))} className="h-9 w-9 cursor-pointer rounded-lg border-0 bg-transparent p-0" aria-label={`${field.label} color`} /><span className="text-[11px] font-bold leading-tight text-stone-700">{field.label}</span></label>)}</div>
+          </div>
         </CardContent>
       </Card>
 
@@ -248,7 +284,7 @@ export function CharacterHouseBuilder({ onBack }: { onBack: () => void }) {
         <CardContent className="space-y-4 p-4 sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-1 rounded-xl border border-stone-200 bg-stone-50 p-1">{floors.map((_, index) => <button key={index} type="button" onClick={() => { setFloor(index); setSelectedRoom(null); }} className={`rounded-lg px-3 py-2 text-xs font-bold ${floor === index ? 'bg-stone-800 text-white shadow' : 'text-stone-600'}`}>{index === floors.length - 1 && floors.length > 1 ? `All ${floors.length} floors` : `Through floor ${index + 1}`}</button>)}</div>
-            <Button type="button" variant="outline" className="h-10 rounded-xl bg-white text-xs font-bold" onClick={() => setShowRoof(value => !value)}>{showRoof ? 'Remove roof' : 'Show roof'}</Button>
+            <div className="flex gap-1"><Button type="button" variant="outline" className="h-10 rounded-xl bg-white text-xs font-bold" onClick={() => { setSceneView('house'); setSelectedRoom(null); }}><Home className="mr-1.5 h-4 w-4" /> Full house</Button><Button type="button" variant="outline" disabled={!selectedRoom} className="h-10 rounded-xl bg-white text-xs font-bold" onClick={() => setSceneView('room')}><Scan className="mr-1.5 h-4 w-4" /> Room detail</Button><Button type="button" variant="outline" className="h-10 rounded-xl bg-white text-xs font-bold" onClick={() => setShowRoof(value => !value)}>{showRoof ? 'Remove roof' : 'Show roof'}</Button></div>
           </div>
           <Suspense fallback={<div className="grid h-[34rem] place-items-center rounded-[2rem] bg-stone-100 text-sm font-semibold text-stone-500">Preparing the 3D house…</div>}>
             <CharacterHouse3D
@@ -258,11 +294,13 @@ export function CharacterHouseBuilder({ onBack }: { onBack: () => void }) {
               interiorStyle={config.interiorStyle}
               reveal={reveal}
               showRoof={showRoof}
+              finishes={config.finishes}
+              viewMode={sceneView}
               selectedRoom={selectedRoom?.id}
-              onRoomSelect={setSelectedRoom}
+              onRoomSelect={(room) => { setSelectedRoom(room); if (sceneView === 'room') setSceneView('room'); }}
             />
           </Suspense>
-          {selectedRoom && <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-amber-700 shadow-sm"><Sparkles className="h-5 w-5" /></span><div><p className="font-black text-stone-900">{selectedRoom.name}</p><p className="text-sm text-stone-600">{selectedRoom.meaning}</p></div></div>}
+          {selectedRoom && <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-amber-700 shadow-sm"><Sparkles className="h-5 w-5" /></span><div className="min-w-0 flex-1"><p className="font-black text-stone-900">{selectedRoom.name}</p><p className="text-sm text-stone-600">{selectedRoom.meaning}</p></div><Button type="button" size="sm" onClick={() => setSceneView('room')} className="rounded-xl bg-amber-700 hover:bg-amber-800"><Scan className="mr-1.5 h-4 w-4" /> View room details</Button></div>}
           <Button type="button" onClick={placeBlock} disabled={alreadyPlacedToday || config.completedDays >= 365} className="h-14 w-full rounded-2xl bg-gradient-to-r from-rose-700 to-amber-700 text-base font-black text-white shadow-lg shadow-rose-900/15 hover:from-rose-800 hover:to-amber-800">
             {config.completedDays >= 365 ? <><Check className="mr-2 h-5 w-5" /> House completed</> : alreadyPlacedToday ? <><Check className="mr-2 h-5 w-5" /> Today’s block is placed</> : <><Hammer className="mr-2 h-5 w-5" /> Place Today’s Block</>}
           </Button>

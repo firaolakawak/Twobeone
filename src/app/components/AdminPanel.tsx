@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import {
   BookOpen,
   BellRing,
+  Blocks,
   ClipboardList,
   GraduationCap,
   Home,
@@ -32,6 +33,8 @@ import { Sidebar, type SidebarItem } from "./admin/dashboard/Sidebar";
 import { ContentLanguageProvider } from "../contexts/ContentLanguageContext";
 import "../styles/dashboard.css";
 
+const CharacterHouseAdminPreview = lazy(() => import("./admin/CharacterHouseAdminPreview").then((module) => ({ default: module.CharacterHouseAdminPreview })));
+
 interface AdminPanelProps {
   onSignOut: () => void;
   accessToken?: string;
@@ -48,6 +51,7 @@ const sections: SidebarItem[] = [
   { id: "pushNotifications", label: "Push Notifications", icon: BellRing },
   { id: "shabbatShalom", label: "Shabbat Shalom", icon: Mail },
   { id: "landingPage", label: "Landing Page", icon: Home },
+  { id: "characterHouse", label: "Character House", icon: Blocks },
   { id: "privileges", label: "Privileges", icon: ShieldCheck },
   { id: "auditLog", label: "Audit Log", icon: ClipboardList },
   { id: "accountRecovery", label: "Account Recovery", icon: ShieldAlert },
@@ -82,6 +86,7 @@ export function AdminPanel({ onSignOut, accessToken, onBackToHome }: AdminPanelP
             {activeSection === "pushNotifications" && <PushNotificationsManager accessToken={accessToken} />}
             {activeSection === "shabbatShalom" && <ShabbatShalomConsole accessToken={accessToken} />}
             {activeSection === "landingPage" && <LandingPageManager accessToken={accessToken} />}
+            {activeSection === "characterHouse" && <Suspense fallback={<div className="admin-panel">Loading 3D game studio…</div>}><CharacterHouseAdminPreview /></Suspense>}
             {activeSection === "privileges" && <PrivilegeManager accessToken={accessToken} />}
             {activeSection === "auditLog" && <AuditLog accessToken={accessToken || ""} />}
             {activeSection === "accountRecovery" && <AccountRecovery accessToken={accessToken} />}

@@ -34,6 +34,9 @@ describe('CharacterHouseBuilder helpers', () => {
     expect(rooms.filter(room => room.id.startsWith('bed-'))).toHaveLength(5);
     expect(rooms.filter(room => room.id.startsWith('bath-'))).toHaveLength(4);
     expect(rooms.some(room => room.name === 'Prayer Room')).toBe(true);
+    expect(rooms.some(room => room.name === 'Dining Room')).toBe(true);
+    expect(rooms.some(room => room.name === 'Master Bedroom')).toBe(true);
+    expect(rooms.some(room => room.name === 'Guest Room')).toBe(true);
   });
 
   it('uses a prayer corner for an apartment floor plan', () => {
@@ -41,4 +44,3 @@ describe('CharacterHouseBuilder helpers', () => {
     expect(rooms.some(room => room.name === 'Prayer Corner')).toBe(true);
   });
 });
-
