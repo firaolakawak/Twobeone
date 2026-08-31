@@ -1,6 +1,7 @@
 import { ContactShadows, Html, OrbitControls, RoundedBox } from '@react-three/drei';
 import { Canvas, useThree } from '@react-three/fiber';
 import { Suspense, useEffect, useMemo, useState } from 'react';
+import * as THREE from 'three';
 import type { HomeType, HouseFinishes, InteriorStyle, Room } from './CharacterHouseBuilder';
 
 interface CharacterHouse3DProps {
@@ -56,6 +57,80 @@ function roomPlacement(index: number, count: number, width: number, depth: numbe
 
 function Box({ position, args, color, rotation, opacity = 1, metalness = 0, roughness = .72 }: { position: [number, number, number]; args: [number, number, number]; color: string; rotation?: [number, number, number]; opacity?: number; metalness?: number; roughness?: number }) {
   return <mesh position={position} rotation={rotation} castShadow receiveShadow><boxGeometry args={args} /><meshStandardMaterial color={color} transparent={opacity < 1} opacity={opacity} metalness={metalness} roughness={roughness} /></mesh>;
+}
+
+function SoilGround({ width, depth, landscaped }: { width: number; depth: number; landscaped: boolean }) {
+  const size = 72;
+  const holeWidth = width + 3.1;
+  const holeDepth = depth + 3.1;
+  const sideWidth = (size - holeWidth) / 2;
+  const endDepth = (size - holeDepth) / 2;
+  const soilDetails = useMemo(() => Array.from({ length: 54 }, (_, index) => {
+    const angle = index * 2.399963;
+    const radius = 8.5 + ((index * 7) % 25) * .82;
+    return {
+      x: Math.cos(angle) * radius,
+      z: Math.sin(angle) * radius,
+      scale: .12 + (index % 5) * .045,
+      color: ['#6f4528', '#8a5933', '#a16b3d', '#5e3d28'][index % 4],
+    };
+  }), []);
+  const soilColor = landscaped ? '#69503b' : '#745039';
+  return <group>
+    {/* Four soil masses leave a genuine recessed excavation around the foundation. */}
+    <Box position={[-(holeWidth + sideWidth) / 2, -.51, 0]} args={[sideWidth, .74, size]} color={soilColor} roughness={1} />
+    <Box position={[(holeWidth + sideWidth) / 2, -.51, 0]} args={[sideWidth, .74, size]} color={soilColor} roughness={1} />
+    <Box position={[0, -.51, -(holeDepth + endDepth) / 2]} args={[holeWidth, .74, endDepth]} color={soilColor} roughness={1} />
+    <Box position={[0, -.51, (holeDepth + endDepth) / 2]} args={[holeWidth, .74, endDepth]} color={soilColor} roughness={1} />
+    <Box position={[0, -1.04, 0]} args={[holeWidth, .16, holeDepth]} color="#4a3022" roughness={1} />
+    <Box position={[0, -.94, 0]} args={[width + 1.45, .12, depth + 1.45]} color="#807367" roughness={1} />
+    {soilDetails.map((detail, index) => {
+      if (Math.abs(detail.x) < holeWidth / 2 + .4 && Math.abs(detail.z) < holeDepth / 2 + .4) return null;
+      return <mesh key={index} position={[detail.x, -.115 + detail.scale * .2, detail.z]} rotation={[index * .31, index * .73, index * .17]} castShadow receiveShadow>
+        <dodecahedronGeometry args={[detail.scale, 0]} />
+        <meshStandardMaterial color={detail.color} roughness={1} />
+      </mesh>;
+    })}
+    {!landscaped && [
+      [-holeWidth / 2 - .8, -holeDepth / 2 - .45, 1.5, .55],
+      [holeWidth / 2 + .85, holeDepth / 2 - .2, 1.8, .7],
+      [-holeWidth / 2 - 1.1, holeDepth / 2 + .1, 1.25, .48],
+    ].map(([x, z, sx, sz], index) => <group key={index} position={[x, 0, z]} rotation={[0, index * .6, 0]}>
+      <mesh position={[0, -.1, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={[sx * 1.18, sz * 1.35, 1]} receiveShadow><circleGeometry args={[1, 28]} /><meshStandardMaterial color="#5d3b28" roughness={1} /></mesh>
+      <mesh position={[0, .02, 0]} scale={[sx, .34, sz]} castShadow receiveShadow><sphereGeometry args={[1, 24, 12]} /><meshStandardMaterial color={index === 1 ? '#9a6339' : '#855331'} roughness={1} /></mesh>
+    </group>)}
+  </group>;
+}
+
+function ConcreteFoundation({ width, depth }: { width: number; depth: number }) {
+  const concrete = '#8d8a80';
+  const freshConcrete = '#aaa79c';
+  const steel = '#4c4037';
+  const rebarPoints: Array<[number, number]> = [
+    [-width / 2, -depth / 2], [0, -depth / 2], [width / 2, -depth / 2],
+    [-width / 2, 0], [width / 2, 0],
+    [-width / 2, depth / 2], [0, depth / 2], [width / 2, depth / 2],
+  ];
+  return <group>
+    {/* Wide strip footings sit on compacted gravel below grade. */}
+    <Box position={[0, -.78, -depth / 2]} args={[width + 1.25, .34, .9]} color={concrete} roughness={.98} />
+    <Box position={[0, -.78, depth / 2]} args={[width + 1.25, .34, .9]} color={concrete} roughness={.98} />
+    <Box position={[-width / 2, -.78, 0]} args={[.9, .34, depth]} color={concrete} roughness={.98} />
+    <Box position={[width / 2, -.78, 0]} args={[.9, .34, depth]} color={concrete} roughness={.98} />
+    {/* Reinforced concrete stem walls rise through the excavated soil. */}
+    <Box position={[0, -.39, -depth / 2]} args={[width + .35, .72, .3]} color={freshConcrete} roughness={.94} />
+    <Box position={[0, -.39, depth / 2]} args={[width + .35, .72, .3]} color={freshConcrete} roughness={.94} />
+    <Box position={[-width / 2, -.39, 0]} args={[.3, .72, depth]} color={freshConcrete} roughness={.94} />
+    <Box position={[width / 2, -.39, 0]} args={[.3, .72, depth]} color={freshConcrete} roughness={.94} />
+    <Box position={[0, -.025, 0]} args={[width, .25, depth]} color="#aaa89f" roughness={.96} />
+    {/* Saw-cut control joints break up the slab's otherwise flat appearance. */}
+    <Box position={[0, .105, 0]} args={[.025, .012, depth - .3]} color="#6f6d67" roughness={1} />
+    <Box position={[0, .106, 0]} args={[width - .3, .012, .025]} color="#6f6d67" roughness={1} />
+    {rebarPoints.map(([x, z], index) => <group key={index} position={[x, 0, z]}>
+      <mesh position={[-.07, .35, 0]} castShadow><cylinderGeometry args={[.022, .022, .72, 10]} /><meshStandardMaterial color={steel} metalness={.62} roughness={.56} /></mesh>
+      <mesh position={[.07, .35, 0]} castShadow><cylinderGeometry args={[.022, .022, .72, 10]} /><meshStandardMaterial color={steel} metalness={.62} roughness={.56} /></mesh>
+    </group>)}
+  </group>;
 }
 
 function Glass({ position, args, rotation }: { position: [number, number, number]; args: [number, number, number]; rotation?: [number, number, number] }) {
@@ -170,7 +245,7 @@ function HouseScene(props: CharacterHouse3DProps) {
   const showSlabs = reveal > .1, showFrame = reveal > .28, showWalls = reveal > .4, showWindows = reveal > .54, showFurniture = reveal > .68, showGarden = reveal > .88;
   const detailMode = props.viewMode === 'room' && Boolean(selectedRoom);
   return <group>
-    <Box position={[0, -.35, 0]} args={[width + 1, .7, depth + 1]} color="#b7aa98" />
+    <ConcreteFoundation width={width} depth={depth} />
     {showSlabs && floors.slice(0, visibleFloorCount).map((rooms, floorIndex) => {
       const y = floorIndex * floorHeight;
       return <group key={floorIndex}>
@@ -207,10 +282,10 @@ export function CharacterHouse3D(props: CharacterHouse3DProps) {
   const initialCamera = useMemo<[number, number, number]>(() => [dimensions.width * .85, Math.max(8, props.floors.length * 4.4), dimensions.width * 1.05], [dimensions.width, props.floors.length]);
   if (canvasError) return <div className="grid min-h-[32rem] place-items-center rounded-[2rem] bg-stone-100 p-8 text-center text-sm text-stone-600">This device could not start the 3D viewer. Please enable WebGL or try a current browser.</div>;
   return <div className="relative h-[38rem] overflow-hidden rounded-[2rem] border border-emerald-900/10 bg-gradient-to-b from-cyan-50 to-emerald-100 shadow-inner">
-    <Canvas shadows dpr={[1, 1.65]} camera={{ position: initialCamera, fov: props.viewMode === 'room' ? 32 : 38, near: .1, far: 140 }} gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }} onCreated={({ gl }) => { gl.domElement.setAttribute('aria-label', 'Detailed interactive 3D cutaway house. Drag to rotate, scroll or pinch to zoom, and tap a room.'); gl.domElement.addEventListener('webglcontextlost', () => setCanvasError(true), { once: true }); }}>
-      <color attach="background" args={['#dff5f2']} /><fog attach="fog" args={['#dff5f2', 32, 68]} />
-      <ambientLight intensity={.9} /><hemisphereLight args={['#fff8df', '#3d7338', 1.45]} /><directionalLight position={[12, 20, 14]} intensity={2.5} castShadow shadow-mapSize={[2048, 2048]} shadow-camera-far={60} />
-      <Suspense fallback={null}><HouseScene {...props} /><mesh position={[0, -.75, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow><planeGeometry args={[80, 80]} /><meshStandardMaterial color="#3d8a36" roughness={1} /></mesh><ContactShadows position={[0, -.7, 0]} opacity={.42} scale={32} blur={2.5} far={18} /></Suspense>
+    <Canvas shadows dpr={[1, 1.65]} camera={{ position: initialCamera, fov: props.viewMode === 'room' ? 32 : 38, near: .1, far: 140 }} gl={{ antialias: true, alpha: true, powerPreference: 'high-performance', toneMapping: THREE.ACESFilmicToneMapping }} onCreated={({ gl }) => { gl.toneMappingExposure = 1.08; gl.shadowMap.type = THREE.PCFSoftShadowMap; gl.domElement.setAttribute('aria-label', 'Detailed interactive 3D cutaway house. Drag to rotate, scroll or pinch to zoom, and tap a room.'); gl.domElement.addEventListener('webglcontextlost', () => setCanvasError(true), { once: true }); }}>
+      <color attach="background" args={['#cdd9d5']} /><fog attach="fog" args={['#cdd9d5', 38, 76]} />
+      <ambientLight intensity={.48} /><hemisphereLight args={['#fff4da', '#493426', 1.15]} /><directionalLight position={[13, 19, 9]} intensity={3.1} color="#fff1d6" castShadow shadow-mapSize={[2048, 2048]} shadow-camera-near={1} shadow-camera-far={55} shadow-camera-left={-22} shadow-camera-right={22} shadow-camera-top={22} shadow-camera-bottom={-22} shadow-bias={-.00035} /><directionalLight position={[-10, 8, -12]} intensity={.55} color="#9dc5d0" />
+      <Suspense fallback={null}><SoilGround width={dimensions.width} depth={dimensions.depth} landscaped={props.reveal > .88} /><HouseScene {...props} /><ContactShadows position={[0, -.92, 0]} opacity={.5} scale={34} blur={2.15} far={20} color="#24170f" /></Suspense>
       <CameraControls props={props} width={dimensions.width} depth={dimensions.depth} />
     </Canvas>
     <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-stone-950/78 px-3 py-1.5 text-[11px] font-semibold text-white backdrop-blur">{props.viewMode === 'room' ? 'Room detail · Drag to inspect · Pinch to zoom' : 'Full house · Drag to orbit · Tap a room'}</div>
