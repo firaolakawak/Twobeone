@@ -554,6 +554,116 @@ app.post('/make-server-6d579fee/profile/link-by-code', async (c) => {
   }
 });
 
+// ============================================
+// CHARACTER HOUSE — MUTUAL BLUEPRINT APPROVAL
+// ============================================
+
+const characterHouseKey = (profile: any, userId: string) =>
+  `character-house:${profile.coupleId || [userId, profile.partnerId].sort().join(':')}`;
+
+const sanitizeHouseBlueprint = (value: any) => {
+  const homeTypes = ['house', 'villa', 'townhouse', 'apartment', 'duplex', 'penthouse'];
+  const interiorStyles = ['warm-modern', 'ethiopian-heritage', 'peaceful-minimalist'];
+  const cleanColor = (color: unknown, fallback: string) => /^#[0-9a-f]{6}$/i.test(String(color || '')) ? String(color) : fallback;
+  const finishes = value?.finishes || {};
+  return {
+    homeType: homeTypes.includes(value?.homeType) ? value.homeType : 'house',
+    floors: Math.max(1, Math.min(3, Math.floor(Number(value?.floors) || 1))),
+    bedrooms: Math.max(1, Math.min(7, Math.floor(Number(value?.bedrooms) || 1))),
+    bathrooms: Math.max(1, Math.min(6, Math.floor(Number(value?.bathrooms) || 1))),
+    interiorStyle: interiorStyles.includes(value?.interiorStyle) ? value.interiorStyle : 'warm-modern',
+    homeName: String(value?.homeName || 'Our Covenant Home').trim().slice(0, 48),
+    finishes: {
+      wallPaint: cleanColor(finishes.wallPaint, '#fff8e9'),
+      sofaFabric: cleanColor(finishes.sofaFabric, '#9b5960'),
+      livingAccent: cleanColor(finishes.livingAccent, '#d3a65f'),
+      diningWood: cleanColor(finishes.diningWood, '#87532f'),
+      kitchenCabinet: cleanColor(finishes.kitchenCabinet, '#72836d'),
+      bathroomTile: cleanColor(finishes.bathroomTile, '#c9e0df'),
+      masterBedding: cleanColor(finishes.masterBedding, '#b87979'),
+      guestBedding: cleanColor(finishes.guestBedding, '#7c8e73'),
+    },
+  };
+};
+
+app.get('/make-server-6d579fee/character-house', async (c) => {
+  try {
+    const userId = await getUserFromToken(c.req.header('Authorization'));
+    if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+    const profile = await kv.get(`user:${userId}`);
+    if (!profile?.partnerId) return c.json({ blueprint: null });
+    const blueprint = await kv.get(characterHouseKey(profile, userId));
+    return c.json({ blueprint: blueprint || null });
+  } catch (error: any) {
+    return c.json({ error: error.message || 'Failed to load the shared blueprint' }, 500);
+  }
+});
+
+app.post('/make-server-6d579fee/character-house/submit', async (c) => {
+  try {
+    const userId = await getUserFromToken(c.req.header('Authorization'));
+    if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+    const profile = await kv.get(`user:${userId}`);
+    if (!profile?.partnerId) return c.json({ error: 'Connect with your partner before submitting a blueprint.' }, 409);
+    const partner = await kv.get(`user:${profile.partnerId}`);
+    if (!partner || partner.partnerId !== userId) return c.json({ error: 'Your partner connection could not be verified.' }, 409);
+
+    const key = characterHouseKey(profile, userId);
+    const existing = await kv.get(key);
+    if (existing?.blueprintStatus === 'active') return c.json({ error: 'This couple already has an active Character House challenge.' }, 409);
+    if (existing?.blueprintStatus === 'pending') return c.json({ error: 'A blueprint is already waiting for partner approval.' }, 409);
+
+    const body = await c.req.json();
+    const now = new Date().toISOString();
+    const blueprint = {
+      ...sanitizeHouseBlueprint(body?.blueprint),
+      blueprintStatus: 'pending',
+      completedDays: 0,
+      submittedBy: userId,
+      submittedByName: profile.name || 'Your partner',
+      blueprintSubmittedAt: now,
+      approvedBy: null,
+      challengeStartedAt: null,
+      lastBlockDate: null,
+    };
+    await kv.set(key, blueprint);
+    return c.json({ success: true, blueprint });
+  } catch (error: any) {
+    return c.json({ error: error.message || 'Failed to submit the blueprint' }, 500);
+  }
+});
+
+app.post('/make-server-6d579fee/character-house/approve', async (c) => {
+  try {
+    const userId = await getUserFromToken(c.req.header('Authorization'));
+    if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+    const profile = await kv.get(`user:${userId}`);
+    if (!profile?.partnerId) return c.json({ error: 'Connect with your partner before approving a blueprint.' }, 409);
+
+    const key = characterHouseKey(profile, userId);
+    const blueprint = await kv.get(key);
+    if (!blueprint || blueprint.blueprintStatus !== 'pending') return c.json({ error: 'There is no blueprint waiting for approval.' }, 409);
+    if (blueprint.submittedBy === userId) return c.json({ error: 'The partner who submitted the blueprint cannot approve it.' }, 403);
+    if (blueprint.submittedBy !== profile.partnerId) return c.json({ error: 'This blueprint was not submitted by your linked partner.' }, 403);
+
+    const startedAt = new Date().toISOString();
+    const activeBlueprint = {
+      ...blueprint,
+      blueprintStatus: 'active',
+      approvedBy: userId,
+      approvedByName: profile.name || 'Partner',
+      blueprintApprovedAt: startedAt,
+      challengeStartedAt: startedAt,
+      completedDays: 0,
+      lastBlockDate: null,
+    };
+    await kv.set(key, activeBlueprint);
+    return c.json({ success: true, blueprint: activeBlueprint });
+  } catch (error: any) {
+    return c.json({ error: error.message || 'Failed to approve the blueprint' }, 500);
+  }
+});
+
 // Request partner disconnect (requires mutual agreement + 30-day grace period)
 app.post('/make-server-6d579fee/partner/request-disconnect', async (c) => {
   try {

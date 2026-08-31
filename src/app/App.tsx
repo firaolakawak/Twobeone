@@ -1700,6 +1700,9 @@ export default function App() {
                 selectedScreen === "character-house" && (
                   <CharacterHouseBuilder
                     onBack={() => setSelectedScreen("dashboard")}
+                    currentUserId={profile?.id || user.id}
+                    partnerId={partner?.id}
+                    partnerName={partner?.name}
                   />
                 )}
 

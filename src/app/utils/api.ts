@@ -715,6 +715,23 @@ export const partnerApi = {
   },
 };
 
+// Shared Character House blueprint and two-partner approval workflow
+export const characterHouse = {
+  get: async () =>
+    apiCall<{ blueprint: any | null }>('/character-house', {}, 2, 20000),
+
+  submit: async (blueprint: any) =>
+    apiCall<{ success: boolean; blueprint: any }>('/character-house/submit', {
+      method: 'POST',
+      body: JSON.stringify({ blueprint }),
+    }),
+
+  approve: async () =>
+    apiCall<{ success: boolean; blueprint: any }>('/character-house/approve', {
+      method: 'POST',
+    }),
+};
+
 // ── Overall (General) Compatibility ─────────────────────────────────────────
 
 export const marriageReadiness = {
@@ -759,6 +776,7 @@ export const api = {
   engagement,
   health,
   partner: partnerApi,
+  characterHouse,
   marriageReadiness,
   compatibility,
 };

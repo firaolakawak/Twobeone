@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ArrowLeft,
   Bath,
@@ -6,6 +6,7 @@ import {
   Building2,
   Check,
   CalendarDays,
+  Clock3,
   Hammer,
   HeartHandshake,
   Home,
@@ -13,7 +14,9 @@ import {
   Minus,
   Paintbrush,
   Plus,
+  RefreshCw,
   Scan,
+  ShieldCheck,
   Sparkles,
   LockKeyhole,
 } from 'lucide-react';
@@ -22,6 +25,7 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Progress } from './ui/progress';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './ui/alert-dialog';
+import api from '../utils/api';
 
 export type HomeType = 'house' | 'villa' | 'townhouse' | 'apartment' | 'duplex' | 'penthouse';
 export type InteriorStyle = 'warm-modern' | 'ethiopian-heritage' | 'peaceful-minimalist';
@@ -60,9 +64,14 @@ interface HouseConfig {
   completedDays: number;
   finishes: HouseFinishes;
   lastBlockDate?: string;
-  blueprintStatus: 'draft' | 'active';
+  blueprintStatus: 'draft' | 'pending' | 'active';
   blueprintSubmittedAt?: string;
+  blueprintApprovedAt?: string;
   challengeStartedAt?: string;
+  submittedBy?: string;
+  submittedByName?: string;
+  approvedBy?: string;
+  approvedByName?: string;
 }
 
 export interface Room {
@@ -131,7 +140,7 @@ const DEFAULT_CONFIG: HouseConfig = {
 };
 
 const DAILY_CHALLENGES = [
-  { title: 'Place God at the Center', scripture: 'Psalm 127:1', action: 'Read the verse together and agree on one daily time when you will pray for your home.' },
+  { title: 'Excavate and Lay the Foundation', scripture: 'Psalm 127:1', action: 'Read the verse together, pray over the home you are building, and agree that Godâ€™s Word will be the foundation of your relationship.' },
   { title: 'Build on God’s Word', scripture: 'Matthew 7:24–25', action: 'Choose one biblical value that you want this home and relationship to demonstrate.' },
   { title: 'Speak with Grace', scripture: 'Colossians 4:6', action: 'Give your partner one sincere, specific word of encouragement.' },
   { title: 'Listen Before Speaking', scripture: 'James 1:19', action: 'Give each partner three uninterrupted minutes to share about their day.' },
@@ -142,6 +151,10 @@ const DAILY_CHALLENGES = [
 
 export function isBlueprintNameReady(name: string) {
   return name.trim().length >= 3;
+}
+
+export function canUserApproveBlueprint(status: HouseConfig['blueprintStatus'], submittedBy: string | undefined, currentUserId: string | undefined, partnerId: string | undefined) {
+  return status === 'pending' && Boolean(submittedBy && currentUserId && partnerId && submittedBy === partnerId && submittedBy !== currentUserId);
 }
 
 export function clampToRange(value: number, range: [number, number]) {
@@ -186,17 +199,23 @@ function todayKey() {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 }
 
+function normalizeConfig(parsed: any): HouseConfig {
+  if (!parsed || !HOME_DEFINITIONS.some(home => home.id === parsed.homeType)) return DEFAULT_CONFIG;
+  const mutuallyApproved = Boolean(parsed.submittedBy && parsed.approvedBy && parsed.submittedBy !== parsed.approvedBy);
+  const blueprintStatus = parsed.blueprintStatus === 'active' && mutuallyApproved ? 'active' : parsed.blueprintStatus === 'pending' && parsed.submittedBy ? 'pending' : 'draft';
+  return {
+    ...DEFAULT_CONFIG,
+    ...parsed,
+    blueprintStatus,
+    finishes: { ...DEFAULT_CONFIG.finishes, ...(parsed.finishes || {}) },
+    completedDays: clampToRange(Number(parsed.completedDays) || 0, [0, 365]),
+  };
+}
+
 function loadConfig(): HouseConfig {
   try {
     const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-    if (!parsed || !HOME_DEFINITIONS.some(home => home.id === parsed.homeType)) return DEFAULT_CONFIG;
-    return {
-      ...DEFAULT_CONFIG,
-      ...parsed,
-      blueprintStatus: parsed.blueprintStatus === 'active' ? 'active' : 'draft',
-      finishes: { ...DEFAULT_CONFIG.finishes, ...(parsed.finishes || {}) },
-      completedDays: clampToRange(Number(parsed.completedDays) || 0, [0, 365]),
-    };
+    return normalizeConfig(parsed);
   } catch {
     return DEFAULT_CONFIG;
   }
@@ -233,26 +252,66 @@ function Counter({ label, icon: Icon, value, range, onChange }: { label: string;
   );
 }
 
-export function CharacterHouseBuilder({ onBack }: { onBack: () => void }) {
+interface CharacterHouseBuilderProps {
+  onBack: () => void;
+  currentUserId?: string;
+  partnerId?: string;
+  partnerName?: string;
+}
+
+export function CharacterHouseBuilder({ onBack, currentUserId, partnerId, partnerName }: CharacterHouseBuilderProps) {
   const [config, setConfig] = useState<HouseConfig>(loadConfig);
   const [floor, setFloor] = useState(() => Math.max(0, loadConfig().floors - 1));
   const [showRoof, setShowRoof] = useState(false);
   const [mode, setMode] = useState<ViewerMode>('blueprint');
   const [sceneView, setSceneView] = useState<SceneView>('house');
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-  const [coupleApproved, setCoupleApproved] = useState(false);
   const [submitOpen, setSubmitOpen] = useState(false);
+  const [approvalOpen, setApprovalOpen] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const selectedHome = HOME_DEFINITIONS.find(home => home.id === config.homeType) || HOME_DEFINITIONS[0];
   const floors = useMemo(() => createFloorRooms(config), [config]);
   const stage = getConstructionStage(config.completedDays);
   const reveal = mode === 'blueprint' ? 1 : Math.min(1, config.completedDays / 295);
   const alreadyPlacedToday = config.lastBlockDate === todayKey();
   const challengeActive = config.blueprintStatus === 'active';
+  const blueprintPending = config.blueprintStatus === 'pending';
+  const submittedByCurrentUser = Boolean(currentUserId && config.submittedBy === currentUserId);
+  const canApprove = canUserApproveBlueprint(config.blueprintStatus, config.submittedBy, currentUserId, partnerId);
   const todaysChallenge = DAILY_CHALLENGES[config.completedDays % DAILY_CHALLENGES.length];
+
+  const refreshBlueprint = useCallback(async (announce = false) => {
+    if (!currentUserId || !partnerId) return;
+    setSyncing(true);
+    try {
+      const result = await api.characterHouse.get();
+      if (result.blueprint) {
+        const shared = normalizeConfig(result.blueprint);
+        setConfig(shared);
+        setFloor(Math.max(0, shared.floors - 1));
+        if (shared.blueprintStatus === 'active') setMode('current');
+        if (announce) toast.success(shared.blueprintStatus === 'active' ? 'Your partner approved the blueprint. Day 1 has started!' : 'Blueprint status updated.');
+      } else if (announce) {
+        toast.info('No shared blueprint has been submitted yet.');
+      }
+    } catch (error: any) {
+      if (announce) toast.error(error.message || 'Could not refresh the blueprint.');
+    } finally {
+      setSyncing(false);
+    }
+  }, [currentUserId, partnerId]);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
   }, [config]);
+
+  useEffect(() => {
+    if (!currentUserId || !partnerId) return;
+    void refreshBlueprint(false);
+    if (!blueprintPending) return;
+    const interval = window.setInterval(() => void refreshBlueprint(false), 15000);
+    return () => window.clearInterval(interval);
+  }, [blueprintPending, currentUserId, partnerId, refreshBlueprint]);
 
   useEffect(() => {
     if (floor >= config.floors) setFloor(config.floors - 1);
@@ -272,14 +331,42 @@ export function CharacterHouseBuilder({ onBack }: { onBack: () => void }) {
     toast.success('Today’s block has been placed. Keep building together!');
   };
 
-  const startChallenge = () => {
-    if (!coupleApproved || !isBlueprintNameReady(config.homeName)) return;
-    const startedAt = new Date().toISOString();
-    setConfig(current => ({ ...current, blueprintStatus: 'active', blueprintSubmittedAt: startedAt, challengeStartedAt: startedAt, completedDays: 0, lastBlockDate: undefined }));
-    setMode('current');
-    setSceneView('house');
-    setSubmitOpen(false);
-    toast.success('Blueprint submitted! Your 365-day character challenge starts today.');
+  const submitBlueprint = async () => {
+    if (!isBlueprintNameReady(config.homeName)) return;
+    if (!partnerId) {
+      toast.error('Connect with your partner before submitting a blueprint.');
+      return;
+    }
+    setSyncing(true);
+    try {
+      const result = await api.characterHouse.submit(config);
+      setConfig(normalizeConfig(result.blueprint));
+      setMode('blueprint');
+      setSceneView('house');
+      setSubmitOpen(false);
+      toast.success(`Blueprint sent to ${partnerName || 'your partner'} for approval.`);
+    } catch (error: any) {
+      toast.error(error.message || 'Could not submit the blueprint.');
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  const approveBlueprint = async () => {
+    if (!canApprove) return;
+    setSyncing(true);
+    try {
+      const result = await api.characterHouse.approve();
+      setConfig(normalizeConfig(result.blueprint));
+      setMode('current');
+      setSceneView('house');
+      setApprovalOpen(false);
+      toast.success('Blueprint approved. Day 1: excavate and lay the foundation!');
+    } catch (error: any) {
+      toast.error(error.message || 'Could not approve the blueprint.');
+    } finally {
+      setSyncing(false);
+    }
   };
 
   return (
@@ -289,7 +376,7 @@ export function CharacterHouseBuilder({ onBack }: { onBack: () => void }) {
         <div><p className="text-xs font-bold uppercase tracking-[.2em] text-amber-700">Character development</p><h1 className="text-2xl font-black tracking-tight text-stone-950">Build the House That Honors God</h1></div>
       </div>
 
-      {!challengeActive && <>
+      {config.blueprintStatus === 'draft' && <>
       <Card className="overflow-hidden rounded-[2rem] border-amber-200 bg-gradient-to-br from-[#fffdf8] to-[#f3e8d8] shadow-xl shadow-amber-900/5">
         <CardHeader className="pb-3"><CardTitle className="flex items-center gap-2 text-lg"><Home className="h-5 w-5 text-rose-700" /> Choose your home</CardTitle></CardHeader>
         <CardContent className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -318,14 +405,16 @@ export function CharacterHouseBuilder({ onBack }: { onBack: () => void }) {
           </div>
           <div className="rounded-2xl border border-amber-300 bg-gradient-to-br from-amber-50 to-rose-50 p-4">
             <label className="block"><span className="mb-1.5 block text-xs font-black uppercase tracking-wider text-amber-800">Name your home</span><input value={config.homeName} onChange={event => setConfig(current => ({ ...current, homeName: event.target.value }))} maxLength={48} placeholder="House of Grace" className="h-12 w-full rounded-xl border border-amber-200 bg-white px-4 font-bold text-stone-950 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-200" /></label>
-            <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-xl border border-white bg-white/80 p-3"><input type="checkbox" checked={coupleApproved} onChange={event => setCoupleApproved(event.target.checked)} className="mt-0.5 h-5 w-5 accent-amber-700" /><span><strong className="block text-sm text-stone-900">We reviewed and chose this blueprint together</strong><small className="mt-0.5 block leading-5 text-stone-600">Submitting starts the 365-day challenge and locks this blueprint.</small></span></label>
-            <Button type="button" onClick={() => setSubmitOpen(true)} disabled={!coupleApproved || !isBlueprintNameReady(config.homeName)} className="mt-4 h-14 w-full rounded-xl bg-gradient-to-r from-amber-700 to-rose-700 font-black text-white hover:from-amber-800 hover:to-rose-800"><HeartHandshake className="mr-2 h-5 w-5" /> Submit Blueprint & Start Challenge</Button>
+            <div className="mt-4 flex items-start gap-3 rounded-xl border border-white bg-white/80 p-3"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" /><span><strong className="block text-sm text-stone-900">Your partner must approve this design</strong><small className="mt-0.5 block leading-5 text-stone-600">Submitting sends a locked review copy to {partnerName || 'your linked partner'}. The challenge will not start until they approve it.</small></span></div>
+            <Button type="button" onClick={() => setSubmitOpen(true)} disabled={syncing || !partnerId || !isBlueprintNameReady(config.homeName)} className="mt-4 h-14 w-full rounded-xl bg-gradient-to-r from-amber-700 to-rose-700 font-black text-white hover:from-amber-800 hover:to-rose-800"><HeartHandshake className="mr-2 h-5 w-5" /> {partnerId ? 'Submit Blueprint for Approval' : 'Connect a Partner to Submit'}</Button>
           </div>
         </CardContent>
       </Card>
       </>}
 
-      {challengeActive && <Card className="overflow-hidden rounded-[2rem] border-emerald-200 bg-gradient-to-br from-emerald-50 to-amber-50 shadow-sm"><CardContent className="flex flex-wrap items-center gap-4 p-5"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-600 text-white shadow"><LockKeyhole className="h-6 w-6" /></span><div className="min-w-0 flex-1"><p className="text-xs font-black uppercase tracking-widest text-emerald-700">Blueprint submitted · Challenge active</p><h2 className="mt-1 text-lg font-black text-stone-950">{config.homeName}</h2><p className="mt-1 text-xs text-stone-600">{selectedHome.name} · {config.floors} floors · {config.bedrooms} bedrooms · {config.bathrooms} bathrooms</p></div><div className="rounded-xl bg-white/80 px-3 py-2 text-right"><p className="text-xs font-bold text-stone-500">Started</p><p className="text-sm font-black text-stone-900">{config.challengeStartedAt ? new Date(config.challengeStartedAt).toLocaleDateString() : 'Today'}</p></div></CardContent></Card>}
+      {blueprintPending && <Card className="overflow-hidden rounded-[2rem] border-amber-300 bg-gradient-to-br from-amber-50 via-white to-rose-50 shadow-lg"><CardContent className="p-5 sm:p-6"><div className="flex flex-wrap items-start gap-4"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-amber-600 text-white shadow"><Clock3 className="h-6 w-6" /></span><div className="min-w-0 flex-1"><p className="text-xs font-black uppercase tracking-widest text-amber-700">Blueprint awaiting partner approval</p><h2 className="mt-1 text-lg font-black text-stone-950">{config.homeName}</h2><p className="mt-1 text-sm leading-6 text-stone-600">{submittedByCurrentUser ? `${partnerName || 'Your partner'} must review and approve this blueprint before construction can begin.` : `${config.submittedByName || partnerName || 'Your partner'} submitted this blueprint for your review.`}</p><p className="mt-2 text-xs font-bold text-stone-500">{selectedHome.name} · {config.floors} floors · {config.bedrooms} bedrooms · {config.bathrooms} bathrooms</p></div>{canApprove ? <Button type="button" onClick={() => setApprovalOpen(true)} disabled={syncing} className="h-12 rounded-xl bg-emerald-700 px-5 font-black text-white hover:bg-emerald-800"><ShieldCheck className="mr-2 h-5 w-5" /> Review & approve</Button> : <Button type="button" variant="outline" onClick={() => void refreshBlueprint(true)} disabled={syncing} className="h-11 rounded-xl bg-white font-bold"><RefreshCw className={`mr-2 h-4 w-4 ${syncing ? 'animate-spin' : ''}`} /> Check status</Button>}</div></CardContent></Card>}
+
+      {challengeActive && <Card className="overflow-hidden rounded-[2rem] border-emerald-200 bg-gradient-to-br from-emerald-50 to-amber-50 shadow-sm"><CardContent className="flex flex-wrap items-center gap-4 p-5"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-600 text-white shadow"><LockKeyhole className="h-6 w-6" /></span><div className="min-w-0 flex-1"><p className="text-xs font-black uppercase tracking-widest text-emerald-700">Both partners approved · Challenge active</p><h2 className="mt-1 text-lg font-black text-stone-950">{config.homeName}</h2><p className="mt-1 text-xs text-stone-600">Submitted by {config.submittedByName || 'one partner'} · Approved by {config.approvedByName || 'the other partner'}</p></div><div className="rounded-xl bg-white/80 px-3 py-2 text-right"><p className="text-xs font-bold text-stone-500">Started</p><p className="text-sm font-black text-stone-900">{config.challengeStartedAt ? new Date(config.challengeStartedAt).toLocaleDateString() : 'Today'}</p></div></CardContent></Card>}
 
       <Card className="overflow-hidden rounded-[2rem] border-amber-200 bg-white shadow-xl shadow-stone-900/5">
         <CardHeader className="space-y-3 border-b border-stone-100 bg-amber-50/45">
@@ -354,9 +443,9 @@ export function CharacterHouseBuilder({ onBack }: { onBack: () => void }) {
           {selectedRoom && <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-amber-700 shadow-sm"><Sparkles className="h-5 w-5" /></span><div className="min-w-0 flex-1"><p className="font-black text-stone-900">{selectedRoom.name}</p><p className="text-sm text-stone-600">{selectedRoom.meaning}</p></div><Button type="button" size="sm" onClick={() => setSceneView('room')} className="rounded-xl bg-amber-700 hover:bg-amber-800"><Scan className="mr-1.5 h-4 w-4" /> View room details</Button></div>}
           {challengeActive && config.completedDays < 365 && <div className="rounded-2xl border border-violet-200 bg-gradient-to-br from-violet-50 to-rose-50 p-4"><div className="flex items-start gap-3"><span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-violet-700 font-black text-white">{config.completedDays + 1}</span><div><p className="text-xs font-black uppercase tracking-wider text-violet-700">Today’s character challenge · {todaysChallenge.scripture}</p><h3 className="mt-1 font-black text-stone-950">{todaysChallenge.title}</h3><p className="mt-2 text-sm leading-6 text-stone-600">{todaysChallenge.action}</p></div></div></div>}
           {challengeActive && <Button type="button" onClick={placeBlock} disabled={alreadyPlacedToday || config.completedDays >= 365} className="h-14 w-full rounded-2xl bg-gradient-to-r from-rose-700 to-amber-700 text-base font-black text-white shadow-lg shadow-rose-900/15 hover:from-rose-800 hover:to-amber-800">
-            {config.completedDays >= 365 ? <><Check className="mr-2 h-5 w-5" /> House completed</> : alreadyPlacedToday ? <><Check className="mr-2 h-5 w-5" /> Today’s block is placed</> : <><Hammer className="mr-2 h-5 w-5" /> Place Today’s Block</>}
+            {config.completedDays >= 365 ? <><Check className="mr-2 h-5 w-5" /> House completed</> : alreadyPlacedToday ? <><Check className="mr-2 h-5 w-5" /> Today’s block is placed</> : config.completedDays === 0 ? <><Hammer className="mr-2 h-5 w-5" /> Complete Excavation & Place Foundation Block</> : <><Hammer className="mr-2 h-5 w-5" /> Place Today’s Block</>}
           </Button>}
-          <p className="text-center text-xs text-stone-500">{challengeActive ? 'Complete one activity to earn one block. Missing a day never removes progress.' : 'Customize together, submit the blueprint, and Day 1 will unlock.'}</p>
+          <p className="text-center text-xs text-stone-500">{challengeActive ? 'Complete one activity to earn one block. Missing a day never removes progress.' : blueprintPending ? 'Construction remains locked until the other partner approves the blueprint.' : 'Customize the design and submit it to your partner for approval.'}</p>
         </CardContent>
       </Card>
 
@@ -364,10 +453,21 @@ export function CharacterHouseBuilder({ onBack }: { onBack: () => void }) {
         <AlertDialogContent className="rounded-[1.75rem] border-amber-200">
           <AlertDialogHeader>
             <div className="mx-auto mb-2 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-amber-500 to-rose-600 text-white sm:mx-0"><HeartHandshake className="h-7 w-7" /></div>
-            <AlertDialogTitle>Submit “{config.homeName.trim()}” and start?</AlertDialogTitle>
-            <AlertDialogDescription asChild><div className="space-y-3"><p>This confirms the blueprint as your shared design and starts the 365-day character-development challenge today.</p><ul className="space-y-2 rounded-xl bg-amber-50 p-3 text-left text-stone-700"><li className="flex gap-2"><LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" /> The selected home, rooms, finishes, and colors will be locked.</li><li className="flex gap-2"><CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" /> Day 1 becomes available immediately.</li><li className="flex gap-2"><Hammer className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" /> Only one completed activity can place one block each day.</li></ul></div></AlertDialogDescription>
+            <AlertDialogTitle>Submit “{config.homeName.trim()}” for approval?</AlertDialogTitle>
+            <AlertDialogDescription asChild><div className="space-y-3"><p>This sends your completed blueprint to {partnerName || 'your partner'} for an independent review.</p><ul className="space-y-2 rounded-xl bg-amber-50 p-3 text-left text-stone-700"><li className="flex gap-2"><LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" /> The selected home, rooms, finishes, and colors become a locked review copy.</li><li className="flex gap-2"><Clock3 className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" /> Construction remains locked while approval is pending.</li><li className="flex gap-2"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" /> Only the other linked partner can approve and start the challenge.</li></ul></div></AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter><AlertDialogCancel>Keep editing</AlertDialogCancel><AlertDialogAction onClick={startChallenge} className="bg-gradient-to-r from-amber-700 to-rose-700 font-black text-white hover:from-amber-800 hover:to-rose-800">Submit & start Day 1</AlertDialogAction></AlertDialogFooter>
+          <AlertDialogFooter><AlertDialogCancel>Keep editing</AlertDialogCancel><AlertDialogAction onClick={() => void submitBlueprint()} disabled={syncing} className="bg-gradient-to-r from-amber-700 to-rose-700 font-black text-white hover:from-amber-800 hover:to-rose-800">Submit for partner approval</AlertDialogAction></AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={approvalOpen} onOpenChange={setApprovalOpen}>
+        <AlertDialogContent className="rounded-[1.75rem] border-emerald-200">
+          <AlertDialogHeader>
+            <div className="mx-auto mb-2 grid h-14 w-14 place-items-center rounded-2xl bg-emerald-700 text-white sm:mx-0"><ShieldCheck className="h-7 w-7" /></div>
+            <AlertDialogTitle>Approve “{config.homeName.trim()}” and begin?</AlertDialogTitle>
+            <AlertDialogDescription asChild><div className="space-y-3"><p>By approving, you confirm the blueprint submitted by {config.submittedByName || partnerName || 'your partner'} as your shared Character House design.</p><ul className="space-y-2 rounded-xl bg-emerald-50 p-3 text-left text-stone-700"><li className="flex gap-2"><CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" /> The 365-day challenge starts immediately for both partners.</li><li className="flex gap-2"><Hammer className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" /> Day 1 opens at the excavated site: lay the foundation on God’s Word.</li><li className="flex gap-2"><LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" /> The approved blueprint remains locked during construction.</li></ul></div></AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter><AlertDialogCancel>Review again</AlertDialogCancel><AlertDialogAction onClick={() => void approveBlueprint()} disabled={syncing} className="bg-emerald-700 font-black text-white hover:bg-emerald-800">Approve & start excavation</AlertDialogAction></AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>

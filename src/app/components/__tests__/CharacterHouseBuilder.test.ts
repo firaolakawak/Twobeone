@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   HOME_DEFINITIONS,
+  canUserApproveBlueprint,
   clampToRange,
   createFloorRooms,
   getConstructionStage,
@@ -49,5 +50,12 @@ describe('CharacterHouseBuilder helpers', () => {
     expect(isBlueprintNameReady('')).toBe(false);
     expect(isBlueprintNameReady('  Hi  ')).toBe(false);
     expect(isBlueprintNameReady('Our Covenant Home')).toBe(true);
+  });
+
+  it('allows only the other linked partner to approve a pending blueprint', () => {
+    expect(canUserApproveBlueprint('pending', 'partner-a', 'partner-b', 'partner-a')).toBe(true);
+    expect(canUserApproveBlueprint('pending', 'partner-a', 'partner-a', 'partner-b')).toBe(false);
+    expect(canUserApproveBlueprint('active', 'partner-a', 'partner-b', 'partner-a')).toBe(false);
+    expect(canUserApproveBlueprint('pending', 'stranger', 'partner-b', 'partner-a')).toBe(false);
   });
 });
