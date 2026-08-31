@@ -5,7 +5,9 @@ import {
   BedDouble,
   Building2,
   Check,
+  CalendarDays,
   Hammer,
+  HeartHandshake,
   Home,
   Layers3,
   Minus,
@@ -13,11 +15,13 @@ import {
   Plus,
   Scan,
   Sparkles,
+  LockKeyhole,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Progress } from './ui/progress';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './ui/alert-dialog';
 
 export type HomeType = 'house' | 'villa' | 'townhouse' | 'apartment' | 'duplex' | 'penthouse';
 export type InteriorStyle = 'warm-modern' | 'ethiopian-heritage' | 'peaceful-minimalist';
@@ -56,6 +60,9 @@ interface HouseConfig {
   completedDays: number;
   finishes: HouseFinishes;
   lastBlockDate?: string;
+  blueprintStatus: 'draft' | 'active';
+  blueprintSubmittedAt?: string;
+  challengeStartedAt?: string;
 }
 
 export interface Room {
@@ -118,9 +125,24 @@ const DEFAULT_CONFIG: HouseConfig = {
   bathrooms: 3,
   interiorStyle: 'warm-modern',
   homeName: 'House of Grace',
-  completedDays: 14,
+  completedDays: 0,
   finishes: FINISH_PRESETS['warm-modern'],
+  blueprintStatus: 'draft',
 };
+
+const DAILY_CHALLENGES = [
+  { title: 'Place God at the Center', scripture: 'Psalm 127:1', action: 'Read the verse together and agree on one daily time when you will pray for your home.' },
+  { title: 'Build on God’s Word', scripture: 'Matthew 7:24–25', action: 'Choose one biblical value that you want this home and relationship to demonstrate.' },
+  { title: 'Speak with Grace', scripture: 'Colossians 4:6', action: 'Give your partner one sincere, specific word of encouragement.' },
+  { title: 'Listen Before Speaking', scripture: 'James 1:19', action: 'Give each partner three uninterrupted minutes to share about their day.' },
+  { title: 'Practice Practical Love', scripture: '1 Corinthians 13:4–7', action: 'Complete one small act of service requested by your partner.' },
+  { title: 'Choose Integrity', scripture: 'Psalm 15:1–2', action: 'Share one honest feeling gently, without blame or accusation.' },
+  { title: 'Pray as One', scripture: 'Colossians 4:2', action: 'Each partner prays aloud for one need the other person shared.' },
+];
+
+export function isBlueprintNameReady(name: string) {
+  return name.trim().length >= 3;
+}
 
 export function clampToRange(value: number, range: [number, number]) {
   return Math.min(range[1], Math.max(range[0], value));
@@ -168,7 +190,13 @@ function loadConfig(): HouseConfig {
   try {
     const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
     if (!parsed || !HOME_DEFINITIONS.some(home => home.id === parsed.homeType)) return DEFAULT_CONFIG;
-    return { ...DEFAULT_CONFIG, ...parsed, finishes: { ...DEFAULT_CONFIG.finishes, ...(parsed.finishes || {}) }, completedDays: clampToRange(Number(parsed.completedDays) || 0, [0, 365]) };
+    return {
+      ...DEFAULT_CONFIG,
+      ...parsed,
+      blueprintStatus: parsed.blueprintStatus === 'active' ? 'active' : 'draft',
+      finishes: { ...DEFAULT_CONFIG.finishes, ...(parsed.finishes || {}) },
+      completedDays: clampToRange(Number(parsed.completedDays) || 0, [0, 365]),
+    };
   } catch {
     return DEFAULT_CONFIG;
   }
@@ -212,11 +240,15 @@ export function CharacterHouseBuilder({ onBack }: { onBack: () => void }) {
   const [mode, setMode] = useState<ViewerMode>('blueprint');
   const [sceneView, setSceneView] = useState<SceneView>('house');
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+  const [coupleApproved, setCoupleApproved] = useState(false);
+  const [submitOpen, setSubmitOpen] = useState(false);
   const selectedHome = HOME_DEFINITIONS.find(home => home.id === config.homeType) || HOME_DEFINITIONS[0];
   const floors = useMemo(() => createFloorRooms(config), [config]);
   const stage = getConstructionStage(config.completedDays);
   const reveal = mode === 'blueprint' ? 1 : Math.min(1, config.completedDays / 295);
   const alreadyPlacedToday = config.lastBlockDate === todayKey();
+  const challengeActive = config.blueprintStatus === 'active';
+  const todaysChallenge = DAILY_CHALLENGES[config.completedDays % DAILY_CHALLENGES.length];
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
@@ -234,10 +266,20 @@ export function CharacterHouseBuilder({ onBack }: { onBack: () => void }) {
   };
 
   const placeBlock = () => {
-    if (alreadyPlacedToday) return;
+    if (!challengeActive || alreadyPlacedToday) return;
     setConfig(current => ({ ...current, completedDays: Math.min(365, current.completedDays + 1), lastBlockDate: todayKey() }));
     setMode('current');
     toast.success('Today’s block has been placed. Keep building together!');
+  };
+
+  const startChallenge = () => {
+    if (!coupleApproved || !isBlueprintNameReady(config.homeName)) return;
+    const startedAt = new Date().toISOString();
+    setConfig(current => ({ ...current, blueprintStatus: 'active', blueprintSubmittedAt: startedAt, challengeStartedAt: startedAt, completedDays: 0, lastBlockDate: undefined }));
+    setMode('current');
+    setSceneView('house');
+    setSubmitOpen(false);
+    toast.success('Blueprint submitted! Your 365-day character challenge starts today.');
   };
 
   return (
@@ -247,6 +289,7 @@ export function CharacterHouseBuilder({ onBack }: { onBack: () => void }) {
         <div><p className="text-xs font-bold uppercase tracking-[.2em] text-amber-700">Character development</p><h1 className="text-2xl font-black tracking-tight text-stone-950">Build the House That Honors God</h1></div>
       </div>
 
+      {!challengeActive && <>
       <Card className="overflow-hidden rounded-[2rem] border-amber-200 bg-gradient-to-br from-[#fffdf8] to-[#f3e8d8] shadow-xl shadow-amber-900/5">
         <CardHeader className="pb-3"><CardTitle className="flex items-center gap-2 text-lg"><Home className="h-5 w-5 text-rose-700" /> Choose your home</CardTitle></CardHeader>
         <CardContent className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -273,8 +316,16 @@ export function CharacterHouseBuilder({ onBack }: { onBack: () => void }) {
             <p className="mb-3 flex items-center gap-2 text-sm font-black text-stone-800"><Paintbrush className="h-4 w-4 text-rose-700" /> Customize colors</p>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{FINISH_FIELDS.map(field => <label key={field.key} className="flex cursor-pointer items-center gap-2 rounded-xl border border-stone-200 bg-white p-2.5 shadow-sm"><input type="color" value={config.finishes[field.key]} onChange={event => setConfig(current => ({ ...current, finishes: { ...current.finishes, [field.key]: event.target.value } }))} className="h-9 w-9 cursor-pointer rounded-lg border-0 bg-transparent p-0" aria-label={`${field.label} color`} /><span className="text-[11px] font-bold leading-tight text-stone-700">{field.label}</span></label>)}</div>
           </div>
+          <div className="rounded-2xl border border-amber-300 bg-gradient-to-br from-amber-50 to-rose-50 p-4">
+            <label className="block"><span className="mb-1.5 block text-xs font-black uppercase tracking-wider text-amber-800">Name your home</span><input value={config.homeName} onChange={event => setConfig(current => ({ ...current, homeName: event.target.value }))} maxLength={48} placeholder="House of Grace" className="h-12 w-full rounded-xl border border-amber-200 bg-white px-4 font-bold text-stone-950 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-200" /></label>
+            <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-xl border border-white bg-white/80 p-3"><input type="checkbox" checked={coupleApproved} onChange={event => setCoupleApproved(event.target.checked)} className="mt-0.5 h-5 w-5 accent-amber-700" /><span><strong className="block text-sm text-stone-900">We reviewed and chose this blueprint together</strong><small className="mt-0.5 block leading-5 text-stone-600">Submitting starts the 365-day challenge and locks this blueprint.</small></span></label>
+            <Button type="button" onClick={() => setSubmitOpen(true)} disabled={!coupleApproved || !isBlueprintNameReady(config.homeName)} className="mt-4 h-14 w-full rounded-xl bg-gradient-to-r from-amber-700 to-rose-700 font-black text-white hover:from-amber-800 hover:to-rose-800"><HeartHandshake className="mr-2 h-5 w-5" /> Submit Blueprint & Start Challenge</Button>
+          </div>
         </CardContent>
       </Card>
+      </>}
+
+      {challengeActive && <Card className="overflow-hidden rounded-[2rem] border-emerald-200 bg-gradient-to-br from-emerald-50 to-amber-50 shadow-sm"><CardContent className="flex flex-wrap items-center gap-4 p-5"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-600 text-white shadow"><LockKeyhole className="h-6 w-6" /></span><div className="min-w-0 flex-1"><p className="text-xs font-black uppercase tracking-widest text-emerald-700">Blueprint submitted · Challenge active</p><h2 className="mt-1 text-lg font-black text-stone-950">{config.homeName}</h2><p className="mt-1 text-xs text-stone-600">{selectedHome.name} · {config.floors} floors · {config.bedrooms} bedrooms · {config.bathrooms} bathrooms</p></div><div className="rounded-xl bg-white/80 px-3 py-2 text-right"><p className="text-xs font-bold text-stone-500">Started</p><p className="text-sm font-black text-stone-900">{config.challengeStartedAt ? new Date(config.challengeStartedAt).toLocaleDateString() : 'Today'}</p></div></CardContent></Card>}
 
       <Card className="overflow-hidden rounded-[2rem] border-amber-200 bg-white shadow-xl shadow-stone-900/5">
         <CardHeader className="space-y-3 border-b border-stone-100 bg-amber-50/45">
@@ -283,7 +334,7 @@ export function CharacterHouseBuilder({ onBack }: { onBack: () => void }) {
         </CardHeader>
         <CardContent className="space-y-4 p-4 sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-1 rounded-xl border border-stone-200 bg-stone-50 p-1">{floors.map((_, index) => <button key={index} type="button" onClick={() => { setFloor(index); setSelectedRoom(null); }} className={`rounded-lg px-3 py-2 text-xs font-bold ${floor === index ? 'bg-stone-800 text-white shadow' : 'text-stone-600'}`}>{index === floors.length - 1 && floors.length > 1 ? `All ${floors.length} floors` : `Through floor ${index + 1}`}</button>)}</div>
+            <div className="flex items-center gap-1 rounded-xl border border-stone-200 bg-stone-50 p-1">{floors.map((_, index) => <button key={index} type="button" onClick={() => { setFloor(index); setSelectedRoom(null); setSceneView('house'); }} className={`rounded-lg px-3 py-2 text-xs font-bold ${floor === index ? 'bg-stone-800 text-white shadow' : 'text-stone-600'}`}>{index === floors.length - 1 && floors.length > 1 ? `All ${floors.length} floors` : `Through floor ${index + 1}`}</button>)}</div>
             <div className="flex gap-1"><Button type="button" variant="outline" className="h-10 rounded-xl bg-white text-xs font-bold" onClick={() => { setSceneView('house'); setSelectedRoom(null); }}><Home className="mr-1.5 h-4 w-4" /> Full house</Button><Button type="button" variant="outline" disabled={!selectedRoom} className="h-10 rounded-xl bg-white text-xs font-bold" onClick={() => setSceneView('room')}><Scan className="mr-1.5 h-4 w-4" /> Room detail</Button><Button type="button" variant="outline" className="h-10 rounded-xl bg-white text-xs font-bold" onClick={() => setShowRoof(value => !value)}>{showRoof ? 'Remove roof' : 'Show roof'}</Button></div>
           </div>
           <Suspense fallback={<div className="grid h-[34rem] place-items-center rounded-[2rem] bg-stone-100 text-sm font-semibold text-stone-500">Preparing the 3D house…</div>}>
@@ -301,12 +352,24 @@ export function CharacterHouseBuilder({ onBack }: { onBack: () => void }) {
             />
           </Suspense>
           {selectedRoom && <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-amber-700 shadow-sm"><Sparkles className="h-5 w-5" /></span><div className="min-w-0 flex-1"><p className="font-black text-stone-900">{selectedRoom.name}</p><p className="text-sm text-stone-600">{selectedRoom.meaning}</p></div><Button type="button" size="sm" onClick={() => setSceneView('room')} className="rounded-xl bg-amber-700 hover:bg-amber-800"><Scan className="mr-1.5 h-4 w-4" /> View room details</Button></div>}
-          <Button type="button" onClick={placeBlock} disabled={alreadyPlacedToday || config.completedDays >= 365} className="h-14 w-full rounded-2xl bg-gradient-to-r from-rose-700 to-amber-700 text-base font-black text-white shadow-lg shadow-rose-900/15 hover:from-rose-800 hover:to-amber-800">
+          {challengeActive && config.completedDays < 365 && <div className="rounded-2xl border border-violet-200 bg-gradient-to-br from-violet-50 to-rose-50 p-4"><div className="flex items-start gap-3"><span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-violet-700 font-black text-white">{config.completedDays + 1}</span><div><p className="text-xs font-black uppercase tracking-wider text-violet-700">Today’s character challenge · {todaysChallenge.scripture}</p><h3 className="mt-1 font-black text-stone-950">{todaysChallenge.title}</h3><p className="mt-2 text-sm leading-6 text-stone-600">{todaysChallenge.action}</p></div></div></div>}
+          {challengeActive && <Button type="button" onClick={placeBlock} disabled={alreadyPlacedToday || config.completedDays >= 365} className="h-14 w-full rounded-2xl bg-gradient-to-r from-rose-700 to-amber-700 text-base font-black text-white shadow-lg shadow-rose-900/15 hover:from-rose-800 hover:to-amber-800">
             {config.completedDays >= 365 ? <><Check className="mr-2 h-5 w-5" /> House completed</> : alreadyPlacedToday ? <><Check className="mr-2 h-5 w-5" /> Today’s block is placed</> : <><Hammer className="mr-2 h-5 w-5" /> Place Today’s Block</>}
-          </Button>
-          <p className="text-center text-xs text-stone-500">One activity earns one block. Missing a day never removes progress.</p>
+          </Button>}
+          <p className="text-center text-xs text-stone-500">{challengeActive ? 'Complete one activity to earn one block. Missing a day never removes progress.' : 'Customize together, submit the blueprint, and Day 1 will unlock.'}</p>
         </CardContent>
       </Card>
+
+      <AlertDialog open={submitOpen} onOpenChange={setSubmitOpen}>
+        <AlertDialogContent className="rounded-[1.75rem] border-amber-200">
+          <AlertDialogHeader>
+            <div className="mx-auto mb-2 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-amber-500 to-rose-600 text-white sm:mx-0"><HeartHandshake className="h-7 w-7" /></div>
+            <AlertDialogTitle>Submit “{config.homeName.trim()}” and start?</AlertDialogTitle>
+            <AlertDialogDescription asChild><div className="space-y-3"><p>This confirms the blueprint as your shared design and starts the 365-day character-development challenge today.</p><ul className="space-y-2 rounded-xl bg-amber-50 p-3 text-left text-stone-700"><li className="flex gap-2"><LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" /> The selected home, rooms, finishes, and colors will be locked.</li><li className="flex gap-2"><CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" /> Day 1 becomes available immediately.</li><li className="flex gap-2"><Hammer className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" /> Only one completed activity can place one block each day.</li></ul></div></AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter><AlertDialogCancel>Keep editing</AlertDialogCancel><AlertDialogAction onClick={startChallenge} className="bg-gradient-to-r from-amber-700 to-rose-700 font-black text-white hover:from-amber-800 hover:to-rose-800">Submit & start Day 1</AlertDialogAction></AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

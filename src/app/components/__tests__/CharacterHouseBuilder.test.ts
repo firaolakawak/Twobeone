@@ -4,6 +4,7 @@ import {
   clampToRange,
   createFloorRooms,
   getConstructionStage,
+  isBlueprintNameReady,
 } from '../CharacterHouseBuilder';
 
 describe('CharacterHouseBuilder helpers', () => {
@@ -42,5 +43,11 @@ describe('CharacterHouseBuilder helpers', () => {
   it('uses a prayer corner for an apartment floor plan', () => {
     const rooms = createFloorRooms({ homeType: 'apartment', floors: 1, bedrooms: 2, bathrooms: 1 }).flat();
     expect(rooms.some(room => room.name === 'Prayer Corner')).toBe(true);
+  });
+
+  it('requires a meaningful house name before blueprint submission', () => {
+    expect(isBlueprintNameReady('')).toBe(false);
+    expect(isBlueprintNameReady('  Hi  ')).toBe(false);
+    expect(isBlueprintNameReady('Our Covenant Home')).toBe(true);
   });
 });
