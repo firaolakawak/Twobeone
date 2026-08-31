@@ -30,6 +30,7 @@ import {
   Brain,
   ChevronDown,
   RefreshCw,
+  Hammer,
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { ComprehensiveBibleReader } from './ComprehensiveBibleReader';
@@ -1670,6 +1671,27 @@ export function CoupleDashboard({
           reminderOnly
         />
       )}
+
+      {/* Character Development House */}
+      <Card
+        className="group cursor-pointer overflow-hidden rounded-[1.75rem] border-amber-200 bg-gradient-to-br from-[#fffdf7] via-amber-50/55 to-rose-50/45 shadow-[0_18px_48px_-34px_rgba(146,64,14,.42)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_54px_-30px_rgba(146,64,14,.4)]"
+        onClick={() => onScreenNavigate?.('character-house')}
+      >
+        <CardContent className="flex items-center gap-4 p-5">
+          <div className="relative grid h-20 w-24 shrink-0 place-items-end overflow-hidden rounded-2xl border border-amber-200 bg-gradient-to-b from-sky-100 to-emerald-50 p-3">
+            <div className="absolute bottom-2 h-8 w-16 border-2 border-stone-500 bg-stone-200 shadow-sm" />
+            <div className="absolute bottom-10 h-10 w-10 rotate-45 border-l-2 border-t-2 border-rose-900/30 bg-gradient-to-br from-rose-600 to-amber-700" />
+            <div className="absolute bottom-2 left-1/2 h-6 w-3 -translate-x-1/2 rounded-t bg-amber-900" />
+            <span className="absolute right-2 top-2 grid h-6 w-6 place-items-center rounded-full bg-amber-500 text-white shadow"><Hammer className="h-3.5 w-3.5" /></span>
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-black uppercase tracking-[.16em] text-amber-700">365-day character journey</p>
+            <h3 className="mt-1 text-base font-black leading-tight text-stone-950">Build the House That Honors God</h3>
+            <p className="mt-1 text-xs leading-5 text-stone-600">Choose your dream home, design its rooms, and place one character-building block each day.</p>
+            <span className="mt-3 inline-flex items-center text-xs font-black text-rose-700">Open house builder <ArrowRight className="ml-1 h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /></span>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Learning Modules */}
       <LearningModulesCard 

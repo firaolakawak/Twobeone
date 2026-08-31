@@ -87,6 +87,7 @@ const IconsMissingNotice   = lazy(() => import("./components/IconsMissingNotice"
 const PWAUpdateAvailable   = lazy(() => import("./components/PWAUpdateAvailable").then(m => ({ default: m.PWAUpdateAvailable })));
 const LegalFooter          = lazy(() => import("./components/LegalFooter").then(m => ({ default: m.LegalFooter })));
 const PartnerChat          = lazy(() => import("./components/PartnerChat").then(m => ({ default: m.PartnerChat })));
+const CharacterHouseBuilder = lazy(() => import("./components/CharacterHouseBuilder").then(m => ({ default: m.CharacterHouseBuilder })));
 
 import { createClient } from "./utils/supabase/client";
 import {
@@ -1692,6 +1693,13 @@ export default function App() {
                     accessToken={accessToken || undefined}
                     userName={profile?.name}
                     partnerName={partner?.name}
+                  />
+                )}
+
+              {activeTab === "home" &&
+                selectedScreen === "character-house" && (
+                  <CharacterHouseBuilder
+                    onBack={() => setSelectedScreen("dashboard")}
                   />
                 )}
 
