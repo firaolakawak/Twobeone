@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import {
   ArrowLeft,
   Bath,
   BedDouble,
-  BookOpen,
   Building2,
   Check,
   Hammer,
@@ -11,10 +10,7 @@ import {
   Layers3,
   Minus,
   Plus,
-  RotateCw,
   Sparkles,
-  ZoomIn,
-  ZoomOut,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from './ui/button';
@@ -47,13 +43,15 @@ interface HouseConfig {
   lastBlockDate?: string;
 }
 
-interface Room {
+export interface Room {
   id: string;
   name: string;
   meaning: string;
   kind: 'living' | 'bedroom' | 'service' | 'faith' | 'outdoor';
   span?: number;
 }
+
+const CharacterHouse3D = lazy(() => import('./CharacterHouse3D').then(module => ({ default: module.CharacterHouse3D })));
 
 export const HOME_DEFINITIONS: HomeDefinition[] = [
   { id: 'house', name: 'House', description: 'Warm and welcoming', floorRange: [1, 2], bedroomRange: [1, 5], bathroomRange: [1, 4], defaults: { floors: 2, bedrooms: 3, bathrooms: 2 }, shape: 'pitched' },
@@ -177,37 +175,10 @@ function Counter({ label, icon: Icon, value, range, onChange }: { label: string;
   );
 }
 
-function FloorPlan({ rooms, rotation, zoom, selectedRoom, onRoomSelect, reveal }: { rooms: Room[]; rotation: number; zoom: number; selectedRoom?: string; onRoomSelect: (room: Room) => void; reveal: number }) {
-  const colors: Record<Room['kind'], string> = {
-    living: 'from-rose-100 to-amber-50 border-rose-300', bedroom: 'from-violet-100 to-rose-50 border-violet-300',
-    service: 'from-sky-100 to-stone-50 border-sky-300', faith: 'from-amber-100 to-yellow-50 border-amber-400', outdoor: 'from-emerald-100 to-lime-50 border-emerald-300',
-  };
-  return (
-    <div className="relative flex min-h-[25rem] items-center justify-center overflow-hidden rounded-[2rem] border border-amber-200/70 bg-[radial-gradient(circle_at_center,_#fffdf7,_#f3eadc)] p-7 shadow-inner">
-      <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'linear-gradient(#bcae9a 1px, transparent 1px), linear-gradient(90deg, #bcae9a 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-      <div className="relative grid w-full max-w-lg grid-cols-2 gap-1.5 border-[10px] border-stone-700 bg-stone-700 p-1.5 shadow-[18px_22px_40px_rgba(72,52,34,.2)] transition-transform duration-500" style={{ transform: `rotate(${rotation}deg) scale(${zoom})`, opacity: Math.max(.16, reveal) }}>
-        {rooms.map((room, index) => {
-          const isVisible = index / Math.max(rooms.length, 1) <= reveal;
-          return (
-            <button key={room.id} type="button" onClick={() => onRoomSelect(room)} disabled={!isVisible} className={`relative min-h-24 overflow-hidden border-2 bg-gradient-to-br p-3 text-left transition-all ${colors[room.kind]} ${selectedRoom === room.id ? 'z-10 ring-4 ring-amber-400 ring-offset-2' : 'hover:brightness-105'} ${isVisible ? '' : 'grayscale'}`} style={{ gridColumn: room.span === 2 ? 'span 2' : undefined, transform: `rotate(${-rotation}deg)` }}>
-              <span className="block text-xs font-black text-stone-800">{isVisible ? room.name : 'Future room'}</span>
-              {room.kind === 'faith' && <BookOpen className="absolute bottom-2 right-2 h-5 w-5 text-amber-700/70" />}
-              {room.kind === 'bedroom' && <BedDouble className="absolute bottom-2 right-2 h-5 w-5 text-violet-700/60" />}
-              {room.kind === 'service' && room.name.includes('Bath') && <Bath className="absolute bottom-2 right-2 h-5 w-5 text-sky-700/60" />}
-            </button>
-          );
-        })}
-        {rooms.length === 0 && <div className="col-span-2 grid min-h-48 place-items-center bg-stone-100 text-sm text-stone-500">This floor is waiting for its first room.</div>}
-      </div>
-    </div>
-  );
-}
-
 export function CharacterHouseBuilder({ onBack }: { onBack: () => void }) {
   const [config, setConfig] = useState<HouseConfig>(loadConfig);
-  const [floor, setFloor] = useState(0);
-  const [rotation, setRotation] = useState(0);
-  const [zoom, setZoom] = useState(1);
+  const [floor, setFloor] = useState(() => Math.max(0, loadConfig().floors - 1));
+  const [showRoof, setShowRoof] = useState(false);
   const [mode, setMode] = useState<ViewerMode>('blueprint');
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const selectedHome = HOME_DEFINITIONS.find(home => home.id === config.homeType) || HOME_DEFINITIONS[0];
@@ -226,7 +197,7 @@ export function CharacterHouseBuilder({ onBack }: { onBack: () => void }) {
 
   const updateHome = (home: HomeDefinition) => {
     setConfig(current => ({ ...current, homeType: home.id, ...home.defaults }));
-    setFloor(0);
+    setFloor(home.defaults.floors - 1);
     setSelectedRoom(null);
   };
 
@@ -261,7 +232,7 @@ export function CharacterHouseBuilder({ onBack }: { onBack: () => void }) {
         <CardHeader className="pb-3"><CardTitle className="flex items-center gap-2 text-lg"><Building2 className="h-5 w-5 text-amber-700" /> Design your {selectedHome.name.toLowerCase()}</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-3 sm:grid-cols-3">
-            <Counter label="Floors" icon={Layers3} value={config.floors} range={selectedHome.floorRange} onChange={value => setConfig(current => ({ ...current, floors: value }))} />
+            <Counter label="Floors" icon={Layers3} value={config.floors} range={selectedHome.floorRange} onChange={value => { setConfig(current => ({ ...current, floors: value })); setFloor(value - 1); }} />
             <Counter label="Bedrooms" icon={BedDouble} value={config.bedrooms} range={selectedHome.bedroomRange} onChange={value => setConfig(current => ({ ...current, bedrooms: value }))} />
             <Counter label="Bathrooms" icon={Bath} value={config.bathrooms} range={selectedHome.bathroomRange} onChange={value => setConfig(current => ({ ...current, bathrooms: value }))} />
           </div>
@@ -276,10 +247,21 @@ export function CharacterHouseBuilder({ onBack }: { onBack: () => void }) {
         </CardHeader>
         <CardContent className="space-y-4 p-4 sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-1 rounded-xl border border-stone-200 bg-stone-50 p-1">{floors.map((_, index) => <button key={index} type="button" onClick={() => { setFloor(index); setSelectedRoom(null); }} className={`rounded-lg px-3 py-2 text-xs font-bold ${floor === index ? 'bg-stone-800 text-white shadow' : 'text-stone-600'}`}>Floor {index + 1}</button>)}</div>
-            <div className="flex items-center gap-1"><Button type="button" variant="outline" size="icon" className="h-9 w-9 rounded-full" onClick={() => setRotation(value => (value + 90) % 360)} aria-label="Rotate floor plan"><RotateCw className="h-4 w-4" /></Button><Button type="button" variant="outline" size="icon" className="h-9 w-9 rounded-full" onClick={() => setZoom(value => Math.max(.72, value - .08))} aria-label="Zoom out"><ZoomOut className="h-4 w-4" /></Button><Button type="button" variant="outline" size="icon" className="h-9 w-9 rounded-full" onClick={() => setZoom(value => Math.min(1.16, value + .08))} aria-label="Zoom in"><ZoomIn className="h-4 w-4" /></Button></div>
+            <div className="flex items-center gap-1 rounded-xl border border-stone-200 bg-stone-50 p-1">{floors.map((_, index) => <button key={index} type="button" onClick={() => { setFloor(index); setSelectedRoom(null); }} className={`rounded-lg px-3 py-2 text-xs font-bold ${floor === index ? 'bg-stone-800 text-white shadow' : 'text-stone-600'}`}>{index === floors.length - 1 && floors.length > 1 ? `All ${floors.length} floors` : `Through floor ${index + 1}`}</button>)}</div>
+            <Button type="button" variant="outline" className="h-10 rounded-xl bg-white text-xs font-bold" onClick={() => setShowRoof(value => !value)}>{showRoof ? 'Remove roof' : 'Show roof'}</Button>
           </div>
-          <FloorPlan rooms={floors[floor] || []} rotation={rotation} zoom={zoom} selectedRoom={selectedRoom?.id} onRoomSelect={setSelectedRoom} reveal={reveal} />
+          <Suspense fallback={<div className="grid h-[34rem] place-items-center rounded-[2rem] bg-stone-100 text-sm font-semibold text-stone-500">Preparing the 3D house…</div>}>
+            <CharacterHouse3D
+              homeType={config.homeType}
+              floors={floors}
+              activeFloor={floor}
+              interiorStyle={config.interiorStyle}
+              reveal={reveal}
+              showRoof={showRoof}
+              selectedRoom={selectedRoom?.id}
+              onRoomSelect={setSelectedRoom}
+            />
+          </Suspense>
           {selectedRoom && <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-amber-700 shadow-sm"><Sparkles className="h-5 w-5" /></span><div><p className="font-black text-stone-900">{selectedRoom.name}</p><p className="text-sm text-stone-600">{selectedRoom.meaning}</p></div></div>}
           <Button type="button" onClick={placeBlock} disabled={alreadyPlacedToday || config.completedDays >= 365} className="h-14 w-full rounded-2xl bg-gradient-to-r from-rose-700 to-amber-700 text-base font-black text-white shadow-lg shadow-rose-900/15 hover:from-rose-800 hover:to-amber-800">
             {config.completedDays >= 365 ? <><Check className="mr-2 h-5 w-5" /> House completed</> : alreadyPlacedToday ? <><Check className="mr-2 h-5 w-5" /> Today’s block is placed</> : <><Hammer className="mr-2 h-5 w-5" /> Place Today’s Block</>}
