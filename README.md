@@ -1,50 +1,24 @@
-# Welcome to your Expo app 👋
+# TwoBeOne
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+TwoBeOne is a free, faith-centered relationship app designed for Christian couples. It gives two partners a private shared space to strengthen their relationship with each other and with God.
 
-## Get started
+Its main features include:
 
-1. Install dependencies
+- Daily Scripture-based devotionals and reflection prompts
+- Shared prayer requests and answered-prayer tracking
+- Private and shared couple journaling
+- More than 1,000 conversation questions across faith, family, finance, intimacy, trust, and everyday life
+- Partner chat, shared calendar, reminders, and relationship milestones
+- Mood tracking, weekly reports, and AI-generated relationship insights
+- Pre-marriage lessons, quizzes, and marriage-readiness reports
+- Scripture memorization and Bible reading
+- Christian community groups
+- Progress, engagement, and devotional-streak tracking
 
-   ```bash
-   npm install
-   ```
+Each person creates an account, then connects with their partner using a unique invitation code. Couple-related content is synchronized between the two accounts.
 
-2. Start the app
+The app supports English, Amharic, and Afaan Oromo, making it particularly relevant to Ethiopian Christian communities. It is intended for dating, engaged, newlywed, and married couples.
 
-   ```bash
-   npx expo start
-   ```
+Technically, the primary product is a React and TypeScript Progressive Web App built with Vite. It uses Supabase for authentication, database storage, server functions, partner synchronization, and authorization. It also includes offline support, install-to-home-screen functionality, push notifications, an administration console, newsletters, and AI-assisted analysis.
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+One important repository observation: it contains both the main Vite PWA and an Expo/React Native starter structure. The Vite application under [`src/app/App.tsx`](src/app/App.tsx) appears to be the developed product, while parts of the root Expo setup do not accurately describe the full app yet. The project is feature-rich, but the documentation and duplicate platform structure would benefit from consolidation before production handoff.
