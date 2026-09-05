@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { act, cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it } from 'vitest';
 import { LanguageProvider, useLanguage } from '../../contexts/LanguageContext';
@@ -10,7 +10,10 @@ function CurrentLanguage() {
 }
 
 describe('LanguageSelector', () => {
-  afterEach(() => localStorage.clear());
+  afterEach(() => {
+    cleanup();
+    localStorage.clear();
+  });
 
   it('switches the complete UI context to Afaan Oromo and persists the choice', async () => {
     const user = userEvent.setup();
@@ -22,11 +25,26 @@ describe('LanguageSelector', () => {
     );
 
     await user.click(screen.getByRole('button', { name: 'Select language' }));
-    await user.click(screen.getByRole('menuitem', { name: /Oromiffa/ }));
+    await user.click(screen.getByRole('menuitem', { name: /Afaan Oromo/ }));
 
     expect(screen.getByText('om:Baga Nagaan Dhuftan')).toBeInTheDocument();
     expect(localStorage.getItem('twobeone_language')).toBe('om');
     expect(document.documentElement).toHaveAttribute('lang', 'om');
     expect(document.body).toHaveAttribute('data-language', 'om');
+  });
+
+  it('synchronizes separate provider boundaries when the language changes', () => {
+    render(
+      <>
+        <LanguageProvider><CurrentLanguage /></LanguageProvider>
+        <LanguageProvider><CurrentLanguage /></LanguageProvider>
+      </>,
+    );
+
+    act(() => {
+      window.dispatchEvent(new CustomEvent('twobeone:language-change', { detail: 'am' }));
+    });
+
+    expect(screen.getAllByText(/^am:/)).toHaveLength(2);
   });
 });

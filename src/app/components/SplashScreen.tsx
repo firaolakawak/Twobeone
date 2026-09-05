@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Heart, Loader2, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -9,19 +10,20 @@ interface SplashScreenProps {
 }
 
 export function SplashScreen({ onComplete, checkingAuth = true, authStatus = 'checking' }: SplashScreenProps) {
+  const { t } = useLanguage();
   const [isVisible, setIsVisible] = useState(true);
-  const [statusMessage, setStatusMessage] = useState('Loading...');
+  const [statusMessage, setStatusMessage] = useState(t.common.loading);
 
   useEffect(() => {
     // Update status message based on auth status
     if (authStatus === 'checking') {
-      setStatusMessage('Checking authentication...');
+      setStatusMessage(t.splash.checkingAuthentication);
     } else if (authStatus === 'authenticated') {
-      setStatusMessage('Welcome back!');
+      setStatusMessage(t.splash.welcomeBack);
     } else if (authStatus === 'unauthenticated') {
-      setStatusMessage('Redirecting...');
+      setStatusMessage(t.splash.redirecting);
     }
-  }, [authStatus]);
+  }, [authStatus, t]);
 
   useEffect(() => {
     // If auth check is complete, wait a bit then fade out
@@ -84,7 +86,7 @@ export function SplashScreen({ onComplete, checkingAuth = true, authStatus = 'ch
               transition={{ delay: 0.5, duration: 0.6 }}
             >
               <h1 className="text-5xl text-white mb-2">TwoBeOne</h1>
-              <p className="text-white/90 text-lg">Growing Together in Faith</p>
+              <p className="text-white/90 text-lg">{t.splash.tagline}</p>
             </motion.div>
 
             {/* Status Indicator */}

@@ -1,5 +1,6 @@
 import { TrendingUp } from 'lucide-react';
 import { Card } from './ui/card';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface Milestone {
   id: string;
@@ -13,6 +14,7 @@ interface RecentMilestonesProps {
 }
 
 export function RecentMilestones({ milestones, onViewAll }: RecentMilestonesProps) {
+  const { t } = useLanguage();
   const displayMilestones = milestones.slice(0, 3);
 
   return (
@@ -20,14 +22,14 @@ export function RecentMilestones({ milestones, onViewAll }: RecentMilestonesProp
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2 text-success-700">
           <TrendingUp className="w-5 h-5" />
-          <h3 className="font-medium">Recent Milestones</h3>
+          <h3 className="font-medium">{t.dashboard.recentMilestones}</h3>
         </div>
         {onViewAll && (
           <button 
             onClick={onViewAll}
             className="text-sm text-muted-foreground hover:text-foreground"
           >
-            View All
+            {t.dashboard.viewAll}
           </button>
         )}
       </div>

@@ -121,11 +121,21 @@ export function PWAInstallPrompt() {
   }, [appShell]);
 
   useEffect(() => {
+    const applyLanguage = (next: unknown) => {
+      if (next === 'en' || next === 'am' || next === 'om') setLanguage(next);
+    };
     const handleLanguageChange = (event: Event) => {
-      setLanguage((event as CustomEvent<Language>).detail);
+      applyLanguage((event as CustomEvent<unknown>).detail);
+    };
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === 'twobeone_language') applyLanguage(event.newValue);
     };
     window.addEventListener('twobeone:language-change', handleLanguageChange);
-    return () => window.removeEventListener('twobeone:language-change', handleLanguageChange);
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      window.removeEventListener('twobeone:language-change', handleLanguageChange);
+      window.removeEventListener('storage', handleStorage);
+    };
   }, []);
 
   const dismiss = () => {

@@ -9,15 +9,19 @@ function leafPaths(value: unknown, prefix = ''): string[] {
   );
 }
 
+function leafValues(value: unknown): string[] {
+  if (typeof value === 'string') return [value];
+  if (!value || typeof value !== 'object') return [];
+  return Object.values(value).flatMap(leafValues);
+}
+
 describe('three-language UI catalog', () => {
   it('keeps English, Amharic, and Afaan Oromo complete and structurally aligned', () => {
     const expected = leafPaths(translations.en).sort();
 
     for (const language of ['am', 'om'] as const) {
       expect(leafPaths(translations[language]).sort()).toEqual(expected);
-      for (const value of Object.values(translations[language])) {
-        expect(value).toBeTruthy();
-      }
+      expect(leafValues(translations[language]).every((value) => value.trim().length > 0)).toBe(true);
     }
   });
 });

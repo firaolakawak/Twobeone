@@ -32,6 +32,26 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
     }
   };
 
+  // Keep every provider instance and other open tabs in sync. The app has
+  // separate provider boundaries for public, authentication, and app routes.
+  useEffect(() => {
+    const applyExternalLanguage = (next: unknown) => {
+      if (next === 'en' || next === 'am' || next === 'om') setLanguageState(next);
+    };
+    const handleLanguageChange = (event: Event) => {
+      applyExternalLanguage((event as CustomEvent<unknown>).detail);
+    };
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === 'twobeone_language') applyExternalLanguage(event.newValue);
+    };
+    window.addEventListener('twobeone:language-change', handleLanguageChange);
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      window.removeEventListener('twobeone:language-change', handleLanguageChange);
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, []);
+
   // Keep browser accessibility metadata and the Ethiopic font in sync on every change.
   useEffect(() => {
     document.documentElement.lang = language;

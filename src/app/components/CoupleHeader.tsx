@@ -1,5 +1,6 @@
 import { Heart, Calendar, User, UserPlus } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface CoupleHeaderProps {
   userName?: string;
@@ -8,6 +9,7 @@ interface CoupleHeaderProps {
 }
 
 export function CoupleHeader({ userName, partnerName, daysTogetherDate }: CoupleHeaderProps) {
+  const { t } = useLanguage();
   const calculateDaysTogether = () => {
     if (!daysTogetherDate) return 0;
     const start = new Date(daysTogetherDate);
@@ -23,8 +25,8 @@ export function CoupleHeader({ userName, partnerName, daysTogetherDate }: Couple
     <div className="relative">
       {/* Love Messages */}
       <div className="flex justify-between items-start mb-4 px-2">
-        <div className="text-sm">I love you ❤️</div>
-        <div className="text-sm">I love you ❤️</div>
+        <div className="text-sm">{t.dashboard.loveYou}</div>
+        <div className="text-sm">{t.dashboard.loveYou}</div>
       </div>
 
       {/* Couple Avatars with Distance */}

@@ -34,6 +34,58 @@ export interface Translations {
     changedTo: string;
   };
 
+  splash: {
+    tagline: string;
+    checkingAuthentication: string;
+    welcomeBack: string;
+    redirecting: string;
+  };
+
+  resetPassword: {
+    title: string;
+    subtitle: string;
+    verifying: string;
+    invalidLink: string;
+    minimumLength: string;
+    mismatch: string;
+    updateFailed: string;
+    updated: string;
+    updatedDescription: string;
+    continueToSignIn: string;
+    newPassword: string;
+    confirmPassword: string;
+    hidePassword: string;
+    showPassword: string;
+    updating: string;
+    updatePassword: string;
+    requestNewLink: string;
+  };
+
+  newsletter: {
+    subtitle: string;
+    invalidLink: string;
+    updateFailed: string;
+    confirmedMessage: string;
+    unsubscribedMessage: string;
+    subscriptionConfirmed: string;
+    preferenceUpdated: string;
+    confirmTitle: string;
+    unsubscribeTitle: string;
+    confirmDescription: string;
+    unsubscribeDescription: string;
+    updating: string;
+    confirm: string;
+    unsubscribe: string;
+    returnToApp: string;
+  };
+
+  pwaUpdate: {
+    title: string;
+    description: string;
+    later: string;
+    updateNow: string;
+  };
+
   // Legal and account-management UI chrome
   legal: {
     documents: string;
@@ -155,6 +207,9 @@ export interface Translations {
     online: string;
     offline: string;
     notSharedYet: string;
+    recentMilestones: string;
+    preMarriageGuidance: string;
+    loveYou: string;
   };
 
   // Devotionals
@@ -181,6 +236,7 @@ export interface Translations {
     completed: string;
     loading: string;
     noDevotionals: string;
+    reflectTogether: string;
   };
 
   // Journal
@@ -496,6 +552,58 @@ export const translations: Record<Language, Translations> = {
       changedTo: 'Language set to',
     },
 
+    splash: {
+      tagline: 'Growing Together in Faith',
+      checkingAuthentication: 'Checking authentication...',
+      welcomeBack: 'Welcome back!',
+      redirecting: 'Redirecting...',
+    },
+
+    resetPassword: {
+      title: 'Create a new password',
+      subtitle: 'Secure your TwoBeOne account with a new password.',
+      verifying: 'Verifying your reset link...',
+      invalidLink: 'This reset link is invalid or has expired. Request a new link from the sign-in page.',
+      minimumLength: 'Use at least 8 characters for your new password.',
+      mismatch: 'The passwords do not match.',
+      updateFailed: 'Your password could not be updated.',
+      updated: 'Password updated',
+      updatedDescription: 'You can now sign in using your new password.',
+      continueToSignIn: 'Continue to sign in',
+      newPassword: 'New password',
+      confirmPassword: 'Confirm new password',
+      hidePassword: 'Hide password',
+      showPassword: 'Show password',
+      updating: 'Updating password...',
+      updatePassword: 'Update password',
+      requestNewLink: 'Request a new reset link',
+    },
+
+    newsletter: {
+      subtitle: 'Encouragement and practical guidance for the week ahead.',
+      invalidLink: 'This email preference link is incomplete or invalid.',
+      updateFailed: 'Unable to update your email preference.',
+      confirmedMessage: 'Your subscription is confirmed.',
+      unsubscribedMessage: 'You have been unsubscribed.',
+      subscriptionConfirmed: 'Subscription confirmed',
+      preferenceUpdated: 'Email preference updated',
+      confirmTitle: 'Confirm your subscription',
+      unsubscribeTitle: 'Unsubscribe from weekly email?',
+      confirmDescription: 'Confirm to receive one thoughtful email each Saturday. You can unsubscribe at any time.',
+      unsubscribeDescription: 'You will stop receiving weekly encouragement and app updates. Essential account emails are unaffected.',
+      updating: 'Updating...',
+      confirm: 'Confirm subscription',
+      unsubscribe: 'Unsubscribe',
+      returnToApp: 'Return to TwoBeOne',
+    },
+
+    pwaUpdate: {
+      title: 'Update Available',
+      description: 'A new version of TwoBeOne is ready. Update now for the latest features and improvements!',
+      later: 'Later',
+      updateNow: 'Update Now',
+    },
+
     legal: {
       documents: 'Legal Documents',
       documentsDescription: 'Review our privacy policy and terms of service',
@@ -613,6 +721,9 @@ export const translations: Record<Language, Translations> = {
       online: 'online',
       offline: 'offline',
       notSharedYet: 'Not shared yet',
+      recentMilestones: 'Recent Milestones',
+      preMarriageGuidance: 'Pre-Marriage Guidance',
+      loveYou: 'I love you ❤️',
     },
 
     devotionals: {
@@ -638,6 +749,7 @@ export const translations: Record<Language, Translations> = {
       completed: 'Completed',
       loading: 'Loading devotionals...',
       noDevotionals: 'No devotionals found',
+      reflectTogether: 'Reflect Together',
     },
 
     journal: {
@@ -972,6 +1084,58 @@ export const translations: Record<Language, Translations> = {
       changedTo: 'ቋንቋው ተቀይሯል ወደ',
     },
 
+    splash: {
+      tagline: 'በእምነት አብረን እናድግ',
+      checkingAuthentication: 'መግቢያው እየተረጋገጠ ነው...',
+      welcomeBack: 'እንኳን ደህና ተመለሱ!',
+      redirecting: 'በማዘዋወር ላይ...',
+    },
+
+    resetPassword: {
+      title: 'አዲስ የይለፍ ቃል ይፍጠሩ',
+      subtitle: 'የTwoBeOne መለያዎን በአዲስ የይለፍ ቃል ይጠብቁ።',
+      verifying: 'የዳግም ማስጀመሪያ አገናኙ እየተረጋገጠ ነው...',
+      invalidLink: 'ይህ የዳግም ማስጀመሪያ አገናኝ የማይሰራ ወይም ጊዜው ያለፈበት ነው። ከመግቢያ ገጹ አዲስ አገናኝ ይጠይቁ።',
+      minimumLength: 'አዲሱ የይለፍ ቃልዎ ቢያንስ 8 ቁምፊዎች ይኑሩት።',
+      mismatch: 'የይለፍ ቃሎቹ አይዛመዱም።',
+      updateFailed: 'የይለፍ ቃልዎን ማዘመን አልተቻለም።',
+      updated: 'የይለፍ ቃሉ ተዘምኗል',
+      updatedDescription: 'አሁን በአዲሱ የይለፍ ቃልዎ መግባት ይችላሉ።',
+      continueToSignIn: 'ወደ መግቢያ ይቀጥሉ',
+      newPassword: 'አዲስ የይለፍ ቃል',
+      confirmPassword: 'አዲሱን የይለፍ ቃል ያረጋግጡ',
+      hidePassword: 'የይለፍ ቃሉን ደብቅ',
+      showPassword: 'የይለፍ ቃሉን አሳይ',
+      updating: 'የይለፍ ቃሉ እየተዘመነ ነው...',
+      updatePassword: 'የይለፍ ቃሉን አዘምን',
+      requestNewLink: 'አዲስ የዳግም ማስጀመሪያ አገናኝ ይጠይቁ',
+    },
+
+    newsletter: {
+      subtitle: 'ለመጪው ሳምንት ማበረታቻ እና ተግባራዊ መመሪያ።',
+      invalidLink: 'ይህ የኢሜይል ምርጫ አገናኝ ያልተሟላ ወይም የማይሰራ ነው።',
+      updateFailed: 'የኢሜይል ምርጫዎን ማዘመን አልተቻለም።',
+      confirmedMessage: 'ምዝገባዎ ተረጋግጧል።',
+      unsubscribedMessage: 'ከምዝገባው ወጥተዋል።',
+      subscriptionConfirmed: 'ምዝገባው ተረጋግጧል',
+      preferenceUpdated: 'የኢሜይል ምርጫው ተዘምኗል',
+      confirmTitle: 'ምዝገባዎን ያረጋግጡ',
+      unsubscribeTitle: 'ከሳምንታዊው ኢሜይል ይውጡ?',
+      confirmDescription: 'በየቅዳሜው አንድ ጠቃሚ ኢሜይል ለመቀበል ያረጋግጡ። በማንኛውም ጊዜ መውጣት ይችላሉ።',
+      unsubscribeDescription: 'ሳምንታዊ ማበረታቻዎችን እና የመተግበሪያ ዜናዎችን መቀበል ያቆማሉ። አስፈላጊ የመለያ ኢሜይሎች አይነኩም።',
+      updating: 'በማዘመን ላይ...',
+      confirm: 'ምዝገባውን አረጋግጥ',
+      unsubscribe: 'ከምዝገባ ውጣ',
+      returnToApp: 'ወደ TwoBeOne ተመለስ',
+    },
+
+    pwaUpdate: {
+      title: 'ዝማኔ ይገኛል',
+      description: 'አዲስ የTwoBeOne ስሪት ዝግጁ ነው። የቅርብ ጊዜ ባህሪያትን እና ማሻሻያዎችን ለማግኘት አሁን ያዘምኑ!',
+      later: 'በኋላ',
+      updateNow: 'አሁን አዘምን',
+    },
+
     legal: {
       documents: 'ህጋዊ ሰነዶች',
       documentsDescription: 'የግላዊነት ፖሊሲያችንን እና የአገልግሎት ውሎችን ይመልከቱ',
@@ -1089,6 +1253,9 @@ export const translations: Record<Language, Translations> = {
       online: 'መስመር ላይ',
       offline: 'ከመስመር ውጭ',
       notSharedYet: 'እስካሁን አልተጋራም',
+      recentMilestones: 'የቅርብ ጊዜ የግንኙነት ምዕራፎች',
+      preMarriageGuidance: 'የቅድመ ጋብቻ መመሪያ',
+      loveYou: 'እወድሃለሁ ❤️',
     },
 
     devotionals: {
@@ -1114,6 +1281,7 @@ export const translations: Record<Language, Translations> = {
       completed: 'ተጠናቋል',
       loading: 'ጥናቶችን በመጫን ላይ...',
       noDevotionals: 'ምንም ጥናቶች አልተገኙም',
+      reflectTogether: 'አብረን እናሰላስል',
     },
 
     journal: {
@@ -1446,6 +1614,54 @@ export const translations: Record<Language, Translations> = {
       menu: 'Filannoowwan afaanii',
       changedTo: 'Afaan jijjiirame gara',
     },
+    splash: {
+      tagline: 'Amantiidhaan Waliin Guddachuu',
+      checkingAuthentication: 'Eenyummaan mirkanaaʼaa jira...',
+      welcomeBack: 'Baga nagaan deebitan!',
+      redirecting: 'Gara fuulduraatti dabarfamaa jira...',
+    },
+    resetPassword: {
+      title: 'Jecha iccitii haaraa uumi',
+      subtitle: 'Akkaawuntii TwoBeOne kee jecha iccitii haaraatiin eegi.',
+      verifying: 'Geessituun deebisanii qindeessuu mirkanaaʼaa jira...',
+      invalidLink: 'Geessituun kun sirrii miti yookaan yeroon isaa darbeera. Fuula seensa irraa geessituu haaraa gaafadhu.',
+      minimumLength: 'Jecha iccitii haaraa keessatti yoo xiqqaate arfiilee 8 fayyadami.',
+      mismatch: 'Jechoonni iccitii wal hin siman.',
+      updateFailed: 'Jechi iccitii kee haaromfamuu hin dandeenye.',
+      updated: 'Jechi iccitii haaromfameera',
+      updatedDescription: 'Amma jecha iccitii haaraa keetiin seenuu dandeessa.',
+      continueToSignIn: 'Gara seensaatti itti fufi',
+      newPassword: 'Jecha iccitii haaraa',
+      confirmPassword: 'Jecha iccitii haaraa mirkaneessi',
+      hidePassword: 'Jecha iccitii dhoksi',
+      showPassword: 'Jecha iccitii agarsiisi',
+      updating: 'Jechi iccitii haaromfamaa jira...',
+      updatePassword: 'Jecha iccitii haaromsi',
+      requestNewLink: 'Geessituu haaraa gaafadhu',
+    },
+    newsletter: {
+      subtitle: 'Torban dhufuuf jajjabinaa fi gorsa hojii irra oolu.',
+      invalidLink: 'Geessituun filannoo imeelii kun guutuu miti yookaan sirrii miti.',
+      updateFailed: 'Filannoo imeelii kee haaromsuun hin dandaʼamne.',
+      confirmedMessage: 'Galmeen kee mirkanaaʼeera.',
+      unsubscribedMessage: 'Galmee keessaa baateetta.',
+      subscriptionConfirmed: 'Galmeen mirkanaaʼeera',
+      preferenceUpdated: 'Filannoon imeelii haaromfameera',
+      confirmTitle: 'Galmee kee mirkaneessi',
+      unsubscribeTitle: 'Imeelii torbanii keessaa baata?',
+      confirmDescription: 'Sanbata hunda imeelii yaada gaarii qabu tokko argachuuf mirkaneessi. Yeroo barbaadde galmee keessaa baʼuu dandeessa.',
+      unsubscribeDescription: 'Jajjabinaa torbanii fi odeeffannoo appii argachuun ni dhaabbata. Imeeliin akkaawuntii barbaachisaan hin jijjiiramu.',
+      updating: 'Haaromfamaa jira...',
+      confirm: 'Galmee mirkaneessi',
+      unsubscribe: 'Galmee keessaa baʼi',
+      returnToApp: 'Gara TwoBeOne deebiʼi',
+    },
+    pwaUpdate: {
+      title: 'Haaromsi Jira',
+      description: 'TwoBeOneʼn haaraan qophaaʼeera. Amaloota fi fooyyaʼiinsa haaraa argachuuf amma haaromsi!',
+      later: 'Boodarra',
+      updateNow: 'Amma Haaromsi',
+    },
     legal: {
       documents: 'Sanadoota Seeraa',
       documentsDescription: 'Imaammata dhuunfaa fi haala tajaajilaa keenya ilaali',
@@ -1559,6 +1775,9 @@ export const translations: Record<Language, Translations> = {
       online: 'sarara irra',
       offline: 'sararaan ala',
       notSharedYet: 'Ammaaf hin qoodamne',
+      recentMilestones: 'Milkaaʼinaalee Dhihoo',
+      preMarriageGuidance: 'Qajeelfama Fuudhaa fi Heerumaa Duraa',
+      loveYou: 'Sin jaalladha ❤️',
     },
     devotionals: {
       title: 'Kaayyoo Amantii Guyyaa Guyyaa',
@@ -1583,6 +1802,7 @@ export const translations: Record<Language, Translations> = {
       completed: 'Xumurameera',
       loading: "Kaayyoolee fe'aa jira...",
       noDevotionals: 'Kaayyoon argamu hin jiru',
+      reflectTogether: 'Waliin Xinxalaa',
     },
     journal: {
       title: 'Yaadannoo',
@@ -1903,5 +2123,5 @@ export function getTranslations(lang: Language): Translations {
 export const languages = [
   { code: 'en' as Language, name: 'English', nativeName: 'English', flag: '🇺🇸' },
   { code: 'am' as Language, name: 'Amharic', nativeName: 'አማርኛ', flag: '🇪🇹' },
-  { code: 'om' as Language, name: 'Afan Oromo', nativeName: 'Oromiffa', flag: '🇪🇹' },
+  { code: 'om' as Language, name: 'Afaan Oromo', nativeName: 'Afaan Oromo', flag: '🇪🇹' },
 ];

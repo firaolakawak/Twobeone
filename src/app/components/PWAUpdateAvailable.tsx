@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { RefreshCw, X } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export function PWAUpdateAvailable() {
+  const { t } = useLanguage();
   const [showUpdate, setShowUpdate] = useState(false);
   const [registration, setRegistration] = useState<ServiceWorkerRegistration | null>(null);
 
@@ -91,10 +93,10 @@ export function PWAUpdateAvailable() {
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-foreground dark:text-white mb-1">
-                Update Available
+                {t.pwaUpdate.title}
               </h3>
               <p className="text-sm text-muted-foreground dark:text-muted-foreground mb-3">
-                A new version of TwoBeOne is ready. Update now for the latest features and improvements!
+                {t.pwaUpdate.description}
               </p>
               <div className="flex gap-2">
                 <Button
@@ -104,7 +106,7 @@ export function PWAUpdateAvailable() {
                   className="flex-1"
                 >
                   <X className="w-4 h-4 mr-1" />
-                  Later
+                  {t.pwaUpdate.later}
                 </Button>
                 <Button
                   onClick={handleUpdate}
@@ -112,7 +114,7 @@ export function PWAUpdateAvailable() {
                   className="flex-1 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white"
                 >
                   <RefreshCw className="w-4 h-4 mr-1" />
-                  Update Now
+                  {t.pwaUpdate.updateNow}
                 </Button>
               </div>
             </div>

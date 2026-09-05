@@ -12,6 +12,7 @@ import {
 // ── Critical path — loaded eagerly (needed before/at first paint) ──────────
 import { SEOHead } from "./components/SEOHead";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import { getTranslations } from "./utils/i18n";
 import { LanguageSelector } from "./components/LanguageSelector";
 import { SplashScreen } from "./components/SplashScreen";
 import { AuthPage } from "./components/AuthPage";
@@ -397,6 +398,7 @@ export default function App() {
   });
   const vocabulary =
     APP_TRANSLATIONS[currentLangCode] || APP_TRANSLATIONS.en;
+  const uiTranslations = getTranslations(currentLangCode);
 
   useEffect(() => {
     const handleLanguageChange = (event: Event) => {
@@ -406,6 +408,17 @@ export default function App() {
     window.addEventListener("twobeone:language-change", handleLanguageChange);
     return () => window.removeEventListener("twobeone:language-change", handleLanguageChange);
   }, []);
+
+  // The saved profile is the cross-device source of truth. LanguageSelector
+  // writes changes back to the profile, while this hydrates a newly opened
+  // browser or installed app from that preference.
+  useEffect(() => {
+    const profileLanguage = profile?.language;
+    if (profileLanguage !== "en" && profileLanguage !== "am" && profileLanguage !== "om") return;
+    if (profileLanguage === currentLangCode) return;
+    window.localStorage.setItem("twobeone_language", profileLanguage);
+    window.dispatchEvent(new CustomEvent("twobeone:language-change", { detail: profileLanguage }));
+  }, [profile?.language, currentLangCode]);
 
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
@@ -1257,8 +1270,8 @@ export default function App() {
   );
 
   const handleMoodSelect = useCallback((mood: string) => {
-    toast.success("Mood recorded!");
-  }, []);
+    toast.success(uiTranslations.mood.moodSaved);
+  }, [uiTranslations.mood.moodSaved]);
 
   const handlePrayClick = useCallback(
     () => setActiveTab("prayer"),
@@ -1447,15 +1460,15 @@ export default function App() {
                 <div
                   className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-1"
                   role="status"
-                  aria-label={`${partnerPreferences?.name || "Partner"} is ${partnerOnline ? "online" : "offline"}`}
-                  title={`${partnerPreferences?.name || "Partner"} is ${partnerOnline ? "online" : "offline"}`}
+                  aria-label={`${partnerPreferences?.name || uiTranslations.mood.partner}: ${partnerOnline ? uiTranslations.dashboard.online : uiTranslations.dashboard.offline}`}
+                  title={`${partnerPreferences?.name || uiTranslations.mood.partner}: ${partnerOnline ? uiTranslations.dashboard.online : uiTranslations.dashboard.offline}`}
                 >
                   <span
                     className={`h-2.5 w-2.5 rounded-full ${partnerOnline ? "bg-emerald-500 shadow-[0_0_0_3px_rgba(16,185,129,0.16)]" : "bg-slate-300"}`}
                     aria-hidden="true"
                   />
                   <span className="hidden text-xs font-semibold text-slate-700 sm:inline">
-                    {partnerOnline ? "Online" : "Offline"}
+                    {partnerOnline ? uiTranslations.dashboard.online : uiTranslations.dashboard.offline}
                   </span>
                 </div>
               )}

@@ -1,10 +1,13 @@
 import { useMemo, useState } from 'react';
 import { CheckCircle2, Heart, Loader2, MailCheck, MailX } from 'lucide-react';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
+import { useLanguage } from '../contexts/LanguageContext';
 
 type NewsletterAction = 'confirm' | 'unsubscribe';
 
 export function NewsletterPreferencePage({ action, onComplete }: { action: NewsletterAction; onComplete: () => void }) {
+  const { t } = useLanguage();
+  const copy = t.newsletter;
   const [status, setStatus] = useState<'idle' | 'saving' | 'complete' | 'error'>('idle');
   const [message, setMessage] = useState('');
   const token = useMemo(() => new URLSearchParams(window.location.search).get('token') || '', []);
@@ -13,7 +16,7 @@ export function NewsletterPreferencePage({ action, onComplete }: { action: Newsl
   const submit = async () => {
     if (!token) {
       setStatus('error');
-      setMessage('This email preference link is incomplete or invalid.');
+      setMessage(copy.invalidLink);
       return;
     }
     setStatus('saving');
@@ -32,12 +35,12 @@ export function NewsletterPreferencePage({ action, onComplete }: { action: Newsl
         },
       );
       const data = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(data.error || 'Unable to update your email preference.');
+      if (!response.ok) throw new Error(copy.updateFailed);
       setStatus('complete');
-      setMessage(data.message || (isConfirmation ? 'Your subscription is confirmed.' : 'You have been unsubscribed.'));
+      setMessage(isConfirmation ? copy.confirmedMessage : copy.unsubscribedMessage);
     } catch (error) {
       setStatus('error');
-      setMessage(error instanceof Error ? error.message : 'Unable to update your email preference.');
+      setMessage(error instanceof Error ? error.message : copy.updateFailed);
     }
   };
 
@@ -48,27 +51,27 @@ export function NewsletterPreferencePage({ action, onComplete }: { action: Newsl
         <header className="bg-gradient-to-br from-rose-500 to-pink-600 px-7 py-7 text-white">
           <div className="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-white shadow-lg"><Heart className="h-6 w-6 fill-rose-500 text-rose-500" /></div>
           <h1 className="text-2xl font-bold text-white">Shabbat Shalom</h1>
-          <p className="mt-1 text-sm text-white/85">Encouragement and practical guidance for the week ahead.</p>
+          <p className="mt-1 text-sm text-white/85">{copy.subtitle}</p>
         </header>
         <div className="space-y-5 p-7 text-center">
           <Icon className={`mx-auto h-12 w-12 ${status === 'error' ? 'text-red-500' : 'text-rose-600'}`} />
           <div>
             <h2 className="text-lg font-semibold">
-              {status === 'complete' ? (isConfirmation ? 'Subscription confirmed' : 'Email preference updated') : isConfirmation ? 'Confirm your subscription' : 'Unsubscribe from weekly email?'}
+              {status === 'complete' ? (isConfirmation ? copy.subscriptionConfirmed : copy.preferenceUpdated) : isConfirmation ? copy.confirmTitle : copy.unsubscribeTitle}
             </h2>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
               {message || (isConfirmation
-                ? 'Confirm to receive one thoughtful email each Saturday. You can unsubscribe at any time.'
-                : 'You will stop receiving weekly encouragement and app updates. Essential account emails are unaffected.')}
+                ? copy.confirmDescription
+                : copy.unsubscribeDescription)}
             </p>
           </div>
           {status !== 'complete' && (
             <button type="button" onClick={submit} disabled={status === 'saving'} className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-rose-600 font-semibold text-white hover:bg-rose-700 disabled:opacity-60">
               {status === 'saving' && <Loader2 className="h-4 w-4 animate-spin" />}
-              {status === 'saving' ? 'Updating…' : isConfirmation ? 'Confirm subscription' : 'Unsubscribe'}
+              {status === 'saving' ? copy.updating : isConfirmation ? copy.confirm : copy.unsubscribe}
             </button>
           )}
-          <button type="button" onClick={onComplete} className="w-full text-sm font-semibold text-rose-600">Return to TwoBeOne</button>
+          <button type="button" onClick={onComplete} className="w-full text-sm font-semibold text-rose-600">{copy.returnToApp}</button>
         </div>
       </section>
     </main>
