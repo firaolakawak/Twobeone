@@ -106,7 +106,7 @@ const STATS = [
   { value: "10k+", label: "Active Couples", colorVar: "var(--primary-600)" },
   { value: "500k+", label: "Devotionals Read", colorVar: "var(--secondary-600)" },
   { value: "250k+", label: "Prayers Shared", colorVar: "var(--primary-500)" },
-  { value: "4.9★", label: "App Store Rating", colorVar: "var(--warning-500)" },
+  { value: "4.9★", label: "Couples Rating", colorVar: "var(--warning-500)" },
 ];
 
 const FAQS = [
@@ -155,8 +155,7 @@ const WHY_ITEMS = [
   },
 ];
 
-const APP_STORE_URL = (import.meta as any).env?.VITE_APP_STORE_URL as string | undefined;
-const GOOGLE_PLAY_URL = (import.meta as any).env?.VITE_GOOGLE_PLAY_URL as string | undefined;
+const GOOGLE_PLAY_URL = "https://play.google.com/store/apps/details?id=com.twobeone.app&pli=1";
 
 type HeroPreview = "devotional" | "prayer" | "sync";
 
@@ -276,6 +275,12 @@ export function LandingPage({ onGetStarted, initialPage = null }: LandingPagePro
       return;
     }
     onGetStarted();
+  };
+
+  const openAppleInstallGuide = () => {
+    window.dispatchEvent(new CustomEvent('twobeone:open-install', {
+      detail: { platform: 'ios' },
+    }));
   };
 
   /* ─── STATIC PAGE ROUTER ─── */
@@ -432,13 +437,18 @@ export function LandingPage({ onGetStarted, initialPage = null }: LandingPagePro
             </p>
 
             <div className="launch-hero__stores" aria-label="Download TwoBeOne">
-              <button className="launch-store-button" onClick={() => openStore(APP_STORE_URL)} type="button">
+              <button
+                className="launch-store-button"
+                onClick={openAppleInstallGuide}
+                type="button"
+                aria-label="Show iPhone and iPad installation instructions"
+              >
                 <svg className="launch-store-button__apple" viewBox="0 0 24 24" aria-hidden="true">
                   <path fill="currentColor" d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.79 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.53 4.1ZM12.03 7.25C11.88 5.02 13.69 3.18 15.77 3c.29 2.58-2.34 4.5-3.74 4.25Z" />
                 </svg>
                 <span>
-                  <small>Download on the</small>
-                  <strong>App Store</strong>
+                  <small>Install as a PWA</small>
+                  <strong>iPhone / iPad</strong>
                 </span>
               </button>
 

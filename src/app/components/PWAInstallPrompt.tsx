@@ -100,7 +100,9 @@ export function PWAInstallPrompt() {
       if (isInstalled()) handleInstalled();
     };
 
-    const handleManualOpen = () => {
+    const handleManualOpen = (event: Event) => {
+      const requestedPlatform = (event as CustomEvent<{ platform?: InstallPlatform }>).detail?.platform;
+      if (requestedPlatform === 'ios') setPlatform('ios');
       if (!isInstalled()) setShowPrompt(true);
     };
 

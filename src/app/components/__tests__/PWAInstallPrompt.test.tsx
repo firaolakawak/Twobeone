@@ -73,6 +73,22 @@ describe('PWAInstallPrompt', () => {
     expect(installEvent.prompt).toHaveBeenCalledOnce();
   });
 
+  it('shows the iOS PWA guide when requested by the Apple homepage button', async () => {
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 1280 });
+    Object.defineProperty(navigator, 'userAgent', {
+      configurable: true,
+      value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/140.0.0.0',
+    });
+    render(<PWAInstallPrompt />);
+
+    await act(async () => window.dispatchEvent(new CustomEvent('twobeone:open-install', {
+      detail: { platform: 'ios' },
+    })));
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByTestId('ios-install-steps')).toBeInTheDocument();
+  });
+
   it('does not show an install banner after the app has been installed', async () => {
     vi.useFakeTimers();
     localStorage.setItem('twobeone_app_installed', 'true');
