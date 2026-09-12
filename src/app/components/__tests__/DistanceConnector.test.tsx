@@ -437,4 +437,109 @@ describe("compact journey locations", () => {
       screen.getByRole("button", { name: "Bakka qoodame haqi" }),
     ).toBeVisible();
   });
+
+  it("opens location settings from the keyboard-accessible love journey row without duplicating identity", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(
+        response({
+          userLocation: dubaiLocation,
+          partnerLocation: addisLocation,
+        }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+    const user = userEvent.setup();
+    render(journey({ variant: "love-journey" }));
+    await screen.findByText("Dubai");
+
+    const row = screen.getByRole("button", { name: "Location settings" });
+    expect(row).toHaveTextContent("Dubai");
+    expect(row).toHaveTextContent("Addis Ababa");
+    expect(row).toHaveTextContent(/≈ [\d,]+ km/);
+    expect(row).toHaveAccessibleDescription(
+      /Partner One: Dubai, United Arab Emirates.*Partner Two: Addis Ababa, Ethiopia.*Approximate straight-line distance.*Both cities set manually/,
+    );
+    expect(
+      screen.queryByText("Partner One", { exact: true }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Partner Two", { exact: true }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    expect(screen.getAllByRole("button")).toHaveLength(1);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    await user.tab();
+    expect(row).toHaveFocus();
+    await user.keyboard("{Enter}");
+    expect(
+      screen.getByRole("dialog", { name: "Location settings" }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: "Update current location" }),
+    ).toBeVisible();
+    expect(screen.getByLabelText("Set your city")).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: "Remove shared location" }),
+    ).toBeVisible();
+    expect(getCurrentLocation).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    {
+      state: "same city",
+      partnerLocation: { ...dubaiLocation, userId: "two" },
+      value: "Same city",
+      description: /Based on your selected city/,
+    },
+    {
+      state: "not shared",
+      partnerLocation: null,
+      value: "—",
+      description: /Not shared.*Distance unavailable/,
+    },
+  ])(
+    "keeps the love journey $state distance truthful",
+    async ({ partnerLocation, value, description }) => {
+      vi.stubGlobal(
+        "fetch",
+        vi
+          .fn()
+          .mockResolvedValue(
+            response({ userLocation: dubaiLocation, partnerLocation }),
+          ),
+      );
+      render(journey({ variant: "love-journey" }));
+      await screen.findByText(value);
+      const row = screen.getByRole("button", { name: "Location settings" });
+      await waitFor(() => expect(row).toHaveAttribute("aria-busy", "false"));
+      expect(row).toHaveAccessibleDescription(description);
+      expect(row).not.toHaveTextContent("0.0 km");
+      expect(screen.getAllByRole("button")).toHaveLength(1);
+    },
+  );
+
+  it("distinguishes loading and a failed lookup from unshared locations in the love journey row", async () => {
+    let finishLookup!: (value: Response) => void;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockImplementation(
+        () =>
+          new Promise<Response>((resolve) => {
+            finishLookup = resolve;
+          }),
+      ),
+    );
+    render(journey({ variant: "love-journey" }));
+    const row = screen.getByRole("button", { name: "Location settings" });
+    expect(row).toHaveAttribute("aria-busy", "true");
+    expect(row).toHaveAccessibleDescription(/Loading locations/);
+    expect(row).not.toHaveTextContent("Not shared");
+
+    await act(async () => finishLookup({ ok: false, status: 503 } as Response));
+    expect(row).toHaveAttribute("aria-busy", "false");
+    expect(row).toHaveAccessibleDescription(/Locations unavailable/);
+    expect(row).not.toHaveTextContent("Not shared");
+    expect(row).toHaveTextContent("—");
+  });
 });

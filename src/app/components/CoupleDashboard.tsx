@@ -1,5 +1,5 @@
 import { useLanguage } from "../contexts/LanguageContext";
-import { useState, useEffect, useMemo, memo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Heart,
   BookOpen,
@@ -8,7 +8,6 @@ import {
   Calendar,
   Users,
   ArrowRight,
-  SlidersHorizontal,
   Clock,
   Shuffle,
   Brain,
@@ -21,7 +20,13 @@ import {
 } from "lucide-react";
 import { ComprehensiveBibleReader } from "./ComprehensiveBibleReader";
 import { PushNotificationSetup } from "./PushNotificationSetup";
-import { DistanceConnector } from "./DistanceConnector";
+import { LoveJourneyHeader } from "./LoveJourneyHeader";
+import { parseRelationshipStart } from "../utils/relationshipJourney";
+export {
+  parseRelationshipStart,
+  getElapsedRelationshipTime,
+} from "../utils/relationshipJourney";
+export { JourneyCounter } from "./LoveJourneyHeader";
 import { projectId } from "../utils/supabase/info";
 import { toast } from "sonner";
 import type {
@@ -117,47 +122,6 @@ export function pickRandomHomeSpotlight(
 
 export const RELATIONSHIP_STAGE_START_DAYS = [0, 90, 180, 250, 360] as const;
 
-// Settings saves a calendar date. Treat it as local midnight; timestamps retain
-// their explicit timezone so the displayed date and elapsed counter agree.
-export function parseRelationshipStart(
-  start: string | Date | null | undefined,
-) {
-  if (!start) return null;
-  const dateOnly =
-    typeof start === "string" && /^\d{4}-\d{2}-\d{2}$/.test(start);
-  const date =
-    start instanceof Date
-      ? new Date(start.getTime())
-      : new Date(dateOnly ? `${start}T00:00:00` : start);
-  if (!Number.isFinite(date.getTime())) return null;
-  if (dateOnly) {
-    const [year, month, day] = (start as string).split("-").map(Number);
-    if (
-      date.getFullYear() !== year ||
-      date.getMonth() !== month - 1 ||
-      date.getDate() !== day
-    )
-      return null;
-  }
-  return date;
-}
-
-export function getElapsedRelationshipTime(
-  start: string | Date | undefined,
-  now = Date.now(),
-) {
-  const date = parseRelationshipStart(start);
-  if (!date) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
-
-  const diffMs = Math.max(0, now - date.getTime());
-  return {
-    days: Math.floor(diffMs / 86_400_000),
-    hours: Math.floor((diffMs % 86_400_000) / 3_600_000),
-    minutes: Math.floor((diffMs % 3_600_000) / 60_000),
-    seconds: Math.floor((diffMs % 60_000) / 1_000),
-  };
-}
-
 export function getRelationshipStageProgress(daysTogetherInput: number) {
   const daysTogether = Number.isFinite(daysTogetherInput)
     ? Math.max(0, Math.floor(daysTogetherInput))
@@ -221,66 +185,6 @@ interface MoodEntry {
   note?: string;
 }
 
-// Keep the one-second updates isolated from the dashboard's data and activities.
-export const JourneyCounter = memo(function JourneyCounter({
-  start,
-}: {
-  start: string;
-}) {
-  const { t, language } = useLanguage();
-  const copy = dashboardJourneyCopy[language];
-  const [time, setTime] = useState(() => getElapsedRelationshipTime(start));
-
-  useEffect(() => {
-    const update = () => setTime(getElapsedRelationshipTime(start));
-    update();
-    const interval = setInterval(update, 1000);
-    const onVisible = () => {
-      if (!document.hidden) update();
-    };
-    document.addEventListener("visibilitychange", onVisible);
-    return () => {
-      clearInterval(interval);
-      document.removeEventListener("visibilitychange", onVisible);
-    };
-  }, [start]);
-
-  return (
-    <div className="journey-counter">
-      <div
-        className="journey-counter-values"
-        role="timer"
-        aria-live="off"
-        aria-label={t.dashboard.daysTogether}
-      >
-        {[
-          { unit: "days", value: time.days, label: t.time.days },
-          { unit: "hours", value: time.hours, label: t.time.hours },
-          { unit: "minutes", value: time.minutes, label: t.time.minutes },
-          { unit: "seconds", value: time.seconds, label: t.time.seconds },
-        ].map(({ unit, value, label }) => (
-          <div key={unit}>
-            <strong data-unit={unit}>
-              {unit === "days" ? value : String(value).padStart(2, "0")}
-            </strong>
-            <span>{label}</span>
-          </div>
-        ))}
-      </div>
-      <p className="journey-since">
-        <Calendar size={12} aria-hidden="true" />
-        {copy.since}
-        <time dateTime={start}>
-          {parseRelationshipStart(start)?.toLocaleDateString(
-            language === "en" ? "en-GB" : language === "am" ? "am-ET" : "om-ET",
-            { day: "numeric", month: "short", year: "numeric" },
-          )}
-        </time>
-      </p>
-    </div>
-  );
-});
-
 export function CoupleDashboard({
   profile,
   partner,
@@ -293,8 +197,6 @@ export function CoupleDashboard({
   accessToken,
   devotionalStreak,
   devotionalCompletedCount = 0,
-  userOnline,
-  partnerOnline,
   devotionals = [],
   onOpenDevotional,
   onStartQuestion,
@@ -1107,9 +1009,6 @@ export function CoupleDashboard({
   ] as const;
   const userName = profile?.name || profile?.full_name || copy.you;
   const partnerName = partner?.name || partner?.full_name || copy.partner;
-  const hour = new Date().getHours();
-  const greeting =
-    hour < 12 ? copy.morning : hour < 18 ? copy.afternoon : copy.evening;
   const activityLabel =
     spotlight.kind === "devotion"
       ? t.nav.devotions
@@ -1119,95 +1018,28 @@ export function CoupleDashboard({
 
   return (
     <div className="journey-dashboard">
-      <div className="journey-welcome">
-        <div>
-          <p>
-            {greeting}, {userName.split(" ")[0]}
-          </p>
-          <h1>{copy.littleWorld}</h1>
-        </div>
-        <span>
-          <Heart size={12} aria-hidden="true" />
-          {copy.justUs}
-        </span>
-      </div>
-
-      <section className="journey-panel" aria-labelledby="journey-couple-title">
-        <div className="journey-topline">
-          <span>{t.dashboard.growingTogetherInFaith}</span>
-          <button
-            type="button"
-            className="journey-icon-button journey-settings"
-            onClick={() => onNavigate?.("profile")}
-            aria-label={copy.editJourney}
-          >
-            <SlidersHorizontal size={15} aria-hidden="true" />
-          </button>
-        </div>
-        <div className="journey-title-row">
-          <h2 id="journey-couple-title">
-            {userName}
-            {partner && (
-              <>
-                {" "}
-                <span>&amp;</span> {partnerName}
-              </>
-            )}
-          </h2>
-          <p>{copy.story}</p>
-        </div>
-        {partner &&
-          (relationshipStart ? (
-            <JourneyCounter start={relationshipStart} />
-          ) : (
-            <button
-              type="button"
-              className="journey-set-date"
-              onClick={() => onNavigate?.("profile")}
-            >
-              <Calendar size={15} aria-hidden="true" />
-              {copy.setDate}
-            </button>
-          ))}
-        {partner && profile?.id && accessToken ? (
-          <DistanceConnector
-            embedded
-            variant="journey"
-            userId={profile.id}
-            userName={userName}
-            userAvatar={
-              profile.profilePicture || profile.avatar_url || undefined
-            }
-            partnerId={partner.id}
-            partnerName={partnerName}
-            partnerAvatar={
-              partner.profilePicture || partner.avatar_url || undefined
-            }
-            accessToken={accessToken}
-            userOnline={userOnline}
-            partnerOnline={partnerOnline}
-          />
-        ) : (
-          <div className="journey-unlinked">
-            <Users size={30} className="text-primary-400" aria-hidden="true" />
-            <p>
-              {partner
-                ? t.dashboard.locationNotSet
-                : t.dashboard.connectWithPartner}
-            </p>
-            {!partner && (
-              <button
-                type="button"
-                className="journey-primary"
-                onClick={() => onNavigate?.("profile")}
-              >
-                <Users size={15} aria-hidden="true" />
-                {t.dashboard.addPartner}
-              </button>
-            )}
-          </div>
-        )}
-      </section>
+      <LoveJourneyHeader
+        user={{
+          id: profile?.id || "",
+          name: userName,
+          avatar: profile?.profilePicture || profile?.avatar_url || undefined,
+        }}
+        partner={
+          partner
+            ? {
+                id: partner.id,
+                name: partnerName,
+                avatar:
+                  partner.profilePicture || partner.avatar_url || undefined,
+              }
+            : undefined
+        }
+        start={relationshipStart || undefined}
+        accessToken={accessToken}
+        milestones={milestones}
+        onEdit={() => onNavigate?.("profile")}
+        onViewMemories={() => onScreenNavigate?.("milestones")}
+      />
 
       <section
         className="journey-card journey-spotlight"

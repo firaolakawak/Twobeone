@@ -54,7 +54,7 @@ describe("Our Journey counter", () => {
     expect(timer.querySelector('[data-unit="seconds"]')).toHaveTextContent(
       "59",
     );
-    for (const label of ["days", "hours", "minutes", "seconds"])
+    for (const label of ["days together", "hours", "minutes", "seconds"])
       expect(within(timer).getByText(label)).toBeVisible();
 
     act(() => {

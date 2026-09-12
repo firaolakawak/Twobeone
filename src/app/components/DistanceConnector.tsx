@@ -3,6 +3,7 @@ import {
   useEffect,
   useCallback,
   useRef,
+  useId,
   type ReactNode,
 } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
@@ -55,7 +56,7 @@ interface DistanceConnectorProps {
   userOnline?: boolean;
   partnerOnline?: boolean;
   embedded?: boolean;
-  variant?: "default" | "journey";
+  variant?: "default" | "journey" | "love-journey";
   centerContent?: ReactNode;
 }
 
@@ -71,6 +72,9 @@ const LOCATION_COPY = {
     coupleLocations: "Your shared locations",
     notShared: "Not shared",
     locationShared: "Location shared",
+    loadingLocations: "Loading locations…",
+    locationsUnavailable: "Locations unavailable",
+    km: "km",
     sameCity: "Same city",
     distanceUnavailable: "Distance unavailable",
     approximate: "Approximate straight-line distance",
@@ -114,6 +118,9 @@ const LOCATION_COPY = {
     coupleLocations: "ያጋራችሁት አካባቢ",
     notShared: "አልተጋራም",
     locationShared: "አካባቢ ተጋርቷል",
+    loadingLocations: "አካባቢዎችን በመጫን ላይ…",
+    locationsUnavailable: "አካባቢዎች አይገኙም",
+    km: "ኪ.ሜ",
     sameCity: "በአንድ ከተማ",
     distanceUnavailable: "ርቀት አይገኝም",
     approximate: "ግምታዊ የቀጥታ መስመር ርቀት",
@@ -156,6 +163,9 @@ const LOCATION_COPY = {
     coupleLocations: "Bakkeewwan waliin qooddan",
     notShared: "Hin qoodamne",
     locationShared: "Bakki qoodameera",
+    loadingLocations: "Bakkeewwan fe'amaa jiru…",
+    locationsUnavailable: "Bakkeewwan hin argamne",
+    km: "km",
     sameCity: "Magaalaa tokko keessa",
     distanceUnavailable: "Fageenyi hin argamne",
     approximate: "Fageenya tilmaamaa sarara qajeelaa",
@@ -234,6 +244,7 @@ export function DistanceConnector({
 }: DistanceConnectorProps) {
   const { t, language } = useLanguage();
   const copy = LOCATION_COPY[language];
+  const compactDescriptionId = useId();
   const locationScope = `${userId}:${partnerId || ""}`;
   const currentScope = useRef(locationScope);
   currentScope.current = locationScope;
@@ -243,6 +254,12 @@ export function DistanceConnector({
     user: UserLocation | null;
     partner: UserLocation | null;
   } | null>(null);
+  const [locationLoad, setLocationLoad] = useState<{
+    scope: string;
+    state: "loading" | "ready" | "error";
+  }>({ scope: locationScope, state: "loading" });
+  const locationReadState =
+    locationLoad.scope === locationScope ? locationLoad.state : "loading";
   const userLocation =
     locations?.scope === locationScope ? locations.user : null;
   const partnerLocation =
@@ -283,6 +300,7 @@ export function DistanceConnector({
     locationRequest.current?.abort();
     const controller = new AbortController();
     locationRequest.current = controller;
+    setLocationLoad({ scope: locationScope, state: "loading" });
     try {
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/couple-locations`,
@@ -291,7 +309,14 @@ export function DistanceConnector({
           signal: controller.signal,
         },
       );
-      if (!response.ok) return;
+      if (!response.ok) {
+        if (
+          !controller.signal.aborted &&
+          currentScope.current === locationScope
+        )
+          setLocationLoad({ scope: locationScope, state: "error" });
+        return;
+      }
       const data = await response.json();
       if (controller.signal.aborted || currentScope.current !== locationScope)
         return;
@@ -300,9 +325,15 @@ export function DistanceConnector({
         user: validUserLocation(data.userLocation, userId),
         partner: validUserLocation(data.partnerLocation, partnerId),
       });
+      setLocationLoad({ scope: locationScope, state: "ready" });
     } catch (error) {
-      if (!controller.signal.aborted)
+      if (
+        !controller.signal.aborted &&
+        currentScope.current === locationScope
+      ) {
+        setLocationLoad({ scope: locationScope, state: "error" });
         console.error("[DistanceConnector] Failed to load locations:", error);
+      }
     }
   }, [userId, partnerId, accessToken, locationScope]);
 
@@ -561,6 +592,37 @@ export function DistanceConnector({
       },
     ).format(new Date(entry.updatedAt))}`;
   };
+  const compactCity = (entry: UserLocation | null) =>
+    entry?.location?.city ||
+    (entry
+      ? copy.locationShared
+      : locationReadState === "loading"
+        ? copy.loadingLocations
+        : locationReadState === "error"
+          ? copy.locationsUnavailable
+          : copy.notShared);
+  const compactDistance =
+    distance === null || sameManualCity
+      ? journeyDistance
+      : `${journeyDistance} ${copy.km}`;
+  const compactDescription = [
+    `${userName}: ${compactCity(userLocation)}${userLocation?.location?.country ? `, ${userLocation.location.country}` : ""}`,
+    `${partnerName}: ${compactCity(partnerLocation)}${partnerLocation?.location?.country ? `, ${partnerLocation.location.country}` : ""}`,
+    distance === null
+      ? copy.distanceUnavailable
+      : `${compactDistance}. ${sameManualCity ? copy.cityBaseline : copy.approximate}`,
+    locationReadState === "ready"
+      ? sharingSource
+      : locationReadState === "loading"
+        ? copy.loadingLocations
+        : copy.locationsUnavailable,
+    userLocation &&
+      `${userName}: ${sourceLabel(userLocation)}${updateLabel(userLocation) ? `. ${updateLabel(userLocation)}` : ""}`,
+    partnerLocation &&
+      `${partnerName}: ${sourceLabel(partnerLocation)}${updateLabel(partnerLocation) ? `. ${updateLabel(partnerLocation)}` : ""}`,
+  ]
+    .filter(Boolean)
+    .join(". ");
   const journeyPerson = (
     name: string,
     avatar: string | undefined,
@@ -657,7 +719,44 @@ export function DistanceConnector({
         }
       `}</style>
 
-      {variant === "journey" ? (
+      {variant === "love-journey" ? (
+        <>
+          <button
+            className="love-journey-places"
+            type="button"
+            onClick={() => setShowSettings(true)}
+            aria-label={t.dashboard.locationSettings}
+            aria-describedby={compactDescriptionId}
+            aria-haspopup="dialog"
+            aria-busy={locationReadState === "loading"}
+            title={t.dashboard.locationSettings}
+          >
+            <span className="love-journey-places__city">
+              {compactCity(userLocation)}
+            </span>
+            <span className="love-journey-places__route">
+              <span
+                className="love-journey-places__route-line"
+                aria-hidden="true"
+              >
+                <Heart />
+              </span>
+              <span className="love-journey-places__distance">
+                {compactDistance}
+              </span>
+            </span>
+            <span className="love-journey-places__city">
+              {compactCity(partnerLocation)}
+            </span>
+          </button>
+          <span
+            className="love-journey-places__description"
+            id={compactDescriptionId}
+          >
+            {compactDescription}
+          </span>
+        </>
+      ) : variant === "journey" ? (
         <section aria-label={copy.coupleLocations} className="distance-journey">
           <div className="distance-journey__places">
             {journeyPerson(
