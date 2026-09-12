@@ -268,7 +268,7 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
     <div className="space-y-6 pb-20">
       {/* Header with Action Button */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl">Couple Profile</h1>
+        <h1 className="tbo-h1">Couple Profile</h1>
         {!partner ? (
           <Button onClick={() => setIsLinkDialogOpen(true)} className="bg-primary-600 hover:bg-primary-700">
             <Link2 className="w-4 h-4 mr-2" />

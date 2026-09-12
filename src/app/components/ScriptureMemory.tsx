@@ -251,14 +251,14 @@ export function ScriptureMemory({ onBack, accessToken, userName, partnerName }: 
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-primary-50 to-primary-50 dark:from-neutral-900 dark:via-primary-900/20 dark:to-primary-900/20 p-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+          <div className="flex min-w-0 items-center gap-3">
             <Button variant="ghost" size="icon" onClick={onBack}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <div>
-              <h1 className="flex items-center gap-2">
-                <Brain className="w-6 h-6 text-primary-600" />
+            <div className="min-w-0">
+              <h1 className="tbo-h1 flex items-center gap-2">
+                <Brain className="w-6 h-6 shrink-0 text-primary-600" />
                 {t.bible.title}
               </h1>
               <p className="text-sm text-muted-foreground mt-1">

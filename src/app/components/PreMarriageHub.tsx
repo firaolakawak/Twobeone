@@ -569,12 +569,13 @@ function ModuleCard({
             />
             <span
               style={{
-                fontSize: "13px",
+                fontSize: "var(--tbo-body-s-size)",
+                lineHeight: "var(--tbo-body-s-line)",
                 color: "#475569",
                 flex: 1,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
+                minWidth: 0,
+                overflowWrap: "anywhere",
+                whiteSpace: "normal",
               }}
             >
               {lesson.title}
@@ -890,8 +891,9 @@ export function PreMarriageHub({
           <div>
             <h1
               style={{
-                fontSize: "20px",
-                fontWeight: 700,
+                fontSize: "var(--tbo-h2-size)",
+                lineHeight: "var(--tbo-h2-line)",
+                fontWeight: 500,
                 color: "#ffffff",
                 margin: 0,
               }}

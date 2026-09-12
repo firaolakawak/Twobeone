@@ -315,7 +315,7 @@ export function CommunityGroups() {
                 <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" aria-hidden="true" />
                 Growing in faith together
               </div>
-              <h1 className="text-3xl font-bold tracking-[-0.035em] text-slate-950 sm:text-4xl">{t.community.title}</h1>
+              <h1 className="tbo-h1 text-slate-950">{t.community.title}</h1>
               <p className="mt-2 max-w-lg text-[15px] leading-7 text-slate-600">Find belonging, share encouragement, and build meaningful connections with other couples.</p>
             </div>
             <Button type="button" onClick={() => setIsCreateDialogOpen(true)} aria-label="Create New Group" className="h-11 rounded-full bg-rose-600 px-5 font-bold text-white shadow-lg shadow-rose-200 hover:bg-rose-700">
@@ -621,7 +621,7 @@ function GroupDetails({ group, onBack, isMember, onLeave }: {
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">{group.name}</h1>
+                <h1 className="tbo-h1 text-slate-950">{group.name}</h1>
                 <Badge className="border-0 bg-white/80 text-rose-700 shadow-sm hover:bg-white">{group.memberCount} members</Badge>
               </div>
               <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600">{group.description || 'A welcoming space for couples to connect and grow together.'}</p>

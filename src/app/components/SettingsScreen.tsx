@@ -656,7 +656,7 @@ export function SettingsScreen({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 text-slate-900">
+    <div className="min-h-screen min-w-0 bg-slate-50/50 text-slate-900 [overflow-wrap:anywhere]">
       <div className="mx-auto w-full max-w-3xl space-y-7 pb-28">
         <Card className="relative isolate overflow-hidden rounded-[2rem] border-rose-100 bg-gradient-to-br from-rose-50 via-white to-amber-50 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)]">
           <input type="file" id="cover-picture-upload" className="hidden" accept="image/*" onChange={handleUploadCoverPicture} disabled={isUploadingCover} />
@@ -713,10 +713,10 @@ export function SettingsScreen({
                 </DropdownMenu>
               </div>
               <div className="min-w-0 flex-1 sm:pb-1">
-                <h1 className="text-3xl font-bold tracking-[-0.035em] text-slate-950">{profile?.name || 'Your Profile'}</h1>
-                <p className="mt-1 truncate text-sm text-slate-500">{profile?.email}</p>
+                <h1 className="tbo-h1 text-slate-950">{profile?.name || 'Your Profile'}</h1>
+                <p className="mt-1 tbo-body-s [overflow-wrap:anywhere] text-slate-500">{profile?.email}</p>
                 {partner && (
-                  <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-sm font-medium text-rose-700 ring-1 ring-rose-100">
+                  <div className="mt-3 inline-flex max-w-full items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-sm font-medium text-rose-700 ring-1 ring-rose-100">
                     <Heart className="h-4 w-4 fill-rose-500 text-rose-500" />
                     <span>Connected with {partner.name}</span>
                   </div>
@@ -728,24 +728,24 @@ export function SettingsScreen({
 
         {/* Settings Tabs */}
         <Tabs defaultValue="personal" className="w-full gap-6">
-          <TabsList className="mb-6 grid h-14 w-full grid-cols-5 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-inner" aria-label="Profile settings sections">
-            <TabsTrigger value="personal" aria-label="Personal" className="h-full gap-2 rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
+          <TabsList className="mb-6 grid h-auto min-h-14 w-full grid-cols-5 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-inner" aria-label="Profile settings sections">
+            <TabsTrigger value="personal" aria-label="Personal" className="h-auto min-h-11 min-w-0 flex-wrap gap-2 whitespace-normal rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
               <User className="w-4 h-4" />
               <span className="hidden sm:inline">Personal</span>
             </TabsTrigger>
-            <TabsTrigger value="couple" aria-label="Couple" className="h-full gap-2 rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
+            <TabsTrigger value="couple" aria-label="Couple" className="h-auto min-h-11 min-w-0 flex-wrap gap-2 whitespace-normal rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
               <Heart className="w-4 h-4" />
               <span className="hidden sm:inline">Couple</span>
             </TabsTrigger>
-            <TabsTrigger value="privacy" aria-label="Privacy" className="h-full gap-2 rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
+            <TabsTrigger value="privacy" aria-label="Privacy" className="h-auto min-h-11 min-w-0 flex-wrap gap-2 whitespace-normal rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
               <Shield className="w-4 h-4" />
               <span className="hidden sm:inline">Privacy</span>
             </TabsTrigger>
-            <TabsTrigger value="notifications" aria-label="Alerts" className="h-full gap-2 rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
+            <TabsTrigger value="notifications" aria-label="Alerts" className="h-auto min-h-11 min-w-0 flex-wrap gap-2 whitespace-normal rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
               <Bell className="w-4 h-4" />
               <span className="hidden sm:inline">Alerts</span>
             </TabsTrigger>
-            <TabsTrigger value="app" aria-label="App settings" className="h-full gap-2 rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
+            <TabsTrigger value="app" aria-label="App settings" className="h-auto min-h-11 min-w-0 flex-wrap gap-2 whitespace-normal rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
               <Settings className="w-4 h-4" />
               <span className="hidden sm:inline">App</span>
             </TabsTrigger>
@@ -755,7 +755,7 @@ export function SettingsScreen({
           <TabsContent value="personal" className="space-y-6">
             <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="tbo-h3 flex min-w-0 items-start gap-2 [&>svg]:shrink-0">
                   <User className="w-5 h-5" />
                   Personal Information
                 </CardTitle>
@@ -826,7 +826,7 @@ export function SettingsScreen({
                 <Button 
                   onClick={handleSavePersonalInfo} 
                   disabled={isSaving}
-                  className="h-11 w-full rounded-full bg-rose-600 font-bold text-white shadow-sm hover:bg-rose-700"
+                  className="h-auto min-h-11 w-full whitespace-normal rounded-full bg-rose-600 py-2 font-medium text-white shadow-sm hover:bg-rose-700"
                 >
                   {isSaving ? 'Saving...' : 'Save Changes'}
                 </Button>
@@ -836,7 +836,7 @@ export function SettingsScreen({
             {/* Account Actions */}
             <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="tbo-h3 flex min-w-0 items-start gap-2 [&>svg]:shrink-0">
                   <Settings className="w-5 h-5" />
                   Account Actions
                 </CardTitle>
@@ -900,7 +900,7 @@ export function SettingsScreen({
           <TabsContent value="couple" className="space-y-6">
             <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="tbo-h3 flex min-w-0 items-start gap-2 [&>svg]:shrink-0">
                   <Heart className="w-5 h-5 text-primary-500" />
                   Couple Information
                 </CardTitle>
@@ -912,7 +912,7 @@ export function SettingsScreen({
                   {partner ? (
                     <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-success-50 to-success-50 rounded-lg border border-success-500/30">
                       <CheckCircle className="w-5 h-5 text-success-700" />
-                      <div className="flex-1">
+                      <div className="min-w-0 flex-1">
                         <p className="font-medium text-success-700">{partner.name}</p>
                         <p className="text-sm text-success-700">{partner.email}</p>
                       </div>
@@ -929,7 +929,7 @@ export function SettingsScreen({
                   <div className="space-y-3 rounded-2xl border border-rose-100 bg-gradient-to-r from-rose-50 to-amber-50 p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Key className="w-5 h-5 text-primary-600" />
-                      <h4 className="font-semibold text-primary-900">Link by Code</h4>
+                      <h4 className="tbo-body-l text-primary-900">Link by Code</h4>
                     </div>
                     <p className="text-sm text-foreground mb-3">
                       Connect with your partner using their invite code
@@ -939,7 +939,7 @@ export function SettingsScreen({
                         placeholder="Enter partner's code"
                         value={partnerCode}
                         onChange={(e) => setPartnerCode(e.target.value.toUpperCase())}
-                        className="flex-1 font-mono"
+                        className="min-w-0 flex-1 font-mono"
                       />
                       <Button
                         onClick={handleLinkByCode}
@@ -1053,7 +1053,7 @@ export function SettingsScreen({
                 <Button 
                   onClick={handleSavePersonalInfo}
                   disabled={isSaving}
-                  className="h-11 w-full rounded-full bg-rose-600 font-bold text-white shadow-sm hover:bg-rose-700"
+                  className="h-auto min-h-11 w-full whitespace-normal rounded-full bg-rose-600 py-2 font-medium text-white shadow-sm hover:bg-rose-700"
                 >
                   {isSaving ? 'Saving...' : 'Save Changes'}
                 </Button>
@@ -1063,7 +1063,7 @@ export function SettingsScreen({
             {/* Danger Zone */}
             <Card className="rounded-[1.5rem] border-error-500/30 bg-error-50/50 shadow-sm">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-error-500">
+                <CardTitle className="tbo-h3 flex min-w-0 items-start gap-2 [&>svg]:shrink-0 text-error-500">
                   <AlertTriangle className="w-5 h-5" />
                   Danger Zone
                 </CardTitle>
@@ -1108,15 +1108,15 @@ export function SettingsScreen({
           <TabsContent value="privacy" className="space-y-6">
             <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="tbo-h3 flex min-w-0 items-start gap-2 [&>svg]:shrink-0">
                   <Shield className="w-5 h-5" />
                   Privacy & Sharing
                 </CardTitle>
                 <CardDescription>Control what you share with your partner</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
+                <div className="flex min-w-0 items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1">
                     <p className="font-medium">Share Journal Entries</p>
                     <p className="text-sm text-muted-foreground">Allow partner to view your journal entries</p>
                   </div>
@@ -1127,8 +1127,8 @@ export function SettingsScreen({
                 </div>
                 <Separator />
                 
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
+                <div className="flex min-w-0 items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1">
                     <p className="font-medium">Share Prayer Requests</p>
                     <p className="text-sm text-muted-foreground">Allow partner to see your prayer requests</p>
                   </div>
@@ -1139,8 +1139,8 @@ export function SettingsScreen({
                 </div>
                 <Separator />
                 
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
+                <div className="flex min-w-0 items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1">
                     <p className="font-medium">Share Progress</p>
                     <p className="text-sm text-muted-foreground">Show your devotional progress to partner</p>
                   </div>
@@ -1151,8 +1151,8 @@ export function SettingsScreen({
                 </div>
                 <Separator />
                 
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
+                <div className="flex min-w-0 items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1">
                     <p className="font-medium">Share Milestones</p>
                     <p className="text-sm text-muted-foreground">Allow partner to see your milestones</p>
                   </div>
@@ -1163,8 +1163,8 @@ export function SettingsScreen({
                 </div>
                 <Separator />
                 
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
+                <div className="flex min-w-0 items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1">
                     <p className="font-medium">Show Online Status</p>
                     <p className="text-sm text-muted-foreground">Let partner see when you're active</p>
                   </div>
@@ -1177,7 +1177,7 @@ export function SettingsScreen({
                 <Button 
                   onClick={handleSavePrivacySettings}
                   disabled={isSaving}
-                  className="mt-4 h-11 w-full rounded-full bg-rose-600 font-bold text-white shadow-sm hover:bg-rose-700"
+                  className="mt-4 h-auto min-h-11 w-full whitespace-normal rounded-full bg-rose-600 py-2 font-medium text-white shadow-sm hover:bg-rose-700"
                 >
                   {isSaving ? 'Saving...' : 'Save Privacy Settings'}
                 </Button>
@@ -1186,7 +1186,7 @@ export function SettingsScreen({
 
             <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="tbo-h3 flex min-w-0 items-start gap-2 [&>svg]:shrink-0">
                   <Lock className="w-5 h-5" />
                   Data & Security
                 </CardTitle>
@@ -1217,15 +1217,15 @@ export function SettingsScreen({
           <TabsContent value="notifications" className="space-y-6">
             <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="tbo-h3 flex min-w-0 items-start gap-2 [&>svg]:shrink-0">
                   <Bell className="w-5 h-5" />
                   Notification Preferences
                 </CardTitle>
                 <CardDescription>Choose what notifications you want to receive</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
+                <div className="flex min-w-0 items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1">
                     <p className="font-medium">Daily Devotional</p>
                     <p className="text-sm text-muted-foreground">Receive daily devotional reminders at 8:00 AM</p>
                   </div>
@@ -1236,8 +1236,8 @@ export function SettingsScreen({
                 </div>
                 <Separator />
                 
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
+                <div className="flex min-w-0 items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1">
                     <p className="font-medium">Prayer Reminders</p>
                     <p className="text-sm text-muted-foreground">Get reminded to pray together with your partner</p>
                   </div>
@@ -1248,8 +1248,8 @@ export function SettingsScreen({
                 </div>
                 <Separator />
                 
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
+                <div className="flex min-w-0 items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1">
                     <p className="font-medium">Partner Activity</p>
                     <p className="text-sm text-muted-foreground">Get notified when partner completes activities</p>
                   </div>
@@ -1260,8 +1260,8 @@ export function SettingsScreen({
                 </div>
                 <Separator />
                 
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
+                <div className="flex min-w-0 items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1">
                     <p className="font-medium">Community Updates</p>
                     <p className="text-sm text-muted-foreground">Receive updates from your community groups</p>
                   </div>
@@ -1274,7 +1274,7 @@ export function SettingsScreen({
                 <Button 
                   onClick={handleSaveNotificationSettings}
                   disabled={isSaving}
-                  className="mt-4 h-11 w-full rounded-full bg-rose-600 font-bold text-white shadow-sm hover:bg-rose-700"
+                  className="mt-4 h-auto min-h-11 w-full whitespace-normal rounded-full bg-rose-600 py-2 font-medium text-white shadow-sm hover:bg-rose-700"
                 >
                   {isSaving ? 'Saving...' : 'Save Notification Settings'}
                 </Button>
@@ -1283,12 +1283,12 @@ export function SettingsScreen({
 
             <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
               <CardHeader>
-                <CardTitle>Notification Channels</CardTitle>
+                <CardTitle className="tbo-h3">Notification Channels</CardTitle>
                 <CardDescription>Choose how you want to receive notifications</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
+                <div className="flex min-w-0 items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1">
                     <p className="font-medium">{t.notifications.pushNotifications}</p>
                     <p className="text-sm text-muted-foreground">Receive notifications on your device</p>
                   </div>
@@ -1299,8 +1299,8 @@ export function SettingsScreen({
                 </div>
                 <Separator />
                 
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
+                <div className="flex min-w-0 items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1">
                     <p className="font-medium">Email Notifications</p>
                     <p className="text-sm text-muted-foreground">Receive notifications via email</p>
                   </div>
@@ -1318,7 +1318,7 @@ export function SettingsScreen({
             {/* Language Selection */}
             <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="tbo-h3 flex min-w-0 items-start gap-2 [&>svg]:shrink-0">
                   <Globe className="w-5 h-5" />
                   {t.profile.language}
                 </CardTitle>
@@ -1346,13 +1346,13 @@ export function SettingsScreen({
                       transition: 'all 150ms',
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
+                    <div className="min-w-0" style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
                       <span style={{ fontSize: '1.75rem' }}>{lang.flag}</span>
-                      <div style={{ textAlign: 'left' }}>
-                        <p style={{ fontWeight: 'var(--font-weight-semibold)', color: 'var(--foreground)', margin: 0, fontSize: 'var(--text-body)' }}>
+                      <div className="min-w-0" style={{ textAlign: 'left' }}>
+                        <p className="tbo-body-l" style={{ color: 'var(--foreground)', margin: 0 }}>
                           {lang.nativeName}
                         </p>
-                        <p style={{ color: 'var(--muted-foreground)', margin: 0, fontSize: 'var(--text-caption)' }}>
+                        <p className="tbo-caption" style={{ color: 'var(--muted-foreground)', margin: 0 }}>
                           {lang.name}
                         </p>
                       </div>
@@ -1372,7 +1372,7 @@ export function SettingsScreen({
             {/* Daily Reminders */}
             <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="tbo-h3 flex min-w-0 items-start gap-2 [&>svg]:shrink-0">
                   <Bell className="w-5 h-5" />
                   Daily Reminders
                 </CardTitle>
@@ -1381,12 +1381,12 @@ export function SettingsScreen({
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <p className="font-medium" style={{ fontSize: 'var(--text-body)', fontWeight: 'var(--font-weight-medium)', color: 'var(--foreground)' }}>
+                <div className="flex min-w-0 items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="tbo-body-l" style={{ color: 'var(--foreground)' }}>
                       Push Notifications
                     </p>
-                    <p className="text-sm" style={{ fontSize: 'var(--text-caption)', color: 'var(--muted-foreground)' }}>
+                    <p className="tbo-body-s" style={{ color: 'var(--muted-foreground)' }}>
                       Daily app notification when inactive for 24 h
                     </p>
                   </div>
@@ -1396,12 +1396,12 @@ export function SettingsScreen({
                   />
                 </div>
                 <Separator />
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <p className="font-medium" style={{ fontSize: 'var(--text-body)', fontWeight: 'var(--font-weight-medium)', color: 'var(--foreground)' }}>
+                <div className="flex min-w-0 items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="tbo-body-l" style={{ color: 'var(--foreground)' }}>
                       Email Reminders
                     </p>
-                    <p className="text-sm" style={{ fontSize: 'var(--text-caption)', color: 'var(--muted-foreground)' }}>
+                    <p className="tbo-body-s" style={{ color: 'var(--muted-foreground)' }}>
                       Sent to {profile?.email || 'your email'} when inactive for 24 h
                     </p>
                   </div>
@@ -1411,8 +1411,8 @@ export function SettingsScreen({
                   />
                 </div>
                 <div
-                  className="rounded-lg p-3 text-sm"
-                  style={{ background: 'var(--primary-50)', border: '1px solid var(--primary-200)', fontSize: 'var(--text-caption)', color: 'var(--primary-700)' }}
+                  className="rounded-lg p-3 tbo-body-s"
+                  style={{ background: 'var(--primary-50)', border: '1px solid var(--primary-200)', color: 'var(--primary-700)' }}
                 >
                   💡 Reminders are sent once per day only when you haven't checked in. You'll be prompted to log your mood, complete your devotional, and answer a Q&A question.
                 </div>
@@ -1427,7 +1427,6 @@ export function SettingsScreen({
                   style={{
                     borderColor: 'var(--primary-300)',
                     color: testReminderState === 'done' ? 'var(--success-700)' : testReminderState === 'error' ? 'var(--error-500)' : 'var(--primary-700)',
-                    fontSize: 'var(--text-caption)',
                     fontWeight: 'var(--font-weight-medium)',
                   }}
                 >
@@ -1448,7 +1447,7 @@ export function SettingsScreen({
             {/* Legal Documents Section */}
             <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="tbo-h3 flex min-w-0 items-start gap-2 [&>svg]:shrink-0">
                   <Scale className="w-5 h-5" />
                   {t.legal.documents}
                 </CardTitle>
@@ -1493,7 +1492,7 @@ export function SettingsScreen({
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-error-500">
+            <DialogTitle className="tbo-h2 flex min-w-0 items-start gap-2 [&>svg]:shrink-0 text-error-500">
               <AlertTriangle className="w-6 h-6" />
               {t.account.deleteAccount}
             </DialogTitle>
@@ -1580,7 +1579,7 @@ export function SettingsScreen({
       <Dialog open={showHelpDialog} onOpenChange={setShowHelpDialog}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-sky-600">
+            <DialogTitle className="tbo-h2 flex min-w-0 items-start gap-2 [&>svg]:shrink-0 text-sky-600">
               <HelpCircle className="w-6 h-6" />
               Help & Support
             </DialogTitle>
@@ -1606,7 +1605,7 @@ export function SettingsScreen({
       <Dialog open={showContactDialog} onOpenChange={setShowContactDialog}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-sky-600">
+            <DialogTitle className="tbo-h2 flex min-w-0 items-start gap-2 [&>svg]:shrink-0 text-sky-600">
               <Mail className="w-6 h-6" />
               Contact Us
             </DialogTitle>
@@ -1672,7 +1671,7 @@ export function SettingsScreen({
       <Dialog open={showPrivacyPolicy} onOpenChange={setShowPrivacyPolicy}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="tbo-h2 flex min-w-0 items-start gap-2 [&>svg]:shrink-0">
               <FileText className="w-5 h-5" />
               {t.legal.privacyPolicy}
             </DialogTitle>
@@ -1690,7 +1689,7 @@ export function SettingsScreen({
       <Dialog open={showTermsOfService} onOpenChange={setShowTermsOfService}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="tbo-h2 flex min-w-0 items-start gap-2 [&>svg]:shrink-0">
               <Scale className="w-5 h-5" />
               {t.legal.termsOfService}
             </DialogTitle>

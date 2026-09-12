@@ -81,6 +81,14 @@ html {
   body {
     font-family: var(--tbo-font-sans);
   }
+  button,
+  input,
+  textarea,
+  select,
+  optgroup {
+    font-family: inherit;
+    letter-spacing: inherit;
+  }
   h1 {
     font-size: var(--tbo-h1-size);
     line-height: var(--tbo-h1-line);
@@ -96,6 +104,13 @@ html {
     line-height: var(--tbo-h3-line);
     font-weight: var(--tbo-weight-medium);
   }
+  h4,
+  h5,
+  h6 {
+    font-size: var(--tbo-body-l-size);
+    line-height: var(--tbo-body-l-line);
+    font-weight: var(--tbo-weight-medium);
+  }
   p,
   input,
   textarea {
@@ -104,6 +119,11 @@ html {
     font-weight: var(--tbo-weight-regular);
   }
   button {
+    font-weight: var(--tbo-weight-medium);
+  }
+  label {
+    font-size: var(--tbo-body-s-size);
+    line-height: var(--tbo-body-s-line);
     font-weight: var(--tbo-weight-medium);
   }
 }
@@ -175,6 +195,12 @@ html {
 .tbo-emotional:lang(am) {
   font-family: var(--tbo-font-amharic);
   letter-spacing: 0;
+}
+
+/* Ethiopic headings and labels retain their natural spacing in every screen,
+   including localized dialogs and content embedded in a Latin-language UI. */
+:where(h1, h2, h3, h4, h5, h6, label, button, .tbo-display, .tbo-h1, .tbo-h2, .tbo-h3, [class*="tracking-"]):lang(am) {
+  letter-spacing: normal;
 }
 
 /* Icon-only header controls retain their physical target size when text grows.

@@ -3,6 +3,8 @@ import { ArrowRight, Calendar, Heart, Sparkles, Users, X } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
 import { dashboardJourneyCopy } from "../data/dashboard-journey";
 import { loveJourneyCopy } from "../data/love-journey";
+import { moodCheckInCopy } from "../data/mood-check-in";
+import { MOOD_EMOJI, type MoodValue } from "../utils/moodCheckIn";
 import {
   getElapsedRelationshipTime,
   getNextRelationshipAnniversary,
@@ -36,6 +38,7 @@ interface JourneyMilestone {
 interface LoveJourneyHeaderProps {
   user: JourneyPerson;
   partner?: JourneyPerson;
+  partnerMood?: MoodValue;
   start?: string;
   accessToken?: string;
   milestones: JourneyMilestone[];
@@ -101,6 +104,7 @@ export const JourneyCounter = memo(function JourneyCounter({
 export function LoveJourneyHeader({
   user,
   partner,
+  partnerMood,
   start,
   accessToken,
   milestones,
@@ -172,7 +176,25 @@ export function LoveJourneyHeader({
                 {partner && (
                   <>
                     {" "}
-                    <span>&amp;</span> {firstName(partner.name)}
+                    <span className="love-journey__ampersand">&amp;</span>{" "}
+                    <span className="love-journey__partner-label">
+                      {firstName(partner.name)}
+                      {partnerMood && (
+                        <>
+                          {" "}
+                          <span
+                            className="love-journey__mood"
+                            role="img"
+                            aria-label={moodCheckInCopy[language].partnerMood
+                              .replace("{name}", firstName(partner.name))
+                              .replace("{mood}", t.mood[partnerMood])}
+                            title={`${firstName(partner.name)}: ${t.mood[partnerMood]}`}
+                          >
+                            {MOOD_EMOJI[partnerMood]}
+                          </span>
+                        </>
+                      )}
+                    </span>
                   </>
                 )}
               </h2>

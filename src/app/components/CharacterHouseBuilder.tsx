@@ -373,7 +373,7 @@ export function CharacterHouseBuilder({ onBack, currentUserId, partnerId, partne
     <div className="space-y-5 pb-8">
       <div className="flex items-center gap-3">
         <Button type="button" variant="outline" size="icon" className="h-11 w-11 shrink-0 rounded-full bg-white" onClick={onBack} aria-label="Back to dashboard"><ArrowLeft className="h-5 w-5" /></Button>
-        <div><p className="text-xs font-bold uppercase tracking-[.2em] text-amber-700">Character development</p><h1 className="text-2xl font-black tracking-tight text-stone-950">Build the House That Honors God</h1></div>
+        <div><p className="text-xs font-bold uppercase tracking-[.2em] text-amber-700">Character development</p><h1 className="tbo-h1 text-stone-950">Build the House That Honors God</h1></div>
       </div>
 
       {config.blueprintStatus === 'draft' && <>
@@ -424,7 +424,7 @@ export function CharacterHouseBuilder({ onBack, currentUserId, partnerId, partne
         <CardContent className="space-y-4 p-4 sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-1 rounded-xl border border-stone-200 bg-stone-50 p-1">{floors.map((_, index) => <button key={index} type="button" onClick={() => { setFloor(index); setSelectedRoom(null); setSceneView('house'); }} className={`rounded-lg px-3 py-2 text-xs font-bold ${floor === index ? 'bg-stone-800 text-white shadow' : 'text-stone-600'}`}>{index === floors.length - 1 && floors.length > 1 ? `All ${floors.length} floors` : `Through floor ${index + 1}`}</button>)}</div>
-            <div className="flex gap-1"><Button type="button" variant="outline" className="h-10 rounded-xl bg-white text-xs font-bold" onClick={() => { setSceneView('house'); setSelectedRoom(null); }}><Home className="mr-1.5 h-4 w-4" /> Full house</Button><Button type="button" variant="outline" disabled={!selectedRoom} className="h-10 rounded-xl bg-white text-xs font-bold" onClick={() => setSceneView('room')}><Scan className="mr-1.5 h-4 w-4" /> Room detail</Button><Button type="button" variant="outline" className="h-10 rounded-xl bg-white text-xs font-bold" onClick={() => setShowRoof(value => !value)}>{showRoof ? 'Remove roof' : 'Show roof'}</Button></div>
+            <div className="flex min-w-0 max-w-full flex-wrap gap-2"><Button type="button" variant="outline" className="h-auto min-h-11 rounded-xl bg-white text-xs leading-4 font-medium" onClick={() => { setSceneView('house'); setSelectedRoom(null); }}><Home className="mr-1.5 h-4 w-4" /> Full house</Button><Button type="button" variant="outline" disabled={!selectedRoom} className="h-auto min-h-11 rounded-xl bg-white text-xs leading-4 font-medium" onClick={() => setSceneView('room')}><Scan className="mr-1.5 h-4 w-4" /> Room detail</Button><Button type="button" variant="outline" className="h-auto min-h-11 rounded-xl bg-white text-xs leading-4 font-medium" onClick={() => setShowRoof(value => !value)}>{showRoof ? 'Remove roof' : 'Show roof'}</Button></div>
           </div>
           <Suspense fallback={<div className="grid h-[34rem] place-items-center rounded-[2rem] bg-stone-100 text-sm font-semibold text-stone-500">Preparing the 3D house…</div>}>
             <CharacterHouse3D

@@ -9,6 +9,14 @@
   --journey-meta-size: var(--tbo-caption-size);
   --journey-section-gap: var(--tbo-space-8);
   --journey-secondary: #626977;
+  /* Match the existing Love Journey card, sign-in screen, and navigation. */
+  --journey-accent: var(--primary-600);
+  --journey-accent-strong: var(--primary-700);
+  --journey-surface: #fff;
+  --journey-surface-soft: var(--primary-50);
+  --journey-surface-muted: #fcf6f8;
+  --journey-border: #f0dfe5;
+  --journey-border-active: var(--primary-300);
   font-optical-sizing: auto;
   font-synthesis: weight;
 }
@@ -41,12 +49,11 @@
   background: #fff1f5;
 }
 .journey-card {
-  border: 1px solid var(--border);
+  border: 1px solid var(--journey-border);
   border-radius: 19px;
-  background: #fff;
+  background: var(--journey-surface);
   padding: var(--tbo-space-4);
   min-width: 0;
-  border-color: #e9e8ed;
 }
 .journey-spotlight {
   margin-top: var(--tbo-space-6);
@@ -70,6 +77,7 @@
 }
 .journey-spotlight-label svg {
   flex-shrink: 0;
+  color: var(--journey-accent);
 }
 .journey-shuffle {
   border-radius: 9px;
@@ -106,7 +114,7 @@
   padding: var(--tbo-space-2) var(--tbo-space-4);
   border: 0;
   border-radius: 11px;
-  background: #e11d48;
+  background: var(--journey-accent);
   color: #fff;
   font-size: var(--tbo-body-l-size);
   font-weight: var(--tbo-weight-medium);
@@ -114,7 +122,7 @@
   line-height: var(--tbo-body-l-line);
 }
 .journey-primary:hover {
-  background: #be123c;
+  background: var(--journey-accent-strong);
 }
 .journey-primary svg {
   flex-shrink: 0;
@@ -154,72 +162,12 @@
   position: absolute;
   inset: -11px -4px;
 }
-.journey-mood-section {
-  margin-top: var(--journey-section-gap);
-}
-.journey-mood-section .journey-section-title > button {
-  color: var(--muted-foreground);
-}
-.journey-moods {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--tbo-space-2);
-  margin-top: var(--tbo-space-4);
-}
-.journey-moods button {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--tbo-space-4) var(--tbo-space-1);
-  gap: var(--tbo-space-2);
-  border: 1px solid #eceef1;
-  border-radius: 12px;
-  background: #fff;
-  color: #6b7280;
-  font-size: var(--tbo-body-m-size);
-  line-height: var(--tbo-body-m-line);
-  overflow-wrap: anywhere;
-  font-weight: var(--tbo-weight-regular);
-}
-.journey-moods button:hover {
-  border-color: #ff9db7;
-  background: #fff8fa;
-}
-.journey-moods button[aria-pressed="true"] {
-  color: #be123c;
-  background: #fef1f4;
-  border-color: #ff9db7;
-}
-.journey-moods button:disabled {
-  cursor: wait;
-  opacity: 0.7;
-}
-.journey-partner-mood {
-  display: flex;
-  align-items: center;
-  gap: var(--tbo-space-2);
-  margin-top: var(--tbo-space-2);
-  min-height: 18px;
-  font-size: var(--journey-meta-size);
-  color: var(--journey-secondary);
-  line-height: var(--tbo-caption-line);
-  font-weight: var(--tbo-weight-medium);
-}
-.journey-partner-mood svg {
-  flex-shrink: 0;
-  color: #f43f5e;
-}
-.journey-partner-mood strong {
-  color: #4b5563;
-  font-weight: var(--tbo-weight-medium);
-}
 .journey-shortcuts {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0;
   margin-top: var(--tbo-space-6);
-  border: 1px solid #e9e8ed;
+  border: 1px solid var(--journey-border);
   border-radius: 14px;
   background: #fff;
   padding: var(--tbo-space-4) 0;
@@ -241,7 +189,7 @@
   line-height: var(--tbo-body-s-line);
 }
 .journey-shortcuts svg {
-  color: #697180;
+  color: var(--journey-accent);
   width: 24px;
   height: 24px;
 }
@@ -258,7 +206,7 @@
   margin-top: var(--tbo-space-4);
   padding: var(--tbo-space-4);
   background: #fff;
-  border: 1px solid #eceef1;
+  border: 1px solid var(--journey-border);
   border-radius: 13px;
   width: 100%;
   text-align: left;
@@ -317,7 +265,7 @@
   border-radius: 0;
   padding: var(--tbo-space-6) 0 0;
   background: transparent;
-  border-top: 1px solid #e9e8ed;
+  border-top: 1px solid var(--journey-border);
 }
 .journey-rhythm > p {
   margin-top: var(--tbo-space-2);
@@ -337,9 +285,13 @@
   margin-top: var(--tbo-space-4);
 }
 .journey-metrics button {
-  padding: 0;
-  border: 0;
-  background: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: var(--tbo-space-2);
+  border: 1px solid var(--journey-border);
+  border-radius: 12px;
+  background: var(--journey-surface-soft);
   text-align: left;
   min-width: 0;
   min-height: 44px;
@@ -349,7 +301,7 @@
   display: block;
   font-size: var(--tbo-h1-size);
   font-weight: var(--tbo-weight-medium);
-  color: #111827;
+  color: var(--journey-accent);
   line-height: var(--tbo-h1-line);
   font-variant-numeric: tabular-nums;
 }
@@ -365,7 +317,7 @@
 }
 .journey-progress-detail {
   margin-top: var(--tbo-space-4);
-  border-top: 1px solid #eceef1;
+  border-top: 1px solid var(--journey-border);
   padding-top: var(--tbo-space-4);
 }
 .journey-progress-detail button {
@@ -373,8 +325,9 @@
   gap: var(--tbo-space-2);
   align-items: center;
   justify-content: space-between;
-  border: 0;
-  background: #f9fafb;
+  border: 1px solid var(--journey-border);
+  background: var(--journey-surface-muted);
+  color: var(--neutral-700);
   padding: var(--tbo-space-4);
   border-radius: 9px;
   width: 100%;
@@ -382,9 +335,12 @@
   text-align: left;
   line-height: var(--tbo-body-s-line);
 }
+.journey-progress-detail button strong {
+  color: var(--journey-accent-strong);
+}
 .journey-explore {
   margin-top: var(--journey-section-gap);
-  border: 1px solid #eceef1;
+  border: 1px solid var(--journey-border);
   border-radius: 13px;
   background: #fff;
   padding: 0;
@@ -421,17 +377,28 @@
   display: flex;
   align-items: center;
   text-align: left;
-  border: 0;
+  border: 1px solid var(--journey-border);
   border-radius: 9px;
-  background: #f9fafb;
+  background: var(--journey-surface-muted);
   padding: var(--tbo-space-2);
   font-size: var(--tbo-body-s-size);
-  color: #4b5563;
+  color: var(--neutral-700);
   min-height: 44px;
   line-height: var(--tbo-body-s-line);
   overflow-wrap: anywhere;
   min-width: 0;
   font-weight: var(--tbo-weight-medium);
+}
+.journey-metrics button:hover,
+.journey-progress-detail button:hover,
+.journey-tools button:hover {
+  background: var(--journey-surface-soft);
+  border-color: var(--journey-border-active);
+}
+.journey-tools button[aria-expanded="true"] {
+  border-color: var(--journey-border-active);
+  background: var(--journey-surface-soft);
+  color: var(--journey-accent-strong);
 }
 .journey-tools button svg {
   display: none;
@@ -442,11 +409,12 @@
   padding: 0 var(--tbo-space-4) var(--tbo-space-4);
 }
 .journey-verse {
-  padding: var(--tbo-space-8) var(--tbo-space-4) var(--tbo-space-2);
+  margin-top: var(--journey-section-gap);
+  padding: var(--tbo-space-6) var(--tbo-space-4) var(--tbo-space-4);
   text-align: center;
   color: var(--muted-foreground);
-  border: 0;
-  background: none;
+  border: 1px solid var(--journey-border);
+  background: linear-gradient(150deg, var(--journey-surface) 18%, var(--journey-surface-soft) 100%);
 }
 .journey-verse blockquote {
   font-size: var(--tbo-body-l-size);
@@ -483,12 +451,13 @@
   font-weight: var(--tbo-weight-medium);
 }
 .journey-verse-languages button[aria-pressed="true"] {
-  color: #be123c;
+  color: var(--journey-accent-strong);
+  background: var(--primary-100);
 }
 .journey-verse .journey-primary {
   position: relative;
   background: none;
-  color: #e11d48;
+  color: var(--journey-accent-strong);
   font-size: var(--tbo-body-s-size);
   padding: var(--tbo-space-2);
   min-height: 44px;
@@ -514,9 +483,6 @@
     padding-inline: var(--tbo-space-4);
     gap: var(--tbo-space-2);
   }
-  .journey-moods {
-    gap: var(--tbo-space-1);
-  }
 }
 
 .journey-shuffle::after {
@@ -533,11 +499,17 @@
 }
 
 .journey-spotlight .journey-primary {
-  width: 100%;
+  width: fit-content;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  font-size: var(--tbo-body-s-size);
+  line-height: var(--tbo-body-s-line);
+  overflow-wrap: anywhere;
 }
 
 .journey-shortcuts button + button {
-  border-left: 1px solid #eeedf1;
+  border-left: 1px solid var(--journey-border);
 }
 
 .journey-spotlight[data-spotlight-kind="devotion"] h2 {

@@ -122,7 +122,7 @@ export function DevotionalDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className="inset-0 left-0 top-0 flex h-dvh w-full max-w-none translate-x-0 translate-y-0 flex-col gap-0 overflow-hidden rounded-none border-0 bg-white p-0 shadow-none sm:h-dvh sm:max-w-none sm:rounded-none"
+        className="inset-0 left-0 top-0 flex h-dvh w-full max-w-none translate-x-0 translate-y-0 flex-col gap-0 overflow-hidden [overflow-wrap:anywhere] rounded-none border-0 bg-white p-0 shadow-none sm:h-dvh sm:max-w-none sm:rounded-none"
         lang={devotional.language === 'am' || devotional.language === 'om' ? devotional.language : undefined}
         showCloseButton={false}
       >
@@ -135,7 +135,7 @@ export function DevotionalDialog({
             <button
               type="button"
               onClick={onClose}
-              className="mt-0.5 inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-white/85 px-3 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-white hover:text-rose-700 hover:ring-rose-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-rose-100 sm:px-4"
+              className="mt-0.5 inline-flex h-auto min-h-11 shrink-0 items-center gap-2 py-2 rounded-full bg-white/85 px-3 text-base font-medium text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-white hover:text-rose-700 hover:ring-rose-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-rose-100 sm:px-4"
               aria-label="Back to devotionals"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden="true" />
@@ -333,7 +333,7 @@ export function DevotionalDialog({
                 await onComplete();
                 onClose();
               }}
-              className="h-12 w-full rounded-full bg-rose-600 px-6 text-sm font-medium text-white shadow-lg shadow-rose-200 transition-all duration-200 hover:bg-rose-700 hover:shadow-xl disabled:bg-emerald-50 disabled:text-emerald-700 disabled:opacity-100 disabled:shadow-none sm:w-auto sm:min-w-56"
+              className="h-auto min-h-12 w-full whitespace-normal rounded-full bg-rose-600 px-6 py-3 font-medium text-white shadow-lg shadow-rose-200 transition-all duration-200 hover:bg-rose-700 hover:shadow-xl disabled:bg-emerald-50 disabled:text-emerald-700 disabled:opacity-100 disabled:shadow-none sm:w-auto sm:min-w-56"
             >
               <CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden="true" />
               {isCompleted ? 'Completed' : 'Mark as Complete'}

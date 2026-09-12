@@ -445,7 +445,7 @@ export function MoodAnalytics({
             </Button>
           )}
           <div>
-            <h1 className="text-2xl font-semibold">
+            <h1 className="tbo-h1">
               {t.mood.analytics}
             </h1>
             <p className="text-sm text-muted-foreground">

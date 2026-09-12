@@ -25,6 +25,7 @@ import { BottomNavigation } from "./components/BottomNavigation";
 import { OfflineIndicator } from "./components/OfflineIndicator";
 import { CalendarAlarmManager } from "./components/CalendarAlarmManager";
 import { Button } from "./components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "./components/ui/avatar";
 import {
   Heart,
   Loader2,
@@ -1403,9 +1404,11 @@ export default function App() {
   }
 
   const isJourneyDashboard = activeTab === "home" && selectedScreen === "dashboard";
-  const headerProfileName = (profile as (UserType & { name?: string }) | null)?.name
-    || profile?.full_name || user?.user_metadata?.full_name || user?.email || "";
+  const headerProfile = profile as (UserType & { name?: string; profilePicture?: string }) | null;
+  const headerProfileName = headerProfile?.name
+    || headerProfile?.full_name || user?.user_metadata?.full_name || user?.email || "";
   const headerProfileInitial = Array.from(String(headerProfileName).trim())[0]?.toLocaleUpperCase() || "?";
+  const headerProfileAvatar = headerProfile?.profilePicture || headerProfile?.avatar_url || undefined;
 
   return (
     <LanguageProvider>
@@ -1429,7 +1432,7 @@ export default function App() {
                   <Heart className="h-[19px] w-[19px] fill-current" strokeWidth={0} aria-hidden="true" />
                 </span>
               ) : <Heart className="h-6 w-6 fill-rose-500 text-rose-500 animate-pulse" />}
-              <span className={isJourneyDashboard ? 'text-[19px] font-[750] tracking-[-.7px] text-[#111827]' : 'text-base font-extrabold text-slate-950 tracking-tight'}>
+              <span className="text-[19px] font-[750] tracking-[-.7px] text-[#111827]">
                 TwoBeOne
               </span>
             </div>
@@ -1514,7 +1517,12 @@ export default function App() {
               )}
               {isJourneyDashboard && (
                 <button type="button" onClick={() => setActiveTab('profile')} aria-label={uiTranslations.nav.profile} title={headerProfileName || uiTranslations.nav.profile} className="flex h-11 w-11 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 focus-visible:ring-offset-1">
-                  <span className="grid h-[35px] w-[35px] place-items-center rounded-full bg-[#ffe0e8] text-xs font-bold text-[#9f1239]" aria-hidden="true">{headerProfileInitial}</span>
+                  <Avatar className="size-[35px] ring-1 ring-rose-200" aria-hidden="true">
+                    <AvatarImage src={headerProfileAvatar} alt="" />
+                    <AvatarFallback className="bg-[#ffe0e8] text-xs font-bold text-[#9f1239]">
+                      {headerProfileInitial}
+                    </AvatarFallback>
+                  </Avatar>
                 </button>
               )}
             </div>

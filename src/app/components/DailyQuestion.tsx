@@ -476,7 +476,7 @@ export function DailyQuestion({
         <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
           {/* Header with Title and Back */}
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-foreground">{question.category}</h1>
+            <h1 className="tbo-h1 text-foreground">{question.category}</h1>
             {onBack && (
               <button
                 onClick={onBack}

@@ -11,3 +11,10 @@
 @media(max-width:1080px) { .group-console__toolbar { grid-template-columns:1fr auto auto }.group-console__search { grid-column:1/-1 }.group-console__workspace { grid-template-columns:1fr }.group-console__preview { position:static }.group-console__metrics { grid-template-columns:repeat(2,1fr) } }
 @media(max-width:680px) { .group-console { gap:16px }.group-console__hero { flex-direction:column;padding:22px }.group-console__hero button { width:100% }.group-console__metrics { gap:8px }.group-console__metrics article { padding:12px }.group-console__toolbar { grid-template-columns:1fr auto }.group-console__segments { grid-column:1/-1 }.group-console__segments button { flex:1 }.group-console__select select { max-width:110px }.group-console__row-main { grid-template-columns:46px minmax(0,1fr) }.group-console__row-main>svg { display:none }.group-console__avatar { height:46px;width:46px }.group-console__row-title { align-items:flex-start;flex-direction:column }.group-console__row-actions>span { max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap }.group-console__preview dl { grid-template-columns:1fr }.group-console__preview dl>div,.group-console__preview dl>div:nth-child(odd) { border-bottom:1px solid var(--gc-line);border-right:0 }.group-console__preview dl>div:last-child { border-bottom:0 }.group-editor>section { padding:15px }.group-editor__grid,.group-editor__grid--two { grid-template-columns:1fr } }
 @media(prefers-reduced-motion:reduce) { .group-console * { animation:none!important;transition:none!important } }
+
+/* Keep Amharic headings clear of tight Latin tracking and leading. */
+.group-console__hero h1:lang(am),
+.group-console__preview-body h2:lang(am) {
+  letter-spacing: 0;
+  line-height: 1.3;
+}

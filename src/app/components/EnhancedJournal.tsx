@@ -426,41 +426,41 @@ export function EnhancedJournal({
 
   return (
     <div className="min-h-screen bg-slate-50/50 text-slate-900 selection:bg-rose-200 dark:bg-neutral-950 dark:text-neutral-50">
-      <main className="mx-auto w-full max-w-3xl space-y-7 px-4 pb-32 pt-5 sm:px-6 sm:pt-8">
+      <main className="mx-auto min-w-0 w-full max-w-3xl space-y-7 px-4 [overflow-wrap:anywhere] pb-32 pt-5 sm:px-6 sm:pt-8">
         <header className="relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-rose-50 via-white to-amber-50 px-6 py-7 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)] ring-1 ring-rose-100/80 sm:px-9 sm:py-9">
           <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-rose-200/30 blur-3xl" aria-hidden="true" />
           <div className="pointer-events-none absolute -bottom-24 -left-16 h-52 w-52 rounded-full bg-amber-200/30 blur-3xl" aria-hidden="true" />
           <div className="relative">
             <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-xs font-semibold tracking-wide text-rose-700 shadow-sm ring-1 ring-rose-100">
+                <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 tbo-caption text-rose-700 shadow-sm ring-1 ring-rose-100">
                   <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" aria-hidden="true" />
                   Our story, held with care
                 </div>
-                <h1 className="text-3xl font-bold tracking-[-0.035em] text-slate-950 sm:text-4xl">{t.journal.title}</h1>
-                <p className="mt-2 max-w-lg text-[15px] leading-7 text-slate-600">Capture the reflections, milestones, and little moments shaping your life together.</p>
+                <h1 className="tbo-h1 text-slate-950">{t.journal.title}</h1>
+                <p className="mt-2 max-w-lg tbo-body-m text-slate-600">Capture the reflections, milestones, and little moments shaping your life together.</p>
               </div>
-              <Button type="button" onClick={openEntryForm} className="h-11 rounded-full bg-rose-600 px-5 font-bold text-white shadow-lg shadow-rose-200 hover:bg-rose-700">
+              <Button type="button" onClick={openEntryForm} className="h-auto min-h-11 whitespace-normal rounded-full bg-rose-600 px-5 py-2 font-medium text-white shadow-lg shadow-rose-200 hover:bg-rose-700">
                 <Plus className="h-4 w-4" aria-hidden="true" />
                 {t.journal.newEntry}
               </Button>
             </div>
             <div className="mt-7 grid grid-cols-3 gap-3 border-t border-rose-100/80 pt-5">
-              <div><p className="text-xl font-bold text-slate-900">{validEntries.length}</p><p className="mt-0.5 text-xs font-medium text-slate-500">Entries</p></div>
-              <div className="border-l border-rose-100 pl-3"><p className="text-xl font-bold text-slate-900">{sharedEntryCount}</p><p className="mt-0.5 text-xs font-medium text-slate-500">Shared</p></div>
-              <div className="border-l border-rose-100 pl-3"><p className="text-xl font-bold text-slate-900">{eventEntryCount}</p><p className="mt-0.5 text-xs font-medium text-slate-500">Moments</p></div>
+              <div><p className="tbo-h2 text-slate-900">{validEntries.length}</p><p className="mt-0.5 tbo-caption text-slate-500">Entries</p></div>
+              <div className="border-l border-rose-100 pl-3"><p className="tbo-h2 text-slate-900">{sharedEntryCount}</p><p className="mt-0.5 tbo-caption text-slate-500">Shared</p></div>
+              <div className="border-l border-rose-100 pl-3"><p className="tbo-h2 text-slate-900">{eventEntryCount}</p><p className="mt-0.5 tbo-caption text-slate-500">Moments</p></div>
             </div>
           </div>
         </header>
 
         <section className="space-y-5" aria-label="Journal controls">
-          <div className="grid h-14 grid-cols-3 gap-1 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-[inset_0_1px_2px_rgba(15,23,42,0.04),0_10px_30px_-24px_rgba(15,23,42,0.45)]" role="tablist" aria-label="Journal entry types">
+          <div className="grid h-auto min-h-14 grid-cols-3 gap-1 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-[inset_0_1px_2px_rgba(15,23,42,0.04),0_10px_30px_-24px_rgba(15,23,42,0.45)]" role="tablist" aria-label="Journal entry types">
             {([
               { value: "all", label: "All Entries", icon: BookOpen },
               { value: "journal", label: "Reflections", icon: Heart },
               { value: "event", label: "Moments", icon: Sparkles },
             ] as const).map(({ value, label, icon: Icon }) => (
-              <button key={value} type="button" role="tab" aria-label={label} aria-selected={entryFilter === value} onClick={() => setEntryFilter(value)} className={`flex h-full items-center justify-center gap-2 rounded-[0.9rem] px-2 text-xs font-semibold transition-all sm:text-sm ${entryFilter === value ? "bg-white text-rose-700 shadow-sm ring-1 ring-rose-100" : "text-slate-500 hover:bg-white/65 hover:text-slate-800"}`}>
+              <button key={value} type="button" role="tab" aria-label={label} aria-selected={entryFilter === value} onClick={() => setEntryFilter(value)} className={`flex h-auto min-h-11 min-w-0 flex-wrap items-center justify-center gap-2 whitespace-normal rounded-[0.9rem] px-2 py-2 tbo-caption transition-all ${entryFilter === value ? "bg-white text-rose-700 shadow-sm ring-1 ring-rose-100" : "text-slate-500 hover:bg-white/65 hover:text-slate-800"}`}>
                 <Icon className="h-4 w-4" aria-hidden="true" />
                 <span className="hidden sm:inline">{label}</span><span className="sm:hidden">{value === "all" ? "All" : label}</span>
               </button>
@@ -490,16 +490,16 @@ export function EnhancedJournal({
             <div key={dateKey} className="mb-10 last:mb-0">
               {/* Date Header Segment */}
               <div className="sticky top-0 z-20 mb-6 flex items-center gap-4 rounded-2xl bg-slate-50/90 py-2 backdrop-blur-sm dark:bg-neutral-950/90">
-                <div className="flex h-14 w-14 flex-col items-center justify-center rounded-2xl bg-rose-50 text-rose-700 shadow-sm ring-1 ring-rose-100 dark:bg-rose-500/20 dark:text-rose-300">
-                  <span className="text-[10px] font-bold uppercase tracking-wider opacity-80">
+                <div className="flex min-h-14 min-w-14 shrink-0 flex-col items-center justify-center py-1 rounded-2xl bg-rose-50 text-rose-700 shadow-sm ring-1 ring-rose-100 dark:bg-rose-500/20 dark:text-rose-300">
+                  <span className="tbo-caption uppercase opacity-80">
                     {month.slice(0, 3)}
                   </span>
-                  <span className="text-xl font-extrabold leading-none">
+                  <span className="tbo-h2">
                     {day}
                   </span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm tracking-wide">
+                  <h3 className="tbo-h3">
                     {dayOfWeek}
                   </h3>
                   <p className="text-xs text-muted-foreground">
@@ -571,7 +571,7 @@ export function EnhancedJournal({
                               </span>
                             )}
                             <span
-                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium tracking-wide border ${
+                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full tbo-caption border ${
                                 isEvent
                                   ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
                                   : "bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400 border-rose-100 dark:border-rose-500/20"
@@ -582,13 +582,13 @@ export function EnhancedJournal({
                                 : "📖 Journal"}
                             </span>
                             {isPartner && (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium tracking-wide bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full tbo-caption bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
                                 💖 {partnerName}
                               </span>
                             )}
                           </div>
 
-                          <h3 className="text-lg font-bold tracking-tight text-foreground mb-2 leading-snug">
+                          <h3 className="tbo-h3 text-foreground mb-2">
                             {entry.title}
                           </h3>
 
@@ -603,7 +603,7 @@ export function EnhancedJournal({
                                 <span className="opacity-40">
                                   •
                                 </span>
-                                <span className="flex items-center gap-1 max-w-[180px] truncate">
+                                <span className="flex min-w-0 items-start gap-1 [overflow-wrap:anywhere]">
                                   <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
                                   {location}
                                 </span>
@@ -612,7 +612,7 @@ export function EnhancedJournal({
                           </div>
 
                           {entry.content && (
-                            <p className="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed whitespace-pre-wrap mb-4">
+                            <p className="tbo-body-l text-neutral-600 dark:text-neutral-300 whitespace-pre-wrap mb-4">
                               {entry.content}
                             </p>
                           )}
@@ -700,7 +700,7 @@ export function EnhancedJournal({
                                           }
                                           alt={comment.userName}
                                         />
-                                        <AvatarFallback className="bg-rose-500 text-[10px] text-white">
+                                        <AvatarFallback className="bg-rose-500 tbo-caption text-white">
                                           {
                                             comment
                                               .userName?.[0]
@@ -708,10 +708,10 @@ export function EnhancedJournal({
                                         </AvatarFallback>
                                       </Avatar>
                                       <div className="flex-1 min-w-0">
-                                        <span className="text-xs font-semibold block">
+                                        <span className="tbo-caption block">
                                           {comment.userName}
                                         </span>
-                                        <p className="text-xs text-muted-foreground mt-0.5">
+                                        <p className="tbo-body-s text-muted-foreground mt-0.5">
                                           {comment.text ||
                                             comment.content}
                                         </p>
@@ -722,14 +722,14 @@ export function EnhancedJournal({
                             )}
 
                           {/* Component Card Interface Toolbar */}
-                          <div className="flex items-center justify-end gap-1 pt-3 mt-4 border-t border-neutral-100 dark:border-neutral-800">
+                          <div className="flex flex-wrap items-center justify-end gap-1 pt-3 mt-4 border-t border-neutral-100 dark:border-neutral-800">
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() =>
                                 setCommentingEntry(entry)
                               }
-                              className="h-8 rounded-full px-3 text-xs text-muted-foreground hover:bg-rose-50 hover:text-rose-700 dark:hover:text-rose-400"
+                              className="h-auto min-h-11 whitespace-normal rounded-full px-3 py-2 text-muted-foreground hover:bg-rose-50 hover:text-rose-700 dark:hover:text-rose-400"
                             >
                               <MessageCircle className="w-4 h-4 mr-1.5" />
                               Comment
@@ -742,7 +742,7 @@ export function EnhancedJournal({
                                   onClick={() =>
                                     handleEdit(entry)
                                   }
-                                  className="h-8 rounded-full px-3 text-xs text-muted-foreground hover:bg-slate-100 hover:text-foreground"
+                                  className="h-auto min-h-11 whitespace-normal rounded-full px-3 py-2 text-muted-foreground hover:bg-slate-100 hover:text-foreground"
                                 >
                                   <Edit2 className="w-4 h-4 mr-1.5" />
                                   Edit
@@ -760,7 +760,7 @@ export function EnhancedJournal({
                                         entry.id,
                                       );
                                   }}
-                                  className="h-8 rounded-full px-3 text-xs text-muted-foreground hover:bg-red-50 hover:text-destructive"
+                                  className="h-auto min-h-11 whitespace-normal rounded-full px-3 py-2 text-muted-foreground hover:bg-red-50 hover:text-destructive"
                                 >
                                   <Trash2 className="w-4 h-4 mr-1.5" />
                                   Delete
@@ -783,10 +783,10 @@ export function EnhancedJournal({
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 text-rose-600">
               {searchQuery ? <Search className="h-6 w-6" /> : <BookOpen className="h-6 w-6" />}
             </div>
-            <h3 className="mb-2 text-lg font-bold text-slate-900">
+            <h3 className="mb-2 tbo-h3 text-slate-900">
               {searchQuery ? "No matching entries" : entryFilter === "event" ? "No moments yet" : t.journal.noEntries}
             </h3>
-            <p className="mb-6 text-sm leading-6 text-slate-500">
+            <p className="mb-6 tbo-body-s text-slate-500">
               {searchQuery ? "Try another title, detail, or location." : "Start documenting your shared faith journey and the moments you want to remember."}
             </p>
             {searchQuery ? (
@@ -807,14 +807,14 @@ export function EnhancedJournal({
           if (!open) resetForm();
         }}
       >
-        <DialogContent className="max-h-[92dvh] gap-0 overflow-y-auto rounded-[1.75rem] border-rose-100 p-0 sm:max-w-xl">
+        <DialogContent className="max-h-[92dvh] min-w-0 gap-0 overflow-y-auto [overflow-wrap:anywhere] rounded-[1.75rem] border-rose-100 p-0 sm:max-w-xl">
           <DialogHeader className="border-b border-rose-100 bg-gradient-to-br from-rose-50 via-white to-amber-50 px-6 py-6 pr-12 text-left">
-            <DialogTitle className="text-2xl font-bold tracking-tight text-slate-900">
+            <DialogTitle className="tbo-h2 text-slate-900">
               {editingEntry
                 ? t.journal.edit
                 : t.journal.newEntry}
             </DialogTitle>
-            <DialogDescription className="text-sm leading-6 text-slate-600">
+            <DialogDescription className="tbo-body-s text-slate-600">
               {entryType === "journal"
                 ? "Write what is on your heart and choose whether to share it."
                 : "Preserve a meaningful moment in your story together."}
@@ -828,16 +828,16 @@ export function EnhancedJournal({
             }
             className="w-full p-6"
           >
-            <TabsList className="grid h-12 w-full grid-cols-2 rounded-2xl bg-slate-100 p-1">
+            <TabsList className="grid h-auto min-h-12 w-full grid-cols-2 rounded-2xl bg-slate-100 p-1">
               <TabsTrigger
                 value="journal"
-                className="rounded-xl py-2 text-sm data-[state=active]:text-rose-700 data-[state=active]:shadow-sm"
+                className="h-auto min-h-11 min-w-0 whitespace-normal rounded-xl py-2 tbo-caption data-[state=active]:text-rose-700 data-[state=active]:shadow-sm"
               >
                 {t.journal.title}
               </TabsTrigger>
               <TabsTrigger
                 value="event"
-                className="rounded-xl py-2 text-sm data-[state=active]:text-rose-700 data-[state=active]:shadow-sm"
+                className="h-auto min-h-11 min-w-0 whitespace-normal rounded-xl py-2 tbo-caption data-[state=active]:text-rose-700 data-[state=active]:shadow-sm"
               >
                 Event
               </TabsTrigger>
@@ -848,11 +848,11 @@ export function EnhancedJournal({
               className="mt-5 space-y-5"
             >
               {/* Chronological Configurations Segment */}
-              <div className="grid grid-cols-2 gap-3 rounded-2xl border border-rose-100 bg-gradient-to-r from-rose-50/70 to-amber-50/70 p-4">
+              <div className="grid grid-cols-1 gap-3 rounded-2xl border border-rose-100 sm:grid-cols-2 bg-gradient-to-r from-rose-50/70 to-amber-50/70 p-4">
                 <div className="space-y-1.5">
                   <Label
                     htmlFor="date"
-                    className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider"
+                    className="tbo-caption text-muted-foreground uppercase"
                   >
                     Date
                   </Label>
@@ -883,7 +883,7 @@ export function EnhancedJournal({
                 <div className="space-y-1.5">
                   <Label
                     htmlFor="time"
-                    className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider"
+                    className="tbo-caption text-muted-foreground uppercase"
                   >
                     Time
                   </Label>
@@ -907,7 +907,7 @@ export function EnhancedJournal({
 
               {entryType === "event" && (
                 <div className="space-y-2">
-                  <Label className="text-xs font-semibold">
+                  <Label className="tbo-caption">
                     Select Event Emoji
                   </Label>
                   <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-1 border rounded-xl">
@@ -930,7 +930,7 @@ export function EnhancedJournal({
               <div className="space-y-1.5">
                 <Label
                   htmlFor="title"
-                  className="text-xs font-semibold"
+                  className="tbo-caption"
                 >
                   Title
                 </Label>
@@ -952,7 +952,7 @@ export function EnhancedJournal({
                 <div className="space-y-1.5">
                   <Label
                     htmlFor="location"
-                    className="text-xs font-semibold"
+                    className="tbo-caption"
                   >
                     Location{" "}
                     <span className="text-muted-foreground font-normal">
@@ -974,7 +974,7 @@ export function EnhancedJournal({
               <div className="space-y-1.5">
                 <Label
                   htmlFor="content"
-                  className="text-xs font-semibold"
+                  className="tbo-caption"
                 >
                   Details
                 </Label>
@@ -991,7 +991,7 @@ export function EnhancedJournal({
 
               {/* Media Upload Interaction Array */}
               <div className="space-y-2">
-                <Label className="text-xs font-semibold">
+                <Label className="tbo-caption">
                   Attach Media
                 </Label>
                 <div className="grid grid-cols-3 gap-2">
@@ -1002,7 +1002,7 @@ export function EnhancedJournal({
                     onClick={() =>
                       fileInputRef.current?.click()
                     }
-                    className="h-10 rounded-xl border-slate-200 text-xs hover:bg-rose-50 hover:text-rose-700"
+                    className="h-auto min-h-11 min-w-0 flex-wrap whitespace-normal rounded-xl border-slate-200 px-2 py-2 hover:bg-rose-50 hover:text-rose-700"
                   >
                     <ImageIcon className="w-3.5 h-3.5 mr-1.5 text-muted-foreground" />{" "}
                     Photo
@@ -1014,7 +1014,7 @@ export function EnhancedJournal({
                     onClick={() =>
                       videoInputRef.current?.click()
                     }
-                    className="h-10 rounded-xl border-slate-200 text-xs hover:bg-rose-50 hover:text-rose-700"
+                    className="h-auto min-h-11 min-w-0 flex-wrap whitespace-normal rounded-xl border-slate-200 px-2 py-2 hover:bg-rose-50 hover:text-rose-700"
                   >
                     <Video className="w-3.5 h-3.5 mr-1.5 text-muted-foreground" />{" "}
                     Video
@@ -1028,7 +1028,7 @@ export function EnhancedJournal({
                         ? stopRecording
                         : startRecording
                     }
-                    className={`h-10 rounded-xl text-xs ${isRecording ? "border-red-200 bg-red-50 text-red-600" : "border-slate-200 hover:bg-rose-50 hover:text-rose-700"}`}
+                    className={`h-auto min-h-11 min-w-0 flex-wrap whitespace-normal rounded-xl px-2 py-2 ${isRecording ? "border-red-200 bg-red-50 text-red-600" : "border-slate-200 hover:bg-rose-50 hover:text-rose-700"}`}
                   >
                     <Mic
                       className={`w-3.5 h-3.5 mr-1.5 ${isRecording ? "animate-pulse text-destructive" : "text-muted-foreground"}`}
@@ -1090,10 +1090,10 @@ export function EnhancedJournal({
               </div>
 
               {/* Privacy Config Segment */}
-              <div className="flex items-center justify-between rounded-2xl border border-rose-100 bg-gradient-to-r from-rose-50 to-amber-50 p-4">
+              <div className="flex items-center justify-between gap-3 rounded-2xl border border-rose-100 bg-gradient-to-r from-rose-50 to-amber-50 p-4">
                 <Label
                   htmlFor="shared"
-                  className="cursor-pointer text-xs font-semibold"
+                  className="min-w-0 cursor-pointer tbo-caption"
                 >
                   {isShared
                     ? "Shared with Partner"
@@ -1112,14 +1112,14 @@ export function EnhancedJournal({
                   type="button"
                   variant="outline"
                   onClick={() => setIsOpen(false)}
-                  className="h-10 rounded-full text-xs"
+                  className="h-auto min-h-11 whitespace-normal rounded-full py-2"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="h-10 rounded-full border-0 bg-rose-600 px-5 text-xs text-white shadow-sm hover:bg-rose-700"
+                  className="h-auto min-h-11 whitespace-normal rounded-full border-0 bg-rose-600 px-5 py-2 text-white shadow-sm hover:bg-rose-700"
                 >
                   {isLoading
                     ? "Saving..."
@@ -1142,10 +1142,10 @@ export function EnhancedJournal({
       >
         <DialogContent className="sm:max-w-[420px] rounded-2xl p-6">
           <DialogHeader>
-            <DialogTitle className="text-lg font-bold tracking-tight">
+            <DialogTitle className="tbo-h2">
               Add Thoughtful Comment
             </DialogTitle>
-            <DialogDescription className="text-xs truncate">
+            <DialogDescription className="tbo-body-s [overflow-wrap:anywhere]">
               {commentingEntry?.title}
             </DialogDescription>
           </DialogHeader>

@@ -149,7 +149,7 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
             <MessageCircleHeart className="h-6 w-6" />
           </div>
           <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-primary-600">{t.questions.title}</p>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          <h1 className="tbo-h1 text-foreground">
             {t.questions.selectCategory}
           </h1>
           <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">

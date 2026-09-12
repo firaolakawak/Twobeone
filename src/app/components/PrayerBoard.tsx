@@ -333,7 +333,7 @@ export function PrayerBoard({
   };
 
   return (
-    <div className="mx-auto min-h-screen w-full max-w-3xl space-y-7 pb-28">
+    <div className="mx-auto min-h-screen min-w-0 w-full max-w-3xl space-y-7 pb-28 [overflow-wrap:anywhere]">
       <header className="relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-rose-50 via-white to-amber-50 px-6 py-7 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)] ring-1 ring-rose-100/80 sm:px-9 sm:py-9">
         <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-rose-200/30 blur-3xl" aria-hidden="true" />
         <div className="pointer-events-none absolute -bottom-24 -left-16 h-52 w-52 rounded-full bg-amber-200/30 blur-3xl" aria-hidden="true" />
@@ -347,7 +347,7 @@ export function PrayerBoard({
               <h1 className="tbo-h1 tbo-emotional text-slate-950">{t.prayer.title}</h1>
               <p className="mt-2 max-w-lg tbo-body-l tbo-supportive text-slate-600">Bring your hopes, needs, and gratitude into one shared sacred space.</p>
             </div>
-            <Button type="button" onClick={openPrayerForm} className="h-11 rounded-full bg-rose-600 px-5 font-medium text-white shadow-lg shadow-rose-200 hover:bg-rose-700">
+            <Button type="button" onClick={openPrayerForm} className="h-auto min-h-11 whitespace-normal rounded-full bg-rose-600 px-5 py-2 font-medium text-white shadow-lg shadow-rose-200 hover:bg-rose-700">
               <Plus className="h-4 w-4" aria-hidden="true" />
               {t.prayer.newRequest}
             </Button>
@@ -361,13 +361,13 @@ export function PrayerBoard({
       </header>
 
       <div className="space-y-5">
-        <div className="grid h-14 w-full grid-cols-3 gap-1 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-[inset_0_1px_2px_rgba(15,23,42,0.04),0_10px_30px_-24px_rgba(15,23,42,0.45)]" role="tablist" aria-label="Prayer sections">
+        <div className="grid h-auto min-h-14 w-full grid-cols-3 gap-1 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-[inset_0_1px_2px_rgba(15,23,42,0.04),0_10px_30px_-24px_rgba(15,23,42,0.45)]" role="tablist" aria-label="Prayer sections">
           <button
             type="button"
             role="tab"
             aria-selected={activeTab === "requests"}
             onClick={() => setActiveTab("requests")}
-            className={`flex h-full items-center justify-center gap-2 rounded-[0.9rem] px-2 tbo-caption transition-all ${
+            className={`flex h-auto min-h-11 min-w-0 flex-wrap items-center justify-center gap-2 whitespace-normal rounded-[0.9rem] px-2 py-2 tbo-caption transition-all ${
               activeTab === "requests"
                 ? "bg-white text-rose-700 shadow-sm ring-1 ring-rose-100"
                 : "text-slate-500 hover:bg-white/65 hover:text-slate-800"
@@ -381,7 +381,7 @@ export function PrayerBoard({
             role="tab"
             aria-selected={activeTab === "answered"}
             onClick={() => setActiveTab("answered")}
-            className={`flex h-full items-center justify-center gap-2 rounded-[0.9rem] px-2 tbo-caption transition-all ${
+            className={`flex h-auto min-h-11 min-w-0 flex-wrap items-center justify-center gap-2 whitespace-normal rounded-[0.9rem] px-2 py-2 tbo-caption transition-all ${
               activeTab === "answered"
                 ? "bg-white text-rose-700 shadow-sm ring-1 ring-rose-100"
                 : "text-slate-500 hover:bg-white/65 hover:text-slate-800"
@@ -395,7 +395,7 @@ export function PrayerBoard({
             role="tab"
             aria-selected={activeTab === "together"}
             onClick={() => setActiveTab("together")}
-            className={`flex h-full items-center justify-center gap-2 rounded-[0.9rem] px-2 tbo-caption transition-all ${
+            className={`flex h-auto min-h-11 min-w-0 flex-wrap items-center justify-center gap-2 whitespace-normal rounded-[0.9rem] px-2 py-2 tbo-caption transition-all ${
               activeTab === "together"
                 ? "bg-white text-rose-700 shadow-sm ring-1 ring-rose-100"
                 : "text-slate-500 hover:bg-white/65 hover:text-slate-800"

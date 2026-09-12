@@ -121,6 +121,24 @@ describe("LoveJourneyHeader", () => {
     expect(within(portraits).getByText("A")).toBeVisible();
   });
 
+  it.each([
+    [userProfile, partnerProfile, "Sarah & Abel", "Abel feels Good"],
+    [partnerProfile, userProfile, "Abel & Sarah", "Sarah feels Good"],
+  ] as const)("keeps viewer %s first and labels the emoji as the partner's mood", (user, partner, names, label) => {
+    renderHeader({ user, partner, partnerMood: "good" });
+    const heading = screen.getByRole("heading", {
+      name: (name) => name.replace(/\s+/g, " ") === `${names} ${label}`,
+    });
+    expect(within(heading).getByRole("img", { name: label })).toHaveTextContent("🙂");
+    expect(heading).toHaveTextContent(`${names} 🙂`);
+  });
+
+  it("omits the mood emoji when the partner has not shared a current mood", () => {
+    renderHeader();
+    const heading = screen.getByRole("heading", { name: "Sarah & Abel" });
+    expect(within(heading).queryByRole("img")).not.toBeInTheDocument();
+  });
+
   it("derives the live counter and next anniversary from the saved relationship date", () => {
     renderHeader();
     const timer = screen.getByRole("timer", { name: "Days Together" });

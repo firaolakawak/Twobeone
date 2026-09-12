@@ -394,7 +394,7 @@ export function QADiscussionHub({
             <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-100 text-primary-700 ring-1 ring-primary-200/60">
               <MessageSquare className="h-6 w-6" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">A conversation worth having</h1>
+            <h1 className="tbo-h1 text-foreground">A conversation worth having</h1>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">Answer honestly, discover each other gently, and grow closer one question at a time.</p>
           </div>
 

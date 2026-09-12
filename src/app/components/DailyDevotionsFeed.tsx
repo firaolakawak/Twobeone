@@ -378,7 +378,7 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
     : 0;
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-7 pb-6">
+    <div className="mx-auto min-w-0 w-full max-w-3xl space-y-7 [overflow-wrap:anywhere] pb-6">
       {/* Warm, quiet introduction */}
       <header className="relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-rose-50 via-white to-amber-50 px-6 py-8 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)] ring-1 ring-rose-100/80 sm:px-9 sm:py-10">
         <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-rose-200/30 blur-3xl" aria-hidden="true" />
@@ -419,21 +419,21 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full gap-7">
-        <TabsList className="grid h-14 w-full grid-cols-3 gap-1 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-[inset_0_1px_2px_rgba(15,23,42,0.04),0_10px_30px_-24px_rgba(15,23,42,0.45)]" aria-label="Devotional sections">
-          <TabsTrigger value="devotionals" className="group h-full rounded-[0.9rem] border-0 bg-transparent px-2 tbo-caption text-slate-500 shadow-none transition-all duration-200 hover:bg-white/65 hover:text-slate-800 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-[0_4px_14px_-8px_rgba(190,24,93,0.45)] data-[state=active]:ring-1 data-[state=active]:ring-rose-100">
+        <TabsList className="grid h-auto min-h-14 w-full grid-cols-3 gap-1 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-[inset_0_1px_2px_rgba(15,23,42,0.04),0_10px_30px_-24px_rgba(15,23,42,0.45)]" aria-label="Devotional sections">
+          <TabsTrigger value="devotionals" className="group h-auto min-h-11 min-w-0 flex-wrap whitespace-normal py-2 [overflow-wrap:anywhere] rounded-[0.9rem] border-0 bg-transparent px-2 tbo-caption text-slate-500 shadow-none transition-all duration-200 hover:bg-white/65 hover:text-slate-800 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-[0_4px_14px_-8px_rgba(190,24,93,0.45)] data-[state=active]:ring-1 data-[state=active]:ring-rose-100">
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-transparent transition-colors group-data-[state=active]:bg-rose-50">
               <BookOpen className="h-4 w-4" aria-hidden="true" />
             </span>
             <span className="hidden sm:inline">{t.devotionals.title}</span>
             <span className="sm:hidden">Readings</span>
           </TabsTrigger>
-          <TabsTrigger value="audio" className="group h-full rounded-[0.9rem] border-0 bg-transparent px-2 tbo-caption text-slate-500 shadow-none transition-all duration-200 hover:bg-white/65 hover:text-slate-800 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-[0_4px_14px_-8px_rgba(190,24,93,0.45)] data-[state=active]:ring-1 data-[state=active]:ring-rose-100">
+          <TabsTrigger value="audio" className="group h-auto min-h-11 min-w-0 flex-wrap whitespace-normal py-2 [overflow-wrap:anywhere] rounded-[0.9rem] border-0 bg-transparent px-2 tbo-caption text-slate-500 shadow-none transition-all duration-200 hover:bg-white/65 hover:text-slate-800 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-[0_4px_14px_-8px_rgba(190,24,93,0.45)] data-[state=active]:ring-1 data-[state=active]:ring-rose-100">
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-transparent transition-colors group-data-[state=active]:bg-rose-50">
               <Headphones className="h-4 w-4" aria-hidden="true" />
             </span>
             <span>{t.devotionals.audioTab}</span>
           </TabsTrigger>
-          <TabsTrigger value="verses" className="group h-full rounded-[0.9rem] border-0 bg-transparent px-2 tbo-caption text-slate-500 shadow-none transition-all duration-200 hover:bg-white/65 hover:text-slate-800 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-[0_4px_14px_-8px_rgba(190,24,93,0.45)] data-[state=active]:ring-1 data-[state=active]:ring-rose-100">
+          <TabsTrigger value="verses" className="group h-auto min-h-11 min-w-0 flex-wrap whitespace-normal py-2 [overflow-wrap:anywhere] rounded-[0.9rem] border-0 bg-transparent px-2 tbo-caption text-slate-500 shadow-none transition-all duration-200 hover:bg-white/65 hover:text-slate-800 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-[0_4px_14px_-8px_rgba(190,24,93,0.45)] data-[state=active]:ring-1 data-[state=active]:ring-rose-100">
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-transparent transition-colors group-data-[state=active]:bg-rose-50">
               <Bookmark className="h-4 w-4" aria-hidden="true" />
             </span>
@@ -443,7 +443,7 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
 
         {/* Devotionals Tab */}
         <TabsContent value="devotionals" className="space-y-7 data-[state=active]:animate-in data-[state=active]:fade-in data-[state=active]:slide-in-from-bottom-2 data-[state=active]:duration-300">
-          <div className="flex items-end justify-between gap-4 px-1">
+          <div className="flex flex-wrap items-end justify-between gap-4 px-1">
             <div>
               <p className="tbo-caption uppercase text-rose-600">Your shared rhythm</p>
               <h2 className="mt-1 tbo-h2 text-slate-950">Daily readings</h2>
@@ -499,7 +499,7 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
                   onClick={() => onDevotionalClick(featuredDevotional.id)}
                   aria-label={`Read ${featuredDevotional.title}`}
                 >
-                  <div className="flex items-center justify-between gap-4">
+                  <div className="flex flex-wrap items-center justify-between gap-4">
                     <span className="inline-flex items-center gap-2 tbo-caption uppercase text-rose-200">
                       <span className="h-1.5 w-1.5 rounded-full bg-rose-400 shadow-[0_0_0_4px_rgba(251,113,133,0.12)]" />
                       Featured devotion
@@ -559,7 +559,7 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
                               <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
                                 <span>{devotional.duration || '5 min read'}</span>
                                 <span aria-hidden="true">·</span>
-                                <span className="truncate">{devotional.reference}</span>
+                                <span className="min-w-0 [overflow-wrap:anywhere]">{devotional.reference}</span>
                               </div>
                               <h3 className="mt-1.5 tbo-h3 text-slate-900">{devotional.title}</h3>
                             </div>
@@ -607,7 +607,7 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
 
         {/* Audio Lessons Tab */}
         <TabsContent value="audio" className="space-y-6">
-          <div className="flex items-end justify-between gap-4 px-1">
+          <div className="flex flex-wrap items-end justify-between gap-4 px-1">
             <div>
               <h2 className="tbo-h2 text-slate-950">Audio devotionals</h2>
               <p className="mt-1 tbo-body-s text-slate-500">Listen and reflect wherever your day takes you.</p>
@@ -694,7 +694,7 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
 
         {/* Memory Verses Tab - Now shows saved highlights */}
         <TabsContent value="verses" className="space-y-6">
-          <div className="flex items-end justify-between gap-4 px-1">
+          <div className="flex flex-wrap items-end justify-between gap-4 px-1">
             <div>
               <h2 className="tbo-h2 text-slate-950">Saved verses</h2>
               <p className="mt-1 tbo-body-s text-slate-500">Return to the words you want to carry with you.</p>

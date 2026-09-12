@@ -1,7 +1,6 @@
 import { useLanguage } from "../contexts/LanguageContext";
 import { useState, useEffect, useMemo } from "react";
 import {
-  Heart,
   BookOpen,
   PenLine,
   MessageCircleHeart,
@@ -12,14 +11,14 @@ import {
   Brain,
   ChevronDown,
   Hammer,
-  Smile,
-  Laugh,
-  Meh,
-  Frown,
 } from "lucide-react";
 import { ComprehensiveBibleReader } from "./ComprehensiveBibleReader";
 import { PushNotificationSetup } from "./PushNotificationSetup";
 import { LoveJourneyHeader } from "./LoveJourneyHeader";
+import { MoodCheckInDialog } from "./MoodCheckInDialog";
+import { useDailyMoodCheckIn } from "../hooks/useDailyMoodCheckIn";
+import { moodCheckInCopy } from "../data/mood-check-in";
+import type { MoodValue } from "../utils/moodCheckIn";
 import { parseRelationshipStart } from "../utils/relationshipJourney";
 export {
   parseRelationshipStart,
@@ -177,13 +176,6 @@ interface Milestone {
   icon: string;
 }
 
-interface MoodEntry {
-  userId: string;
-  mood: "great" | "good" | "okay" | "sad";
-  date: string;
-  note?: string;
-}
-
 export function CoupleDashboard({
   profile,
   partner,
@@ -203,7 +195,11 @@ export function CoupleDashboard({
   const { t, language } = useLanguage();
   const calendarCopy = coupleCalendarCopy[language];
   const copy = dashboardJourneyCopy[language];
-  const [isSavingMood, setIsSavingMood] = useState(false);
+  const moodCopy = moodCheckInCopy[language];
+  const moodCheckIn = useDailyMoodCheckIn({
+    userId: profile?.id,
+    partnerId: partner?.id,
+  });
   const [championsExpanded, setChampionsExpanded] = useState(false);
   const [progressExpanded, setProgressExpanded] = useState(false);
   const [dailyVerse, setDailyVerse] = useState<BibleVerse | null>(null);
@@ -213,8 +209,6 @@ export function CoupleDashboard({
     language === "en" ? "en" : "am",
   );
   const [milestones, setMilestones] = useState<Milestone[]>([]);
-  const [todaysMood, setTodaysMood] = useState<MoodEntry | null>(null);
-  const [partnerMood, setPartnerMood] = useState<MoodEntry | null>(null);
   const [totalQuestionsCount, setTotalQuestionsCount] = useState(0);
   const [spotlightQuestions, setSpotlightQuestions] = useState<
     DashboardQuestion[]
@@ -711,66 +705,6 @@ export function CoupleDashboard({
     }
   }, [profile?.id, partner?.id]);
 
-  useEffect(() => {
-    // Fetch moods from backend
-    const fetchMoods = async () => {
-      try {
-        const { moods: fetchedMoods } = await moodsApi.list();
-
-        // Get today's date string
-        const today = new Date().toISOString().split("T")[0];
-
-        // Find today's mood for user and partner
-        const userTodayMood = fetchedMoods.find(
-          (m: any) => m.userId === profile?.id && m.createdAt.startsWith(today),
-        );
-        const partnerTodayMood = fetchedMoods.find(
-          (m: any) => m.userId === partner?.id && m.createdAt.startsWith(today),
-        );
-
-        if (userTodayMood) {
-          setTodaysMood({
-            userId: userTodayMood.userId,
-            mood: userTodayMood.mood,
-            date: userTodayMood.createdAt,
-            note: userTodayMood.note,
-          });
-        }
-
-        if (partnerTodayMood) {
-          setPartnerMood({
-            userId: partnerTodayMood.userId,
-            mood: partnerTodayMood.mood,
-            date: partnerTodayMood.createdAt,
-            note: partnerTodayMood.note,
-          });
-        }
-      } catch (error: any) {
-        // Suppress expected network errors — moods polling is non-critical
-        const isNetworkErr =
-          error?.message?.includes("Unable to connect") ||
-          error?.message?.includes("Failed to fetch") ||
-          error?.message?.includes("Unauthorized") ||
-          error?.message?.includes("timeout");
-        if (!isNetworkErr) {
-          console.warn("Could not fetch moods - non-critical feature:", error);
-        }
-      }
-    };
-
-    if (profile?.id) {
-      // Defer 1.5s — mood data is non-critical for initial render
-      const timeout = setTimeout(() => fetchMoods(), 1500);
-      const interval = setInterval(() => {
-        if (document.visibilityState === "visible") void fetchMoods();
-      }, 5 * 60_000);
-      return () => {
-        clearTimeout(timeout);
-        clearInterval(interval);
-      };
-    }
-  }, [profile?.id, partner?.id]);
-
   // Auto-check for weekly mood report (only if user has a partner)
   useEffect(() => {
     /** Returns "YYYY-Www" ISO week string so the key is unambiguous. */
@@ -834,41 +768,8 @@ export function CoupleDashboard({
     return () => clearInterval(interval);
   }, [profile?.id, partner?.id]);
 
-  // Helper function to save mood and refetch
-  const handleMoodUpdate = async (
-    moodValue: "great" | "good" | "okay" | "sad",
-  ) => {
-    if (isSavingMood) return;
-    setIsSavingMood(true);
-    try {
-      await moodsApi.save(moodValue);
-      setTodaysMood({
-        userId: profile?.id || "",
-        mood: moodValue,
-        date: new Date().toISOString(),
-      });
-      toast.success(t.mood.moodSaved);
-
-      // Refetch to get the saved mood from backend
-      const { moods: fetchedMoods } = await moodsApi.list();
-      const today = new Date().toISOString().split("T")[0];
-      const userTodayMood = fetchedMoods.find(
-        (m: any) => m.userId === profile?.id && m.createdAt.startsWith(today),
-      );
-      if (userTodayMood) {
-        setTodaysMood({
-          userId: userTodayMood.userId,
-          mood: userTodayMood.mood,
-          date: userTodayMood.createdAt,
-          note: userTodayMood.note,
-        });
-      }
-    } catch (error) {
-      console.error("Error saving mood:", error);
-      toast.error(t.messages.errorOccurred);
-    } finally {
-      setIsSavingMood(false);
-    }
+  const handleMoodUpdate = async (value: MoodValue) => {
+    if (await moodCheckIn.saveMood(value)) toast.success(t.mood.moodSaved);
   };
 
   // Calculate stats
@@ -1000,12 +901,6 @@ export function CoupleDashboard({
   const upcomingMilestone = milestones
     .filter((milestone) => new Date(milestone.date).getTime() > Date.now())
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
-  const moodChoices = [
-    { value: "great", label: t.mood.great, icon: Laugh },
-    { value: "good", label: t.mood.good, icon: Smile },
-    { value: "okay", label: t.mood.okay, icon: Meh },
-    { value: "sad", label: t.mood.sad, icon: Frown },
-  ] as const;
   const userName = profile?.name || profile?.full_name || copy.you;
   const partnerName = partner?.name || partner?.full_name || copy.partner;
   const activityLabel =
@@ -1034,10 +929,22 @@ export function CoupleDashboard({
             : undefined
         }
         start={relationshipStart || undefined}
+        partnerMood={moodCheckIn.partnerMood?.mood}
         accessToken={accessToken}
         milestones={milestones}
         onEdit={() => onNavigate?.("profile")}
         onViewMemories={() => onScreenNavigate?.("milestones")}
+      />
+
+      <MoodCheckInDialog
+        open={moodCheckIn.isOpen}
+        onOpenChange={(open) =>
+          open ? moodCheckIn.openCheckIn() : moodCheckIn.closeCheckIn()
+        }
+        onSelect={handleMoodUpdate}
+        isSaving={moodCheckIn.isSaving}
+        selectedMood={moodCheckIn.ownMood?.mood}
+        error={moodCheckIn.saveFailed ? moodCopy.saveError : null}
       />
 
       <section
@@ -1072,57 +979,6 @@ export function CoupleDashboard({
           </button>
         </div>
       </section>
-
-      {partner && (
-        <section
-          className="journey-mood-section"
-          aria-labelledby="journey-mood-title"
-        >
-          <div className="journey-section-title">
-            <h2 id="journey-mood-title">{copy.moodTitle}</h2>
-            <button
-              type="button"
-              onClick={() => onScreenNavigate?.("mood-analytics")}
-              aria-label={copy.moodAnalytics}
-            >
-              {copy.checkIn}
-            </button>
-          </div>
-          <div
-            className="journey-moods"
-            role="group"
-            aria-label={t.dashboard.yourMood}
-          >
-            {moodChoices.map(({ value, label, icon: Icon }) => (
-              <button
-                type="button"
-                key={value}
-                aria-pressed={todaysMood?.mood === value}
-                disabled={isSavingMood}
-                onClick={() => handleMoodUpdate(value)}
-              >
-                <Icon size={25} strokeWidth={1.5} aria-hidden="true" />
-                <span>{label}</span>
-              </button>
-            ))}
-          </div>
-          <p className="journey-partner-mood">
-            <Heart size={13} aria-hidden="true" />
-            <span>
-              {partnerName} {t.dashboard.shared.toLocaleLowerCase()}:{" "}
-              <strong>
-                {partnerMood
-                  ? moodChoices.find((mood) => mood.value === partnerMood.mood)
-                      ?.label
-                  : t.dashboard.notSharedYet}
-              </strong>
-            </span>
-          </p>
-          <span className="sr-only" role="status">
-            {todaysMood ? copy.moodSaved : ""}
-          </span>
-        </section>
-      )}
 
       <div
         className="journey-shortcuts"
