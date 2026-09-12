@@ -132,14 +132,12 @@ describe("compact journey locations", () => {
   it("shows both city/country pairs and approximate distance while presence stays independent", async () => {
     vi.stubGlobal(
       "fetch",
-      vi
-        .fn()
-        .mockResolvedValue(
-          response({
-            userLocation: dubaiLocation,
-            partnerLocation: addisLocation,
-          }),
-        ),
+      vi.fn().mockResolvedValue(
+        response({
+          userLocation: dubaiLocation,
+          partnerLocation: addisLocation,
+        }),
+      ),
     );
     render(journey());
 
@@ -147,11 +145,13 @@ describe("compact journey locations", () => {
     expect(screen.getByText("United Arab Emirates")).toBeVisible();
     expect(screen.getByText("Addis Ababa")).toBeVisible();
     expect(screen.getByText("Ethiopia")).toBeVisible();
-    expect(screen.getByText(/^[\d,]+ km$/)).toBeVisible();
+    expect(screen.getByText(/^≈ [\d,]+$/).closest("p")).toHaveTextContent(
+      /^≈ [\d,]+ km apart$/,
+    );
     expect(
       screen.getByText("Approximate straight-line distance"),
     ).toBeVisible();
-    expect(screen.getAllByText("City set manually")).toHaveLength(2);
+    expect(screen.getByText("Both cities set manually")).toBeVisible();
     expect(screen.getByLabelText("Partner One: online")).toBeInTheDocument();
     expect(screen.getByLabelText("Partner Two: offline")).toBeInTheDocument();
     expect(getCurrentLocation).not.toHaveBeenCalled();
@@ -379,7 +379,7 @@ describe("compact journey locations", () => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
     );
     expect(getCurrentLocation).toHaveBeenCalledTimes(1);
-    expect(screen.getByText("Saved device location")).toBeVisible();
+    expect(screen.getByText("Shared city and device locations")).toBeVisible();
     const post = fetchMock.mock.calls.find(
       ([, init]) => init?.method === "POST",
     );
@@ -425,7 +425,9 @@ describe("compact journey locations", () => {
 
     expect(screen.getByText("Fageenyi hin argamne")).toBeVisible();
     expect(screen.getByText("Hin qoodamne")).toBeVisible();
-    expect(screen.getByText("Magaalaa harkaan filatame")).toBeVisible();
+    expect(
+      screen.getByText("Magaalaan keessan harkaan filatame"),
+    ).toBeVisible();
     await user.click(screen.getByRole("button", { name: "Qindaa'ina bakka" }));
     expect(
       screen.getByRole("button", { name: "Bakka ammaa haaromsaa" }),

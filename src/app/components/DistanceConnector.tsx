@@ -27,6 +27,7 @@ import {
   Heart,
   Wifi,
   WifiOff,
+  Route,
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
@@ -41,6 +42,7 @@ import {
 import { projectId } from "../utils/supabase/info";
 import { createClient } from "../utils/supabase/client";
 import { useLanguage } from "../contexts/LanguageContext";
+import "../styles/distance-journey.css";
 
 interface DistanceConnectorProps {
   userId: string;
@@ -75,6 +77,13 @@ const LOCATION_COPY = {
     cityBaseline: "Based on your selected city",
     manual: "City set manually",
     device: "Saved device location",
+    bothManual: "Both cities set manually",
+    bothDevice: "Both device locations saved",
+    mixedSources: "Shared city and device locations",
+    ownManual: "Your city set manually",
+    ownDevice: "Your device location saved",
+    ownNotShared: "Your location is not shared",
+    kmApart: " km apart",
     updated: "Updated",
     settings: "Location settings",
     description: "Choose the location you want to share with your partner.",
@@ -111,6 +120,13 @@ const LOCATION_COPY = {
     cityBaseline: "በመረጣችሁት ከተማ መሠረት",
     manual: "በእጅ የተመረጠ ከተማ",
     device: "የተቀመጠ የመሣሪያ አካባቢ",
+    bothManual: "ሁለቱም ከተሞች በእጅ ተመርጠዋል",
+    bothDevice: "የሁለቱም መሣሪያዎች አካባቢ ተቀምጧል",
+    mixedSources: "የተጋሩ የከተማ እና የመሣሪያ አካባቢዎች",
+    ownManual: "ከተማዎ በእጅ ተመርጧል",
+    ownDevice: "የመሣሪያዎ አካባቢ ተቀምጧል",
+    ownNotShared: "አካባቢዎ አልተጋራም",
+    kmApart: " ኪ.ሜ ርቀት",
     updated: "የታደሰው",
     settings: "የአካባቢ ቅንብሮች",
     description: "ለባልደረባዎ ማጋራት የሚፈልጉትን አካባቢ ይምረጡ።",
@@ -146,6 +162,13 @@ const LOCATION_COPY = {
     cityBaseline: "Magaalaa filattan irratti hundaa'a",
     manual: "Magaalaa harkaan filatame",
     device: "Bakka meeshaa irraa galmaa'e",
+    bothManual: "Magaalonni lamaanuu harkaan filataman",
+    bothDevice: "Bakki meeshaalee lamaanii galmaa'eera",
+    mixedSources: "Bakka magaalaa fi meeshaa irraa qoodame",
+    ownManual: "Magaalaan keessan harkaan filatame",
+    ownDevice: "Bakki meeshaa keessanii galmaa'eera",
+    ownNotShared: "Bakki keessan hin qoodamne",
+    kmApart: " km wal irraa fagaattu",
     updated: "Haaromfame",
     settings: "Qindaa'ina bakka",
     description: "Bakka hiriyaa keessan waliin qooduu barbaaddan filadhaa.",
@@ -503,7 +526,26 @@ export function DistanceConnector({
       ? "—"
       : sameManualCity
         ? copy.sameCity
-        : embeddedDistanceLabel;
+        : `≈ ${new Intl.NumberFormat(
+            language === "en" ? "en-US" : `${language}-ET`,
+            {
+              minimumFractionDigits: distance < 10 ? 1 : 0,
+              maximumFractionDigits: distance < 10 ? 1 : 0,
+            },
+          ).format(distance)}`;
+  const sharingSource = !userLocation
+    ? copy.ownNotShared
+    : !partnerLocation
+      ? userLocation.locationType === "manual"
+        ? copy.ownManual
+        : copy.ownDevice
+      : userLocation.locationType === "manual" &&
+          partnerLocation.locationType === "manual"
+        ? copy.bothManual
+        : userLocation.locationType === "live" &&
+            partnerLocation.locationType === "live"
+          ? copy.bothDevice
+          : copy.mixedSources;
   const sourceLabel = (entry: UserLocation) =>
     entry.locationType === "manual" ? copy.manual : copy.device;
   const updateLabel = (entry: UserLocation) => {
@@ -525,49 +567,38 @@ export function DistanceConnector({
     initials: string,
     online: boolean,
     entry: UserLocation | null,
+    isUser = false,
   ) => (
-    <div className="min-w-0 text-center">
-      <div className="relative mx-auto h-12 w-12">
-        <Avatar className="h-12 w-12 border-2 border-white shadow-sm ring-1 ring-rose-100">
+    <div className="distance-journey__person">
+      <div
+        className={`distance-journey__avatar ${isUser ? "distance-journey__avatar--user" : "distance-journey__avatar--partner"}`}
+      >
+        <Avatar className="distance-journey__avatar-image">
           <AvatarImage src={avatar} alt={name} />
-          <AvatarFallback
-            className="text-xs font-semibold text-white"
-            style={{ background: "linear-gradient(135deg, #ff6391, #e11d48)" }}
-          >
+          <AvatarFallback className="distance-journey__initials">
             {initials.slice(0, 2)}
           </AvatarFallback>
         </Avatar>
-        <PresenceBadge
-          compact
-          online={online}
-          label={`${name}: ${online ? t.dashboard.online : t.dashboard.offline}`}
+        <span
+          className={`distance-journey__presence${online ? "" : " distance-journey__presence--offline"}`}
+          role="status"
+          aria-label={`${name}: ${online ? t.dashboard.online : t.dashboard.offline}`}
+          title={`${name}: ${online ? t.dashboard.online : t.dashboard.offline}`}
         />
       </div>
-      <p className="mt-2 break-words text-xs font-semibold leading-4 text-slate-900">
+      <strong>
         {name}
-      </p>
-      <p className="mt-1 flex items-start justify-center gap-1 text-[11px] leading-4 text-slate-600">
-        <MapPin
-          className="mt-0.5 h-3 w-3 shrink-0 text-rose-500"
-          aria-hidden="true"
-        />
-        <span className="min-w-0 break-words">
+        {isUser && <small>{t.mood.you}</small>}
+      </strong>
+      <p className="distance-journey__city">
+        <MapPin aria-hidden="true" />
+        <span>
           {entry?.location?.city ||
             (entry ? copy.locationShared : copy.notShared)}
         </span>
       </p>
       {entry?.location?.country && (
-        <p className="break-words text-[10px] leading-4 text-slate-500">
-          {entry.location.country}
-        </p>
-      )}
-      {entry && (
-        <p
-          className="mt-1 text-[9px] leading-4 text-slate-500"
-          title={updateLabel(entry)}
-        >
-          {sourceLabel(entry)}
-        </p>
+        <p className="distance-journey__country">{entry.location.country}</p>
       )}
     </div>
   );
@@ -627,22 +658,22 @@ export function DistanceConnector({
       `}</style>
 
       {variant === "journey" ? (
-        <section aria-label={copy.coupleLocations} className="space-y-3 pb-3">
-          <div className="grid grid-cols-[minmax(0,1fr)_2.75rem_minmax(0,1fr)] items-start gap-2">
+        <section aria-label={copy.coupleLocations} className="distance-journey">
+          <div className="distance-journey__places">
             {journeyPerson(
               userName,
               userAvatar,
               userInitials,
               userOnline,
               userLocation,
+              true,
             )}
-            <div
-              className="flex h-12 items-center justify-center gap-1 text-rose-300"
-              aria-hidden="true"
-            >
-              <span className="h-px flex-1 bg-rose-200" />
-              <Heart className="h-4 w-4 fill-rose-100 text-rose-400" />
-              <span className="h-px flex-1 bg-rose-200" />
+            <div className="distance-journey__connection" aria-hidden="true">
+              <span className="distance-journey__connection-line" />
+              <span className="distance-journey__connection-heart">
+                <Heart />
+              </span>
+              <span className="distance-journey__connection-line" />
             </div>
             {journeyPerson(
               partnerName,
@@ -653,18 +684,19 @@ export function DistanceConnector({
             )}
           </div>
           <div
-            className="flex items-center gap-3 rounded-2xl border border-rose-100 px-3 py-2"
-            style={{ background: "#fef1f4" }}
+            className="distance-journey__distance"
+            role="status"
+            aria-live="polite"
           >
-            <MapPin
-              className="h-4 w-4 shrink-0 text-rose-500"
-              aria-hidden="true"
-            />
-            <div className="min-w-0 flex-1" role="status" aria-live="polite">
-              <p className="text-sm font-semibold tabular-nums text-rose-700">
-                {journeyDistance}
+            <Route aria-hidden="true" />
+            <div>
+              <p className="distance-journey__distance-primary">
+                <strong>{journeyDistance}</strong>
+                {distance !== null && !sameManualCity && (
+                  <span>{copy.kmApart}</span>
+                )}
               </p>
-              <p className="text-[10px] leading-4 text-slate-500">
+              <p className="distance-journey__distance-caption">
                 {distance === null
                   ? copy.distanceUnavailable
                   : sameManualCity
@@ -672,14 +704,27 @@ export function DistanceConnector({
                     : copy.approximate}
               </p>
             </div>
+          </div>
+          <div className="distance-journey__sharing-footer">
+            <span
+              title={[
+                userLocation &&
+                  `${userName}: ${updateLabel(userLocation) || sourceLabel(userLocation)}`,
+                partnerLocation &&
+                  `${partnerName}: ${updateLabel(partnerLocation) || sourceLabel(partnerLocation)}`,
+              ]
+                .filter(Boolean)
+                .join(" · ")}
+            >
+              {sharingSource}
+            </span>
             <button
               type="button"
               onClick={() => setShowSettings(true)}
               aria-label={t.dashboard.locationSettings}
               title={t.dashboard.locationSettings}
-              className="grid h-11 w-11 shrink-0 place-items-center rounded-xl text-rose-600 transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
             >
-              <Settings className="h-4 w-4" aria-hidden="true" />
+              {t.dashboard.locationSettings} <span aria-hidden="true">↗</span>
             </button>
           </div>
           {!userLocation ? (

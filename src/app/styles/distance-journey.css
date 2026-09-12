@@ -1,0 +1,234 @@
+/* Location layout from the approved Our Journey proposal. */
+.distance-journey {
+  color: #111827;
+  line-height: normal;
+}
+
+.distance-journey p {
+  margin: 0;
+}
+
+.distance-journey__places {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 66px minmax(0, 1fr);
+  align-items: start;
+  margin-top: 22px;
+  position: relative;
+}
+
+.distance-journey__person {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.distance-journey__avatar {
+  width: 49px;
+  height: 49px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 19px;
+  font-weight: 650;
+  position: relative;
+  box-shadow:
+    0 0 0 4px #fff,
+    0 0 0 5px #fbd8e1;
+}
+
+.distance-journey__avatar--user {
+  background: #ffe0e8;
+  color: #9f1239;
+}
+
+.distance-journey__avatar--partner {
+  background: #ede8e7;
+  color: #655553;
+}
+
+.distance-journey__avatar-image {
+  width: 49px;
+  height: 49px;
+}
+
+.distance-journey__initials {
+  background: transparent;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.distance-journey__presence {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 11px;
+  height: 11px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #22c55e;
+}
+
+.distance-journey__presence--offline {
+  background: #9ca3af;
+}
+
+.distance-journey__person > strong {
+  font-size: 12px;
+  font-weight: 650;
+  margin-top: 11px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.distance-journey__person strong small {
+  font-size: 8px;
+  color: #6b7280;
+  font-weight: 400;
+  margin-left: 2px;
+}
+
+.distance-journey .distance-journey__city {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 10px;
+  margin-top: 6px;
+  text-align: center;
+  min-height: 15px;
+  overflow-wrap: anywhere;
+}
+
+.distance-journey__city svg {
+  width: 11px;
+  height: 11px;
+  color: #e11d48;
+  flex-shrink: 0;
+  stroke-width: 1.7;
+}
+
+.distance-journey .distance-journey__country {
+  font-size: 8px;
+  color: #6b7280;
+  margin-top: 3px;
+  text-align: center;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.distance-journey__connection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 13px;
+  color: #e11d48;
+}
+
+.distance-journey__connection-line {
+  height: 1px;
+  flex: 1;
+  border-bottom: 1px dashed #e8a8b8;
+}
+
+.distance-journey__connection-heart {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #fff1f5;
+}
+
+.distance-journey__connection-heart svg {
+  width: 12px;
+  height: 12px;
+  fill: #f43f5e;
+  stroke: none;
+}
+
+.distance-journey__distance {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 13px 7px;
+  background: #fff6f8;
+  border: 1px solid #ffe0e8;
+  border-radius: 12px;
+  text-align: left;
+}
+
+.distance-journey__distance > svg {
+  color: #e11d48;
+  width: 21px;
+  height: 21px;
+  flex-shrink: 0;
+  stroke-width: 1.7;
+}
+
+.distance-journey__distance-primary {
+  font-size: 11px;
+  color: #9f1239;
+}
+
+.distance-journey__distance-primary strong {
+  font-size: 23px;
+  letter-spacing: -0.7px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.distance-journey .distance-journey__distance-caption {
+  display: block;
+  font-size: 9px;
+  margin-top: 3px;
+  color: #6b7280;
+}
+
+.distance-journey__sharing-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  padding: 12px 0;
+  font-size: 8px;
+  color: #6b7280;
+}
+
+.distance-journey__sharing-footer button {
+  border: 0;
+  background: none;
+  color: #be123c;
+  font-size: 9px;
+  padding: 7px 0;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.distance-journey__sharing-footer button:focus-visible {
+  outline: 3px solid #e11d48;
+  outline-offset: 4px;
+}
+
+@media (max-width: 380px) {
+  .distance-journey__places {
+    grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr);
+  }
+  .distance-journey__sharing-footer {
+    gap: 3px;
+    font-size: 7px;
+  }
+  .distance-journey__sharing-footer button {
+    font-size: 8px;
+  }
+  .distance-journey .distance-journey__country {
+    font-size: 7px;
+  }
+  .distance-journey .distance-journey__city {
+    font-size: 9px;
+  }
+}

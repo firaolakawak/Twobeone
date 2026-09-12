@@ -1430,6 +1430,11 @@ export default function App() {
     );
   }
 
+  const isJourneyDashboard = activeTab === "home" && selectedScreen === "dashboard";
+  const headerProfileName = (profile as (UserType & { name?: string }) | null)?.name
+    || profile?.full_name || user?.user_metadata?.full_name || user?.email || "";
+  const headerProfileInitial = Array.from(String(headerProfileName).trim())[0]?.toLocaleUpperCase() || "?";
+
   return (
     <LanguageProvider>
       <SEOHead />
@@ -1443,20 +1448,23 @@ export default function App() {
         />
       )}
       <div className="app-mobile-shell min-h-screen bg-background flex flex-col">
-        {/* SOLID OPAQUE HEADER TRUNK BAR CONTAINER */}
-        <header className="sticky top-0 left-0 right-0 z-50 flex min-h-16 items-center pt-[env(safe-area-inset-top,0px)]" style={{ background: 'var(--card)', borderBottom: '1px solid var(--border)', boxShadow: '0 1px 0 0 var(--border)' }}>
-          <div className="w-full max-w-2xl mx-auto px-4 flex min-h-16 items-center justify-between">
+        <header className="sticky top-0 left-0 right-0 z-50 flex min-h-16 items-center pt-[env(safe-area-inset-top,0px)]" style={isJourneyDashboard ? { background: '#fff', borderBottom: '1px solid #f3f4f6' } : { background: 'var(--card)', borderBottom: '1px solid var(--border)', boxShadow: '0 1px 0 0 var(--border)' }}>
+          <div className={`w-full max-w-2xl mx-auto flex min-h-16 items-center justify-between gap-2 ${isJourneyDashboard ? 'px-5 max-[380px]:px-[15px]' : 'px-4'}`}>
             {/* Platform Brand Title Identification */}
-            <div className="flex items-center gap-2">
-              <Heart className="h-6 w-6 fill-rose-500 text-rose-500 animate-pulse" />
-              <span className="text-base font-extrabold text-slate-950 tracking-tight">
+            <div className={`flex shrink-0 items-center ${isJourneyDashboard ? 'gap-[10px]' : 'gap-2'}`}>
+              {isJourneyDashboard ? (
+                <span className="grid h-[29px] w-[29px] place-items-center rounded-[9px] text-white" style={{ background: 'linear-gradient(135deg, #ff6391, #e11d48)' }}>
+                  <Heart className="h-[19px] w-[19px] fill-current" strokeWidth={0} aria-hidden="true" />
+                </span>
+              ) : <Heart className="h-6 w-6 fill-rose-500 text-rose-500 animate-pulse" />}
+              <span className={isJourneyDashboard ? 'text-[19px] font-[750] tracking-[-.7px] text-[#111827]' : 'text-base font-extrabold text-slate-950 tracking-tight'}>
                 TwoBeOne
               </span>
             </div>
 
             {/* Consolidated Switcher Operations Header End Block */}
-            <div className="flex items-center gap-2">
-              {partner && (
+            <div className={`flex shrink-0 items-center ${isJourneyDashboard ? 'gap-0.5' : 'gap-2'}`}>
+              {partner && !isJourneyDashboard && (
                 <div
                   className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-1"
                   role="status"
@@ -1472,11 +1480,14 @@ export default function App() {
                   </span>
                 </div>
               )}
-              <LanguageSelector
-                accessToken={accessToken || undefined}
-                userId={profile?.id}
-              />
+              <div className={isJourneyDashboard ? '[&>div>button]:h-11 [&>div>button]:w-11 [&>div>button]:justify-center' : undefined}>
+                <LanguageSelector
+                  accessToken={accessToken || undefined}
+                  userId={profile?.id}
+                />
+              </div>
               {user && (
+                <div className={isJourneyDashboard ? "[&>button:first-child]:text-[#6b7280] [&>button:first-child>svg]:h-5 [&>button:first-child>svg]:w-5 [&>button:first-child>svg]:stroke-[1.7] [&>button:first-child]:before:absolute [&>button:first-child]:before:inset-[4.5px] [&>button:first-child]:before:rounded-full [&>button:first-child]:before:border [&>button:first-child]:before:border-[#f3f4f6] [&>button:first-child]:before:content-['']" : undefined}>
                 <Suspense fallback={null}>
                 <NotificationCenter
                   accessToken={accessToken}
@@ -1527,14 +1538,20 @@ export default function App() {
                   }}
                 />
                 </Suspense>
+                </div>
+              )}
+              {isJourneyDashboard && (
+                <button type="button" onClick={() => setActiveTab('profile')} aria-label={uiTranslations.nav.profile} title={headerProfileName || uiTranslations.nav.profile} className="flex h-11 w-11 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 focus-visible:ring-offset-1">
+                  <span className="grid h-[35px] w-[35px] place-items-center rounded-full bg-[#ffe0e8] text-xs font-bold text-[#9f1239]" aria-hidden="true">{headerProfileInitial}</span>
+                </button>
               )}
             </div>
           </div>
         </header>
 
         {/* Content Flow Layout Window Context */}
-        <div className="flex-1 w-full pt-4 pb-28">
-          <div className="max-w-6xl mx-auto px-4">
+        <div className={`flex-1 w-full pb-28 ${isJourneyDashboard ? 'pt-5' : 'pt-4'}`} style={isJourneyDashboard ? { background: 'linear-gradient(180deg, #fff 0%, #fff9fa 46%, #fff 100%)' } : undefined}>
+          <div className={isJourneyDashboard ? 'max-w-2xl mx-auto px-[18px]' : 'max-w-6xl mx-auto px-4'}>
             <Toaster />
             <Suspense fallback={null}>
               <PWAUpdateAvailable />
@@ -1569,7 +1586,7 @@ export default function App() {
             )}
 
             {/* Main Application Interface Core Components Render Frame */}
-            <main className="container mx-auto px-2 max-w-2xl">
+            <main className={isJourneyDashboard ? 'mx-auto w-full max-w-2xl' : 'container mx-auto px-2 max-w-2xl'}>
               <Suspense fallback={<ScreenLoader />}>
               {activeTab === "home" &&
                 selectedScreen === "dashboard" && (

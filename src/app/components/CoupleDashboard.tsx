@@ -8,11 +8,11 @@ import {
   Calendar,
   Users,
   ArrowRight,
-  Settings,
-  BarChart3,
+  SlidersHorizontal,
+  Clock,
+  Shuffle,
   Brain,
   ChevronDown,
-  RefreshCw,
   Hammer,
   Smile,
   Laugh,
@@ -20,7 +20,6 @@ import {
   Frown,
 } from "lucide-react";
 import { ComprehensiveBibleReader } from "./ComprehensiveBibleReader";
-import { LearningModulesCard } from "./LearningModulesCard";
 import { PushNotificationSetup } from "./PushNotificationSetup";
 import { DistanceConnector } from "./DistanceConnector";
 import { projectId } from "../utils/supabase/info";
@@ -304,7 +303,8 @@ export function CoupleDashboard({
   const calendarCopy = coupleCalendarCopy[language];
   const copy = dashboardJourneyCopy[language];
   const [isSavingMood, setIsSavingMood] = useState(false);
-  const [toolsExpanded, setToolsExpanded] = useState(false);
+  const [championsExpanded, setChampionsExpanded] = useState(false);
+  const [progressExpanded, setProgressExpanded] = useState(false);
   const [dailyVerse, setDailyVerse] = useState<BibleVerse | null>(null);
   const [isLoadingVerse, setIsLoadingVerse] = useState(true);
   const [isBibleReaderOpen, setIsBibleReaderOpen] = useState(false);
@@ -1107,41 +1107,54 @@ export function CoupleDashboard({
   ] as const;
   const userName = profile?.name || profile?.full_name || copy.you;
   const partnerName = partner?.name || partner?.full_name || copy.partner;
+  const hour = new Date().getHours();
+  const greeting =
+    hour < 12 ? copy.morning : hour < 18 ? copy.afternoon : copy.evening;
+  const activityLabel =
+    spotlight.kind === "devotion"
+      ? t.nav.devotions
+      : spotlight.kind === "question"
+        ? t.dashboard.questions
+        : t.nav.journal;
 
   return (
     <div className="journey-dashboard">
       <div className="journey-welcome">
         <div>
-          <p>{copy.greeting}</p>
-          <h1>{copy.title}</h1>
+          <p>
+            {greeting}, {userName.split(" ")[0]}
+          </p>
+          <h1>{copy.littleWorld}</h1>
         </div>
         <span>
-          <Heart size={17} aria-hidden="true" />
+          <Heart size={12} aria-hidden="true" />
+          {copy.justUs}
         </span>
       </div>
 
       <section className="journey-panel" aria-labelledby="journey-couple-title">
-        <div className="journey-title-row">
-          <div>
-            <h2 id="journey-couple-title">
-              {userName}
-              {partner && (
-                <>
-                  {" "}
-                  <span>&amp;</span> {partnerName}
-                </>
-              )}
-            </h2>
-            <p>{t.dashboard.growingTogetherInFaith}</p>
-          </div>
+        <div className="journey-topline">
+          <span>{t.dashboard.growingTogetherInFaith}</span>
           <button
             type="button"
-            className="journey-icon-button"
+            className="journey-icon-button journey-settings"
             onClick={() => onNavigate?.("profile")}
             aria-label={copy.editJourney}
           >
-            <Settings size={16} aria-hidden="true" />
+            <SlidersHorizontal size={15} aria-hidden="true" />
           </button>
+        </div>
+        <div className="journey-title-row">
+          <h2 id="journey-couple-title">
+            {userName}
+            {partner && (
+              <>
+                {" "}
+                <span>&amp;</span> {partnerName}
+              </>
+            )}
+          </h2>
+          <p>{copy.story}</p>
         </div>
         {partner &&
           (relationshipStart ? (
@@ -1203,31 +1216,40 @@ export function CoupleDashboard({
         <div className="journey-spotlight-top">
           <span className="journey-spotlight-label">
             <SpotlightIcon size={16} aria-hidden="true" />
-            {copy.forToday}
+            {copy.forToday} · {activityLabel}
           </span>
           <button
             type="button"
             onClick={shuffleSpotlight}
-            className="journey-icon-button"
+            className="journey-icon-button journey-shuffle"
             aria-label={copy.shuffle}
           >
-            <RefreshCw size={15} aria-hidden="true" />
+            <Shuffle size={14} aria-hidden="true" />
           </button>
         </div>
         <h2 id="home-spotlight-title">{spotlight.title}</h2>
         <p>{spotlight.description}</p>
-        <button
-          type="button"
-          className="journey-primary"
-          onClick={openSpotlight}
-        >
-          {spotlight.actionLabel}
-          <ArrowRight size={15} aria-hidden="true" />
-        </button>
+        <div className="journey-daily-footer">
+          <button
+            type="button"
+            className="journey-primary"
+            onClick={openSpotlight}
+          >
+            {spotlight.actionLabel}
+            <ArrowRight size={15} aria-hidden="true" />
+          </button>
+          <span>
+            <Clock size={13} aria-hidden="true" />
+            {copy.timeTogether}
+          </span>
+        </div>
       </section>
 
       {partner && (
-        <section className="journey-card" aria-labelledby="journey-mood-title">
+        <section
+          className="journey-mood-section"
+          aria-labelledby="journey-mood-title"
+        >
           <div className="journey-section-title">
             <h2 id="journey-mood-title">{copy.moodTitle}</h2>
             <button
@@ -1235,7 +1257,7 @@ export function CoupleDashboard({
               onClick={() => onScreenNavigate?.("mood-analytics")}
               aria-label={copy.moodAnalytics}
             >
-              <BarChart3 size={17} aria-hidden="true" />
+              {copy.checkIn}
             </button>
           </div>
           <div
@@ -1259,11 +1281,13 @@ export function CoupleDashboard({
           <p className="journey-partner-mood">
             <Heart size={13} aria-hidden="true" />
             <span>
-              {partnerName}:{" "}
-              {partnerMood
-                ? moodChoices.find((mood) => mood.value === partnerMood.mood)
-                    ?.label
-                : t.dashboard.notSharedYet}
+              {partnerName} {t.dashboard.shared.toLocaleLowerCase()}:{" "}
+              <strong>
+                {partnerMood
+                  ? moodChoices.find((mood) => mood.value === partnerMood.mood)
+                      ?.label
+                  : t.dashboard.notSharedYet}
+              </strong>
             </span>
           </p>
           <span className="sr-only" role="status">
@@ -1294,7 +1318,7 @@ export function CoupleDashboard({
         </button>
       </div>
 
-      <section className="journey-card" aria-labelledby="journey-plans-title">
+      <section className="journey-plans" aria-labelledby="journey-plans-title">
         <div className="journey-section-title">
           <h2 id="journey-plans-title">{copy.plans}</h2>
           <button
@@ -1354,32 +1378,42 @@ export function CoupleDashboard({
       >
         <div className="journey-section-title">
           <h2 id="journey-rhythm-title">{copy.rhythm}</h2>
+          <button
+            type="button"
+            onClick={() => setProgressExpanded((value) => !value)}
+            aria-expanded={progressExpanded}
+            aria-controls="journey-progress-detail"
+          >
+            {copy.viewProgress}
+          </button>
         </div>
         <p>
           <strong>
             {devotionalStreakValue} {copy.streak}.
           </strong>{" "}
-          {t.dashboard.growingTogetherInFaith}
+          {copy.rhythmHint}
         </p>
         <div className="journey-metrics">
           <button type="button" onClick={() => onNavigate?.("devotions")}>
             <strong>{devotionalCompletedCount}</strong>
             <span>{copy.read}</span>
           </button>
-          <button type="button" onClick={() => onNavigate?.("journal")}>
-            <strong>{sharedJournalEntries}</strong>
-            <span>
-              {t.dashboard.journalEntries} · {t.dashboard.shared}
-            </span>
-          </button>
           <button type="button" onClick={() => onNavigate?.("prayer")}>
             <strong>
               {answeredPrayers} / {totalPrayers}
             </strong>
-            <span>
-              {t.dashboard.prayers} · {t.dashboard.answered}
-            </span>
+            <span>{copy.answeredPrayers}</span>
           </button>
+          <button type="button" onClick={() => onNavigate?.("journal")}>
+            <strong>{sharedJournalEntries}</strong>
+            <span>{copy.sharedJournals}</span>
+          </button>
+        </div>
+        <div
+          id="journey-progress-detail"
+          className="journey-progress-detail"
+          hidden={!progressExpanded}
+        >
           <button
             type="button"
             onClick={() => onScreenNavigate?.("category-selection")}
@@ -1397,12 +1431,13 @@ export function CoupleDashboard({
 
       <details
         className="journey-card journey-explore"
-        onToggle={(event) => setToolsExpanded(event.currentTarget.open)}
+        onToggle={(event) => {
+          if (!event.currentTarget.open) setChampionsExpanded(false);
+        }}
       >
         <summary>
           <span>
             <strong>{copy.explore}</strong>
-            <small>{copy.exploreHint}</small>
           </span>
           <ChevronDown size={18} aria-hidden="true" />
         </summary>
@@ -1412,11 +1447,6 @@ export function CoupleDashboard({
             { label: copy.character, icon: Hammer, screen: "character-house" },
             { label: copy.scripture, icon: Brain, screen: "scripture-memory" },
             { label: copy.milestones, icon: Calendar, screen: "milestones" },
-            {
-              label: t.dashboard.questions,
-              icon: MessageCircleHeart,
-              screen: "category-selection",
-            },
           ].map(({ label, icon: Icon, screen }) => (
             <button
               key={screen}
@@ -1427,17 +1457,20 @@ export function CoupleDashboard({
               {label}
             </button>
           ))}
+          <button
+            type="button"
+            onClick={() => setChampionsExpanded((value) => !value)}
+            aria-expanded={championsExpanded}
+          >
+            {copy.champions}
+          </button>
           <button type="button" onClick={() => onNavigate?.("community")}>
             <Users size={17} aria-hidden="true" />
             {t.nav.community}
           </button>
         </div>
-        {toolsExpanded && (
+        {championsExpanded && (
           <div className="journey-extras">
-            <LearningModulesCard
-              onViewAll={() => onScreenNavigate?.("guidance")}
-              accessToken={accessToken}
-            />
             <ChampionsCard />
           </div>
         )}
@@ -1447,25 +1480,9 @@ export function CoupleDashboard({
         className="journey-card journey-verse"
         aria-labelledby="journey-verse-title"
       >
-        <div className="journey-section-title">
-          <h2 id="journey-verse-title">{t.dashboard.dailyVerse}</h2>
-          <div
-            className="journey-verse-languages"
-            role="group"
-            aria-label={t.language.select}
-          >
-            {(["en", "am"] as const).map((lang) => (
-              <button
-                type="button"
-                key={lang}
-                aria-pressed={verseLanguage === lang}
-                onClick={() => setVerseLanguage(lang)}
-              >
-                {lang === "en" ? "English" : "አማርኛ"}
-              </button>
-            ))}
-          </div>
-        </div>
+        <h2 id="journey-verse-title" className="sr-only">
+          {t.dashboard.dailyVerse}
+        </h2>
         {isLoadingVerse ? (
           <p className="journey-verse-reference" role="status">
             {t.common.loading}
@@ -1493,11 +1510,27 @@ export function CoupleDashboard({
                 onClick={() => setIsBibleReaderOpen(true)}
               >
                 <BookOpen size={15} aria-hidden="true" />
-                {t.dashboard.readFullChapter}
+                {t.dashboard.readFullChapter} <span aria-hidden="true">→</span>
               </button>
             </>
           )
         )}
+        <div
+          className="journey-verse-languages"
+          role="group"
+          aria-label={t.language.select}
+        >
+          {(["en", "am"] as const).map((lang) => (
+            <button
+              type="button"
+              key={lang}
+              aria-pressed={verseLanguage === lang}
+              onClick={() => setVerseLanguage(lang)}
+            >
+              {lang === "en" ? "English" : "አማርኛ"}
+            </button>
+          ))}
+        </div>
       </section>
 
       {profile?.id && accessToken && (

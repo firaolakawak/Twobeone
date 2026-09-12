@@ -4,9 +4,9 @@ import {
   ChevronRight,
   Ellipsis,
   Globe2,
-  HandHeart,
+  Heart,
   Home,
-  MessageCircleHeart,
+  MessageCircle,
   User,
   X,
 } from "lucide-react";
@@ -41,8 +41,8 @@ export const BottomNavigation = memo(function BottomNavigation({
   const tabs = [
     { id: "home", label: t.nav.home, icon: Home },
     { id: "devotions", label: t.nav.devotions, icon: BookOpen },
-    { id: "prayer", label: t.nav.prayer, icon: HandHeart },
-    { id: "chat", label: t.nav.chat, icon: MessageCircleHeart },
+    { id: "prayer", label: t.nav.prayer, icon: Heart },
+    { id: "chat", label: t.nav.chat, icon: MessageCircle },
     { id: "more", label: moreLabel, icon: Ellipsis },
   ];
   const moreTabs = [
@@ -53,16 +53,16 @@ export const BottomNavigation = memo(function BottomNavigation({
   return (
     <Dialog open={isMoreOpen} onOpenChange={setIsMoreOpen}>
       <div
-        className="pointer-events-none fixed inset-x-0 bottom-0 z-50 bg-gradient-to-t from-white via-white/95 to-transparent px-3 pt-5"
+        className="fixed inset-x-0 bottom-0 z-50 border-t border-[#eceef1] bg-white"
         style={{
-          paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)",
+          paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 13px)",
         }}
       >
         <nav
           aria-label={t.nav.primaryNavigation}
-          className="pointer-events-auto mx-auto max-w-lg rounded-[1.75rem] border border-white/90 bg-white/90 px-2 shadow-[0_-2px_10px_rgba(83,45,67,0.03),0_16px_45px_rgba(83,45,67,0.18)] ring-1 ring-neutral-950/[0.04] backdrop-blur-2xl"
+          className="mx-auto w-full max-w-2xl px-2 pt-[9px]"
         >
-          <div className="flex min-h-[4.25rem] items-stretch justify-between gap-0.5 py-2">
+          <div className="grid grid-cols-5 items-stretch gap-0.5">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isMore = tab.id === "more";
@@ -85,26 +85,24 @@ export const BottomNavigation = memo(function BottomNavigation({
                   whileTap={prefersReducedMotion ? undefined : { scale: 0.92 }}
                   transition={{ duration: 0.16 }}
                   title={tab.label}
-                  className={`group relative flex min-h-[52px] min-w-11 flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${isActive ? "bg-rose-50 text-primary" : "text-neutral-500 hover:bg-rose-50/60 hover:text-neutral-900"}`}
+                  className={`group relative flex min-h-[47px] min-w-11 flex-col items-center justify-center gap-[6px] rounded-[10px] px-0.5 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 focus-visible:ring-offset-1 ${isActive ? "bg-[#fef1f4] text-[#e11d48]" : "text-[#6b7280] hover:bg-rose-50/60 hover:text-neutral-900"}`}
                 >
-                  <span className="relative flex h-7 w-9 shrink-0 items-center justify-center">
+                  <span className="relative flex h-5 w-5 shrink-0 items-center justify-center">
                     <Icon
                       aria-hidden="true"
-                      className={`h-6 w-6 transition-transform duration-200 motion-reduce:transform-none motion-reduce:transition-none ${isActive ? "scale-105 text-primary" : "group-hover:scale-105"}`}
-                      strokeWidth={isActive ? 2.4 : 1.9}
+                      className="h-5 w-5"
+                      strokeWidth={1.7}
                     />
                     {unreadCount > 0 && (
                       <span
-                        className="absolute -right-1 -top-1 grid min-h-4 min-w-4 place-items-center rounded-full bg-rose-600 px-1 text-[9px] font-black leading-none text-white shadow-sm ring-2 ring-white"
+                        className="absolute -right-2 -top-1 grid min-h-3.5 min-w-3.5 place-items-center rounded-full bg-[#f43f5e] px-1 text-[8px] font-bold leading-none text-white ring-2 ring-white"
                         aria-hidden="true"
                       >
                         {unreadCount > 99 ? "99+" : unreadCount}
                       </span>
                     )}
                   </span>
-                  <span
-                    className={`relative w-full break-words text-center text-[9px] leading-[1.15] ${isActive ? "font-extrabold text-primary" : "font-semibold"}`}
-                  >
+                  <span className="relative w-full break-words text-center text-[8px] font-semibold leading-[1.15]">
                     {tab.label}
                   </span>
                 </motion.button>
