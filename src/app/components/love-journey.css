@@ -8,7 +8,7 @@
   color: #111827;
 }
 .love-journey__body {
-  padding: 19px 19px 17px;
+  padding: 20px 19px 16px;
 }
 .love-journey__identity {
   display: flex;
@@ -21,21 +21,21 @@
 }
 .love-journey .love-journey__eyebrow,
 .love-journey-story .love-journey__eyebrow {
-  margin: 0 0 6px;
-  color: #e11d48;
-  font-size: 9px;
-  line-height: 1.4;
-  letter-spacing: 0.12em;
-  font-weight: 750;
-  text-transform: uppercase;
+  margin: 0 0 5px;
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.5;
+  letter-spacing: 0;
+  font-weight: 400;
+  text-transform: none;
   overflow-wrap: anywhere;
 }
 .love-journey__identity h2 {
   margin: 0;
-  font-size: 19px;
-  letter-spacing: -0.65px;
-  line-height: 1.2;
-  font-weight: 730;
+  font-size: 20px;
+  letter-spacing: -0.4px;
+  line-height: 1.3;
+  font-weight: 600;
   overflow-wrap: anywhere;
 }
 .love-journey__identity h2 span {
@@ -75,7 +75,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-top: 21px;
+  margin-top: 20px;
 }
 .love-journey__elapsed-mark {
   width: 33px;
@@ -94,17 +94,17 @@
   margin: 0;
   display: flex;
   align-items: baseline;
-  gap: 6px;
+  gap: 7px;
   color: #4b4450;
-  font-size: 13px;
-  line-height: 1.3;
+  font-size: 14px;
+  line-height: 1.4;
 }
 .love-journey__elapsed-primary strong {
   flex-shrink: 0;
-  font-size: 27px;
+  font-size: 26px;
   line-height: 1;
-  font-weight: 650;
-  letter-spacing: -1px;
+  font-weight: 600;
+  letter-spacing: -0.7px;
   color: #111827;
   font-variant-numeric: tabular-nums;
 }
@@ -113,17 +113,17 @@
   flex-wrap: wrap;
   gap: 4px;
   align-items: baseline;
-  margin-top: 6px;
-  color: #75707b;
+  margin-top: 5px;
+  color: #6b7280;
   font-size: 12px;
-  line-height: 1.3;
+  line-height: 1.5;
   font-variant-numeric: tabular-nums;
 }
 .love-journey__clock-unit {
   white-space: nowrap;
 }
 .love-journey__clock-unit b {
-  font-weight: 500;
+  font-weight: 400;
 }
 .love-journey__clock-unit + .love-journey__clock-unit::before {
   content: "·";
@@ -145,8 +145,10 @@
   justify-content: space-between;
   gap: 8px;
   padding: 9px 12px 9px 19px;
-  background: #fdf2f6;
+  background: #fcf6f8;
   border-top: 1px solid #f0dfe5;
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
 .love-journey__occasion {
   display: flex;
@@ -160,16 +162,17 @@
 }
 .love-journey__occasion p {
   margin: 0;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
-  color: #7b5665;
+  color: #77616b;
   overflow-wrap: anywhere;
 }
 .love-journey__occasion strong {
   display: block;
-  font-size: 12px;
-  font-weight: 600;
-  color: #653c4c;
+  font-size: 14px;
+  font-weight: 500;
+  color: #463440;
+  margin-top: 3px;
 }
 .love-journey__story-button {
   display: inline-flex;
@@ -180,8 +183,8 @@
   border: 0;
   background: transparent;
   color: #e11d48;
-  font-size: 12px;
-  font-weight: 650;
+  font-size: 13px;
+  font-weight: 600;
   border-radius: 9px;
   flex-shrink: 0;
 }
@@ -197,10 +200,11 @@
   justify-content: center;
   gap: 5px;
   margin: 13px 0 0;
-  color: #89818b;
-  font-size: 10px;
+  color: #77707a;
+  font-size: 12px;
   line-height: 1.5;
   text-align: center;
+  margin-top: 14px;
 }
 .love-journey__faith svg {
   flex-shrink: 0;
@@ -216,18 +220,20 @@
   width: 100%;
   border: 1px dashed #e9b7c7;
   border-radius: 10px;
-  font-size: 12px;
+  font-size: 14px;
   color: #a9294d;
   text-align: left;
   background: #fff;
+  line-height: 1.6;
 }
 .love-journey__set-date svg {
   flex-shrink: 0;
 }
 .love-journey__unlinked {
   margin-top: 20px;
-  font-size: 13px;
+  font-size: 14px;
   color: #6b7280;
+  line-height: 1.6;
 }
 .love-journey__unlinked button {
   display: flex;
@@ -241,7 +247,8 @@
   color: #fff;
   border: 0;
   border-radius: 10px;
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: 600;
 }
 .love-journey-story {
   width: min(390px, calc(100% - 28px));
@@ -293,8 +300,8 @@
 }
 .love-journey-story .love-journey-story__intro {
   margin-top: 9px;
-  font-size: 12px;
-  line-height: 1.8;
+  font-size: 14px;
+  line-height: 1.6;
   color: #6b7280;
 }
 .love-journey-story__timeline {
@@ -331,14 +338,14 @@
   border-color: #e11d48;
 }
 .love-journey-story h3 {
-  font-size: 13px;
-  font-weight: 650;
+  font-size: 16px;
+  font-weight: 600;
   line-height: 1.5;
 }
 .love-journey-story__timeline p {
   color: #6b7280;
-  font-size: 11px;
-  line-height: 1.7;
+  font-size: 13px;
+  line-height: 1.6;
   margin-top: 5px;
 }
 .love-journey-story__memories {
@@ -346,8 +353,8 @@
   border-top: 1px solid #f0e8eb;
 }
 .love-journey-story__memories p {
-  font-size: 12px;
-  line-height: 1.7;
+  font-size: 14px;
+  line-height: 1.6;
   margin-top: 8px;
   color: #6b7280;
 }
@@ -362,11 +369,11 @@
 }
 .love-journey-story__memories strong {
   display: block;
-  font-size: 12px;
-  font-weight: 550;
+  font-size: 14px;
+  font-weight: 500;
 }
 .love-journey-story__memories time {
-  font-size: 11px;
+  font-size: 12px;
   color: #6b7280;
 }
 .love-journey-story__actions {
@@ -382,9 +389,10 @@
   padding: 10px;
   color: #fff;
   background: #e11d48;
-  font-size: 12px;
+  font-size: 14px;
   border: 0;
   border-radius: 10px;
+  font-weight: 600;
 }
 .love-journey-story__text-button {
   min-height: 44px;
@@ -392,7 +400,7 @@
   border: 0;
   background: transparent;
   color: #ad2548;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.5;
 }
 @media (max-width: 360px) {

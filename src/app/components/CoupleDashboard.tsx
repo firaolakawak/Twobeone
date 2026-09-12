@@ -8,7 +8,6 @@ import {
   Calendar,
   Users,
   ArrowRight,
-  Clock,
   Shuffle,
   Brain,
   ChevronDown,
@@ -1070,10 +1069,6 @@ export function CoupleDashboard({
             {spotlight.actionLabel}
             <ArrowRight size={15} aria-hidden="true" />
           </button>
-          <span>
-            <Clock size={13} aria-hidden="true" />
-            {copy.timeTogether}
-          </span>
         </div>
       </section>
 
