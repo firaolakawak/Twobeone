@@ -21,7 +21,6 @@ import {
   MessageCircle,
   NotebookPen,
   Plus,
-  Smartphone,
   Sparkles,
   Sprout,
   X,
@@ -35,6 +34,7 @@ import {
   type StaticPage,
 } from "../utils/publicRoutes";
 import { AppLaunchPreview } from "./landing/AppLaunchPreview";
+import { StoreDownloadButtons } from "./landing/StoreDownloadButtons";
 import {
   BlogPage,
   HelpCenterPage,
@@ -46,8 +46,6 @@ import {
 } from "./StaticPages";
 import "../styles/launch-landing.css";
 
-const GOOGLE_PLAY_URL =
-  "https://play.google.com/store/apps/details?id=com.twobeone.app&pli=1";
 const NAV_LINKS = [
   { label: "The app", id: "features" },
   { label: "How it works", id: "how-it-works" },
@@ -322,9 +320,10 @@ export function LandingPage({
               Make room for what matters. A shared space for you and your
               partner to connect, pray, and build a life rooted in faith.
             </p>
-            <div className="ll-hero-actions">
-              <button className="ll-button" onClick={onGetStarted}>
-                Start your journey <ArrowUpRight size={19} aria-hidden="true" />
+            <StoreDownloadButtons onInstallIOS={openAppleInstallGuide} />
+            <div className="ll-hero-actions ll-hero-actions--web">
+              <button className="ll-text-link" onClick={onGetStarted}>
+                Open the web app <ArrowUpRight size={16} aria-hidden="true" />
               </button>
               <a
                 className="ll-text-link"
@@ -406,7 +405,7 @@ export function LandingPage({
             </p>
           </div>
           <div className="ll-feature-grid">
-            <article className="ll-feature ll-feature--sage">
+            <article className="ll-feature ll-feature--pink">
               <div
                 className="ll-feature-art ll-devotion-art"
                 aria-hidden="true"
@@ -444,7 +443,7 @@ export function LandingPage({
                 </button>
               </div>
             </article>
-            <article className="ll-feature ll-feature--peach">
+            <article className="ll-feature ll-feature--blush">
               <div
                 className="ll-feature-art ll-conversation-art"
                 aria-hidden="true"
@@ -736,26 +735,12 @@ export function LandingPage({
               <br />A beautiful place to begin.
             </p>
             <button
-              className="ll-button ll-button--cream"
+              className="ll-button ll-button--light"
               onClick={onGetStarted}
             >
               Get started for free <ArrowUpRight size={19} aria-hidden="true" />
             </button>
-            <div className="ll-platforms">
-              <button onClick={openAppleInstallGuide}>
-                <Smartphone size={16} aria-hidden="true" /> Install on iPhone /
-                iPad <ArrowUpRight size={13} aria-hidden="true" />
-              </button>
-              <span />
-              <a
-                href={GOOGLE_PLAY_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Get it on Google Play{" "}
-                <ArrowUpRight size={13} aria-hidden="true" />
-              </a>
-            </div>
+            <StoreDownloadButtons onInstallIOS={openAppleInstallGuide} />
           </div>
         </section>
         <section

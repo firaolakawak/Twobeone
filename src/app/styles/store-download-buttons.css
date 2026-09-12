@@ -1,0 +1,168 @@
+.sdb-downloads {
+  margin-top: 28px;
+}
+.sdb-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.launch-landing .sdb-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 11px;
+  width: 181px;
+  min-height: 59px;
+  padding: 10px 15px;
+  border: 1px solid #454047;
+  border-radius: 9px;
+  background: #211e23;
+  color: #fff;
+  text-align: left;
+  font-family: "Segoe UI", Arial, sans-serif;
+  line-height: 1.1;
+  box-shadow: 0 3px 0 #2b1b320a;
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.launch-landing .sdb-badge:hover {
+  background: #37323b;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px #2b1b3217;
+}
+.sdb-icon {
+  flex: 0 0 29px;
+  width: 29px;
+  height: 33px;
+}
+.sdb-icon--apple {
+  width: 32px;
+  height: 35px;
+  flex-basis: 32px;
+}
+.sdb-badge > span {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  white-space: nowrap;
+}
+.sdb-badge small {
+  font-size: 8px;
+  letter-spacing: 0.05em;
+  font-weight: 400;
+}
+.sdb-badge strong {
+  font-size: 19px;
+  font-weight: 550;
+  letter-spacing: -0.65px;
+}
+.launch-landing .sdb-install-note {
+  font-size: 9px;
+  color: #766679;
+  line-height: 1.6;
+  margin: 10px 0 0;
+}
+.ll-hero-actions.ll-hero-actions--web {
+  margin-top: 18px;
+  gap: 27px;
+}
+.ll-hero-actions--web > .ll-text-link:first-child {
+  color: #c02687;
+}
+.ll-download .sdb-downloads {
+  margin-top: 25px;
+}
+.ll-download .sdb-badges {
+  justify-content: center;
+}
+.ll-download .sdb-badge {
+  border-color: #ffffff35;
+}
+.ll-download .sdb-install-note {
+  color: #fff0fa;
+  font-size: 10px;
+}
+@media (max-width: 1100px) and (min-width: 901px) {
+  .launch-landing .sdb-badge {
+    width: 169px;
+    padding-inline: 12px;
+    gap: 9px;
+  }
+  .sdb-badge strong {
+    font-size: 18px;
+  }
+}
+@media (max-width: 900px) {
+  .sdb-badges {
+    justify-content: center;
+  }
+}
+@media (max-width: 600px) {
+  .sdb-downloads {
+    margin-top: 25px;
+  }
+  .sdb-badges {
+    gap: 10px;
+  }
+  .launch-landing .sdb-badge {
+    width: 164px;
+    min-height: 56px;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .sdb-badge strong {
+    font-size: 17px;
+  }
+  .sdb-icon,
+  .sdb-icon--apple {
+    flex-basis: 27px;
+    width: 27px;
+    height: 30px;
+  }
+  .ll-download .sdb-badges {
+    gap: 8px;
+  }
+  .ll-hero-actions.ll-hero-actions--web {
+    margin-top: 17px;
+    gap: 22px;
+  }
+}
+@media (max-width: 380px) {
+  .sdb-badges {
+    gap: 8px;
+  }
+  .launch-landing .sdb-badge {
+    width: 136px;
+    min-height: 50px;
+    padding: 8px;
+    gap: 7px;
+  }
+  .sdb-badge strong {
+    font-size: 14px;
+    letter-spacing: -0.4px;
+  }
+  .sdb-badge small {
+    font-size: 6px;
+  }
+  .sdb-icon,
+  .sdb-icon--apple {
+    flex-basis: 24px;
+    width: 24px;
+    height: 27px;
+  }
+  .ll-download .sdb-badge {
+    width: min(100%, 181px);
+    min-height: 57px;
+    justify-content: center;
+  }
+  .ll-download .sdb-badge strong {
+    font-size: 18px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .launch-landing .sdb-badge {
+    transition: none;
+  }
+}

@@ -5,10 +5,9 @@
   height: 660px;
   margin-inline: auto;
   isolation: isolate;
-  color: #292b27;
+  color: #302334;
   font-family: inherit;
 }
-
 .alp-stage *,
 .alp-stage *::before,
 .alp-stage *::after {
@@ -19,57 +18,67 @@
   cursor: pointer;
 }
 .alp-stage button:focus-visible {
-  outline: 2px solid #a74434;
-  outline-offset: 4px;
+  outline: 2px solid #be185d;
+  outline-offset: 3px;
 }
 .alp-backdrop {
   position: absolute;
   width: 455px;
   height: 455px;
   max-width: 95%;
-  aspect-ratio: 1;
-  top: 72px;
+  top: 64px;
   left: 50%;
   transform: translateX(-50%);
   border-radius: 50%;
-  background: #eee9df;
+  background: linear-gradient(135deg, #fce7f3 0%, #fae8ff 100%);
   z-index: -2;
 }
-.alp-orbit {
+.alp-backdrop-ring {
   position: absolute;
-  width: 510px;
-  height: 510px;
+  width: 494px;
+  height: 494px;
   max-width: 100%;
-  top: 43px;
+  top: 44px;
   left: 50%;
   transform: translateX(-50%);
-  border: 1px dashed #d8d3c7;
+  border: 1px solid #f6dcec;
   border-radius: 50%;
   z-index: -1;
 }
-.alp-orbit-leaf {
+.alp-phone,
+.alp-companion-phone {
   position: absolute;
-  top: 70px;
-  left: 49px;
-  color: #87917a;
-  transform: rotate(-24deg);
-}
-.alp-phone {
-  position: absolute;
-  top: 18px;
-  left: 50%;
-  transform: translateX(-50%) rotate(-3deg);
-  width: 284px;
-  height: 552px;
-  border: 6px solid #2c2e29;
-  border-radius: 43px;
-  background: #faf8f4;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  background: #ffffff;
+  border: 6px solid #27272a;
+  border-radius: 41px;
   box-shadow:
-    0 28px 45px -20px #292b2738,
-    0 3px 0 1px #5b5b50;
+    0 26px 45px -20px #27272a4d,
+    0 0 0 1px #71717a;
+}
+.alp-phone {
+  top: 7px;
+  left: 37%;
+  transform: translateX(-50%);
+  width: 286px;
+  height: 570px;
+  z-index: 2;
+}
+.alp-companion-phone {
+  top: 68px;
+  right: 29px;
+  width: 226px;
+  height: 476px;
+  border-width: 5px;
+  border-radius: 34px;
+  transform: rotate(7deg);
+  z-index: 1;
+  background: #fff8fc;
+  box-shadow:
+    0 22px 35px -20px #27272a40,
+    0 0 0 1px #a1a1aa;
 }
 .alp-uploaded-screen {
   width: 100%;
@@ -78,8 +87,8 @@
   object-position: top center;
 }
 .alp-status {
-  height: 36px;
-  flex: 0 0 36px;
+  height: 32px;
+  flex: 0 0 32px;
   padding: 10px 17px 0;
   display: flex;
   align-items: flex-start;
@@ -90,13 +99,13 @@
 }
 .alp-camera {
   position: absolute;
-  width: 66px;
-  height: 18px;
+  width: 62px;
+  height: 17px;
   top: 7px;
   left: 50%;
   transform: translateX(-50%);
-  background: #2c2e29;
-  border-radius: 20px;
+  background: #27272a;
+  border-radius: 15px;
 }
 .alp-status-icons {
   display: flex;
@@ -104,492 +113,675 @@
   gap: 3px;
 }
 .alp-screen-content {
-  padding: 10px 16px 0;
+  padding: 10px 15px 7px;
   flex: 1;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.alp-screen-content-prayer {
+  gap: 10px;
+}
+.alp-screen-content-sync {
+  gap: 9px;
+}
+.alp-app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.alp-brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.45px;
+  color: #302334;
+}
+.alp-brand > span {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #db2777 0%, #c026d3 100%);
+  color: #ffffff;
+}
+.alp-connected {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #c026d3;
+  font-size: 7px;
+  font-weight: 600;
+}
+.alp-connected > span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #ec4899;
 }
 .alp-greeting {
   display: flex;
   align-items: center;
-  gap: 7px;
-  margin-bottom: 18px;
+  justify-content: space-between;
+  gap: 5px;
+  padding-block: 2px 0;
 }
-.alp-greeting > div {
-  flex: 1;
-}
-.alp-eyebrow {
-  display: block;
-  font-size: 6px;
-  font-weight: 700;
-  letter-spacing: 1.05px;
-  color: #888578;
-  margin-bottom: 7px;
+.alp-greeting p {
+  margin: 0 0 5px;
+  color: #87758b;
+  font-size: 8px;
+  line-height: 1.4;
 }
 .alp-greeting h3 {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 1.15;
-  margin: 0;
-  letter-spacing: -0.6px;
-}
-.alp-profile {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  color: #c45b48;
-  background: #f2e8e0;
-}
-.alp-devotional-card {
-  border-radius: 13px;
-  overflow: hidden;
-  background: #687861;
-  color: #fffef8;
-}
-.alp-landscape {
-  position: relative;
-  height: 77px;
-  background: #c8c9ad;
-  overflow: hidden;
-}
-.alp-sun {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  position: absolute;
-  top: 12px;
-  left: 141px;
-  background: #f7e9be;
-}
-.alp-hill {
-  display: block;
-  position: absolute;
-  border-radius: 50% 50% 0 0;
-}
-.alp-hill-back {
-  width: 225px;
-  height: 88px;
-  top: 44px;
-  left: 50px;
-  background: #8c9a7c;
-  transform: rotate(-15deg);
-}
-.alp-hill-front {
-  width: 300px;
-  height: 100px;
-  top: 54px;
-  left: -70px;
-  background: #687861;
-  transform: rotate(9deg);
-}
-.alp-landscape-caption {
-  position: absolute;
-  left: 15px;
-  top: 16px;
-  font-size: 6px;
-  font-weight: 700;
-  letter-spacing: 1.8px;
-  color: #4d5947;
-}
-.alp-devotional-copy {
-  padding: 8px 15px 15px;
-}
-.alp-card-eyebrow {
-  display: block;
-  font-size: 6.5px;
-  font-weight: 600;
-  letter-spacing: 0.95px;
-  line-height: 1.5;
-}
-.alp-devotional-copy > .alp-card-eyebrow {
-  color: #e4e8d8;
-}
-.alp-devotional-copy h4 {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: inherit;
+  color: #302334;
   font-size: 22px;
-  font-weight: 400;
-  line-height: 1.14;
-  margin: 7px 0 13px;
-  max-width: 155px;
-  letter-spacing: -0.3px;
+  line-height: 1.11;
+  font-weight: 650;
+  letter-spacing: -0.9px;
+  margin: 0;
 }
-.alp-devotional-copy button,
-.alp-together-card button {
-  border: 0;
-  border-radius: 6px;
-  background: #faf8f0;
-  color: #4f5b48;
-  font-size: 8px;
-  font-weight: 600;
-  padding: 7px 10px;
-  display: inline-flex;
-  gap: 15px;
-  align-items: center;
-}
-.alp-devotional-copy button:hover,
-.alp-together-card button:hover {
-  background: #e9e8d9;
-}
-.alp-verse {
-  padding: 16px 2px 13px;
-}
-.alp-verse .alp-card-eyebrow {
-  color: #969182;
-  font-size: 6px;
-}
-.alp-verse p {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 16px;
-  line-height: 1.35;
-  margin: 7px 0 5px;
-  color: #55594e;
-}
-.alp-verse > span:last-child {
-  font-size: 7px;
-  color: #8a897c;
-}
-.alp-rhythm {
-  border-top: 1px solid #e8e4d9;
-  padding-top: 12px;
+.alp-couple-avatars {
   display: flex;
+  position: relative;
   align-items: center;
-  justify-content: space-between;
-  color: #748169;
+  padding-right: 4px;
+  padding-bottom: 3px;
 }
-.alp-rhythm > div {
-  display: flex;
-  gap: 9px;
-  align-items: center;
-}
-.alp-rhythm-icon {
+.alp-couple-avatars > span {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 29px;
   height: 29px;
-  background: #edece1;
-  border-radius: 8px;
+  border: 2px solid #ffffff;
+  background: #f5d0fe;
+  color: #a21caf;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
 }
-.alp-rhythm strong {
-  display: block;
-  font-size: 9px;
-  color: #474b40;
-  font-weight: 600;
+.alp-couple-avatars > span + span {
+  margin-left: -8px;
+  background: #fbcfe8;
+  color: #a21caf;
 }
-.alp-rhythm small {
+.alp-couple-avatars i {
+  position: absolute;
+  right: 1px;
+  bottom: 0;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+  color: #db2777;
+  background: #fff0f7;
+}
+.alp-devotional-card {
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden;
+  padding: 13px 14px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #db2777 0%, #c026d3 100%);
+  color: #ffffff;
+}
+.alp-card-topline,
+.alp-card-bottomline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+}
+.alp-card-topline > svg {
+  color: #ffffff;
+}
+.alp-card-label {
   display: block;
   font-size: 7px;
-  color: #8b8b7e;
+  font-weight: 600;
+  letter-spacing: 0.65px;
+  line-height: 1.5;
+}
+.alp-devotional-card .alp-card-label {
+  color: #ffffff;
+}
+.alp-devotional-card h4 {
+  position: relative;
+  z-index: 1;
+  font-family: inherit;
+  font-size: 21px;
+  line-height: 1.12;
+  letter-spacing: -0.6px;
+  font-weight: 550;
+  margin: 9px 0 5px;
+}
+.alp-devotional-card > p {
+  position: relative;
+  z-index: 1;
+  font-size: 8px;
+  color: #ffffff;
+  line-height: 1.4;
+  margin: 0 0 11px;
+}
+.alp-card-bottomline > span {
+  font-size: 7px;
+  color: #ffffff;
+}
+.alp-card-bottomline button {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 9px;
+  background: #ffffff;
+  color: #a21caf;
+  border: 0;
+  border-radius: 6px;
+  font-size: 8px;
+  font-weight: 650;
+}
+.alp-card-bottomline button:hover {
+  background: #fce7f3;
+}
+.alp-card-leaf {
+  position: absolute;
+  right: -5px;
+  top: 40px;
+  color: #fbcfe8;
+  opacity: 0.45;
+  transform: rotate(-28deg);
+  pointer-events: none;
+}
+.alp-quick-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+.alp-quick-actions button {
+  text-align: left;
+  border: 1px solid #f6dcec;
+  border-radius: 11px;
+  background: #fff0f7;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.alp-quick-actions button + button {
+  background: #faf0ff;
+  border-color: #f1e3f0;
+}
+.alp-quick-actions button:hover {
+  border-color: #f9a8d4;
+}
+.alp-quick-actions button + button:hover {
+  border-color: #e879f9;
+}
+.alp-quick-icon {
+  display: flex;
+  color: #db2777;
+  margin-bottom: 6px;
+}
+.alp-quick-icon-sage {
+  color: #c026d3;
+}
+.alp-quick-actions strong {
+  color: #514156;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: -0.1px;
+}
+.alp-quick-actions button > span:last-child {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2px;
+  font-size: 6.5px;
+  color: #87758b;
   margin-top: 4px;
 }
+.alp-rhythm-card {
+  padding: 0 1px;
+}
+.alp-rhythm-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+.alp-rhythm-heading > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #87758b;
+  font-size: 8px;
+  font-weight: 600;
+}
+.alp-rhythm-heading strong {
+  font-size: 7px;
+  color: #c026d3;
+  font-weight: 500;
+}
+.alp-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  margin-top: 8px;
+}
+.alp-week > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.alp-week > div > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+.alp-week small {
+  font-size: 6px;
+  color: #87758b;
+}
+.alp-day-done {
+  color: #ffffff;
+  background: linear-gradient(135deg, #db2777 0%, #c026d3 100%);
+}
+.alp-day-next {
+  border: 1px solid #f1e3f0;
+}
+.alp-day-next > span {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #e9d5ee;
+}
 .alp-phone-nav {
-  height: 47px;
-  flex: 0 0 47px;
+  height: 49px;
+  flex: 0 0 49px;
   display: flex;
   align-items: center;
   justify-content: space-around;
-  border-top: 1px solid #eae6db;
-  margin: 9px 15px 0;
+  border-top: 1px solid #f1e3f0;
+  background: #ffffff;
 }
 .alp-phone-nav button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 4px 12px;
+  gap: 3px;
+  padding: 6px 15px;
   background: transparent;
   border: 0;
-  color: #98988c;
+  color: #ab9eaf;
 }
 .alp-phone-nav button span {
-  font-size: 6px;
+  font-size: 7px;
+  font-weight: 500;
 }
 .alp-phone-nav button[aria-pressed="true"] {
-  color: #b75947;
+  color: #db2777;
 }
 .alp-home-indicator {
-  background: #363a31;
-  width: 88px;
+  background: #3f3f46;
+  width: 80px;
   height: 3px;
   flex: 0 0 3px;
   border-radius: 5px;
   margin: 1px auto 7px;
 }
-.alp-prayer-card {
-  background: #f0e1d7;
+.alp-prayer-view {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.alp-prayer-feature {
+  position: relative;
+  background: #fff0f7;
   border-radius: 13px;
-  padding: 16px;
-  color: #9d4e3e;
+  padding: 14px;
+  color: #a21caf;
+  overflow: hidden;
 }
-.alp-prayer-card > svg {
-  margin-top: 15px;
+.alp-prayer-symbol {
+  position: absolute;
+  top: 17px;
+  right: 15px;
+  display: flex;
+  padding: 9px;
+  border: 1px solid #f9a8d4;
+  border-radius: 50%;
+  color: #db2777;
 }
-.alp-prayer-card h4 {
-  font-family: Georgia, "Times New Roman", serif;
-  font-weight: 400;
-  font-size: 26px;
-  line-height: 1.1;
-  margin: 9px 0;
+.alp-prayer-feature .alp-card-label {
+  max-width: 120px;
+  font-size: 6px;
 }
-.alp-prayer-card p {
+.alp-prayer-feature h4 {
+  font-family: inherit;
+  font-weight: 550;
+  letter-spacing: -0.6px;
+  font-size: 22px;
+  line-height: 1.15;
+  margin: 12px 0 7px;
+}
+.alp-prayer-feature p {
   font-size: 8px;
-  line-height: 1.6;
+  line-height: 1.5;
   margin: 0;
-  color: #92685c;
+  color: #95648d;
+}
+.alp-list-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2px;
+}
+.alp-list-heading strong {
+  font-size: 9px;
+  font-weight: 650;
+  color: #514156;
+}
+.alp-list-heading > span {
+  font-size: 7px;
+  color: #87758b;
 }
 .alp-prayer-item {
   display: flex;
   align-items: center;
-  gap: 9px;
-  padding: 13px 0;
-  border-bottom: 1px solid #e9e4d9;
+  gap: 7px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f1e3f0;
 }
 .alp-prayer-item > div {
   flex: 1;
 }
-.alp-prayer-item strong,
-.alp-prayer-item span {
-  display: block;
-}
 .alp-prayer-item strong {
+  display: block;
   font-size: 8px;
   font-weight: 600;
+  color: #514156;
 }
 .alp-prayer-item div > span {
-  font-size: 7px;
-  color: #888779;
+  display: block;
+  font-size: 6.5px;
+  color: #87758b;
   margin-top: 4px;
 }
 .alp-prayer-item > svg {
-  color: #859077;
+  color: #c026d3;
+  flex-shrink: 0;
 }
-.alp-prayer-item .alp-small-heart {
+.alp-item-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  background: #f4e8e0;
+  width: 29px;
+  height: 29px;
+  flex-shrink: 0;
+  background: #faf0ff;
   border-radius: 8px;
-  color: #b9634f;
+  color: #c026d3;
 }
-.alp-prayer-item .alp-small-heart-sage {
-  color: #74816a;
-  background: #e9ebdf;
+.alp-item-icon-coral {
+  background: #fff0f7;
+  color: #db2777;
 }
-.alp-screen-button {
+.alp-primary-action {
   width: 100%;
-  margin-top: 13px;
   border: 0;
-  background: #b75947;
-  color: #fffaf4;
-  padding: 9px;
-  border-radius: 7px;
+  background: linear-gradient(135deg, #db2777 0%, #c026d3 100%);
+  color: #ffffff;
+  padding: 10px;
+  border-radius: 8px;
   display: flex;
   gap: 6px;
   align-items: center;
   justify-content: center;
+  font-size: 9px;
+  font-weight: 600;
+}
+.alp-primary-action:hover {
+  background: linear-gradient(135deg, #be185d 0%, #a21caf 100%);
+}
+.alp-checkin-card {
+  background: #faf0ff;
+  border-radius: 13px;
+  padding: 12px;
+  color: #a21caf;
+}
+.alp-checkin-card .alp-card-label {
+  color: #c026d3;
+}
+.alp-checkin-card h4 {
+  font-family: inherit;
+  font-size: 23px;
+  line-height: 1.12;
+  font-weight: 550;
+  letter-spacing: -0.65px;
+  margin: 10px 0 6px;
+}
+.alp-checkin-card > p {
+  font-size: 8px;
+  color: #c026d3;
+  margin: 0;
+}
+.alp-feeling-options {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 8px 10px;
+}
+.alp-feeling-options > span {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 6px;
+  color: #c026d3;
+}
+.alp-feeling-options > span:first-child {
+  color: #db2777;
+}
+.alp-feeling-options > span:last-child {
+  color: #db2777;
+}
+.alp-feeling-options small {
+  font-size: 7px;
+}
+.alp-checkin-card button {
+  border: 0;
+  width: 100%;
+  background: linear-gradient(135deg, #db2777 0%, #c026d3 100%);
+  color: #ffffff;
+  border-radius: 7px;
+  padding: 9px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
   font-size: 8px;
   font-weight: 600;
 }
-.alp-screen-button:hover {
-  background: #a14c3c;
+.alp-checkin-card button:hover {
+  background: linear-gradient(135deg, #be185d 0%, #a21caf 100%);
 }
-.alp-together-card {
-  background: #e9eadd;
-  text-align: center;
-  border-radius: 13px;
-  padding: 16px 11px;
-  color: #53614c;
+.alp-conversation-card {
+  border: 1px solid #f1e3f0;
+  border-radius: 11px;
+  background: #fff8fc;
+  padding: 12px;
 }
-.alp-together-card > .alp-card-eyebrow {
-  font-size: 6px;
-}
-.alp-avatar-pair {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 11px;
-  margin: 21px 0 15px;
-}
-.alp-avatar-pair span {
-  width: 43px;
-  height: 43px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #d4d9c3;
-  color: #5e6e53;
-  border: 3px solid #faf8f0;
-  border-radius: 50%;
-  font-family: Georgia, serif;
-  font-size: 19px;
-}
-.alp-avatar-pair span:last-child {
-  background: #e7cbbb;
-  color: #a06451;
-}
-.alp-avatar-pair > svg {
-  color: #b96550;
-}
-.alp-together-card h4 {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 21px;
-  line-height: 1.12;
-  margin: 0 auto 7px;
-  max-width: 160px;
-  font-weight: 400;
-}
-.alp-together-card p {
-  font-size: 8px;
-  color: #7b826b;
-  margin: 0 0 15px;
-}
-.alp-conversation {
-  margin-top: 16px;
-  padding: 0 2px;
-}
-.alp-conversation > .alp-card-eyebrow {
+.alp-conversation-card > .alp-card-label {
   display: flex;
   align-items: center;
   gap: 5px;
-  color: #9e7560;
+  color: #95648d;
   font-size: 6px;
 }
-.alp-conversation p {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 16px;
-  line-height: 1.3;
-  margin: 9px 0;
+.alp-conversation-card p {
+  font-size: 14px;
+  color: #514156;
+  line-height: 1.35;
+  letter-spacing: -0.25px;
+  margin: 7px 0;
+  font-weight: 500;
 }
-.alp-conversation button {
-  color: #b25e49;
+.alp-conversation-card button {
+  color: #db2777;
   background: transparent;
   border: 0;
-  display: inline-flex;
-  gap: 10px;
+  display: flex;
+  gap: 12px;
   align-items: center;
   font-size: 8px;
   font-weight: 600;
   padding: 0;
 }
 .alp-together-note {
-  padding: 15px 0 0;
   display: flex;
-  gap: 6px;
+  gap: 5px;
   align-items: center;
-  color: #87917b;
-  font-size: 6.5px;
+  justify-content: center;
+  color: #c026d3;
+  font-size: 7px;
 }
-.alp-float-card {
-  position: absolute;
-  border: 1px solid #e8e1d4;
-  background: #fffdf7;
-  border-radius: 12px;
-  box-shadow: 0 9px 30px -13px #54482e28;
+.alp-companion-phone .alp-status {
+  height: 29px;
+  flex-basis: 29px;
+  font-size: 7px;
+  padding: 8px 14px 0;
 }
-.alp-float-rhythm {
-  right: 0;
-  top: 133px;
-  padding: 13px 15px;
-  width: 192px;
-  transform: rotate(4deg);
+.alp-companion-phone .alp-camera {
+  width: 47px;
+  height: 13px;
+  top: 6px;
 }
-.alp-float-card-heading {
+.alp-companion-phone .alp-status-icons {
+  gap: 2px;
+}
+.alp-companion-phone .alp-status-icons > svg {
+  width: 10px;
+}
+.alp-companion-content {
+  flex: 1;
+  min-height: 0;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 9px;
+  padding: 8px 12px;
 }
-.alp-float-icon {
-  display: flex;
-  flex: 0 0 32px;
-  width: 32px;
-  height: 32px;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  background: #f5e6de;
-  color: #bd654f;
+.alp-companion-phone .alp-brand {
+  font-size: 10px;
 }
-.alp-float-icon-sage {
-  color: #7c896e;
-  background: #eeefe3;
+.alp-companion-phone .alp-brand > span {
+  width: 21px;
+  height: 21px;
+  border-radius: 6px;
 }
-.alp-float-card strong {
-  display: block;
-  font-size: 11px;
+.alp-companion-heading {
+  padding: 5px 0 2px;
+}
+.alp-companion-heading > span {
+  font-size: 5px;
   font-weight: 600;
-  letter-spacing: -0.25px;
+  letter-spacing: 1px;
+  color: #87758b;
 }
-.alp-float-card div > span {
-  display: block;
-  font-size: 8px;
-  color: #979385;
-  margin-top: 4px;
+.alp-companion-heading h3 {
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 550;
+  letter-spacing: -0.6px;
+  margin: 4px 0 0;
+  color: #514156;
 }
-.alp-week {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 6px 4px;
-  padding-top: 11px;
-  text-align: center;
+.alp-companion-phone .alp-prayer-feature {
+  padding: 12px;
 }
-.alp-week > span {
+.alp-companion-phone .alp-prayer-feature h4 {
+  font-size: 20px;
+  margin-top: 17px;
+}
+.alp-companion-phone .alp-prayer-feature p {
   font-size: 7px;
-  color: #979385;
 }
-.alp-week i {
-  width: 17px;
-  height: 17px;
-  border-radius: 50%;
-  justify-self: center;
+.alp-companion-phone .alp-prayer-symbol {
+  top: 20px;
+  right: 10px;
+  padding: 5px;
+}
+.alp-companion-phone .alp-prayer-symbol > svg {
+  width: 21px;
+}
+.alp-companion-phone .alp-prayer-item {
+  padding: 7px 0;
+  gap: 6px;
+}
+.alp-companion-phone .alp-prayer-item strong {
+  font-size: 7px;
+}
+.alp-companion-phone .alp-prayer-item div > span {
+  font-size: 5.5px;
+}
+.alp-companion-phone .alp-item-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+}
+.alp-companion-note {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 4px;
+  font-size: 6px;
+  color: #c026d3;
+  padding-top: 6px;
 }
-.alp-day-done {
-  color: #fffdf6;
-  background: #889578;
-}
-.alp-day-next {
-  border: 1px solid #e2e1d4;
-}
-.alp-float-prayer {
-  left: 0;
-  top: 395px;
-  display: flex;
-  gap: 10px;
-  padding: 15px;
-  width: 226px;
-  transform: rotate(-5deg);
-}
-.alp-float-prayer small {
+.alp-companion-nav {
+  height: 34px;
+  flex: 0 0 34px;
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 7px;
-  color: #849171;
-  margin-top: 10px;
+  justify-content: space-around;
+  border-top: 1px solid #f1e3f0;
+  color: #87758b;
+}
+.alp-companion-nav > svg:nth-child(2) {
+  color: #db2777;
+}
+.alp-companion-phone .alp-home-indicator {
+  width: 62px;
 }
 .alp-preview-controls {
   position: absolute;
-  bottom: 17px;
+  bottom: 10px;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 .alp-preview-tabs {
   display: inline-flex;
   gap: 3px;
   padding: 5px;
-  border: 1px solid #e7e1d5;
-  background: #f5f2eb;
+  border: 1px solid #f6dcec;
+  background: #fff1f8;
   border-radius: 30px;
 }
 .alp-preview-tabs button {
@@ -599,7 +791,7 @@
   padding: 9px 12px;
   font-size: 10px;
   font-weight: 500;
-  color: #868475;
+  color: #87758b;
   background: transparent;
   border: 0;
   border-radius: 24px;
@@ -609,93 +801,53 @@
     box-shadow 0.15s ease;
 }
 .alp-preview-tabs button:hover {
-  color: #4e5145;
+  color: #514156;
 }
 .alp-preview-tabs button[aria-pressed="true"] {
-  color: #97513e;
-  background: #fffdf7;
-  box-shadow: 0 2px 6px #51472d0c;
+  color: #ffffff;
+  background: linear-gradient(135deg, #db2777 0%, #c026d3 100%);
+  box-shadow: 0 2px 6px #8318430c;
 }
 .alp-preview-caption {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 7px;
-  letter-spacing: 1.5px;
-  color: #9a9587;
+  font-size: 6.5px;
+  letter-spacing: 1.2px;
+  color: #87758b;
 }
 
 @media (max-width: 1100px) and (min-width: 601px) {
-  .alp-float-rhythm {
-    right: -7px;
-    width: 173px;
-    padding: 12px;
+  .alp-phone {
+    left: 35%;
   }
-  .alp-float-prayer {
-    left: -4px;
-    width: 207px;
-    padding: 12px;
+  .alp-companion-phone {
+    right: 13px;
+    transform: rotate(5deg);
   }
 }
 
 @media (max-width: 600px) {
   .alp-stage {
     max-width: 420px;
-    height: 594px;
+    height: 655px;
   }
   .alp-phone {
-    top: 21px;
-    transform: translateX(-50%) rotate(-3deg) scale(0.9);
-    transform-origin: center top;
+    top: 6px;
+    left: 50%;
+  }
+  .alp-companion-phone {
+    display: none;
   }
   .alp-backdrop {
     width: 355px;
     height: 355px;
-    top: 89px;
+    top: 107px;
   }
-  .alp-orbit {
-    width: 398px;
-    height: 398px;
-    top: 68px;
-  }
-  .alp-orbit-leaf {
-    left: 20px;
-    top: 57px;
-  }
-  .alp-float-rhythm {
-    width: 161px;
-    right: 0;
-    top: 117px;
-    padding: 10px;
-  }
-  .alp-float-prayer {
-    width: 190px;
-    left: 0;
-    top: 367px;
-    padding: 11px;
-    gap: 7px;
-  }
-  .alp-float-card strong {
-    font-size: 9px;
-  }
-  .alp-float-card div > span {
-    font-size: 7px;
-  }
-  .alp-float-icon {
-    width: 27px;
-    height: 27px;
-    flex-basis: 27px;
-  }
-  .alp-float-card-heading {
-    gap: 6px;
-  }
-  .alp-week {
-    gap: 5px 2px;
-    padding-top: 8px;
-  }
-  .alp-week i {
-    width: 15px;
-    height: 15px;
+  .alp-backdrop-ring {
+    width: 396px;
+    height: 396px;
+    top: 86px;
   }
   .alp-preview-controls {
     bottom: 6px;
@@ -704,35 +856,21 @@
 
 @media (max-width: 390px) {
   .alp-stage {
-    height: 560px;
+    height: 620px;
   }
   .alp-phone {
-    transform: translateX(-50%) rotate(-3deg) scale(0.84);
+    transform: translateX(-50%) scale(0.94);
+    transform-origin: center top;
   }
   .alp-backdrop {
-    width: 285px;
-    height: 285px;
-    top: 111px;
+    width: 280px;
+    height: 280px;
+    top: 124px;
   }
-  .alp-orbit {
-    width: 310px;
-    height: 310px;
-    top: 99px;
-  }
-  .alp-float-rhythm {
-    right: -2px;
-    top: 104px;
-    width: 139px;
-    padding: 9px;
-  }
-  .alp-float-rhythm .alp-float-icon {
-    display: none;
-  }
-  .alp-float-prayer {
-    width: 176px;
-    top: 344px;
-    left: -1px;
-    padding: 10px;
+  .alp-backdrop-ring {
+    width: 304px;
+    height: 304px;
+    top: 112px;
   }
   .alp-preview-tabs button {
     font-size: 9px;
@@ -740,8 +878,8 @@
     gap: 5px;
   }
   .alp-preview-caption {
-    font-size: 6px;
-    letter-spacing: 1.1px;
+    font-size: 5.5px;
+    letter-spacing: 0.8px;
   }
 }
 
