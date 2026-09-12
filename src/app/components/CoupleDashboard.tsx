@@ -1042,6 +1042,7 @@ export function CoupleDashboard({
 
       <section
         className="journey-card journey-spotlight"
+        data-spotlight-kind={spotlight.kind}
         aria-labelledby="home-spotlight-title"
       >
         <div className="journey-spotlight-top">

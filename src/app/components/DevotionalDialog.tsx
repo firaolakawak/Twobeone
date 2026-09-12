@@ -135,7 +135,7 @@ export function DevotionalDialog({
             <button
               type="button"
               onClick={onClose}
-              className="mt-0.5 inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-white/85 px-3 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-white hover:text-rose-700 hover:ring-rose-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-rose-100 sm:px-4"
+              className="mt-0.5 inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-white/85 px-3 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-white hover:text-rose-700 hover:ring-rose-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-rose-100 sm:px-4"
               aria-label="Back to devotionals"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden="true" />
@@ -143,19 +143,19 @@ export function DevotionalDialog({
             </button>
             <div className="min-w-0 flex-1">
               <div className="mb-2 flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-rose-700 shadow-sm ring-1 ring-rose-100 sm:text-[11px]">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-2.5 py-1 tbo-caption uppercase text-rose-700 shadow-sm ring-1 ring-rose-100">
                   <Heart className="h-3 w-3 fill-rose-500 text-rose-500" aria-hidden="true" />
                   Devotional reading
                 </span>
                 {isCompleted && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 tbo-caption text-emerald-700 ring-1 ring-emerald-100">
                     <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
                     {t.devotionals.completed}
                   </span>
                 )}
               </div>
-              <DialogTitle className="truncate text-xl font-bold leading-tight tracking-[-0.025em] text-slate-950 sm:text-2xl">{devotional.title}</DialogTitle>
-              <p className="mt-1 hidden max-w-xl text-sm leading-6 text-slate-500 sm:block">
+              <DialogTitle className="tbo-h1 tbo-emotional text-slate-950">{devotional.title}</DialogTitle>
+              <p className="mt-1 hidden max-w-xl tbo-body-s tbo-supportive text-slate-500 sm:block">
                 Scripture, reflection, and prayer for your shared walk.
               </p>
             </div>
@@ -168,15 +168,15 @@ export function DevotionalDialog({
             <section className="relative overflow-hidden rounded-[1.75rem] bg-slate-950 p-6 text-white shadow-[0_22px_55px_-34px_rgba(15,23,42,0.85)] sm:p-8">
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(244,114,182,0.24),transparent_42%),radial-gradient(circle_at_bottom_left,rgba(251,191,36,0.12),transparent_36%)]" aria-hidden="true" />
               <div className="relative">
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-rose-200">
+                <div className="flex items-center gap-2 text-rose-200">
                   <BookOpen className="h-4 w-4" aria-hidden="true" />
-                  <h3>{t.devotionals.scriptureReading}</h3>
+                  <h3 className="tbo-h3">{t.devotionals.scriptureReading}</h3>
                 </div>
                 <blockquote className="mt-6">
-                  <p className="text-lg italic leading-8 text-slate-100 sm:text-xl sm:leading-9">
+                  <p className="tbo-body-l text-slate-100">
                     “{devotional.verse}”
                   </p>
-                  <cite className="mt-5 block text-sm font-bold not-italic text-rose-200">
+                  <cite className="mt-5 block tbo-caption not-italic text-rose-200">
                     {devotional.reference}
                   </cite>
                 </blockquote>
@@ -190,11 +190,11 @@ export function DevotionalDialog({
                   <Heart className="h-4.5 w-4.5" aria-hidden="true" />
                 </span>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.17em] text-rose-500">Pause and consider</p>
-                  <h3 className="mt-0.5 font-bold text-slate-900">{t.devotionals.dailyReflection}</h3>
+                  <p className="tbo-caption uppercase text-rose-500">Pause and consider</p>
+                  <h3 className="mt-0.5 tbo-h3 text-slate-900">{t.devotionals.dailyReflection}</h3>
                 </div>
               </div>
-              <p className="whitespace-pre-line text-[15px] leading-8 text-slate-700 sm:text-base">
+              <p className="whitespace-pre-line tbo-body-l text-slate-700">
                 {devotional.reflection}
               </p>
             </section>
@@ -204,9 +204,9 @@ export function DevotionalDialog({
               <section className="relative overflow-hidden rounded-[1.5rem] bg-gradient-to-br from-rose-50 to-amber-50 p-6 ring-1 ring-rose-100 sm:p-7">
                 <div className="mb-4 flex items-center gap-2 text-rose-700">
                   <Heart className="h-4.5 w-4.5 fill-rose-500 text-rose-500" aria-hidden="true" />
-                  <h3 className="text-xs font-bold uppercase tracking-[0.16em]">{t.devotionals.prayerPrompt}</h3>
+                  <h3 className="tbo-h3">{t.devotionals.prayerPrompt}</h3>
                 </div>
-                <p className="whitespace-pre-line text-[15px] italic leading-8 text-slate-700 sm:text-base">
+                <p className="whitespace-pre-line tbo-body-l text-slate-700">
                   {devotional.prayer}
                 </p>
               </section>
@@ -221,8 +221,8 @@ export function DevotionalDialog({
                       <Heart className="h-4.5 w-4.5 fill-rose-500 text-rose-500" aria-hidden="true" />
                     </span>
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.17em] text-rose-500">Share the moment</p>
-                      <h3 className="font-bold text-slate-900">Reflect together</h3>
+                      <p className="tbo-caption uppercase text-rose-500">Share the moment</p>
+                      <h3 className="tbo-h3 text-slate-900">Reflect together</h3>
                     </div>
                   </div>
                   <PrayerTogetherChat
@@ -245,16 +245,16 @@ export function DevotionalDialog({
                     <Music className="h-4.5 w-4.5" aria-hidden="true" />
                   </span>
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.17em] text-rose-500">Listen and reflect</p>
-                    <h3 className="font-bold text-slate-900">{t.devotionals.audioTab}</h3>
+                    <p className="tbo-caption uppercase text-rose-500">Listen and reflect</p>
+                    <h3 className="tbo-h3 text-slate-900">{t.devotionals.audioTab}</h3>
                   </div>
                 </div>
                 <div>
                   {audioError ? (
                     <div className="text-center py-8">
                       <Music className="mx-auto mb-3 h-10 w-10 text-slate-300" aria-hidden="true" />
-                      <p className="mb-1 text-sm font-semibold text-slate-700">Audio unavailable</p>
-                      <p className="text-xs text-slate-500">The audio format may not be supported by your browser.</p>
+                      <p className="mb-1 text-sm font-medium text-slate-700">Audio unavailable</p>
+                      <p className="tbo-body-s text-slate-500">The audio format may not be supported by your browser.</p>
                     </div>
                   ) : (
                     <>
@@ -312,7 +312,7 @@ export function DevotionalDialog({
                         </div>
                       </div>
 
-                      <p className="mt-3 text-center text-xs text-slate-400">
+                      <p className="mt-3 text-center tbo-body-s tbo-supportive text-slate-600">
                         Listen together at your own pace
                       </p>
                     </>
@@ -333,7 +333,7 @@ export function DevotionalDialog({
                 await onComplete();
                 onClose();
               }}
-              className="h-12 w-full rounded-full bg-rose-600 px-6 text-sm font-bold text-white shadow-lg shadow-rose-200 transition-all duration-200 hover:bg-rose-700 hover:shadow-xl disabled:bg-emerald-50 disabled:text-emerald-700 disabled:opacity-100 disabled:shadow-none sm:w-auto sm:min-w-56"
+              className="h-12 w-full rounded-full bg-rose-600 px-6 text-sm font-medium text-white shadow-lg shadow-rose-200 transition-all duration-200 hover:bg-rose-700 hover:shadow-xl disabled:bg-emerald-50 disabled:text-emerald-700 disabled:opacity-100 disabled:shadow-none sm:w-auto sm:min-w-56"
             >
               <CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden="true" />
               {isCompleted ? 'Completed' : 'Mark as Complete'}

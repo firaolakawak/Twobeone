@@ -1,4 +1,4 @@
-/* Matches the approved couples-love-journey-concept first section. */
+/* Love Journey layout using the shared TwoBeOne typography tokens. */
 .love-journey {
   border: 1px solid #f0dfe5;
   border-radius: 23px;
@@ -6,42 +6,38 @@
   box-shadow: 0 5px 18px #64273705;
   overflow: hidden;
   color: #111827;
+  font-family: var(--tbo-font-sans);
+  font-optical-sizing: auto;
+  font-synthesis: none;
 }
 .love-journey__body {
-  padding: 20px 19px 16px;
+  padding: var(--tbo-space-4);
 }
 .love-journey__identity {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--tbo-space-2);
 }
 .love-journey__names {
   min-width: 0;
 }
 .love-journey .love-journey__eyebrow,
 .love-journey-story .love-journey__eyebrow {
-  margin: 0 0 5px;
+  margin: 0 0 var(--tbo-space-1);
   color: #6b7280;
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: var(--tbo-caption-size);
+  line-height: var(--tbo-caption-line);
   letter-spacing: 0;
-  font-weight: 400;
+  font-weight: var(--tbo-weight-medium);
   text-transform: none;
   overflow-wrap: anywhere;
 }
-.love-journey__identity h2 {
-  margin: 0;
-  font-size: 20px;
-  letter-spacing: -0.4px;
-  line-height: 1.3;
-  font-weight: 600;
-  overflow-wrap: anywhere;
-}
+
 .love-journey__identity h2 span {
-  font-weight: 400;
+  font-weight: var(--tbo-weight-regular);
   color: #b37489;
-  padding: 0 2px;
+  padding: 0;
 }
 .love-journey__portraits {
   display: flex;
@@ -63,9 +59,9 @@
 .love-journey__portrait > span {
   background: #f7e4eb;
   color: #925469;
-  font-family: Georgia, serif;
-  font-size: 21px;
-  font-weight: 400;
+  font-family: var(--tbo-font-sans);
+  font-size: var(--tbo-h2-size);
+  font-weight: var(--tbo-weight-medium);
 }
 .love-journey__portrait--partner > span {
   background: #eee7df;
@@ -74,8 +70,8 @@
 .love-journey__elapsed {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 20px;
+  gap: var(--tbo-space-2);
+  margin-top: var(--tbo-space-6);
 }
 .love-journey__elapsed-mark {
   width: 33px;
@@ -94,66 +90,71 @@
   margin: 0;
   display: flex;
   align-items: baseline;
-  gap: 7px;
+  gap: var(--tbo-space-1);
   color: #4b4450;
-  font-size: 14px;
-  line-height: 1.4;
+  font-size: var(--tbo-body-l-size);
+  line-height: var(--tbo-body-l-line);
+  font-weight: var(--tbo-weight-regular);
 }
 .love-journey__elapsed-primary strong {
   flex-shrink: 0;
-  font-size: 26px;
-  line-height: 1;
-  font-weight: 600;
-  letter-spacing: -0.7px;
+  font-size: var(--tbo-body-l-size);
+  line-height: var(--tbo-body-l-line);
+  font-weight: var(--tbo-weight-regular);
+  letter-spacing: 0;
   color: #111827;
   font-variant-numeric: tabular-nums;
 }
 .love-journey__clock {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: var(--tbo-space-1);
   align-items: baseline;
-  margin-top: 5px;
+  margin-top: var(--tbo-space-1);
   color: #6b7280;
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: var(--tbo-caption-size);
+  line-height: var(--tbo-caption-line);
   font-variant-numeric: tabular-nums;
+  font-weight: var(--tbo-weight-medium);
 }
 .love-journey__clock-unit {
-  white-space: nowrap;
+  white-space: normal;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 .love-journey__clock-unit b {
-  font-weight: 400;
+  font-weight: var(--tbo-weight-medium);
 }
 .love-journey__clock-unit + .love-journey__clock-unit::before {
   content: "·";
-  margin-right: 4px;
+  margin-right: var(--tbo-space-1);
   color: #aa929b;
 }
 .love-journey__locations {
-  margin-top: 17px;
+  margin-top: var(--tbo-space-4);
 }
 .love-journey__location-empty {
-  font-size: 12px;
+  font-size: var(--tbo-caption-size);
   color: #6b7280;
   text-align: center;
-  padding: 10px 0;
+  padding: var(--tbo-space-2) 0;
+  line-height: var(--tbo-caption-line);
 }
 .love-journey__footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  padding: 9px 12px 9px 19px;
+  gap: var(--tbo-space-2);
+  padding: var(--tbo-space-2) var(--tbo-space-4);
   background: #fcf6f8;
   border-top: 1px solid #f0dfe5;
-  padding-top: 12px;
-  padding-bottom: 12px;
+  padding-top: var(--tbo-space-2);
+  padding-bottom: var(--tbo-space-2);
 }
 .love-journey__occasion {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--tbo-space-2);
   min-width: 0;
 }
 .love-journey__occasion > svg {
@@ -162,31 +163,36 @@
 }
 .love-journey__occasion p {
   margin: 0;
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: var(--tbo-caption-size);
+  line-height: var(--tbo-caption-line);
   color: #77616b;
   overflow-wrap: anywhere;
+  font-weight: var(--tbo-weight-medium);
 }
 .love-journey__occasion strong {
   display: block;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: var(--tbo-caption-size);
+  font-weight: var(--tbo-weight-medium);
   color: #463440;
-  margin-top: 3px;
+  margin-top: var(--tbo-space-1);
+  line-height: var(--tbo-caption-line);
 }
 .love-journey__story-button {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: var(--tbo-space-1);
   min-height: 44px;
-  padding: 8px 9px;
+  padding: var(--tbo-space-2);
   border: 0;
   background: transparent;
   color: #e11d48;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--tbo-caption-size);
+  font-weight: var(--tbo-weight-medium);
   border-radius: 9px;
   flex-shrink: 0;
+  line-height: var(--tbo-caption-line);
+  max-width: 45%;
+  overflow-wrap: anywhere;
 }
 .love-journey__story-button:hover {
   background: #f9e2eb;
@@ -198,75 +204,76 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  margin: 13px 0 0;
-  color: #77707a;
-  font-size: 12px;
-  line-height: 1.5;
+  gap: var(--tbo-space-1);
+  margin: var(--tbo-space-4) 0 0;
+  color: #645b67;
+  font-size: var(--tbo-body-s-size);
+  line-height: var(--tbo-body-l-line);
   text-align: center;
-  margin-top: 14px;
+  margin-top: var(--tbo-space-4);
+  font-weight: var(--tbo-weight-light);
 }
 .love-journey__faith svg {
   flex-shrink: 0;
   color: #b0909c;
 }
 .love-journey__set-date {
-  margin-top: 21px;
+  margin-top: var(--tbo-space-6);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--tbo-space-2);
   min-height: 44px;
-  padding: 9px 12px;
+  padding: var(--tbo-space-2);
   width: 100%;
   border: 1px dashed #e9b7c7;
   border-radius: 10px;
-  font-size: 14px;
+  font-size: var(--tbo-body-s-size);
   color: #a9294d;
   text-align: left;
   background: #fff;
-  line-height: 1.6;
+  line-height: var(--tbo-body-s-line);
+  font-weight: var(--tbo-weight-medium);
 }
 .love-journey__set-date svg {
   flex-shrink: 0;
 }
 .love-journey__unlinked {
-  margin-top: 20px;
-  font-size: 14px;
+  margin-top: var(--tbo-space-4);
+  font-size: var(--tbo-body-s-size);
   color: #6b7280;
-  line-height: 1.6;
+  line-height: var(--tbo-body-s-line);
 }
 .love-journey__unlinked button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--tbo-space-2);
   min-height: 44px;
-  margin-top: 14px;
-  padding: 10px 15px;
+  margin-top: var(--tbo-space-4);
+  padding: var(--tbo-space-2) var(--tbo-space-4);
   background: #e11d48;
   color: #fff;
   border: 0;
   border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--tbo-body-l-size);
+  font-weight: var(--tbo-weight-medium);
+  line-height: var(--tbo-body-l-line);
 }
 .love-journey-story {
+  overflow-wrap: anywhere;
   width: min(390px, calc(100% - 28px));
   max-width: 390px;
   max-height: calc(100dvh - 40px);
   overflow-y: auto;
   display: block;
-  padding: 24px;
+  padding: var(--tbo-space-6);
   border: 1px solid #efdce4;
   border-radius: 24px;
   color: #111827;
   background: #fffcfd;
-  font-family:
-    Inter,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+  font-family: var(--tbo-font-sans);
+  font-optical-sizing: auto;
+  font-synthesis: none;
 }
 .love-journey-story button {
   cursor: pointer;
@@ -279,7 +286,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: var(--tbo-space-2);
 }
 .love-journey-story__close {
   border: 0;
@@ -291,27 +298,30 @@
   place-items: center;
 }
 .love-journey-story .love-journey-story__title {
-  font-family: Georgia, serif;
-  font-size: 30px;
-  line-height: 1.15;
-  font-weight: 400;
-  margin: 12px 0 0;
-  letter-spacing: -0.7px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-family: var(--tbo-font-serif);
+  font-size: var(--tbo-display-size);
+  line-height: var(--tbo-display-line);
+  font-weight: var(--tbo-weight-medium);
+  margin: var(--tbo-space-2) 0 0;
+  letter-spacing: -0.02em;
 }
 .love-journey-story .love-journey-story__intro {
-  margin-top: 9px;
-  font-size: 14px;
-  line-height: 1.6;
+  margin-top: var(--tbo-space-2);
+  font-size: var(--tbo-body-m-size);
+  line-height: var(--tbo-body-m-line);
   color: #6b7280;
+  font-weight: var(--tbo-weight-regular);
 }
 .love-journey-story__timeline {
   list-style: none;
   padding: 0;
-  margin: 25px 0 0;
+  margin: var(--tbo-space-6) 0 0;
 }
 .love-journey-story__timeline li {
   position: relative;
-  padding: 0 0 26px 28px;
+  padding: 0 0 var(--tbo-space-6) var(--tbo-space-6);
 }
 .love-journey-story__timeline li:not(:last-child)::before {
   content: "";
@@ -338,94 +348,112 @@
   border-color: #e11d48;
 }
 .love-journey-story h3 {
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 1.5;
+  font-size: var(--tbo-h3-size);
+  font-weight: var(--tbo-weight-medium);
+  line-height: var(--tbo-h3-line);
 }
 .love-journey-story__timeline p {
   color: #6b7280;
-  font-size: 13px;
-  line-height: 1.6;
-  margin-top: 5px;
+  font-size: var(--tbo-body-s-size);
+  line-height: var(--tbo-body-s-line);
+  margin-top: var(--tbo-space-1);
+  font-weight: var(--tbo-weight-regular);
 }
 .love-journey-story__memories {
-  padding: 17px 0;
+  padding: var(--tbo-space-4) 0;
   border-top: 1px solid #f0e8eb;
 }
 .love-journey-story__memories p {
-  font-size: 14px;
-  line-height: 1.6;
-  margin-top: 8px;
+  font-size: var(--tbo-body-s-size);
+  line-height: var(--tbo-body-s-line);
+  margin-top: var(--tbo-space-2);
   color: #6b7280;
 }
 .love-journey-story__memories ul {
   list-style: none;
   padding: 0;
-  margin: 8px 0 0;
+  margin: var(--tbo-space-2) 0 0;
 }
 .love-journey-story__memories li {
-  padding: 7px 0;
+  padding: var(--tbo-space-2) 0;
   overflow-wrap: anywhere;
 }
 .love-journey-story__memories strong {
   display: block;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: var(--tbo-body-l-size);
+  font-weight: var(--tbo-weight-medium);
+  line-height: var(--tbo-body-l-line);
 }
 .love-journey-story__memories time {
-  font-size: 12px;
+  font-size: var(--tbo-caption-size);
   color: #6b7280;
+  line-height: var(--tbo-caption-line);
+  font-weight: var(--tbo-weight-medium);
 }
 .love-journey-story__actions {
   display: grid;
-  gap: 5px;
+  gap: var(--tbo-space-2);
 }
 .love-journey-story__primary {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--tbo-space-2);
   min-height: 44px;
-  padding: 10px;
+  padding: var(--tbo-space-2);
   color: #fff;
   background: #e11d48;
-  font-size: 14px;
+  font-size: var(--tbo-body-l-size);
   border: 0;
   border-radius: 10px;
-  font-weight: 600;
+  font-weight: var(--tbo-weight-medium);
+  line-height: var(--tbo-body-l-line);
 }
 .love-journey-story__text-button {
   min-height: 44px;
-  padding: 6px 0;
+  padding: var(--tbo-space-2) 0;
   border: 0;
   background: transparent;
   color: #ad2548;
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: var(--tbo-body-s-size);
+  line-height: var(--tbo-body-s-line);
+  font-weight: var(--tbo-weight-medium);
 }
 @media (max-width: 360px) {
   .love-journey__body {
-    padding: 17px 14px 16px;
+    padding: var(--tbo-space-4);
   }
-  .love-journey__identity h2 {
-    font-size: 18px;
-  }
+
   .love-journey__portrait {
-    width: 38px;
-    height: 38px;
-  }
-  .love-journey__portrait > span {
-    font-size: 19px;
+    width: 40px;
+    height: 40px;
   }
   .love-journey__footer {
-    padding-left: 14px;
-    padding-right: 7px;
+    padding-inline: var(--tbo-space-4);
   }
   .love-journey__occasion {
-    gap: 6px;
+    gap: var(--tbo-space-2);
   }
   .love-journey__story-button {
-    gap: 3px;
+    gap: var(--tbo-space-1);
     max-width: 45%;
   }
+}
+
+.love-journey__identity h2 {
+  margin: 0;
+  font-size: var(--tbo-h1-size);
+  line-height: var(--tbo-h1-line);
+  font-weight: var(--tbo-weight-medium);
+  letter-spacing: -0.015em;
+  overflow-wrap: anywhere;
+}
+
+:lang(am) .love-journey-story .love-journey-story__title {
+  font-family: "Noto Sans Ethiopic", var(--tbo-font-sans);
+  letter-spacing: 0;
+}
+.love-journey__elapsed-primary > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }

@@ -1,0 +1,177 @@
+/* TwoBeOne type system. Sizes are rem-based: the pixel specification assumes
+   the browser's default 16px root and continues to respect enlarged text. */
+:root {
+  --tbo-font-sans: "Inter", "Noto Sans Ethiopic", -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --tbo-font-serif: "Playfair Display", "Noto Sans Ethiopic", Georgia, serif;
+  --tbo-weight-light: 300;
+  --tbo-weight-regular: 400;
+  --tbo-weight-medium: 500;
+  --tbo-weight-semibold: 600;
+  --tbo-display-size: 2rem;
+  --tbo-display-line: 2.5rem;
+  --tbo-h1-size: 1.5rem;
+  --tbo-h1-line: 2rem;
+  --tbo-h2-size: 1.25rem;
+  --tbo-h2-line: 1.75rem;
+  --tbo-h3-size: 1.125rem;
+  --tbo-h3-line: 1.625rem;
+  --tbo-body-l-size: 1rem;
+  --tbo-body-l-line: 1.5rem;
+  --tbo-body-m-size: 0.9375rem;
+  --tbo-body-m-line: 1.375rem;
+  --tbo-body-s-size: 0.875rem;
+  --tbo-body-s-line: 1.25rem;
+  --tbo-caption-size: 0.75rem;
+  --tbo-caption-line: 1rem;
+  --tbo-space-1: 0.25rem;
+  --tbo-space-2: 0.5rem;
+  --tbo-space-4: 1rem;
+  --tbo-space-6: 1.5rem;
+  --tbo-space-8: 2rem;
+
+  /* Keep existing consumers aligned with the new named scale. */
+  --text-display: var(--tbo-display-size);
+  --text-large-title: var(--tbo-h1-size);
+  --text-title: var(--tbo-h1-size);
+  --text-subtitle: var(--tbo-h2-size);
+  --text-heading: var(--tbo-h3-size);
+  --text-body: var(--tbo-body-l-size);
+  --text-body-large: var(--tbo-body-l-size);
+  --text-callout: var(--tbo-body-m-size);
+  --text-caption: var(--tbo-caption-size);
+  --text-caption-small: var(--tbo-caption-size);
+  --text-label: var(--tbo-caption-size);
+}
+
+@theme inline {
+  --font-sans: var(--tbo-font-sans);
+  --font-serif: var(--tbo-font-serif);
+}
+
+html {
+  font-size: 100%;
+  font-family: var(--tbo-font-sans);
+  font-optical-sizing: auto;
+}
+
+@layer base {
+  body {
+    font-family: var(--tbo-font-sans);
+  }
+  h1 {
+    font-size: var(--tbo-h1-size);
+    line-height: var(--tbo-h1-line);
+    font-weight: var(--tbo-weight-medium);
+  }
+  h2 {
+    font-size: var(--tbo-h2-size);
+    line-height: var(--tbo-h2-line);
+    font-weight: var(--tbo-weight-medium);
+  }
+  h3 {
+    font-size: var(--tbo-h3-size);
+    line-height: var(--tbo-h3-line);
+    font-weight: var(--tbo-weight-medium);
+  }
+  p,
+  input,
+  textarea {
+    font-size: var(--tbo-body-l-size);
+    line-height: var(--tbo-body-l-line);
+    font-weight: var(--tbo-weight-regular);
+  }
+  button {
+    font-weight: var(--tbo-weight-medium);
+  }
+}
+
+.tbo-display {
+  font-size: var(--tbo-display-size);
+  line-height: var(--tbo-display-line);
+  font-weight: var(--tbo-weight-medium);
+  letter-spacing: -0.02em;
+}
+.tbo-h1 {
+  font-size: var(--tbo-h1-size);
+  line-height: var(--tbo-h1-line);
+  font-weight: var(--tbo-weight-medium);
+  letter-spacing: -0.015em;
+}
+.tbo-h2 {
+  font-size: var(--tbo-h2-size);
+  line-height: var(--tbo-h2-line);
+  font-weight: var(--tbo-weight-medium);
+  letter-spacing: -0.01em;
+}
+.tbo-h3 {
+  font-size: var(--tbo-h3-size);
+  line-height: var(--tbo-h3-line);
+  font-weight: var(--tbo-weight-medium);
+  letter-spacing: -0.01em;
+}
+.tbo-body-l {
+  font-size: var(--tbo-body-l-size);
+  line-height: var(--tbo-body-l-line);
+  font-weight: var(--tbo-weight-regular);
+}
+.tbo-body-m {
+  font-size: var(--tbo-body-m-size);
+  line-height: var(--tbo-body-m-line);
+  font-weight: var(--tbo-weight-regular);
+}
+.tbo-body-s {
+  font-size: var(--tbo-body-s-size);
+  line-height: var(--tbo-body-s-line);
+  font-weight: var(--tbo-weight-regular);
+}
+.tbo-caption {
+  font-size: var(--tbo-caption-size);
+  line-height: var(--tbo-caption-line);
+  font-weight: var(--tbo-weight-medium);
+  letter-spacing: 0;
+}
+.tbo-emotional {
+  font-family: var(--tbo-font-serif);
+  font-optical-sizing: auto;
+  font-synthesis: none;
+}
+.tbo-display,
+.tbo-h1,
+.tbo-h2,
+.tbo-h3 {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.tbo-supportive {
+  font-weight: var(--tbo-weight-light);
+  line-height: var(--tbo-body-l-line);
+}
+
+/* Ethiopic has its own type design; never simulate a Latin serif or force tight
+   Latin tracking on Amharic headings. Afaan Oromo uses the Latin font subsets. */
+:lang(am) .tbo-emotional {
+  font-family: "Noto Sans Ethiopic", var(--tbo-font-sans);
+  letter-spacing: 0;
+}
+
+/* Icon-only header controls retain their physical target size when text grows.
+   Wrapping remains available for exceptionally narrow layouts. */
+[data-tbo-header] > div {
+  column-gap: 4px;
+  row-gap: 8px;
+  padding-inline: 16px;
+  flex-wrap: wrap;
+}
+[data-tbo-header] .app-icon-button,
+[data-tbo-header] > div > div:last-child > button {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  flex-shrink: 0;
+}
+[data-tbo-header] .app-icon-button > svg {
+  width: 24px;
+  height: 24px;
+}

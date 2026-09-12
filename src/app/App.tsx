@@ -1448,7 +1448,7 @@ export default function App() {
         />
       )}
       <div className="app-mobile-shell min-h-screen bg-background flex flex-col">
-        <header className="sticky top-0 left-0 right-0 z-50 flex min-h-16 items-center pt-[env(safe-area-inset-top,0px)]" style={isJourneyDashboard ? { background: '#fff', borderBottom: '1px solid #f3f4f6' } : { background: 'var(--card)', borderBottom: '1px solid var(--border)', boxShadow: '0 1px 0 0 var(--border)' }}>
+        <header data-tbo-header={isJourneyDashboard || undefined} className="sticky top-0 left-0 right-0 z-50 flex min-h-16 items-center pt-[env(safe-area-inset-top,0px)]" style={isJourneyDashboard ? { background: '#fff', borderBottom: '1px solid #f3f4f6' } : { background: 'var(--card)', borderBottom: '1px solid var(--border)', boxShadow: '0 1px 0 0 var(--border)' }}>
           <div className={`w-full max-w-2xl mx-auto flex min-h-16 items-center justify-between gap-2 ${isJourneyDashboard ? 'px-5 max-[380px]:px-[15px]' : 'px-4'}`}>
             {/* Platform Brand Title Identification */}
             <div className={`flex shrink-0 items-center ${isJourneyDashboard ? 'gap-[10px]' : 'gap-2'}`}>

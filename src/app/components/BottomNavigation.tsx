@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { useLanguage } from "../contexts/LanguageContext";
+import "../styles/bottom-navigation.css";
 import {
   Dialog,
   DialogClose,
@@ -52,17 +53,12 @@ export const BottomNavigation = memo(function BottomNavigation({
 
   return (
     <Dialog open={isMoreOpen} onOpenChange={setIsMoreOpen}>
-      <div
-        className="fixed inset-x-0 bottom-0 z-50 border-t border-[#eceef1] bg-white"
-        style={{
-          paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 13px)",
-        }}
-      >
+      <div className="tbo-bottom-navigation fixed inset-x-0 bottom-0 z-50 border-t border-[#eceef1] bg-white">
         <nav
           aria-label={t.nav.primaryNavigation}
-          className="mx-auto w-full max-w-2xl px-2 pt-[9px]"
+          className="tbo-bottom-navigation__container mx-auto w-full max-w-2xl"
         >
-          <div className="grid grid-cols-5 items-stretch gap-0.5">
+          <div className="tbo-bottom-navigation__tabs">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isMore = tab.id === "more";
@@ -85,24 +81,20 @@ export const BottomNavigation = memo(function BottomNavigation({
                   whileTap={prefersReducedMotion ? undefined : { scale: 0.92 }}
                   transition={{ duration: 0.16 }}
                   title={tab.label}
-                  className={`group relative flex min-h-[47px] min-w-11 flex-col items-center justify-center gap-[6px] rounded-[10px] px-0.5 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 focus-visible:ring-offset-1 ${isActive ? "bg-[#fef1f4] text-[#e11d48]" : "text-[#6b7280] hover:bg-rose-50/60 hover:text-neutral-900"}`}
+                  className={`tbo-bottom-navigation__action group rounded-[10px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 focus-visible:ring-offset-1 ${isActive ? "bg-[#fef1f4] text-[#e11d48]" : "text-[#6b7280] hover:bg-rose-50/60 hover:text-neutral-900"}`}
                 >
-                  <span className="relative flex h-5 w-5 shrink-0 items-center justify-center">
-                    <Icon
-                      aria-hidden="true"
-                      className="h-5 w-5"
-                      strokeWidth={1.7}
-                    />
+                  <span className="tbo-bottom-navigation__icon">
+                    <Icon aria-hidden="true" size={24} strokeWidth={1.7} />
                     {unreadCount > 0 && (
                       <span
-                        className="absolute -right-2 -top-1 grid min-h-3.5 min-w-3.5 place-items-center rounded-full bg-[#f43f5e] px-1 text-[8px] font-bold leading-none text-white ring-2 ring-white"
+                        className="tbo-bottom-navigation__badge rounded-full bg-[#f43f5e] text-white ring-2 ring-white"
                         aria-hidden="true"
                       >
                         {unreadCount > 99 ? "99+" : unreadCount}
                       </span>
                     )}
                   </span>
-                  <span className="relative w-full break-words text-center text-[8px] font-semibold leading-[1.15]">
+                  <span className="tbo-bottom-navigation__label">
                     {tab.label}
                   </span>
                 </motion.button>
@@ -120,13 +112,13 @@ export const BottomNavigation = memo(function BottomNavigation({
       </div>
       <DialogContent
         showCloseButton={false}
-        className="max-w-[calc(100%-2rem)] rounded-3xl border-rose-100 bg-white p-5 shadow-xl motion-reduce:animate-none motion-reduce:transition-none sm:max-w-sm"
+        className="tbo-navigation-more max-w-[calc(100%-2rem)] rounded-3xl border-rose-100 bg-white p-5 shadow-xl motion-reduce:animate-none motion-reduce:transition-none sm:max-w-sm"
       >
         <DialogHeader className="pr-12 text-left">
-          <DialogTitle className="text-xl font-bold text-neutral-900">
+          <DialogTitle className="tbo-navigation-more__title font-medium text-neutral-900">
             {moreLabel}
           </DialogTitle>
-          <DialogDescription className="text-sm text-neutral-500">
+          <DialogDescription className="tbo-navigation-more__description text-neutral-500">
             {t.nav.community} · {t.nav.profile}
           </DialogDescription>
         </DialogHeader>
@@ -136,7 +128,7 @@ export const BottomNavigation = memo(function BottomNavigation({
             aria-label={t.common.close}
             className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full text-neutral-500 hover:bg-rose-50 hover:text-rose-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
-            <X size={20} aria-hidden="true" />
+            <X size={24} aria-hidden="true" />
           </button>
         </DialogClose>
         <div className="grid gap-2">
@@ -155,13 +147,13 @@ export const BottomNavigation = memo(function BottomNavigation({
                 className={`flex min-h-14 items-center gap-3 rounded-2xl border px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${isActive ? "border-rose-200 bg-rose-50 text-primary" : "border-neutral-100 bg-white text-neutral-700 hover:border-rose-100 hover:bg-rose-50/60"}`}
               >
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-500">
-                  <Icon size={20} aria-hidden="true" />
+                  <Icon size={24} aria-hidden="true" />
                 </span>
-                <span className="flex-1 text-sm font-semibold">
+                <span className="tbo-navigation-more__item-label flex-1">
                   {tab.label}
                 </span>
                 <ChevronRight
-                  size={18}
+                  size={22}
                   className="text-neutral-400"
                   aria-hidden="true"
                 />
