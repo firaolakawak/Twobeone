@@ -1,0 +1,80 @@
+.screen {
+  /* Keep navigation within the visible viewport, including browser chrome. */
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  padding-top: max(var(--safe-area-top-android, 32px), calc(env(safe-area-inset-top, 0px) + 12px));
+  padding-bottom: max(var(--safe-area-bottom-android, 24px), calc(env(safe-area-inset-bottom, 0px) + 12px));
+  padding-left: max(20px, calc(env(safe-area-inset-left, 0px) + 16px));
+  padding-right: max(20px, calc(env(safe-area-inset-right, 0px) + 16px));
+}
+
+.page {
+  gap: 20px;
+  padding-top: 24px;
+}
+
+.artwork {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  height: 14rem;
+}
+
+.compactArtwork {
+  height: 11rem;
+}
+
+.details {
+  margin-top: 20px;
+}
+
+/* Give text more room on smaller phones and in landscape. */
+@media (max-height: 740px) {
+  .page {
+    gap: 12px;
+    padding-top: 12px;
+  }
+
+  .artwork {
+    height: 11rem;
+  }
+
+  .compactArtwork {
+    height: 8.5rem;
+  }
+
+  .artwork > div {
+    transform: scale(0.8);
+  }
+
+  .details {
+    margin-top: 16px;
+  }
+}
+
+@media (max-height: 640px) {
+  .page {
+    gap: 8px;
+    padding-top: 8px;
+  }
+
+  .artwork {
+    height: 8.5rem;
+  }
+
+  .compactArtwork {
+    height: 7rem;
+  }
+
+  .artwork > div {
+    transform: scale(0.625);
+  }
+
+  .details {
+    margin-top: 12px;
+  }
+}
