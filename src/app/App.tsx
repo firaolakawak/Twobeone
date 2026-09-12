@@ -421,35 +421,7 @@ export default function App() {
   }, [profile?.language, currentLangCode]);
 
   useEffect(() => {
-    if (!("serviceWorker" in navigator)) return;
-    navigator.serviceWorker
-      .register("/service-worker.js", { scope: "/" })
-      .then((reg) => {
-        console.log(
-          "[PWA] Service Worker registered:",
-          reg.scope,
-        );
-        if (reg.waiting)
-          reg.waiting.postMessage({ type: "SKIP_WAITING" });
-        reg.addEventListener("updatefound", () => {
-          const w = reg.installing;
-          if (w)
-            w.addEventListener("statechange", () => {
-              if (
-                w.state === "installed" &&
-                navigator.serviceWorker.controller
-              )
-                w.postMessage({ type: "SKIP_WAITING" });
-            });
-        });
-      })
-      .catch((err) => {
-        if (!String(err).includes("SecurityError"))
-          console.warn(
-            "[PWA] Service Worker registration failed:",
-            err,
-          );
-      });
+    void registerServiceWorker();
   }, []);
 
   useEffect(() => {

@@ -11,6 +11,10 @@ export function pushSubscriptionMatchesCurrentKey(subscription: PushSubscription
  * Register the service worker and ensure it activates immediately.
  */
 export async function registerServiceWorker(): Promise<ServiceWorkerRegistration | null> {
+  // Vite serves CSS imports as JavaScript and manages its own module cache.
+  // The production offline worker must never intercept those development files.
+  if (import.meta.env.DEV) return null;
+
   if (!('serviceWorker' in navigator)) {
     console.log('[PWA] Service Workers not supported in this browser');
     return null;
@@ -45,7 +49,7 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
 
     return registration;
   } catch (error) {
-    // Only log if it's not the expected MIME-type error (already guarded by probe in App.tsx)
+    // Some preview hosts return HTML when service workers are unavailable.
     const msg = error instanceof Error ? error.message : String(error);
     if (!msg.includes('MIME')) {
       console.warn('[PWA] Service Worker registration failed:', error);

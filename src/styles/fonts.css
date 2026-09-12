@@ -1,5 +1,16 @@
-/* Self-hosted variable fonts. Sources and OFL notices: ../assets/fonts/README.md. */
+/* Self-hosted fonts. Sources and font notices: ../assets/fonts/README.md. */
 /* Unicode subsets load only when used by the current UI/content. */
+
+/* User-supplied regular Ethiopic face. Latin text keeps its existing UI font;
+   Noto covers any Ethiopic characters absent from this font. */
+@font-face {
+  font-family: "Tayitu";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(../assets/fonts/Tayitu.ttf) format("truetype");
+  unicode-range: U+1200-1399;
+}
 
 /* Inter: latin-ext */
 @font-face {

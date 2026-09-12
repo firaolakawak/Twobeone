@@ -10,7 +10,7 @@
   --journey-section-gap: var(--tbo-space-8);
   --journey-secondary: #626977;
   font-optical-sizing: auto;
-  font-synthesis: none;
+  font-synthesis: weight;
 }
 .journey-dashboard button {
   -webkit-tap-highlight-color: transparent;
@@ -452,8 +452,8 @@
   font-size: var(--tbo-body-l-size);
   line-height: var(--tbo-h2-line);
   margin: 0;
-  font-weight: var(--tbo-weight-light);
-  color: #5c5864;
+  font-weight: var(--tbo-weight-bold);
+  color: #000;
 }
 .journey-verse-reference {
   font-size: var(--journey-meta-size);
@@ -544,6 +544,6 @@
   font-family: var(--tbo-font-serif);
   letter-spacing: 0;
 }
-:lang(am) .journey-spotlight[data-spotlight-kind="devotion"] h2 {
-  font-family: "Noto Sans Ethiopic", var(--tbo-font-sans);
+.journey-spotlight[data-spotlight-kind="devotion"] h2:lang(am) {
+  font-family: var(--tbo-font-amharic);
 }

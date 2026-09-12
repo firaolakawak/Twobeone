@@ -72,7 +72,7 @@ export const JourneyCounter = memo(function JourneyCounter({
       aria-label={t.dashboard.daysTogether}
     >
       <span className="love-journey__elapsed-mark">
-        <Heart size={16} aria-hidden="true" />
+        <Heart size={24} aria-hidden="true" />
       </span>
       <div className="love-journey__elapsed-content">
         <p className="love-journey__elapsed-primary">

@@ -1,13 +1,18 @@
 /* TwoBeOne type system. Sizes are rem-based: the pixel specification assumes
    the browser's default 16px root and continues to respect enlarged text. */
 :root {
-  --tbo-font-sans: "Inter", "Noto Sans Ethiopic", -apple-system,
+  --tbo-font-latin-sans: "Inter", "Tayitu", "Noto Sans Ethiopic", -apple-system,
     BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --tbo-font-serif: "Playfair Display", "Noto Sans Ethiopic", Georgia, serif;
+  --tbo-font-latin-serif: "Playfair Display", "Tayitu", "Noto Sans Ethiopic",
+    Georgia, serif;
+  --tbo-font-amharic: "Tayitu", "Noto Sans Ethiopic", "Inter", sans-serif;
+  --tbo-font-sans: var(--tbo-font-latin-sans);
+  --tbo-font-serif: var(--tbo-font-latin-serif);
   --tbo-weight-light: 300;
   --tbo-weight-regular: 400;
   --tbo-weight-medium: 500;
   --tbo-weight-semibold: 600;
+  --tbo-weight-bold: 700;
   --tbo-display-size: 2rem;
   --tbo-display-line: 2.5rem;
   --tbo-h1-size: 1.5rem;
@@ -53,6 +58,23 @@ html {
   font-size: 100%;
   font-family: var(--tbo-font-sans);
   font-optical-sizing: auto;
+  /* Tayitu is supplied as one regular face; preserve bold emphasis while
+     preventing synthetic italics. Other families have native bold weights. */
+  font-synthesis: weight;
+}
+
+/* Respect both the selected UI language and independently localized content.
+   Tayitu supplies Amharic characters; Noto covers unsupported extensions. */
+[lang|="am"] {
+  --tbo-font-sans: var(--tbo-font-amharic);
+  --tbo-font-serif: var(--tbo-font-amharic);
+  font-family: var(--tbo-font-amharic);
+}
+[lang|="en"],
+[lang|="om"] {
+  --tbo-font-sans: var(--tbo-font-latin-sans);
+  --tbo-font-serif: var(--tbo-font-latin-serif);
+  font-family: var(--tbo-font-sans);
 }
 
 @layer base {
@@ -134,7 +156,7 @@ html {
 .tbo-emotional {
   font-family: var(--tbo-font-serif);
   font-optical-sizing: auto;
-  font-synthesis: none;
+  font-synthesis: weight;
 }
 .tbo-display,
 .tbo-h1,
@@ -150,8 +172,8 @@ html {
 
 /* Ethiopic has its own type design; never simulate a Latin serif or force tight
    Latin tracking on Amharic headings. Afaan Oromo uses the Latin font subsets. */
-:lang(am) .tbo-emotional {
-  font-family: "Noto Sans Ethiopic", var(--tbo-font-sans);
+.tbo-emotional:lang(am) {
+  font-family: var(--tbo-font-amharic);
   letter-spacing: 0;
 }
 

@@ -8,7 +8,7 @@
   color: #111827;
   font-family: var(--tbo-font-sans);
   font-optical-sizing: auto;
-  font-synthesis: none;
+  font-synthesis: weight;
 }
 .love-journey__body {
   padding: var(--tbo-space-4);
@@ -52,9 +52,12 @@
 .love-journey__portrait {
   width: 43px;
   height: 43px;
-  border: 3px solid #fff;
+  border: 2px solid #e11d48;
   margin-left: -8px;
-  box-shadow: 0 1px 4px #4e122010;
+  box-shadow: 0 0 0 2px #fff, 0 1px 4px #4e122010;
+}
+.love-journey__portrait--partner {
+  border-color: #fb7185;
 }
 .love-journey__portrait > span {
   background: #f7e4eb;
@@ -74,8 +77,8 @@
   margin-top: var(--tbo-space-6);
 }
 .love-journey__elapsed-mark {
-  width: 33px;
-  height: 33px;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
   display: grid;
   place-items: center;
@@ -98,11 +101,11 @@
 }
 .love-journey__elapsed-primary strong {
   flex-shrink: 0;
-  font-size: var(--tbo-body-l-size);
-  line-height: var(--tbo-body-l-line);
-  font-weight: var(--tbo-weight-regular);
+  font-size: var(--tbo-h3-size);
+  line-height: var(--tbo-h3-line);
+  font-weight: var(--tbo-weight-bold);
   letter-spacing: 0;
-  color: #111827;
+  color: #e11d48;
   font-variant-numeric: tabular-nums;
 }
 .love-journey__clock {
@@ -111,7 +114,7 @@
   gap: var(--tbo-space-1);
   align-items: baseline;
   margin-top: var(--tbo-space-1);
-  color: #6b7280;
+  color: #e11d48;
   font-size: var(--tbo-caption-size);
   line-height: var(--tbo-caption-line);
   font-variant-numeric: tabular-nums;
@@ -129,6 +132,22 @@
   content: "·";
   margin-right: var(--tbo-space-1);
   color: #aa929b;
+}
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  .love-journey__clock {
+    background-image: linear-gradient(90deg, #e11d48, #be123c);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+}
+@media (forced-colors: active) {
+  .love-journey__clock {
+    background-image: none;
+    color: CanvasText;
+    -webkit-text-fill-color: currentColor;
+  }
 }
 .love-journey__locations {
   margin-top: var(--tbo-space-4);
@@ -273,7 +292,7 @@
   background: #fffcfd;
   font-family: var(--tbo-font-sans);
   font-optical-sizing: auto;
-  font-synthesis: none;
+  font-synthesis: weight;
 }
 .love-journey-story button {
   cursor: pointer;
@@ -444,13 +463,13 @@
   margin: 0;
   font-size: var(--tbo-h1-size);
   line-height: var(--tbo-h1-line);
-  font-weight: var(--tbo-weight-medium);
+  font-weight: var(--tbo-weight-bold);
   letter-spacing: -0.015em;
   overflow-wrap: anywhere;
 }
 
-:lang(am) .love-journey-story .love-journey-story__title {
-  font-family: "Noto Sans Ethiopic", var(--tbo-font-sans);
+.love-journey-story .love-journey-story__title:lang(am) {
+  font-family: var(--tbo-font-amharic);
   letter-spacing: 0;
 }
 .love-journey__elapsed-primary > span {
