@@ -1,9 +1,11 @@
-import { useState, useEffect, type ReactNode } from "react";
 import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from "./ui/avatar";
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  type ReactNode,
+} from "react";
+import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import {
@@ -51,6 +53,7 @@ interface DistanceConnectorProps {
   userOnline?: boolean;
   partnerOnline?: boolean;
   embedded?: boolean;
+  variant?: "default" | "journey";
   centerContent?: ReactNode;
 }
 
@@ -59,6 +62,137 @@ interface UserLocation {
   location: Location | null;
   locationType: "live" | "manual" | null;
   updatedAt?: string;
+}
+
+const LOCATION_COPY = {
+  en: {
+    coupleLocations: "Your shared locations",
+    notShared: "Not shared",
+    locationShared: "Location shared",
+    sameCity: "Same city",
+    distanceUnavailable: "Distance unavailable",
+    approximate: "Approximate straight-line distance",
+    cityBaseline: "Based on your selected city",
+    manual: "City set manually",
+    device: "Saved device location",
+    updated: "Updated",
+    settings: "Location settings",
+    description: "Choose the location you want to share with your partner.",
+    savedLocation: "Your shared location",
+    deviceHeading: "Use your device location",
+    deviceButton: "Update current location",
+    deviceHint:
+      "Saves your current location once. It does not track your movements.",
+    locating: "Getting your location…",
+    manualHeading: "Set your city",
+    cityPlaceholder: "City and country",
+    set: "Set city",
+    searching: "Searching…",
+    remove: "Remove shared location",
+    privacy: "Your shared location is visible to your connected partner.",
+    or: "Or",
+    permissionError: "Unable to get your location. Please check permissions.",
+    updateError: "Could not update your location. Please try again.",
+    updateSuccess: "Location updated.",
+    cityRequired: "Please enter a city name.",
+    cityNotFound: "City not found. Try adding the country.",
+    cityError: "Could not save your city. Please try again.",
+    citySuccess: "City saved.",
+    removeSuccess: "Shared location removed.",
+    removeError: "Could not remove your location. Please try again.",
+  },
+  am: {
+    coupleLocations: "ያጋራችሁት አካባቢ",
+    notShared: "አልተጋራም",
+    locationShared: "አካባቢ ተጋርቷል",
+    sameCity: "በአንድ ከተማ",
+    distanceUnavailable: "ርቀት አይገኝም",
+    approximate: "ግምታዊ የቀጥታ መስመር ርቀት",
+    cityBaseline: "በመረጣችሁት ከተማ መሠረት",
+    manual: "በእጅ የተመረጠ ከተማ",
+    device: "የተቀመጠ የመሣሪያ አካባቢ",
+    updated: "የታደሰው",
+    settings: "የአካባቢ ቅንብሮች",
+    description: "ለባልደረባዎ ማጋራት የሚፈልጉትን አካባቢ ይምረጡ።",
+    savedLocation: "ያጋሩት አካባቢ",
+    deviceHeading: "የመሣሪያዎን አካባቢ ይጠቀሙ",
+    deviceButton: "የአሁኑን አካባቢ ያድሱ",
+    deviceHint: "የአሁኑን አካባቢ አንድ ጊዜ ያስቀምጣል። እንቅስቃሴዎን አይከታተልም።",
+    locating: "አካባቢዎን በማግኘት ላይ…",
+    manualHeading: "ከተማዎን ይምረጡ",
+    cityPlaceholder: "ከተማ እና አገር",
+    set: "ከተማ አስቀምጥ",
+    searching: "በመፈለግ ላይ…",
+    remove: "የተጋራውን አካባቢ ያስወግዱ",
+    privacy: "ያጋሩት አካባቢ ለተገናኙት ባልደረባዎ ይታያል።",
+    or: "ወይም",
+    permissionError: "አካባቢዎን ማግኘት አልተቻለም። ፈቃዶችን ያረጋግጡ።",
+    updateError: "አካባቢዎን ማደስ አልተቻለም። እንደገና ይሞክሩ።",
+    updateSuccess: "አካባቢዎ ታድሷል።",
+    cityRequired: "የከተማ ስም ያስገቡ።",
+    cityNotFound: "ከተማው አልተገኘም። የአገሩን ስም ጨምረው ይሞክሩ።",
+    cityError: "ከተማዎን ማስቀመጥ አልተቻለም። እንደገና ይሞክሩ።",
+    citySuccess: "ከተማዎ ተቀምጧል።",
+    removeSuccess: "የተጋራው አካባቢ ተወግዷል።",
+    removeError: "አካባቢዎን ማስወገድ አልተቻለም። እንደገና ይሞክሩ።",
+  },
+  om: {
+    coupleLocations: "Bakkeewwan waliin qooddan",
+    notShared: "Hin qoodamne",
+    locationShared: "Bakki qoodameera",
+    sameCity: "Magaalaa tokko keessa",
+    distanceUnavailable: "Fageenyi hin argamne",
+    approximate: "Fageenya tilmaamaa sarara qajeelaa",
+    cityBaseline: "Magaalaa filattan irratti hundaa'a",
+    manual: "Magaalaa harkaan filatame",
+    device: "Bakka meeshaa irraa galmaa'e",
+    updated: "Haaromfame",
+    settings: "Qindaa'ina bakka",
+    description: "Bakka hiriyaa keessan waliin qooduu barbaaddan filadhaa.",
+    savedLocation: "Bakka qooddan",
+    deviceHeading: "Bakka meeshaa keessanii fayyadamaa",
+    deviceButton: "Bakka ammaa haaromsaa",
+    deviceHint:
+      "Bakka ammaa keessan yeroo tokko galmeessa. Sochii keessan hin hordofu.",
+    locating: "Bakka keessan barbaadaa jira…",
+    manualHeading: "Magaalaa keessan filadhaa",
+    cityPlaceholder: "Magaalaa fi biyya",
+    set: "Magaalaa galmeessi",
+    searching: "Barbaadaa jira…",
+    remove: "Bakka qoodame haqi",
+    privacy:
+      "Bakki qooddan hiriyaa keessan waliin walitti hidhamtaniif ni mul'ata.",
+    or: "Yookaan",
+    permissionError:
+      "Bakka keessan argachuun hin danda'amne. Eeyyama isaa mirkaneessaa.",
+    updateError:
+      "Bakka keessan haaromsuun hin danda'amne. Irra deebi'aa yaalaa.",
+    updateSuccess: "Bakki haaromfameera.",
+    cityRequired: "Maqaa magaalaa galchaa.",
+    cityNotFound: "Magaalaan hin argamne. Maqaa biyyaas dabalaa yaalaa.",
+    cityError:
+      "Magaalaa keessan galmeessuun hin danda'amne. Irra deebi'aa yaalaa.",
+    citySuccess: "Magaalaan galmaa'eera.",
+    removeSuccess: "Bakki qoodame haqameera.",
+    removeError: "Bakka keessan haquun hin danda'amne. Irra deebi'aa yaalaa.",
+  },
+};
+
+function validUserLocation(
+  value: UserLocation | null | undefined,
+  expectedId: string,
+): UserLocation | null {
+  const location = value?.location;
+  if (
+    value?.userId !== expectedId ||
+    !location ||
+    !Number.isFinite(location.latitude) ||
+    !Number.isFinite(location.longitude) ||
+    Math.abs(location.latitude) > 90 ||
+    Math.abs(location.longitude) > 180
+  )
+    return null;
+  return value;
 }
 
 export function DistanceConnector({
@@ -72,14 +206,33 @@ export function DistanceConnector({
   userOnline: userOnlineOverride,
   partnerOnline: partnerOnlineOverride,
   embedded = false,
+  variant = "default",
   centerContent,
 }: DistanceConnectorProps) {
-  const { t } = useLanguage();
-  const [userLocation, setUserLocation] =
-    useState<UserLocation | null>(null);
-  const [partnerLocation, setPartnerLocation] =
-    useState<UserLocation | null>(null);
-  const [distance, setDistance] = useState<number | null>(null);
+  const { t, language } = useLanguage();
+  const copy = LOCATION_COPY[language];
+  const locationScope = `${userId}:${partnerId || ""}`;
+  const currentScope = useRef(locationScope);
+  currentScope.current = locationScope;
+  const locationRequest = useRef<AbortController | null>(null);
+  const [locations, setLocations] = useState<{
+    scope: string;
+    user: UserLocation | null;
+    partner: UserLocation | null;
+  } | null>(null);
+  const userLocation =
+    locations?.scope === locationScope ? locations.user : null;
+  const partnerLocation =
+    locations?.scope === locationScope ? locations.partner : null;
+  const distance =
+    userLocation?.location && partnerLocation?.location
+      ? calculateDistance(
+          userLocation.location.latitude,
+          userLocation.location.longitude,
+          partnerLocation.location.latitude,
+          partnerLocation.location.longitude,
+        )
+      : null;
   const [isLoading, setIsLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [manualCity, setManualCity] = useState("");
@@ -102,14 +255,54 @@ export function DistanceConnector({
       .map((n) => n[0])
       .join("") || "?";
 
+  const loadLocations = useCallback(async () => {
+    if (!partnerId || currentScope.current !== locationScope) return;
+    locationRequest.current?.abort();
+    const controller = new AbortController();
+    locationRequest.current = controller;
+    try {
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/couple-locations`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+          signal: controller.signal,
+        },
+      );
+      if (!response.ok) return;
+      const data = await response.json();
+      if (controller.signal.aborted || currentScope.current !== locationScope)
+        return;
+      setLocations({
+        scope: locationScope,
+        user: validUserLocation(data.userLocation, userId),
+        partner: validUserLocation(data.partnerLocation, partnerId),
+      });
+    } catch (error) {
+      if (!controller.signal.aborted)
+        console.error("[DistanceConnector] Failed to load locations:", error);
+    }
+  }, [userId, partnerId, accessToken, locationScope]);
+
   useEffect(() => {
-    loadLocations();
-  }, [userId, partnerId]);
+    setLocations(null);
+    setShowSettings(false);
+    setManualCity("");
+    void loadLocations();
+    return () => {
+      locationRequest.current?.abort();
+    };
+  }, [loadLocations]);
 
   useEffect(() => {
     // App.tsx owns the single app-wide presence subscription when overrides
     // are supplied. Avoid subscribing twice to the same Realtime topic.
-    if (!partnerId || userOnlineOverride !== undefined || partnerOnlineOverride !== undefined) return;
+    setDetectedPartnerOnline(false);
+    if (
+      !partnerId ||
+      userOnlineOverride !== undefined ||
+      partnerOnlineOverride !== undefined
+    )
+      return;
 
     const supabase = createClient();
     const roomId = [userId, partnerId].sort().join(":");
@@ -165,55 +358,15 @@ export function DistanceConnector({
     };
   }, [userId, partnerId, userOnlineOverride, partnerOnlineOverride]);
 
-  useEffect(() => {
-    if (userLocation?.location && partnerLocation?.location) {
-      const dist = calculateDistance(
-        userLocation.location.latitude,
-        userLocation.location.longitude,
-        partnerLocation.location.latitude,
-        partnerLocation.location.longitude,
-      );
-      setDistance(dist);
-    } else {
-      setDistance(null);
-    }
-  }, [userLocation, partnerLocation]);
-
-  const loadLocations = async () => {
-    if (!partnerId) return;
-
-    try {
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/couple-locations`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        setUserLocation(data.userLocation || null);
-        setPartnerLocation(data.partnerLocation || null);
-      }
-    } catch (error) {
-      console.error(
-        "[DistanceConnector] Failed to load locations:",
-        error,
-      );
-    }
-  };
-
   const handleEnableLiveLocation = async () => {
+    if (isLoading || isSubmitting) return;
     setIsLoading(true);
     try {
       const location = await getCurrentLocation();
+      if (currentScope.current !== locationScope) return;
 
       if (!location) {
-        toast.error(
-          "Unable to get your location. Please check permissions.",
-        );
+        toast.error(copy.permissionError);
         setIsLoading(false);
         return;
       }
@@ -233,41 +386,34 @@ export function DistanceConnector({
         },
       );
 
-      if (!response.ok)
-        throw new Error("Failed to save location");
+      if (!response.ok) throw new Error("Failed to save location");
 
-      const locationText = location.city
-        ? `${location.city}${location.country ? ", " + location.country : ""}`
-        : "your location";
-
-      toast.success(`📍 Location updated to ${locationText}`);
+      if (currentScope.current !== locationScope) return;
+      toast.success(copy.updateSuccess);
       await loadLocations();
       setShowSettings(false);
     } catch (error) {
-      console.error(
-        "[DistanceConnector] Error enabling live location:",
-        error,
-      );
-      toast.error("Failed to enable live location");
+      console.error("[DistanceConnector] Error enabling live location:", error);
+      toast.error(copy.updateError);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleSetManualLocation = async () => {
+    if (isLoading || isSubmitting) return;
     if (!manualCity.trim()) {
-      toast.error("Please enter a city name");
+      toast.error(copy.cityRequired);
       return;
     }
 
     setIsSubmitting(true);
     try {
       const location = await geocodeCity(manualCity);
+      if (currentScope.current !== locationScope) return;
 
       if (!location) {
-        toast.error(
-          "City not found. Please try a different name.",
-        );
+        toast.error(copy.cityNotFound);
         setIsSubmitting(false);
         return;
       }
@@ -287,14 +433,10 @@ export function DistanceConnector({
         },
       );
 
-      if (!response.ok)
-        throw new Error("Failed to save location");
+      if (!response.ok) throw new Error("Failed to save location");
 
-      const locationText = location.city
-        ? `${location.city}${location.country ? ", " + location.country : ""}`
-        : manualCity;
-
-      toast.success(`📍 Location set to ${locationText}`);
+      if (currentScope.current !== locationScope) return;
+      toast.success(copy.citySuccess);
       await loadLocations();
       setShowSettings(false);
       setManualCity("");
@@ -303,13 +445,14 @@ export function DistanceConnector({
         "[DistanceConnector] Error setting manual location:",
         error,
       );
-      toast.error("Failed to set location");
+      toast.error(copy.cityError);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleRemoveLocation = async () => {
+    if (isLoading || isSubmitting) return;
     setIsLoading(true);
     try {
       const response = await fetch(
@@ -322,18 +465,18 @@ export function DistanceConnector({
         },
       );
 
-      if (!response.ok)
-        throw new Error("Failed to remove location");
+      if (!response.ok) throw new Error("Failed to remove location");
 
-      toast.success("Location removed");
+      if (currentScope.current !== locationScope) return;
+      setLocations((current) =>
+        current?.scope === locationScope ? { ...current, user: null } : current,
+      );
+      toast.success(copy.removeSuccess);
       await loadLocations();
       setShowSettings(false);
     } catch (error) {
-      console.error(
-        "[DistanceConnector] Error removing location:",
-        error,
-      );
-      toast.error("Failed to remove location");
+      console.error("[DistanceConnector] Error removing location:", error);
+      toast.error(copy.removeError);
     } finally {
       setIsLoading(false);
     }
@@ -341,9 +484,93 @@ export function DistanceConnector({
 
   if (!partnerId) return null;
 
-  const embeddedDistanceLabel = distance === null
-    ? null
-    : `${distance < 10 ? distance.toFixed(1) : Math.round(distance)} km`;
+  const embeddedDistanceLabel =
+    distance === null
+      ? null
+      : `${distance < 10 ? distance.toFixed(1) : Math.round(distance)} km`;
+  const sameManualCity =
+    userLocation?.locationType === "manual" &&
+    partnerLocation?.locationType === "manual" &&
+    Boolean(userLocation.location?.city?.trim()) &&
+    userLocation.location?.city?.trim().toLocaleLowerCase() ===
+      partnerLocation.location?.city?.trim().toLocaleLowerCase() &&
+    (userLocation.location?.country && partnerLocation.location?.country
+      ? userLocation.location.country.trim().toLocaleLowerCase() ===
+        partnerLocation.location.country.trim().toLocaleLowerCase()
+      : distance === 0);
+  const journeyDistance =
+    distance === null
+      ? "—"
+      : sameManualCity
+        ? copy.sameCity
+        : embeddedDistanceLabel;
+  const sourceLabel = (entry: UserLocation) =>
+    entry.locationType === "manual" ? copy.manual : copy.device;
+  const updateLabel = (entry: UserLocation) => {
+    if (!entry.updatedAt || !Number.isFinite(Date.parse(entry.updatedAt)))
+      return undefined;
+    return `${copy.updated}: ${new Intl.DateTimeFormat(
+      language === "en" ? "en-GB" : `${language}-ET`,
+      {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      },
+    ).format(new Date(entry.updatedAt))}`;
+  };
+  const journeyPerson = (
+    name: string,
+    avatar: string | undefined,
+    initials: string,
+    online: boolean,
+    entry: UserLocation | null,
+  ) => (
+    <div className="min-w-0 text-center">
+      <div className="relative mx-auto h-12 w-12">
+        <Avatar className="h-12 w-12 border-2 border-white shadow-sm ring-1 ring-rose-100">
+          <AvatarImage src={avatar} alt={name} />
+          <AvatarFallback
+            className="text-xs font-semibold text-white"
+            style={{ background: "linear-gradient(135deg, #ff6391, #e11d48)" }}
+          >
+            {initials.slice(0, 2)}
+          </AvatarFallback>
+        </Avatar>
+        <PresenceBadge
+          compact
+          online={online}
+          label={`${name}: ${online ? t.dashboard.online : t.dashboard.offline}`}
+        />
+      </div>
+      <p className="mt-2 break-words text-xs font-semibold leading-4 text-slate-900">
+        {name}
+      </p>
+      <p className="mt-1 flex items-start justify-center gap-1 text-[11px] leading-4 text-slate-600">
+        <MapPin
+          className="mt-0.5 h-3 w-3 shrink-0 text-rose-500"
+          aria-hidden="true"
+        />
+        <span className="min-w-0 break-words">
+          {entry?.location?.city ||
+            (entry ? copy.locationShared : copy.notShared)}
+        </span>
+      </p>
+      {entry?.location?.country && (
+        <p className="break-words text-[10px] leading-4 text-slate-500">
+          {entry.location.country}
+        </p>
+      )}
+      {entry && (
+        <p
+          className="mt-1 text-[9px] leading-4 text-slate-500"
+          title={updateLabel(entry)}
+        >
+          {sourceLabel(entry)}
+        </p>
+      )}
+    </div>
+  );
 
   return (
     <>
@@ -399,7 +626,77 @@ export function DistanceConnector({
         }
       `}</style>
 
-      {embedded ? (
+      {variant === "journey" ? (
+        <section aria-label={copy.coupleLocations} className="space-y-3 pb-3">
+          <div className="grid grid-cols-[minmax(0,1fr)_2.75rem_minmax(0,1fr)] items-start gap-2">
+            {journeyPerson(
+              userName,
+              userAvatar,
+              userInitials,
+              userOnline,
+              userLocation,
+            )}
+            <div
+              className="flex h-12 items-center justify-center gap-1 text-rose-300"
+              aria-hidden="true"
+            >
+              <span className="h-px flex-1 bg-rose-200" />
+              <Heart className="h-4 w-4 fill-rose-100 text-rose-400" />
+              <span className="h-px flex-1 bg-rose-200" />
+            </div>
+            {journeyPerson(
+              partnerName,
+              partnerAvatar,
+              partnerInitials,
+              partnerOnline,
+              partnerLocation,
+            )}
+          </div>
+          <div
+            className="flex items-center gap-3 rounded-2xl border border-rose-100 px-3 py-2"
+            style={{ background: "#fef1f4" }}
+          >
+            <MapPin
+              className="h-4 w-4 shrink-0 text-rose-500"
+              aria-hidden="true"
+            />
+            <div className="min-w-0 flex-1" role="status" aria-live="polite">
+              <p className="text-sm font-semibold tabular-nums text-rose-700">
+                {journeyDistance}
+              </p>
+              <p className="text-[10px] leading-4 text-slate-500">
+                {distance === null
+                  ? copy.distanceUnavailable
+                  : sameManualCity
+                    ? copy.cityBaseline
+                    : copy.approximate}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowSettings(true)}
+              aria-label={t.dashboard.locationSettings}
+              title={t.dashboard.locationSettings}
+              className="grid h-11 w-11 shrink-0 place-items-center rounded-xl text-rose-600 transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
+            >
+              <Settings className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
+          {!userLocation ? (
+            <button
+              type="button"
+              onClick={() => setShowSettings(true)}
+              className="min-h-11 w-full rounded-xl px-3 text-xs font-semibold text-rose-700 hover:bg-rose-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
+            >
+              {t.dashboard.shareLocation}
+            </button>
+          ) : !partnerLocation ? (
+            <p className="text-center text-[10px] leading-4 text-slate-500">
+              {t.dashboard.waitingForPartnerLocation}
+            </p>
+          ) : null}
+        </section>
+      ) : embedded ? (
         <div className="relative">
           <button
             type="button"
@@ -417,11 +714,35 @@ export function DistanceConnector({
             className="pointer-events-none absolute left-[25%] right-[25%] top-4 z-20 h-14 overflow-hidden sm:left-[24%] sm:right-[24%]"
           >
             {[
-              { direction: 'right', top: 12, size: 10, duration: 4.8, delay: 0 },
-              { direction: 'left', top: 25, size: 8, duration: 5.6, delay: 1.1 },
-              { direction: 'right', top: 32, size: 7, duration: 6.2, delay: 2.4 },
-              { direction: 'left', top: 7, size: 6, duration: 5.1, delay: 3.3 },
-              { direction: 'right', top: 21, size: 6, duration: 5.8, delay: 4.2 },
+              {
+                direction: "right",
+                top: 12,
+                size: 10,
+                duration: 4.8,
+                delay: 0,
+              },
+              {
+                direction: "left",
+                top: 25,
+                size: 8,
+                duration: 5.6,
+                delay: 1.1,
+              },
+              {
+                direction: "right",
+                top: 32,
+                size: 7,
+                duration: 6.2,
+                delay: 2.4,
+              },
+              { direction: "left", top: 7, size: 6, duration: 5.1, delay: 3.3 },
+              {
+                direction: "right",
+                top: 21,
+                size: 6,
+                duration: 5.8,
+                delay: 4.2,
+              },
             ].map((heart, index) => (
               <span
                 key={`${heart.direction}-${index}`}
@@ -430,13 +751,11 @@ export function DistanceConnector({
                   top: heart.top,
                   width: heart.size,
                   height: heart.size,
-                  animation: `loveFlow${heart.direction === 'right' ? 'Right' : 'Left'} ${heart.duration}s ${heart.delay}s ease-in-out infinite`,
-                  WebkitAnimation: `loveFlow${heart.direction === 'right' ? 'Right' : 'Left'} ${heart.duration}s ${heart.delay}s ease-in-out infinite`,
+                  animation: `loveFlow${heart.direction === "right" ? "Right" : "Left"} ${heart.duration}s ${heart.delay}s ease-in-out infinite`,
+                  WebkitAnimation: `loveFlow${heart.direction === "right" ? "Right" : "Left"} ${heart.duration}s ${heart.delay}s ease-in-out infinite`,
                 }}
               >
-                <Heart
-                  className="h-full w-full fill-rose-400 text-rose-400 drop-shadow-[0_2px_3px_rgba(244,63,94,0.25)]"
-                />
+                <Heart className="h-full w-full fill-rose-400 text-rose-400 drop-shadow-[0_2px_3px_rgba(244,63,94,0.25)]" />
               </span>
             ))}
           </div>
@@ -444,17 +763,30 @@ export function DistanceConnector({
           <div className="relative z-10 grid grid-cols-[minmax(0,1fr)_5.5rem_minmax(0,1fr)] items-start gap-2 px-3 text-center sm:grid-cols-[minmax(0,1fr)_6.5rem_minmax(0,1fr)]">
             <div className="flex min-w-0 flex-col items-center">
               <div className="relative">
-                {userLocation?.location && <span className="absolute -inset-1 rounded-full border-2 border-primary-300/50 [animation:pulseRing_2s_ease-out_infinite]" />}
+                {userLocation?.location && (
+                  <span className="absolute -inset-1 rounded-full border-2 border-primary-300/50 [animation:pulseRing_2s_ease-out_infinite]" />
+                )}
                 <Avatar className="relative h-18 w-18 border-4 border-white shadow-xl ring-2 ring-primary-200 sm:h-20 sm:w-20">
                   <AvatarImage src={userAvatar} alt={userName} />
-                  <AvatarFallback className="bg-gradient-to-br from-primary-400 to-primary-600 text-lg font-semibold text-white">{userInitials}</AvatarFallback>
+                  <AvatarFallback className="bg-gradient-to-br from-primary-400 to-primary-600 text-lg font-semibold text-white">
+                    {userInitials}
+                  </AvatarFallback>
                 </Avatar>
-                <PresenceBadge online={userOnline} label={`${userName}: ${userOnline ? t.dashboard.online : t.dashboard.offline}`} />
+                <PresenceBadge
+                  online={userOnline}
+                  label={`${userName}: ${userOnline ? t.dashboard.online : t.dashboard.offline}`}
+                />
               </div>
-              <p className="mt-2 max-w-full truncate text-sm font-semibold text-foreground">{userName}</p>
+              <p className="mt-2 max-w-full truncate text-sm font-semibold text-foreground">
+                {userName}
+              </p>
               <p className="mt-0.5 flex max-w-full items-center justify-center gap-1 truncate text-[11px] font-medium text-muted-foreground">
                 <MapPin className="h-3 w-3 shrink-0 text-primary-500" />
-                {userLocation?.location?.city || <span className="font-normal italic">{t.dashboard.locationNotSet}</span>}
+                {userLocation?.location?.city || (
+                  <span className="font-normal italic">
+                    {t.dashboard.locationNotSet}
+                  </span>
+                )}
               </p>
             </div>
 
@@ -469,7 +801,9 @@ export function DistanceConnector({
                     className="mt-1 flex items-center gap-1 whitespace-nowrap rounded-full border border-primary-100 bg-white/90 px-2.5 py-1 shadow-[0_4px_14px_rgba(139,92,246,0.14)] backdrop-blur"
                   >
                     <Heart className="h-3 w-3 fill-primary-500 text-primary-500" />
-                    <span className="text-xs font-bold text-foreground">{embeddedDistanceLabel}</span>
+                    <span className="text-xs font-bold text-foreground">
+                      {embeddedDistanceLabel}
+                    </span>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -477,225 +811,409 @@ export function DistanceConnector({
 
             <div className="flex min-w-0 flex-col items-center">
               <div className="relative">
-                {partnerLocation?.location && <span className="absolute -inset-1 rounded-full border-2 border-sky-300/50 [animation:pulseRing_2s_ease-out_infinite_0.5s]" />}
+                {partnerLocation?.location && (
+                  <span className="absolute -inset-1 rounded-full border-2 border-sky-300/50 [animation:pulseRing_2s_ease-out_infinite_0.5s]" />
+                )}
                 <Avatar className="relative h-18 w-18 border-4 border-white shadow-xl ring-2 ring-sky-200 sm:h-20 sm:w-20">
                   <AvatarImage src={partnerAvatar} alt={partnerName} />
-                  <AvatarFallback className="bg-gradient-to-br from-sky-400 to-sky-600 text-lg font-semibold text-white">{partnerInitials}</AvatarFallback>
+                  <AvatarFallback className="bg-gradient-to-br from-sky-400 to-sky-600 text-lg font-semibold text-white">
+                    {partnerInitials}
+                  </AvatarFallback>
                 </Avatar>
-                <PresenceBadge online={partnerOnline} label={`${partnerName}: ${partnerOnline ? t.dashboard.online : t.dashboard.offline}`} />
+                <PresenceBadge
+                  online={partnerOnline}
+                  label={`${partnerName}: ${partnerOnline ? t.dashboard.online : t.dashboard.offline}`}
+                />
               </div>
-              <p className="mt-2 max-w-full truncate text-sm font-semibold text-foreground">{partnerName}</p>
+              <p className="mt-2 max-w-full truncate text-sm font-semibold text-foreground">
+                {partnerName}
+              </p>
               <p className="mt-0.5 flex max-w-full items-center justify-center gap-1 truncate text-[11px] font-medium text-muted-foreground">
                 <MapPin className="h-3 w-3 shrink-0 text-sky-500" />
-                {partnerLocation?.location?.city || <span className="font-normal italic">{t.dashboard.locationNotSet}</span>}
+                {partnerLocation?.location?.city || (
+                  <span className="font-normal italic">
+                    {t.dashboard.locationNotSet}
+                  </span>
+                )}
               </p>
             </div>
           </div>
 
-          <div className="mt-1 flex items-center justify-center" aria-label={embeddedDistanceLabel ? `${embeddedDistanceLabel} between you` : 'Couple distance unavailable'}>
+          <div
+            className="mt-1 flex items-center justify-center"
+            aria-label={
+              embeddedDistanceLabel
+                ? `${embeddedDistanceLabel} between you`
+                : "Couple distance unavailable"
+            }
+          >
             {!userLocation?.location ? (
-              <Button size="sm" variant="outline" onClick={() => setShowSettings(true)} className="h-8 rounded-xl px-4 text-xs font-semibold">
-                <MapPin className="mr-1.5 h-3.5 w-3.5 text-primary-500" /> {t.dashboard.shareLocation}
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowSettings(true)}
+                className="h-8 rounded-xl px-4 text-xs font-semibold"
+              >
+                <MapPin className="mr-1.5 h-3.5 w-3.5 text-primary-500" />{" "}
+                {t.dashboard.shareLocation}
               </Button>
             ) : distance === null ? (
-              <span className="text-[10px] italic text-muted-foreground">{t.dashboard.waitingForPartnerLocation}</span>
+              <span className="text-[10px] italic text-muted-foreground">
+                {t.dashboard.waitingForPartnerLocation}
+              </span>
             ) : null}
           </div>
         </div>
       ) : (
-      <div
-        className="relative overflow-hidden rounded-2xl"
-        style={{
-          background: 'var(--card)',
-          boxShadow: '0 2px 0 0 var(--neutral-200), 0 12px 32px -6px rgba(244,63,94,0.12), 0 4px 8px -2px rgba(0,0,0,0.06)',
-        }}
-      >
-        {/* Radial ambient glow — directs focus to avatars */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div style={{
-            position: 'absolute', top: '10%', left: '8%',
-            width: 120, height: 120, borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(244,63,94,0.18) 0%, transparent 70%)',
-            filter: 'blur(12px)',
-          }} />
-          <div style={{
-            position: 'absolute', top: '10%', right: '8%',
-            width: 120, height: 120, borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(14,165,233,0.16) 0%, transparent 70%)',
-            filter: 'blur(12px)',
-          }} />
-          <div style={{
-            position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
-            width: 160, height: 60, borderRadius: '50%',
-            background: 'radial-gradient(ellipse, rgba(139,92,246,0.08) 0%, transparent 70%)',
-            filter: 'blur(8px)',
-          }} />
-        </div>
+        <div
+          className="relative overflow-hidden rounded-2xl"
+          style={{
+            background: "var(--card)",
+            boxShadow:
+              "0 2px 0 0 var(--neutral-200), 0 12px 32px -6px rgba(244,63,94,0.12), 0 4px 8px -2px rgba(0,0,0,0.06)",
+          }}
+        >
+          {/* Radial ambient glow — directs focus to avatars */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <div
+              style={{
+                position: "absolute",
+                top: "10%",
+                left: "8%",
+                width: 120,
+                height: 120,
+                borderRadius: "50%",
+                background:
+                  "radial-gradient(circle, rgba(244,63,94,0.18) 0%, transparent 70%)",
+                filter: "blur(12px)",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                top: "10%",
+                right: "8%",
+                width: 120,
+                height: 120,
+                borderRadius: "50%",
+                background:
+                  "radial-gradient(circle, rgba(14,165,233,0.16) 0%, transparent 70%)",
+                filter: "blur(12px)",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                bottom: 0,
+                left: "50%",
+                transform: "translateX(-50%)",
+                width: 160,
+                height: 60,
+                borderRadius: "50%",
+                background:
+                  "radial-gradient(ellipse, rgba(139,92,246,0.08) 0%, transparent 70%)",
+                filter: "blur(8px)",
+              }}
+            />
+          </div>
 
-        <div className="relative z-10 p-5">
-          {/* Settings button — ghost, no border */}
-          <button
-            onClick={() => setShowSettings(true)}
-            className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-xl transition-colors"
-            style={{ color: 'var(--muted-foreground)', background: 'transparent' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--neutral-100)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-          >
-            <Settings className="w-4 h-4" />
-          </button>
+          <div className="relative z-10 p-5">
+            {/* Settings button — ghost, no border */}
+            <button
+              onClick={() => setShowSettings(true)}
+              className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-xl transition-colors"
+              style={{
+                color: "var(--muted-foreground)",
+                background: "transparent",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = "var(--neutral-100)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = "transparent")
+              }
+            >
+              <Settings className="w-4 h-4" />
+            </button>
 
-          <div className="space-y-4">
-            {/* Arc connector row */}
-            <div className="relative flex items-center justify-between px-3 mt-4">
-
-              {/* User avatar with pulsing ring */}
-              <div className="relative">
-                {userLocation?.location && (
-                  <div style={{
-                    position: 'absolute', inset: -4, borderRadius: '50%',
-                    border: '2px solid rgba(244,63,94,0.35)',
-                    animation: 'pulseRing 2s ease-out infinite',
-                  }} />
-                )}
-                <Avatar className="w-16 h-16 z-10 relative" style={{ border: '3px solid var(--card)', boxShadow: '0 4px 12px rgba(244,63,94,0.25)' }}>
-                  <AvatarImage src={userAvatar} alt={userName} />
-                  <AvatarFallback style={{ background: 'linear-gradient(135deg, var(--primary-400), var(--primary-600))', color: '#fff', fontWeight: 600 }}>
-                    {userInitials}
-                  </AvatarFallback>
-                </Avatar>
-                <PresenceBadge online={userOnline} label={`${userName}: ${userOnline ? t.dashboard.online : t.dashboard.offline}`} />
-              </div>
-
-              {/* Bezier arc SVG canvas */}
-              <div className="absolute left-[4.5rem] right-[4.5rem] top-0 bottom-0 flex items-center justify-center">
-                {/* Distance badge floating above arc midpoint */}
-                <AnimatePresence>
-                  {distance !== null && (
-                    <motion.div
-                      initial={{ scale: 0.7, opacity: 0, y: 6 }}
-                      animate={{ scale: 1, opacity: 1, y: -14 }}
-                      exit={{ scale: 0.7, opacity: 0 }}
-                      className="absolute z-20 flex items-center gap-1 px-2.5 py-1 rounded-full"
+            <div className="space-y-4">
+              {/* Arc connector row */}
+              <div className="relative flex items-center justify-between px-3 mt-4">
+                {/* User avatar with pulsing ring */}
+                <div className="relative">
+                  {userLocation?.location && (
+                    <div
                       style={{
-                        background: 'var(--card)',
-                        boxShadow: '0 2px 8px rgba(139,92,246,0.18), 0 1px 3px rgba(0,0,0,0.08)',
-                        border: '1px solid rgba(139,92,246,0.15)',
+                        position: "absolute",
+                        inset: -4,
+                        borderRadius: "50%",
+                        border: "2px solid rgba(244,63,94,0.35)",
+                        animation: "pulseRing 2s ease-out infinite",
+                      }}
+                    />
+                  )}
+                  <Avatar
+                    className="w-16 h-16 z-10 relative"
+                    style={{
+                      border: "3px solid var(--card)",
+                      boxShadow: "0 4px 12px rgba(244,63,94,0.25)",
+                    }}
+                  >
+                    <AvatarImage src={userAvatar} alt={userName} />
+                    <AvatarFallback
+                      style={{
+                        background:
+                          "linear-gradient(135deg, var(--primary-400), var(--primary-600))",
+                        color: "#fff",
+                        fontWeight: 600,
                       }}
                     >
-                      <Heart className="w-3 h-3" style={{ fill: 'var(--primary-500)', color: 'var(--primary-500)' }} />
-                      <span className="text-xs font-bold" style={{ color: 'var(--foreground)', letterSpacing: '-0.01em' }}>
-                        {formatDistance(distance)}
-                      </span>
-                    </motion.div>
+                      {userInitials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <PresenceBadge
+                    online={userOnline}
+                    label={`${userName}: ${userOnline ? t.dashboard.online : t.dashboard.offline}`}
+                  />
+                </div>
+
+                {/* Bezier arc SVG canvas */}
+                <div className="absolute left-[4.5rem] right-[4.5rem] top-0 bottom-0 flex items-center justify-center">
+                  {/* Distance badge floating above arc midpoint */}
+                  <AnimatePresence>
+                    {distance !== null && (
+                      <motion.div
+                        initial={{ scale: 0.7, opacity: 0, y: 6 }}
+                        animate={{ scale: 1, opacity: 1, y: -14 }}
+                        exit={{ scale: 0.7, opacity: 0 }}
+                        className="absolute z-20 flex items-center gap-1 px-2.5 py-1 rounded-full"
+                        style={{
+                          background: "var(--card)",
+                          boxShadow:
+                            "0 2px 8px rgba(139,92,246,0.18), 0 1px 3px rgba(0,0,0,0.08)",
+                          border: "1px solid rgba(139,92,246,0.15)",
+                        }}
+                      >
+                        <Heart
+                          className="w-3 h-3"
+                          style={{
+                            fill: "var(--primary-500)",
+                            color: "var(--primary-500)",
+                          }}
+                        />
+                        <span
+                          className="text-xs font-bold"
+                          style={{
+                            color: "var(--foreground)",
+                            letterSpacing: "-0.01em",
+                          }}
+                        >
+                          {formatDistance(distance)}
+                        </span>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  <svg
+                    className="w-full overflow-visible"
+                    style={{ height: 48 }}
+                    viewBox="0 0 200 48"
+                    preserveAspectRatio="none"
+                  >
+                    <defs>
+                      <linearGradient
+                        id="arcGrad"
+                        x1="0%"
+                        y1="0%"
+                        x2="100%"
+                        y2="0%"
+                      >
+                        <stop offset="0%" stopColor="var(--primary-400)" />
+                        <stop offset="48%" stopColor="#8b5cf6" />
+                        <stop offset="100%" stopColor="var(--secondary-400)" />
+                      </linearGradient>
+                      <path id="arcPath" d="M 4 40 Q 100 4, 196 40" />
+                    </defs>
+
+                    {/* Faint base arc */}
+                    <use
+                      href="#arcPath"
+                      stroke="url(#arcGrad)"
+                      strokeWidth="2"
+                      fill="none"
+                      strokeLinecap="round"
+                      opacity="0.25"
+                    />
+
+                    {/* Animated dashed pulse */}
+                    <use
+                      href="#arcPath"
+                      stroke="url(#arcGrad)"
+                      strokeWidth="2"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeDasharray="22 180"
+                      style={{
+                        animation: "arcDash 3s linear infinite",
+                        strokeDashoffset: 0,
+                      }}
+                    />
+
+                    {/* Traveling hearts via offset-path */}
+                    {distance !== null &&
+                      [0, 1.1, 2.2].map((delay, i) => (
+                        <g
+                          key={i}
+                          style={{
+                            offsetPath: 'path("M 4 40 Q 100 4, 196 40")',
+                            offsetDistance: "0%",
+                            animation: `heartFloat 3s ${delay}s linear infinite`,
+                          }}
+                        >
+                          <circle
+                            cx="0"
+                            cy="0"
+                            r="4"
+                            fill="var(--primary-500)"
+                            opacity="0.9"
+                          />
+                        </g>
+                      ))}
+                  </svg>
+                </div>
+
+                {/* Partner avatar with pulsing ring */}
+                <div className="relative">
+                  {partnerLocation?.location && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        inset: -4,
+                        borderRadius: "50%",
+                        border: "2px solid rgba(14,165,233,0.35)",
+                        animation: "pulseRing 2s ease-out infinite 0.5s",
+                      }}
+                    />
                   )}
-                </AnimatePresence>
+                  <Avatar
+                    className="w-16 h-16 z-10 relative"
+                    style={{
+                      border: "3px solid var(--card)",
+                      boxShadow: "0 4px 12px rgba(14,165,233,0.22)",
+                    }}
+                  >
+                    <AvatarImage src={partnerAvatar} alt={partnerName} />
+                    <AvatarFallback
+                      style={{
+                        background:
+                          "linear-gradient(135deg, var(--secondary-400), var(--secondary-600))",
+                        color: "#fff",
+                        fontWeight: 600,
+                      }}
+                    >
+                      {partnerInitials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <PresenceBadge
+                    online={partnerOnline}
+                    label={`${partnerName}: ${partnerOnline ? t.dashboard.online : t.dashboard.offline}`}
+                  />
+                </div>
+              </div>
 
-                <svg
-                  className="w-full overflow-visible"
-                  style={{ height: 48 }}
-                  viewBox="0 0 200 48"
-                  preserveAspectRatio="none"
+              {/* Names / status footer */}
+              <div className="grid grid-cols-3 items-center text-center px-1 pt-1">
+                <p
+                  className="text-left text-xs font-semibold truncate"
+                  style={{ color: "var(--foreground)" }}
                 >
-                  <defs>
-                    <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="var(--primary-400)" />
-                      <stop offset="48%" stopColor="#8b5cf6" />
-                      <stop offset="100%" stopColor="var(--secondary-400)" />
-                    </linearGradient>
-                    <path id="arcPath" d="M 4 40 Q 100 4, 196 40" />
-                  </defs>
-
-                  {/* Faint base arc */}
-                  <use href="#arcPath" stroke="url(#arcGrad)" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.25" />
-
-                  {/* Animated dashed pulse */}
-                  <use href="#arcPath" stroke="url(#arcGrad)" strokeWidth="2" fill="none" strokeLinecap="round"
-                    strokeDasharray="22 180"
-                    style={{ animation: 'arcDash 3s linear infinite', strokeDashoffset: 0 }} />
-
-                  {/* Traveling hearts via offset-path */}
-                  {distance !== null && [0, 1.1, 2.2].map((delay, i) => (
-                    <g key={i} style={{
-                      offsetPath: 'path("M 4 40 Q 100 4, 196 40")',
-                      offsetDistance: '0%',
-                      animation: `heartFloat 3s ${delay}s linear infinite`,
-                    }}>
-                      <circle cx="0" cy="0" r="4" fill="var(--primary-500)" opacity="0.9" />
-                    </g>
-                  ))}
-                </svg>
+                  {userLocation?.location?.city || (
+                    <span
+                      style={{
+                        color: "var(--muted-foreground)",
+                        fontStyle: "italic",
+                      }}
+                    >
+                      Not set
+                    </span>
+                  )}
+                </p>
+                <div className="flex justify-center">
+                  {distance !== null ? (
+                    <span
+                      className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full"
+                      style={{
+                        background: "var(--primary-50)",
+                        color: "var(--primary-600)",
+                        border: "1px solid var(--primary-200)",
+                      }}
+                    >
+                      {getDistanceDescription(distance) || "Connected"}
+                    </span>
+                  ) : (
+                    <span
+                      className="text-[10px]"
+                      style={{
+                        color: "var(--muted-foreground)",
+                        fontStyle: "italic",
+                      }}
+                    >
+                      Awaiting location
+                    </span>
+                  )}
+                </div>
+                <p
+                  className="text-right text-xs font-semibold truncate"
+                  style={{ color: "var(--foreground)" }}
+                >
+                  {partnerLocation?.location?.city || (
+                    <span
+                      style={{
+                        color: "var(--muted-foreground)",
+                        fontStyle: "italic",
+                      }}
+                    >
+                      Not set
+                    </span>
+                  )}
+                </p>
               </div>
 
-              {/* Partner avatar with pulsing ring */}
-              <div className="relative">
-                {partnerLocation?.location && (
-                  <div style={{
-                    position: 'absolute', inset: -4, borderRadius: '50%',
-                    border: '2px solid rgba(14,165,233,0.35)',
-                    animation: 'pulseRing 2s ease-out infinite 0.5s',
-                  }} />
-                )}
-                <Avatar className="w-16 h-16 z-10 relative" style={{ border: '3px solid var(--card)', boxShadow: '0 4px 12px rgba(14,165,233,0.22)' }}>
-                  <AvatarImage src={partnerAvatar} alt={partnerName} />
-                  <AvatarFallback style={{ background: 'linear-gradient(135deg, var(--secondary-400), var(--secondary-600))', color: '#fff', fontWeight: 600 }}>
-                    {partnerInitials}
-                  </AvatarFallback>
-                </Avatar>
-                <PresenceBadge online={partnerOnline} label={`${partnerName}: ${partnerOnline ? t.dashboard.online : t.dashboard.offline}`} />
-              </div>
+              {!userLocation?.location && (
+                <div className="text-center">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setShowSettings(true)}
+                    className="text-xs font-semibold h-8 px-4 rounded-xl"
+                    style={{
+                      borderColor: "var(--border)",
+                      color: "var(--foreground)",
+                    }}
+                  >
+                    <MapPin
+                      className="w-3.5 h-3.5 mr-1.5"
+                      style={{ color: "var(--primary-500)" }}
+                    />
+                    Share Your Location
+                  </Button>
+                </div>
+              )}
             </div>
-
-            {/* Names / status footer */}
-            <div className="grid grid-cols-3 items-center text-center px-1 pt-1">
-              <p className="text-left text-xs font-semibold truncate" style={{ color: 'var(--foreground)' }}>
-                {userLocation?.location?.city || <span style={{ color: 'var(--muted-foreground)', fontStyle: 'italic' }}>Not set</span>}
-              </p>
-              <div className="flex justify-center">
-                {distance !== null ? (
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full"
-                    style={{ background: 'var(--primary-50)', color: 'var(--primary-600)', border: '1px solid var(--primary-200)' }}>
-                    {getDistanceDescription(distance) || 'Connected'}
-                  </span>
-                ) : (
-                  <span className="text-[10px]" style={{ color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
-                    Awaiting location
-                  </span>
-                )}
-              </div>
-              <p className="text-right text-xs font-semibold truncate" style={{ color: 'var(--foreground)' }}>
-                {partnerLocation?.location?.city || <span style={{ color: 'var(--muted-foreground)', fontStyle: 'italic' }}>Not set</span>}
-              </p>
-            </div>
-
-            {!userLocation?.location && (
-              <div className="text-center">
-                <Button size="sm" variant="outline" onClick={() => setShowSettings(true)}
-                  className="text-xs font-semibold h-8 px-4 rounded-xl"
-                  style={{ borderColor: 'var(--border)', color: 'var(--foreground)' }}>
-                  <MapPin className="w-3.5 h-3.5 mr-1.5" style={{ color: 'var(--primary-500)' }} />
-                  Share Your Location
-                </Button>
-              </div>
-            )}
           </div>
         </div>
-      </div>
       )}
 
       {/* Control Panel Dialog Settings */}
-      <Dialog
-        open={showSettings}
-        onOpenChange={setShowSettings}
-      >
+      <Dialog open={showSettings} onOpenChange={setShowSettings}>
         <DialogContent className="max-w-md rounded-2xl p-5 border-none shadow-2xl bg-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-base font-bold text-slate-950">
               <MapPin className="w-5 h-5 text-rose-500" />
-              Location Settings
+              {copy.settings}
             </DialogTitle>
             <DialogDescription className="text-xs text-slate-500">
-              Share your location region with your partner to
-              calculate distances.
+              {copy.description}
             </DialogDescription>
           </DialogHeader>
 
@@ -707,7 +1225,7 @@ export function DistanceConnector({
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-slate-900">
-                    Active Location Baseline
+                    {copy.savedLocation}
                   </h4>
                   <p className="text-sm font-semibold text-slate-950 mt-0.5">
                     {userLocation.location.city}
@@ -716,10 +1234,13 @@ export function DistanceConnector({
                       : ""}
                   </p>
                   <span className="inline-block text-[10px] bg-white border border-emerald-200 text-emerald-700 font-bold px-1.5 py-0.5 rounded mt-1.5">
-                    {userLocation.locationType === "live"
-                      ? "📍 GPS LIVE Mode"
-                      : "📌 Manual Entry"}
+                    {sourceLabel(userLocation)}
                   </span>
+                  {updateLabel(userLocation) && (
+                    <p className="mt-1 text-[10px] text-slate-500">
+                      {updateLabel(userLocation)}
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -727,21 +1248,24 @@ export function DistanceConnector({
             {/* GPS Link Option */}
             <div className="space-y-1.5">
               <h4 className="font-bold text-xs text-slate-900 flex items-center gap-1.5">
-                <Navigation className="w-3.5 h-3.5 text-purple-600" />
-                Automatic Device GPS
+                <Navigation className="w-3.5 h-3.5 text-rose-600" />
+                {copy.deviceHeading}
               </h4>
+              <p className="text-xs leading-5 text-slate-500">
+                {copy.deviceHint}
+              </p>
               <Button
-                className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs h-9 rounded-xl shadow-sm"
+                className="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs min-h-11 rounded-xl shadow-sm"
                 onClick={handleEnableLiveLocation}
-                disabled={isLoading}
+                disabled={isLoading || isSubmitting}
               >
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Acquiring satellite data...
+                    {copy.locating}
                   </>
                 ) : (
-                  "Sync Live Location"
+                  copy.deviceButton
                 )}
               </Button>
             </div>
@@ -751,37 +1275,38 @@ export function DistanceConnector({
                 <div className="w-full border-t border-slate-100" />
               </div>
               <div className="relative flex justify-center text-[10px] font-bold text-slate-400 uppercase">
-                <span className="bg-white px-2">Or</span>
+                <span className="bg-white px-2">{copy.or}</span>
               </div>
             </div>
 
             {/* Manual Entry Column */}
             <div className="space-y-2">
-              <h4 className="font-bold text-xs text-slate-900 flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-sky-600" />
-                Manual City Input
-              </h4>
+              <Label
+                htmlFor="manual-city"
+                className="font-bold text-xs text-slate-900 flex items-center gap-1.5"
+              >
+                <MapPin className="w-3.5 h-3.5 text-rose-600" />
+                {copy.manualHeading}
+              </Label>
               <div className="flex gap-2">
                 <Input
                   id="manual-city"
-                  placeholder="e.g., Abu Dhabi, UAE"
+                  placeholder={copy.cityPlaceholder}
                   value={manualCity}
-                  onChange={(e) =>
-                    setManualCity(e.target.value)
-                  }
-                  className="h-9 text-xs border-slate-200 focus:border-purple-500 rounded-xl"
+                  onChange={(e) => setManualCity(e.target.value)}
+                  disabled={isLoading || isSubmitting}
+                  className="min-h-11 text-xs border-slate-200 focus:border-rose-500 rounded-xl"
                   onKeyDown={(e) => {
-                    if (e.key === "Enter")
-                      handleSetManualLocation();
+                    if (e.key === "Enter") handleSetManualLocation();
                   }}
                 />
                 <Button
                   variant="outline"
                   onClick={handleSetManualLocation}
-                  disabled={isSubmitting || !manualCity.trim()}
-                  className="h-9 text-xs font-bold px-4 border-slate-200 rounded-xl whitespace-nowrap"
+                  disabled={isLoading || isSubmitting || !manualCity.trim()}
+                  className="min-h-11 text-xs font-bold px-4 border-slate-200 rounded-xl whitespace-nowrap"
                 >
-                  {isSubmitting ? "Searching..." : "Set"}
+                  {isSubmitting ? copy.searching : copy.set}
                 </Button>
               </div>
             </div>
@@ -790,17 +1315,16 @@ export function DistanceConnector({
             {userLocation?.location && (
               <Button
                 variant="ghost"
-                className="w-full text-xs font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 h-9 rounded-xl border border-transparent hover:border-rose-100"
+                className="w-full text-xs font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 min-h-11 rounded-xl border border-transparent hover:border-rose-100"
                 onClick={handleRemoveLocation}
-                disabled={isLoading}
+                disabled={isLoading || isSubmitting}
               >
-                Clear Location History
+                {copy.remove}
               </Button>
             )}
 
             <p className="text-[10px] text-slate-400 text-center font-medium pt-1">
-              🔒 Private: Location records are shared only
-              within your connected partnership.
+              {copy.privacy}
             </p>
           </div>
         </DialogContent>
@@ -809,16 +1333,27 @@ export function DistanceConnector({
   );
 }
 
-function PresenceBadge({ online, label }: { online: boolean; label: string }) {
+function PresenceBadge({
+  online,
+  label,
+  compact = false,
+}: {
+  online: boolean;
+  label: string;
+  compact?: boolean;
+}) {
   const Icon = online ? Wifi : WifiOff;
   return (
     <span
       role="status"
       aria-label={label}
       title={label}
-      className={`absolute -bottom-0.5 -right-0.5 z-20 flex h-6 w-6 items-center justify-center rounded-full border-[3px] border-white shadow-sm transition-colors duration-300 ${online ? "bg-emerald-500" : "bg-slate-400"}`}
+      className={`absolute -bottom-0.5 -right-0.5 z-20 flex items-center justify-center rounded-full border-white shadow-sm transition-colors duration-300 ${compact ? "h-4 w-4 border-2" : "h-6 w-6 border-[3px]"} ${online ? "bg-emerald-500" : "bg-slate-400"}`}
     >
-      <Icon className="h-2.5 w-2.5 text-white" strokeWidth={3} />
+      <Icon
+        className={compact ? "h-2 w-2 text-white" : "h-2.5 w-2.5 text-white"}
+        strokeWidth={3}
+      />
     </span>
   );
 }

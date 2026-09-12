@@ -1,0 +1,1372 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TwoBeOne · Couples dashboard proposal</title>
+    <style>
+      :root {
+        --rose: #e11d48;
+        --pink: #ff6391;
+        --brand: #f43f5e;
+        --blush: #fef1f4;
+        --border: #e5e7eb;
+        --ink: #111827;
+        --muted: #6b7280;
+        --gradient: linear-gradient(135deg, #ff6391, #e11d48);
+        font-family:
+          Inter,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        color: var(--ink);
+        background: #fafafa;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      button,
+      a {
+        -webkit-tap-highlight-color: transparent;
+      }
+      button {
+        font: inherit;
+        cursor: pointer;
+      }
+      button:focus-visible,
+      a:focus-visible,
+      summary:focus-visible {
+        outline: 3px solid var(--rose);
+        outline-offset: 4px;
+      }
+      button svg {
+        pointer-events: none;
+      }
+      svg {
+        width: 20px;
+        height: 20px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.7;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        flex-shrink: 0;
+      }
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+      button {
+        color: inherit;
+      }
+      a {
+        color: var(--rose);
+      }
+      .symbols {
+        position: absolute;
+        width: 0;
+        height: 0;
+        overflow: hidden;
+      }
+      .presentation {
+        max-width: 1120px;
+        margin: auto;
+        padding: 38px 34px 50px;
+      }
+      .proposal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 28px;
+        border-bottom: 1px solid var(--border);
+        gap: 15px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 750;
+        font-size: 20px;
+        letter-spacing: -0.7px;
+      }
+      .brand-icon {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 11px;
+        background: var(--gradient);
+        color: #fff;
+      }
+      .brand-icon svg {
+        width: 19px;
+        fill: currentColor;
+        stroke-width: 0;
+      }
+      .proposal-header > span {
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.03em;
+      }
+      .concept-layout {
+        display: grid;
+        grid-template-columns: 1fr 405px;
+        gap: 85px;
+        align-items: start;
+        padding-top: 44px;
+      }
+      .proposal-copy {
+        padding-top: 33px;
+      }
+      .eyebrow {
+        color: var(--rose);
+        font-size: 10px;
+        font-weight: 750;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+      }
+      .proposal-copy h1 {
+        font-size: 49px;
+        line-height: 1.09;
+        letter-spacing: -2px;
+        margin-top: 15px;
+        font-weight: 750;
+      }
+      .proposal-copy h1 span {
+        color: var(--rose);
+      }
+      .intro {
+        margin-top: 22px;
+        max-width: 400px;
+        font-size: 15px;
+        color: var(--muted);
+        line-height: 1.8;
+      }
+      .recommendations {
+        display: grid;
+        gap: 23px;
+        margin-top: 35px;
+      }
+      .recommendation {
+        display: flex;
+        align-items: start;
+        gap: 14px;
+      }
+      .number {
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        background: #ffe0e8;
+        color: #be123c;
+        font-size: 11px;
+        font-weight: 750;
+      }
+      .recommendation h2 {
+        font-size: 14px;
+        font-weight: 700;
+        margin: 1px 0 5px;
+      }
+      .recommendation p {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.7;
+        max-width: 350px;
+      }
+      .palette {
+        display: flex;
+        gap: 9px;
+        margin-top: 34px;
+      }
+      .swatch {
+        flex: 1;
+        max-width: 99px;
+        font-size: 9px;
+        color: var(--muted);
+      }
+      .swatch i {
+        display: block;
+        height: 29px;
+        border-radius: 6px;
+        margin-bottom: 7px;
+        border: 1px solid #11182708;
+      }
+      .scope-note {
+        margin-top: 23px;
+        padding-top: 18px;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.7;
+        max-width: 420px;
+      }
+      .scope-note strong {
+        color: var(--ink);
+        font-weight: 650;
+      }
+      .preview-label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        font-size: 10px;
+        color: var(--muted);
+      }
+      .preview-label strong {
+        font-size: 10px;
+        color: #be123c;
+        background: #ffe0e8;
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-weight: 600;
+      }
+      .app-preview {
+        height: 858px;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 27px;
+        overflow: hidden;
+        position: relative;
+        box-shadow:
+          0 28px 65px -35px #11182738,
+          0 6px 15px #11182705;
+        display: flex;
+        flex-direction: column;
+      }
+      .app-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 19px 20px 15px;
+        background: #fff;
+        border-bottom: 1px solid #f3f4f6;
+      }
+      .app-header .brand {
+        font-size: 19px;
+      }
+      .app-header .brand-icon {
+        width: 29px;
+        height: 29px;
+        border-radius: 9px;
+      }
+      .header-tools {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .icon-button {
+        display: grid;
+        place-items: center;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        border: 1px solid #f3f4f6;
+        background: #fff;
+        color: #6b7280;
+        position: relative;
+      }
+      .notice-dot {
+        position: absolute;
+        width: 5px;
+        height: 5px;
+        background: var(--brand);
+        border-radius: 50%;
+        right: 8px;
+        top: 6px;
+      }
+      .profile {
+        border: 0;
+        background: #ffe0e8;
+        color: #9f1239;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .app-scroll {
+        overflow-y: auto;
+        flex: 1;
+        scrollbar-width: thin;
+        scrollbar-color: #f1c8d3 transparent;
+        background: linear-gradient(180deg, #fff 0%, #fff9fa 55%, #fff 100%);
+        padding: 21px 20px 23px;
+      }
+      .welcome {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .welcome p {
+        color: var(--muted);
+        font-size: 11px;
+      }
+      .welcome h2 {
+        font-size: 24px;
+        line-height: 1.18;
+        letter-spacing: -0.8px;
+        margin-top: 4px;
+      }
+      .avatars {
+        display: flex;
+        align-items: center;
+      }
+      .avatars span {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-size: 12px;
+        font-weight: 700;
+        background: #ffe0e8;
+        color: #be123c;
+        border: 3px solid #fff;
+      }
+      .avatars span + span {
+        margin-left: -10px;
+        background: #f3f4f6;
+        color: #4b5563;
+      }
+      .couple-meta {
+        display: flex;
+        gap: 7px;
+        align-items: center;
+        font-size: 10px;
+        color: var(--muted);
+        margin-top: 10px;
+      }
+      .couple-meta .dot {
+        height: 5px;
+        width: 5px;
+        border-radius: 50%;
+        background: #22c55e;
+      }
+      .couple-meta > button {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--rose);
+        font-size: 10px;
+        margin-left: auto;
+      }
+      .daily-card {
+        border: 1px solid #ffd2df;
+        border-radius: 19px;
+        background: #fff;
+        margin-top: 21px;
+        overflow: hidden;
+      }
+      .daily-card::before {
+        content: "";
+        display: block;
+        height: 5px;
+        background: var(--gradient);
+      }
+      .daily-content {
+        padding: 16px;
+      }
+      .card-eyebrow {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+      }
+      .activity-label {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 10px;
+        color: #be123c;
+        font-weight: 650;
+      }
+      .activity-label svg {
+        width: 16px;
+        height: 16px;
+      }
+      .shuffle {
+        width: 30px;
+        height: 30px;
+        display: grid;
+        place-items: center;
+        border: 1px solid #ffe0e8;
+        background: #fff7f9;
+        border-radius: 9px;
+        color: var(--rose);
+      }
+      .shuffle svg {
+        width: 14px;
+        height: 14px;
+      }
+      .daily-card h3 {
+        margin-top: 12px;
+        font-size: 23px;
+        line-height: 1.15;
+        letter-spacing: -0.7px;
+      }
+      .daily-card p {
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.65;
+        margin-top: 9px;
+      }
+      .daily-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 17px;
+      }
+      .primary-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        padding: 12px 17px;
+        border: 0;
+        border-radius: 11px;
+        background: var(--rose);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 650;
+        min-height: 41px;
+      }
+      .primary-button:hover {
+        background: #be123c;
+      }
+      .primary-button svg {
+        width: 15px;
+        height: 15px;
+      }
+      .daily-footer > span {
+        color: var(--muted);
+        font-size: 10px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .daily-footer > span svg {
+        width: 13px;
+        height: 13px;
+      }
+      .section-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+      }
+      .section-heading h3 {
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: -0.2px;
+      }
+      .section-heading small,
+      .section-heading button {
+        font-size: 10px;
+        color: var(--muted);
+      }
+      .section-heading button {
+        border: 0;
+        padding: 4px 0;
+        background: none;
+        color: var(--rose);
+      }
+      .mood-section {
+        margin-top: 24px;
+      }
+      .mood-options {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 9px;
+        margin-top: 13px;
+      }
+      .mood-button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 11px 4px 9px;
+        gap: 6px;
+        border: 1px solid #eceef1;
+        border-radius: 12px;
+        background: #fff;
+        color: #6b7280;
+        font-size: 9px;
+      }
+      .mood-button svg {
+        width: 25px;
+        height: 25px;
+        stroke-width: 1.4;
+      }
+      .mood-button:hover {
+        border-color: #ff9db7;
+        background: #fff8fa;
+      }
+      .mood-button[aria-pressed="true"] {
+        color: #be123c;
+        background: #fef1f4;
+        border-color: #ff9db7;
+      }
+      .partner-mood {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 10px;
+        color: var(--muted);
+        margin-top: 12px;
+        min-height: 18px;
+      }
+      .partner-mood svg {
+        width: 13px;
+        height: 13px;
+        color: var(--brand);
+      }
+      .partner-mood strong {
+        color: #4b5563;
+        font-weight: 600;
+      }
+      .shortcuts {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 23px;
+      }
+      .shortcut {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 5px;
+        background: #fff;
+        border: 1px solid #eee9ed;
+        border-radius: 13px;
+        color: #374151;
+        font-size: 10px;
+        font-weight: 600;
+      }
+      .shortcut svg {
+        color: var(--rose);
+        width: 21px;
+        height: 21px;
+      }
+      .shortcut:hover {
+        background: #fff7f9;
+      }
+      .upcoming {
+        margin-top: 24px;
+      }
+      .event {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 12px;
+        padding: 13px;
+        background: #fff;
+        border: 1px solid #eceef1;
+        border-radius: 13px;
+        width: 100%;
+        text-align: left;
+      }
+      .event-date {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 44px;
+        border-radius: 9px;
+        background: var(--blush);
+        color: var(--rose);
+        flex-shrink: 0;
+      }
+      .event-date small {
+        font-size: 8px;
+        font-weight: 650;
+      }
+      .event-date b {
+        font-size: 18px;
+        line-height: 1.3;
+      }
+      .event > span:nth-child(2) {
+        flex: 1;
+      }
+      .event strong {
+        display: block;
+        font-size: 12px;
+      }
+      .event > span > small {
+        display: block;
+        font-size: 10px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .event > svg {
+        width: 15px;
+        color: var(--muted);
+      }
+      .week {
+        margin-top: 24px;
+        border: 1px solid #ffe0e8;
+        border-radius: 14px;
+        padding: 15px;
+        background: #fff;
+      }
+      .week p {
+        margin-top: 8px;
+        font-size: 11px;
+        line-height: 1.7;
+        color: var(--muted);
+      }
+      .week p strong {
+        color: var(--rose);
+        font-weight: 650;
+      }
+      .week-metrics {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 13px;
+      }
+      .week-metrics span {
+        font-size: 9px;
+        color: var(--muted);
+      }
+      .week-metrics b {
+        display: block;
+        font-size: 20px;
+        color: var(--ink);
+        line-height: 1.5;
+      }
+      details {
+        margin-top: 16px;
+        border: 1px solid #eceef1;
+        border-radius: 13px;
+        background: #fff;
+      }
+      summary {
+        padding: 16px;
+        font-size: 12px;
+        font-weight: 650;
+        cursor: pointer;
+      }
+      .explore-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 0 13px 13px;
+      }
+      .explore-list button {
+        text-align: left;
+        border: 0;
+        border-radius: 9px;
+        background: #f9fafb;
+        padding: 11px;
+        font-size: 10px;
+        color: #4b5563;
+        min-height: 42px;
+      }
+      .verse {
+        padding: 21px 12px 7px;
+        text-align: center;
+        font-size: 12px;
+        line-height: 1.7;
+        color: #6b7280;
+      }
+      .verse small {
+        display: block;
+        font-size: 8px;
+        letter-spacing: 0.06em;
+        margin-top: 7px;
+      }
+      .bottom-nav {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        border-top: 1px solid #eceef1;
+        background: #fff;
+        padding: 9px 8px 13px;
+        gap: 2px;
+        flex-shrink: 0;
+      }
+      .bottom-nav button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        min-height: 47px;
+        border: 0;
+        border-radius: 10px;
+        background: none;
+        color: #6b7280;
+        font-size: 8px;
+        font-weight: 600;
+        position: relative;
+      }
+      .bottom-nav button[aria-current] {
+        color: var(--rose);
+        background: var(--blush);
+      }
+      .bottom-nav svg {
+        width: 21px;
+        height: 21px;
+      }
+      .unread {
+        position: absolute;
+        top: 1px;
+        right: 17px;
+        font-size: 7px;
+        border-radius: 8px;
+        min-width: 13px;
+        min-height: 13px;
+        display: grid;
+        place-items: center;
+        background: var(--rose);
+        color: #fff;
+        border: 2px solid #fff;
+      }
+      dialog {
+        width: min(360px, calc(100% - 36px));
+        border: 1px solid #ffe0e8;
+        border-radius: 20px;
+        padding: 26px;
+        box-shadow: 0 25px 60px #11182720;
+        color: var(--ink);
+      }
+      dialog::backdrop {
+        background: #11182760;
+        backdrop-filter: blur(3px);
+      }
+      dialog .eyebrow {
+        font-size: 9px;
+      }
+      dialog h2 {
+        font-size: 24px;
+        letter-spacing: -0.6px;
+        line-height: 1.2;
+        margin-top: 12px;
+      }
+      dialog p {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.8;
+        margin-top: 14px;
+      }
+      dialog .primary-button {
+        margin-top: 21px;
+        width: 100%;
+      }
+      .preview-footer {
+        font-size: 10px;
+        text-align: center;
+        color: var(--muted);
+        padding-top: 14px;
+      }
+      @media (max-width: 900px) {
+        .presentation {
+          padding: 24px;
+        }
+        .concept-layout {
+          gap: 38px;
+          grid-template-columns: 1fr 370px;
+        }
+        .proposal-copy h1 {
+          font-size: 37px;
+        }
+        .proposal-header > span {
+          font-size: 9px;
+        }
+      }
+      @media (max-width: 740px) {
+        .presentation {
+          padding: 22px 18px 35px;
+        }
+        .proposal-header {
+          padding-bottom: 18px;
+        }
+        .proposal-header > span {
+          max-width: 100px;
+          text-align: right;
+          line-height: 1.5;
+        }
+        .concept-layout {
+          grid-template-columns: 1fr;
+          padding-top: 27px;
+          gap: 32px;
+        }
+        .proposal-copy {
+          padding-top: 0;
+        }
+        .proposal-copy h1 {
+          font-size: 38px;
+        }
+        .intro {
+          font-size: 13px;
+        }
+        .recommendations {
+          gap: 16px;
+          margin-top: 25px;
+        }
+        .palette {
+          margin-top: 24px;
+        }
+        .preview-column {
+          width: min(405px, 100%);
+          margin: auto;
+        }
+        .app-preview {
+          height: 850px;
+        }
+        .scope-note {
+          margin-top: 20px;
+        }
+      }
+      @media (max-width: 380px) {
+        .app-scroll {
+          padding-inline: 15px;
+        }
+        .app-header {
+          padding-inline: 15px;
+        }
+        .daily-card h3 {
+          font-size: 21px;
+        }
+        .daily-footer {
+          gap: 5px;
+        }
+        .daily-footer > span {
+          font-size: 9px;
+        }
+        .primary-button {
+          padding-inline: 12px;
+          gap: 12px;
+        }
+        .mood-options {
+          gap: 6px;
+        }
+        .welcome h2 {
+          font-size: 23px;
+        }
+        .couple-meta {
+          font-size: 9px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          scroll-behavior: auto !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <svg class="symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <symbol id="heart" viewBox="0 0 24 24">
+          <path
+            d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"
+          />
+        </symbol>
+        <symbol id="book" viewBox="0 0 24 24">
+          <path
+            d="M12 6v15M3 3h5a4 4 0 0 1 4 3 4 4 0 0 1 4-3h5v15h-5a4 4 0 0 0-4 3 4 4 0 0 0-4-3H3Z"
+          />
+        </symbol>
+        <symbol id="arrow" viewBox="0 0 24 24">
+          <path d="M5 12h14m-6-6 6 6-6 6" />
+        </symbol>
+        <symbol id="bell" viewBox="0 0 24 24">
+          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" />
+        </symbol>
+        <symbol id="chat" viewBox="0 0 24 24">
+          <path
+            d="M21 11.5a9 9 0 0 1-9.5 9 10 10 0 0 1-4-.9L3 21l1.4-4.5A9 9 0 1 1 21 11.5Z"
+          />
+          <path d="M8 10h8m-8 4h5" />
+        </symbol>
+        <symbol id="calendar" viewBox="0 0 24 24">
+          <rect x="3" y="5" width="18" height="16" rx="2" />
+          <path d="M7 3v4m10-4v4M3 11h18m-13 4h2m4 0h2" />
+        </symbol>
+        <symbol id="pen" viewBox="0 0 24 24">
+          <path d="m15 5 4 4M4 20l5-1L21 7a2.8 2.8 0 0 0-4-4L5 15ZM14 21h7" />
+        </symbol>
+        <symbol id="icon-home" viewBox="0 0 24 24">
+          <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z" />
+        </symbol>
+        <symbol id="icon-more" viewBox="0 0 24 24">
+          <circle cx="5" cy="12" r="1" />
+          <circle cx="12" cy="12" r="1" />
+          <circle cx="19" cy="12" r="1" />
+        </symbol>
+        <symbol id="clock" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 7v5l3 2" />
+        </symbol>
+        <symbol id="icon-shuffle" viewBox="0 0 24 24">
+          <path
+            d="M3 7h3c4 0 8 10 12 10h3m-4-4 4 4-4 4M3 17h3c4 0 8-10 12-10h3m-4-4 4 4-4 4"
+          />
+        </symbol>
+        <symbol id="great" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9" />
+          <path d="m7 9 2-1 2 1m2 0 2-1 2 1M7.5 13h9a4.5 4.5 0 0 1-9 0Z" />
+        </symbol>
+        <symbol id="good" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M8 9h.01M16 9h.01M8 14q4 5 8 0" />
+        </symbol>
+        <symbol id="okay" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M8 9h.01M16 9h.01M8 15h8" />
+        </symbol>
+        <symbol id="sad" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M8 9h.01M16 9h.01M8 16q4-5 8 0" />
+        </symbol>
+      </defs>
+    </svg>
+    <div class="presentation">
+      <header class="proposal-header">
+        <div class="brand">
+          <span class="brand-icon"
+            ><svg><use href="#heart" /></svg></span
+          >TwoBeOne
+        </div>
+        <span>COUPLES DASHBOARD · DESIGN PROPOSAL</span>
+      </header>
+      <div class="concept-layout">
+        <section class="proposal-copy" aria-labelledby="proposal-title">
+          <p class="eyebrow">Recommended direction</p>
+          <h1 id="proposal-title">
+            Your daily space.<br /><span>A little closer.</span>
+          </h1>
+          <p class="intro">
+            A calmer Home screen that helps couples take one meaningful step
+            together, with your existing pink-to-rose brand.
+          </p>
+          <div class="recommendations">
+            <div class="recommendation">
+              <span class="number">01</span>
+              <div>
+                <h2>Put today’s action first</h2>
+                <p>
+                  A compact couple summary makes room for a devotion,
+                  conversation, or reflection. One clear invitation to begin.
+                </p>
+              </div>
+            </div>
+            <div class="recommendation">
+              <span class="number">02</span>
+              <div>
+                <h2>Make checking in effortless</h2>
+                <p>
+                  Keep your four mood choices and your partner’s shared status
+                  close to the top. Journal, questions, and calendar stay one
+                  tap away.
+                </p>
+              </div>
+            </div>
+            <div class="recommendation">
+              <span class="number">03</span>
+              <div>
+                <h2>Keep the rest within reach</h2>
+                <p>
+                  One progress summary, a compact upcoming event, and an
+                  expandable area for learning and relationship tools.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="palette" aria-label="Existing app color palette">
+            <div class="swatch"><i style="background: #ff6391"></i>#FF6391</div>
+            <div class="swatch"><i style="background: #e11d48"></i>#E11D48</div>
+            <div class="swatch"><i style="background: #fef1f4"></i>#FEF1F4</div>
+            <div class="swatch"><i style="background: #111827"></i>#111827</div>
+          </div>
+          <p class="scope-note">
+            <strong>Interactive proposal with sample data.</strong><br />Try the
+            mood choices, shuffle today’s suggestion, open a card, or scroll the
+            phone. Nothing is saved. The existing dashboard has not been
+            changed.
+          </p>
+        </section>
+        <section
+          class="preview-column"
+          aria-label="Proposed mobile Couples dashboard"
+        >
+          <div class="preview-label">
+            <span>HOME · MOBILE CONCEPT</span><strong>Sample data</strong>
+          </div>
+          <div class="app-preview">
+            <header class="app-header">
+              <div class="brand">
+                <span class="brand-icon"
+                  ><svg><use href="#heart" /></svg></span
+                >TwoBeOne
+              </div>
+              <div class="header-tools">
+                <button
+                  class="icon-button"
+                  aria-label="Preview notifications"
+                  data-preview="Notifications"
+                >
+                  <svg><use href="#bell" /></svg
+                  ><i class="notice-dot"></i></button
+                ><button
+                  class="icon-button profile"
+                  aria-label="Preview profile"
+                  data-preview="Your profile"
+                >
+                  S
+                </button>
+              </div>
+            </header>
+            <div class="app-scroll">
+              <div class="welcome">
+                <div>
+                  <p>Good morning, Sarah</p>
+                  <h2>A little closer, today.</h2>
+                </div>
+                <div class="avatars" aria-label="Sarah and Daniel">
+                  <span>S</span><span>D</span>
+                </div>
+              </div>
+              <div class="couple-meta">
+                <span class="dot"></span><span>Daniel is online</span
+                ><span>·</span><span>128 days together</span
+                ><button data-preview="Your shared journey">View us</button>
+              </div>
+              <article class="daily-card" aria-labelledby="daily-title">
+                <div class="daily-content">
+                  <div class="card-eyebrow">
+                    <span class="activity-label"
+                      ><svg id="activity-icon"><use href="#book" /></svg
+                      ><span id="activity-label"
+                        >FOR YOU TODAY · DEVOTIONAL</span
+                      ></span
+                    ><button
+                      class="shuffle"
+                      id="shuffle"
+                      aria-label="Show another daily suggestion"
+                    >
+                      <svg><use href="#icon-shuffle" /></svg>
+                    </button>
+                  </div>
+                  <h3 id="daily-title">Love in the little things</h3>
+                  <p id="daily-description">
+                    Make room for the small acts of kindness that bring you
+                    closer to each other and God.
+                  </p>
+                  <div class="daily-footer">
+                    <button class="primary-button" id="daily-action">
+                      <span>Read together</span
+                      ><svg><use href="#arrow" /></svg></button
+                    ><span
+                      ><svg><use href="#clock" /></svg
+                      ><span id="activity-time">5 min together</span></span
+                    >
+                  </div>
+                </div>
+              </article>
+              <section class="mood-section" aria-labelledby="mood-heading">
+                <div class="section-heading">
+                  <h3 id="mood-heading">How’s your heart today?</h3>
+                  <small>Your check-in</small>
+                </div>
+                <div
+                  class="mood-options"
+                  role="group"
+                  aria-label="Choose your mood"
+                >
+                  <button
+                    class="mood-button"
+                    aria-pressed="false"
+                    data-mood="Great"
+                  >
+                    <svg><use href="#great" /></svg>Great</button
+                  ><button
+                    class="mood-button"
+                    aria-pressed="false"
+                    data-mood="Good"
+                  >
+                    <svg><use href="#good" /></svg>Good</button
+                  ><button
+                    class="mood-button"
+                    aria-pressed="false"
+                    data-mood="Okay"
+                  >
+                    <svg><use href="#okay" /></svg>Okay</button
+                  ><button
+                    class="mood-button"
+                    aria-pressed="false"
+                    data-mood="Sad"
+                  >
+                    <svg><use href="#sad" /></svg>Sad
+                  </button>
+                </div>
+                <p class="partner-mood" id="mood-feedback" aria-live="polite">
+                  <svg><use href="#heart" /></svg
+                  ><span>Daniel shared: <strong>Good</strong></span>
+                </p>
+              </section>
+              <div class="shortcuts" role="group" aria-label="Quick access">
+                <button class="shortcut" data-preview="Your journal">
+                  <svg><use href="#pen" /></svg>Journal</button
+                ><button class="shortcut" data-preview="Conversation questions">
+                  <svg><use href="#chat" /></svg>Questions</button
+                ><button class="shortcut" data-preview="Couple calendar">
+                  <svg><use href="#calendar" /></svg>Calendar
+                </button>
+              </div>
+              <section class="upcoming">
+                <div class="section-heading">
+                  <h3>Something to look forward to</h3>
+                  <button data-preview="Couple calendar">See all</button>
+                </div>
+                <button class="event" data-preview="Your next plan">
+                  <span class="event-date"><small>SUN</small><b>20</b></span
+                  ><span
+                    ><strong>Our Sunday walk</strong
+                    ><small>4:30 PM · A little time for us</small></span
+                  ><svg><use href="#arrow" /></svg>
+                </button>
+              </section>
+              <section class="week">
+                <div class="section-heading">
+                  <h3>Your shared rhythm</h3>
+                  <button data-preview="Your progress">View progress</button>
+                </div>
+                <p>
+                  <strong>3-day devotional streak.</strong> Keep making a little
+                  space for each other.
+                </p>
+                <div class="week-metrics">
+                  <span><b>12</b>Devotionals read</span
+                  ><span><b>4 / 8</b>Prayers answered</span
+                  ><span><b>6</b>Shared journals</span>
+                </div>
+              </section>
+              <details>
+                <summary>Explore together</summary>
+                <div class="explore-list">
+                  <button data-preview="Learning modules">
+                    Learning modules</button
+                  ><button data-preview="Character house">
+                    Character house</button
+                  ><button data-preview="Scripture memory">
+                    Scripture memory</button
+                  ><button data-preview="Your milestones">Milestones</button
+                  ><button data-preview="Champions">Champions</button
+                  ><button data-preview="Community">Community</button>
+                </div>
+              </details>
+              <div class="verse">
+                “Let all that you do be done in love.”<small
+                  >1 CORINTHIANS 16:14</small
+                ><button
+                  class="section-heading"
+                  style="
+                    margin: 10px auto 0;
+                    background: none;
+                    border: 0;
+                    color: var(--rose);
+                    font-size: 10px;
+                    padding: 8px;
+                  "
+                  data-preview="Bible reader"
+                >
+                  Read the full chapter →
+                </button>
+              </div>
+            </div>
+            <nav class="bottom-nav" aria-label="Proposed main navigation">
+              <button aria-current="page" id="home">
+                <svg><use href="#icon-home" /></svg>Home</button
+              ><button data-preview="Devotions">
+                <svg><use href="#book" /></svg>Devotions</button
+              ><button data-preview="Prayer">
+                <svg><use href="#heart" /></svg>Prayer</button
+              ><button data-preview="Partner chat">
+                <svg><use href="#chat" /></svg
+                ><span class="unread" aria-label="2 unread messages">2</span
+                >Chat</button
+              ><button id="more">
+                <svg><use href="#icon-more" /></svg>More
+              </button>
+            </nav>
+          </div>
+          <p class="preview-footer">
+            Five labeled destinations. Existing features remain accessible.
+          </p>
+        </section>
+      </div>
+    </div>
+    <dialog id="concept-dialog" aria-labelledby="dialog-title">
+      <p class="eyebrow">Design concept · Sample content</p>
+      <h2 id="dialog-title"></h2>
+      <p id="dialog-copy"></p>
+      <form method="dialog">
+        <button class="primary-button">Back to the concept</button>
+      </form>
+    </dialog>
+    <script>
+      const modal = document.querySelector("#concept-dialog");
+      function showPreview(title, copy) {
+        document.querySelector("#dialog-title").textContent = title;
+        document.querySelector("#dialog-copy").textContent = copy;
+        modal.showModal();
+      }
+      const descriptions = {
+        Notifications:
+          "Your existing reminders, partner activity, and updates would open here.",
+        "Your profile":
+          "Profile settings, language, account details, and partner connection remain accessible from this avatar and More.",
+        "Your shared journey":
+          "The couple profile would hold the full days-together timeline, milestones, presence, and optional distance details. Journey stages describe time together, not relationship readiness.",
+        "Your journal":
+          "Open your existing journal. Private and shared entries keep their current visibility settings.",
+        "Conversation questions":
+          "Open your existing conversation categories and questions. Both partners’ answers remain in the current discussion flow.",
+        "Couple calendar":
+          "Open your existing shared calendar for plans, reminders, and events.",
+        "Your next plan":
+          "Open the selected calendar event, including its time, details, and current reminder settings.",
+        "Your progress":
+          "One place for actual devotional counts and streaks, prayer responses, journal totals, and question progress. No invented relationship scores.",
+        "Learning modules":
+          "Continue your existing faith and relationship lessons.",
+        "Character house":
+          "Open the existing Character House experience from this secondary tool area.",
+        "Scripture memory":
+          "Open your saved verses and existing Scripture Memory exercises.",
+        "Your milestones":
+          "Open your existing relationship milestones and memories.",
+        Champions:
+          "Keep access to your existing Champions card and activities.",
+        Community: "Open your existing community groups and discussions.",
+        "Bible reader":
+          "Open the existing Bible reader with its language and chapter controls.",
+        Devotions:
+          "The Devotions tab stays directly accessible, with its current readings, completed items, and language controls.",
+        Prayer:
+          "The Prayer tab stays directly accessible. Personal and shared prayers keep their existing privacy controls.",
+        "Partner chat":
+          "Open the existing partner conversation. The unread badge stays visible on the navigation.",
+      };
+      document
+        .querySelectorAll("[data-preview]")
+        .forEach((button) =>
+          button.addEventListener("click", () =>
+            showPreview(
+              button.dataset.preview,
+              descriptions[button.dataset.preview],
+            ),
+          ),
+        );
+      document.querySelectorAll("[data-mood]").forEach((button) =>
+        button.addEventListener("click", () => {
+          document
+            .querySelectorAll("[data-mood]")
+            .forEach((choice) =>
+              choice.setAttribute("aria-pressed", String(choice === button)),
+            );
+          document.querySelector("#mood-feedback").textContent =
+            button.dataset.mood +
+            " selected in this preview. Nothing is saved.";
+        }),
+      );
+      const suggestions = [
+        {
+          label: "FOR YOU TODAY · DEVOTIONAL",
+          title: "Love in the little things",
+          description:
+            "Make room for the small acts of kindness that bring you closer to each other and God.",
+          action: "Read together",
+          time: "5 min together",
+          icon: "book",
+          detail:
+            "This would open the selected devotional using your existing reading flow. The suggestion uses your actual devotional content.",
+        },
+        {
+          label: "FOR YOU TODAY · CONVERSATION",
+          title: "What made you feel loved this week?",
+          description:
+            "Set aside a moment to listen. One thoughtful question can open a meaningful conversation.",
+          action: "Start talking",
+          time: "A moment for us",
+          icon: "chat",
+          detail:
+            "This would open the current question and partner discussion. This concept retains the existing suggestion shuffle.",
+        },
+        {
+          label: "FOR YOU TODAY · JOURNAL",
+          title: "A moment worth remembering",
+          description:
+            "Write down one little thing you’re grateful for in your relationship today.",
+          action: "Open journal",
+          time: "At your own pace",
+          icon: "pen",
+          detail:
+            "This would open the current journal flow with its existing private and shared options.",
+        },
+      ];
+      let currentSuggestion = 0;
+      document.querySelector("#shuffle").addEventListener("click", () => {
+        currentSuggestion = (currentSuggestion + 1) % suggestions.length;
+        const suggestion = suggestions[currentSuggestion];
+        document.querySelector("#activity-label").textContent =
+          suggestion.label;
+        document.querySelector("#daily-title").textContent = suggestion.title;
+        document.querySelector("#daily-description").textContent =
+          suggestion.description;
+        document.querySelector("#daily-action span").textContent =
+          suggestion.action;
+        document.querySelector("#activity-time").textContent = suggestion.time;
+        document
+          .querySelector("#activity-icon use")
+          .setAttribute("href", "#" + suggestion.icon);
+      });
+      document
+        .querySelector("#daily-action")
+        .addEventListener("click", () =>
+          showPreview(
+            suggestions[currentSuggestion].title,
+            suggestions[currentSuggestion].detail,
+          ),
+        );
+      document.querySelector("#home").addEventListener("click", () =>
+        document.querySelector(".app-scroll").scrollTo({
+          top: 0,
+          behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
+            ? "instant"
+            : "smooth",
+        }),
+      );
+      document
+        .querySelector("#more")
+        .addEventListener("click", () =>
+          showPreview(
+            "More, without the clutter",
+            "This proposed fifth destination groups Community, Profile, Journal, Calendar, learning tools, and settings. Existing destinations stay available, while every bottom tab has a readable label.",
+          ),
+        );
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) {
+          const bounds = modal.getBoundingClientRect();
+          if (
+            event.clientX < bounds.left ||
+            event.clientX > bounds.right ||
+            event.clientY < bounds.top ||
+            event.clientY > bounds.bottom
+          )
+            modal.close();
+        }
+      });
+    </script>
+  </body>
+</html>
