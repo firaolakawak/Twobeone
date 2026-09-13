@@ -132,3 +132,12 @@ body,
   background: var(--accent);
   color: var(--primary);
 }
+
+html[data-tbo-ambient-motion="off"] .tbo-app-mark-heart {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tbo-app-mark-heart {
+    animation: none;
+  }
+}

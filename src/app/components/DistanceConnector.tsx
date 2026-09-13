@@ -798,7 +798,7 @@ export function DistanceConnector({
       `}</style>
 
       {variant === "love-journey" ? (
-        <>
+        <div className="love-journey-places-container">
           <button
             className="love-journey-places"
             type="button"
@@ -831,7 +831,7 @@ export function DistanceConnector({
           >
             {compactDescription}
           </span>
-        </>
+        </div>
       ) : variant === "journey" ? (
         <section aria-label={copy.coupleLocations} className="distance-journey">
           <div className="distance-journey__places">

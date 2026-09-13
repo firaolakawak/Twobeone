@@ -234,6 +234,11 @@
 }
 
 /* Twilight belongs only to the compact shared-location panel. */
+.love-journey-places-container {
+  container: love-journey-places-layout / inline-size;
+  width: 100%;
+  min-width: 0;
+}
 .love-journey-places {
   position: relative;
   isolation: isolate;
@@ -245,12 +250,14 @@
   min-height: 90px;
   margin: 0;
   padding: 12px 10px;
-  border: 1px solid #9a859744;
+  border: 1px solid #e0c0dd33;
   border-radius: 17px;
   background:
-    radial-gradient(ellipse at 2% 0%, #eab67545, transparent 65%),
-    radial-gradient(ellipse at 100% 105%, #b493e85c, transparent 65%),
-    linear-gradient(112deg, #58434b, #443750 52%, #3e345b);
+    radial-gradient(ellipse at 2% 0%, #d8a6672e, transparent 65%),
+    radial-gradient(ellipse at 100% 105%, #ad8dd952, transparent 65%),
+    linear-gradient(112deg, #463344eb, #352a48e8 52%, #302547eb);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   box-shadow:
     inset 0 1px 0 #ffffff16,
     0 5px 13px #34263d0c;
@@ -270,10 +277,22 @@
   inset: 0;
   border-radius: inherit;
   background:
-    radial-gradient(ellipse at 15% 15%, #edc38838, transparent 60%),
-    radial-gradient(ellipse at 90% 85%, #b297e338, transparent 60%);
+    radial-gradient(ellipse at 15% 15%, #edc38820, transparent 60%),
+    radial-gradient(ellipse at 90% 85%, #b297e320, transparent 60%);
   background-size: 140% 140%;
   opacity: 0.65;
+  pointer-events: none;
+}
+.love-journey-places::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(110deg, #ffe3b1, #e6d5ff);
+  -webkit-mask: url("/artwork/world-map.svg") center / cover no-repeat;
+  mask: url("/artwork/world-map.svg") center / cover no-repeat;
+  opacity: 0.14;
   pointer-events: none;
 }
 .love-journey-places__place {
@@ -447,8 +466,31 @@
     padding: 11px 8px;
   }
 }
+/* Root-relative units also respond to larger text, preserving usable city widths. */
+@container love-journey-places-layout (max-width: 12rem) {
+  .love-journey-places {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.65rem;
+    padding: 0.65rem 0.5rem;
+  }
+  .love-journey-places__place,
+  .love-journey-places__place:last-child {
+    align-items: center;
+    text-align: center;
+  }
+  .love-journey-places__local-clock,
+  .love-journey-places__place:last-child .love-journey-places__local-clock {
+    justify-content: center;
+  }
+  .love-journey-places__route {
+    justify-self: center;
+    width: 100%;
+    max-width: 10rem;
+  }
+}
 @media (forced-colors: active) {
-  .love-journey-places::before {
+  .love-journey-places::before,
+  .love-journey-places::after {
     display: none;
   }
   .love-journey-places {

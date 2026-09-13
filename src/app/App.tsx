@@ -1431,7 +1431,7 @@ export default function App() {
                 <span className="grid h-[29px] w-[29px] place-items-center rounded-[9px] text-white" style={{ background: 'linear-gradient(135deg, #ff6391, #e11d48)' }}>
                   <Heart className="h-[19px] w-[19px] fill-current" strokeWidth={0} aria-hidden="true" />
                 </span>
-              ) : <Heart className="h-6 w-6 fill-rose-500 text-rose-500 animate-pulse" />}
+              ) : <Heart className="tbo-app-mark-heart h-6 w-6 fill-rose-500 text-rose-500 animate-pulse" />}
               <span className="text-[19px] font-[750] tracking-[-.7px] text-foreground">
                 TwoBeOne
               </span>

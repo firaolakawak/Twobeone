@@ -1,10 +1,24 @@
-import { useEffect, useState } from "react";
-import { useReducedMotion } from "motion/react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 const STORAGE_KEY = "twobeone-ambient-motion";
+const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
+
+function subscribeToReducedMotion(notify: () => void) {
+  const media = window.matchMedia(REDUCED_MOTION_QUERY);
+  media.addEventListener("change", notify);
+  return () => media.removeEventListener("change", notify);
+}
+
+function readReducedMotion() {
+  return window.matchMedia(REDUCED_MOTION_QUERY).matches;
+}
 
 export function useAmbientMotion() {
-  const reducedMotion = Boolean(useReducedMotion());
+  const reducedMotion = useSyncExternalStore(
+    subscribeToReducedMotion,
+    readReducedMotion,
+    () => false,
+  );
   const [preferred, setPreferred] = useState(() => {
     try {
       return localStorage.getItem(STORAGE_KEY) !== "off";

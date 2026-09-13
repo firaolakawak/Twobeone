@@ -1,20 +1,40 @@
 /* Love Journey layout using the shared TwoBeOne typography tokens. */
 .love-journey {
-  border: 1px solid var(--border);
+  --foreground: #fff9f5;
+  --muted-foreground: #eadfea;
+  border: 1px solid #a38baa55;
   border-radius: 26px 22px 25px 23px;
-  background: var(--card);
+  background:
+    radial-gradient(ellipse at 3% 0%, #c79b6040, transparent 62%),
+    radial-gradient(ellipse at 100% 18%, #9870c747, transparent 62%),
+    linear-gradient(140deg, #382c40, #2b1f40 58%, #251d39);
   box-shadow:
     0 2px 4px #24212604,
     0 14px 32px -22px #643d4530,
     inset 0 1px 0 #ffffffb3;
   overflow: hidden;
-  color: var(--foreground);
+  color: #fff9f5;
   font-family: var(--tbo-font-sans);
   font-optical-sizing: auto;
   font-synthesis: weight;
 }
 .love-journey__body {
+  position: relative;
+  isolation: isolate;
   padding: var(--tbo-space-4);
+}
+.love-journey__body::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 190px;
+  z-index: -1;
+  background: url("/artwork/world-map.svg") center 8px / 112% auto no-repeat;
+  opacity: 0.13;
+  mix-blend-mode: screen;
+  -webkit-mask-image: linear-gradient(#000 35%, transparent 96%);
+  mask-image: linear-gradient(#000 35%, transparent 96%);
+  pointer-events: none;
 }
 .love-journey__identity {
   display: flex;
@@ -39,7 +59,7 @@
 
 .love-journey__identity .love-journey__ampersand {
   font-weight: var(--tbo-weight-regular);
-  color: var(--primary);
+  color: #ffb8ce;
   padding: 0;
 }
 .love-journey__mood {
@@ -124,7 +144,7 @@
   line-height: var(--tbo-h3-line);
   font-weight: var(--tbo-weight-bold);
   letter-spacing: 0;
-  color: var(--primary);
+  color: #ffa3c0;
   font-variant-numeric: tabular-nums;
   text-shadow: 0 1px 8px #e11d4812;
 }
@@ -132,7 +152,7 @@
   display: inline-flex;
   white-space: nowrap;
   margin-top: var(--tbo-space-1);
-  color: var(--primary);
+  color: #ffd0df;
   font-size: var(--tbo-caption-size);
   line-height: var(--tbo-caption-line);
   font-variant-numeric: tabular-nums;
@@ -167,8 +187,8 @@
   justify-content: space-between;
   gap: var(--tbo-space-2);
   padding: var(--tbo-space-2) var(--tbo-space-4);
-  background: var(--card);
-  border-top: 1px solid var(--border);
+  background: #ffffff09;
+  border-top: 1px solid #ead5ed2b;
   padding-top: var(--tbo-space-2);
   padding-bottom: var(--tbo-space-2);
 }
@@ -179,7 +199,7 @@
   min-width: 0;
 }
 .love-journey__occasion > svg {
-  color: var(--primary);
+  color: #f5bccf;
   flex-shrink: 0;
 }
 .love-journey__occasion p {
@@ -206,7 +226,7 @@
   padding: var(--tbo-space-2);
   border: 0;
   background: transparent;
-  color: var(--primary);
+  color: #ffd0df;
   font-size: var(--tbo-caption-size);
   font-weight: var(--tbo-weight-medium);
   border-radius: 9px;
@@ -216,7 +236,7 @@
   overflow-wrap: anywhere;
 }
 .love-journey__story-button:hover {
-  background: var(--primary-50);
+  background: #ffffff12;
 }
 .love-journey__story-button > svg {
   flex-shrink: 0;
@@ -510,5 +530,29 @@ html[data-tbo-ambient-motion="off"] .love-journey__elapsed-primary strong {
   .love-journey__elapsed-primary strong {
     animation: none;
     text-shadow: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .love-journey {
+    --foreground: CanvasText;
+    --muted-foreground: CanvasText;
+    background: Canvas;
+    border-color: CanvasText;
+    color: CanvasText;
+  }
+  .love-journey__body::before {
+    display: none;
+  }
+  .love-journey__elapsed-primary strong,
+  .love-journey__clock,
+  .love-journey__identity .love-journey__ampersand,
+  .love-journey__story-button,
+  .love-journey__occasion > svg {
+    color: CanvasText;
+  }
+  .love-journey__footer {
+    background: Canvas;
+    border-color: CanvasText;
   }
 }
