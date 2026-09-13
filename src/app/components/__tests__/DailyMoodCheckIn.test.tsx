@@ -85,6 +85,42 @@ describe('DailyMoodCheckIn', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
+  it('opens analytics from its text action while preserving the saved mood and reminder state', async () => {
+    const onViewAnalytics = vi.fn();
+    const { props } = setup({ mood: 'good', onViewAnalytics });
+    await advance();
+
+    expect(screen.getByRole('button', { name: "Today's Mood" })).toHaveTextContent('😊');
+    const analytics = screen.getByRole('button', { name: 'Mood Analytics' });
+    expect(analytics).toHaveTextContent('Mood Analytics');
+    fireEvent.click(analytics);
+
+    expect(onViewAnalytics).toHaveBeenCalledTimes(1);
+    expect(props.onSave).not.toHaveBeenCalled();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(localStorage.getItem(reminderKey)).toBeNull();
+  });
+
+  it('keeps the automatic daily check-in and save available when dashboard controls are hidden', async () => {
+    const { props } = setup({ showControls: false, onViewAnalytics: vi.fn() });
+    expect(screen.queryByRole('button', { name: "Today's Mood" })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Mood Analytics' })).not.toBeInTheDocument();
+
+    await advance();
+    expect(screen.getByRole('dialog', { name: 'How are you feeling today?' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save Mood' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Good' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save Mood' }));
+    await advance(0);
+
+    expect(props.onSave).toHaveBeenCalledExactlyOnceWith('good');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: "Today's Mood" })).not.toBeInTheDocument();
+    expect(localStorage.getItem(reminderKey)).not.toBeNull();
+    await advance(DAY - 1_001);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
   it('waits for a visible page and for another dialog to close without consuming the reminder', async () => {
     setVisibility('hidden');
     setup();

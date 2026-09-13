@@ -1,0 +1,25 @@
+.relationship-heartbeat {
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .relationship-heartbeat {
+    animation: relationship-heartbeat 1.8s ease-in-out infinite;
+  }
+
+  .relationship-stage-pulse {
+    animation: relationship-stage-pulse 2.4s ease-out infinite;
+  }
+}
+
+@keyframes relationship-heartbeat {
+  0%, 32%, 100% { transform: scale(1); }
+  12% { transform: scale(1.12); }
+  20% { transform: scale(1); }
+  26% { transform: scale(1.06); }
+}
+
+@keyframes relationship-stage-pulse {
+  0% { transform: scale(1); opacity: .7; }
+  75%, 100% { transform: scale(1.25); opacity: 0; }
+}

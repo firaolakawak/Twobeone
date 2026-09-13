@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { BarChart3, Heart, Loader2 } from 'lucide-react';
+import { Check, Heart, Loader2 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MOOD_EMOJI, type MoodValue } from '../utils/dailyMood';
 import { Button } from './ui/button';
@@ -8,6 +8,13 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 const REMINDER_DELAY_MS = 1_000;
 const REMINDER_COOLDOWN_MS = 24 * 60 * 60 * 1_000;
 const MOODS: MoodValue[] = ['great', 'good', 'okay', 'sad'];
+// Use the same mood colors as the existing Mood Analytics selector.
+const MOOD_COLORS = {
+  great: { background: 'var(--success-50)', border: 'var(--success-500)', text: 'var(--success-700)' },
+  good: { background: 'var(--secondary-50)', border: 'var(--secondary-500)', text: 'var(--secondary-700)' },
+  okay: { background: 'var(--warning-50)', border: 'var(--warning-500)', text: 'var(--warning-700)' },
+  sad: { background: 'var(--neutral-100)', border: 'var(--neutral-400)', text: 'var(--neutral-600)' },
+} as const;
 
 export interface DailyMoodCheckInProps {
   userId: string;
@@ -17,6 +24,7 @@ export interface DailyMoodCheckInProps {
   loaded: boolean;
   onSave: (mood: MoodValue) => Promise<void>;
   onViewAnalytics?: () => void;
+  showControls?: boolean;
 }
 
 // A new account gets its own dialog, pending-save lifecycle and reminder state.
@@ -24,7 +32,7 @@ export function DailyMoodCheckIn(props: DailyMoodCheckInProps) {
   return <UserMoodCheckIn key={props.userId} {...props} />;
 }
 
-function UserMoodCheckIn({ userId, userName, partnerName, mood, loaded, onSave, onViewAnalytics }: DailyMoodCheckInProps) {
+function UserMoodCheckIn({ userId, userName, partnerName, mood, loaded, onSave, onViewAnalytics, showControls = true }: DailyMoodCheckInProps) {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [automatic, setAutomatic] = useState(false);
@@ -170,66 +178,78 @@ function UserMoodCheckIn({ userId, userName, partnerName, mood, loaded, onSave, 
 
   return (
     <>
-      <div className="flex items-center gap-1">
+      {showControls && <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <Button
           type="button"
           variant="outline"
           size="sm"
-          className="rounded-full border-rose-200 bg-white/80 text-rose-700 hover:bg-rose-50"
+          className="h-11 rounded-full border-rose-200/70 bg-card/80 px-4 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:border-rose-900/50 dark:text-rose-300 dark:hover:bg-rose-950/30"
           aria-label={t.dashboard.todaysMood}
           onClick={openManually}
           disabled={!loaded}
         >
-          {mood ? <span className="text-lg" aria-hidden="true">{MOOD_EMOJI[mood]}</span> : <Heart className="h-4 w-4" aria-hidden="true" />}
+          {mood && <span className="text-base" aria-hidden="true">{MOOD_EMOJI[mood]}</span>}
           {t.dashboard.todaysMood}
         </Button>
         {onViewAnalytics && (
-          <Button type="button" variant="ghost" size="icon" className="h-8 w-8 rounded-full text-violet-600 hover:bg-violet-50" onClick={onViewAnalytics} aria-label={t.mood.analytics} title={t.mood.analytics}>
-            <BarChart3 className="h-4 w-4" aria-hidden="true" />
+          <Button type="button" variant="link" size="sm" className="h-11 rounded-lg px-1 text-xs font-medium text-muted-foreground hover:text-foreground" onClick={onViewAnalytics} aria-label={t.mood.analytics}>
+            {t.mood.analytics}
           </Button>
         )}
-      </div>
+      </div>}
 
       <Dialog open={open} onOpenChange={(next) => { if (next || canDismiss) setOpen(next); }}>
         <DialogContent
-          className="max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-[1.75rem] border-rose-100 p-6 shadow-xl sm:max-w-md"
-          style={{ background: 'linear-gradient(135deg, #ffffff 0%, #fff1f2 55%, #f5f3ff 100%)' }}
+          className="max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-3xl border-border bg-card p-0 text-card-foreground shadow-xl sm:max-w-md"
           showCloseButton={canDismiss}
           onEscapeKeyDown={(event) => { if (!canDismiss) event.preventDefault(); }}
           onInteractOutside={(event) => { if (!canDismiss) event.preventDefault(); }}
         >
-          <DialogHeader className="items-center text-center sm:text-center">
-            <span className="mb-2 grid h-14 w-14 place-items-center rounded-2xl bg-white text-rose-500 shadow-sm"><Heart className="h-7 w-7" aria-hidden="true" /></span>
-            <p className="text-xs font-semibold uppercase tracking-widest text-rose-600">{userName || t.mood.you}</p>
-            <DialogTitle className="text-xl font-bold leading-tight text-slate-950">{t.mood.howAreYouFeelingToday}</DialogTitle>
-            <DialogDescription className="max-w-xs leading-relaxed">
+          <DialogHeader className="gap-3 border-b border-border bg-muted/40 px-5 py-5 text-left sm:px-6">
+            <div className="flex items-center gap-2 pr-6 text-sm font-semibold text-primary">
+              <Heart className="h-5 w-5" aria-hidden="true" />
+              {t.dashboard.todaysMood}
+            </div>
+            <DialogTitle className="text-xl font-bold leading-tight tracking-tight text-foreground">{t.mood.howAreYouFeelingToday}</DialogTitle>
+            <DialogDescription className="text-sm leading-relaxed">
               {t.mood.shareEmotionalState}
-              {partnerName && <span className="mt-1 block font-medium text-violet-700">{partnerName}</span>}
             </DialogDescription>
+            <p className="flex flex-wrap items-center gap-1.5 text-xs font-medium text-muted-foreground">
+              <span>{userName || t.mood.you}</span>
+              {partnerName && <><span aria-hidden="true">&amp;</span><span>{partnerName}</span></>}
+            </p>
           </DialogHeader>
 
-          <div className="grid grid-cols-4 gap-2 py-3" role="group" aria-label={t.dashboard.yourMood}>
-            {MOODS.map((value) => (
-              <button
-                key={value}
-                type="button"
-                aria-label={t.mood[value]}
-                aria-pressed={selected === value}
-                disabled={saving}
-                onClick={() => setSelected(value)}
-                className={`flex min-w-0 flex-col items-center gap-2 rounded-2xl border px-1 py-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 disabled:opacity-60 ${selected === value ? 'border-rose-400 bg-white text-rose-800 shadow-md ring-2 ring-rose-200' : 'border-white bg-white/60 text-slate-600 hover:border-rose-200 hover:bg-white'}`}
-              >
-                <span className="text-4xl" aria-hidden="true">{MOOD_EMOJI[value]}</span>
-                <span className="break-words text-center text-xs font-semibold">{t.mood[value]}</span>
-              </button>
-            ))}
+          <div className="space-y-5 px-5 py-5 sm:px-6">
+            <div className="grid grid-cols-4 gap-2" role="group" aria-label={t.dashboard.yourMood}>
+              {MOODS.map((value) => {
+                const isSelected = selected === value;
+                const colors = MOOD_COLORS[value];
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    aria-label={t.mood[value]}
+                    aria-pressed={isSelected}
+                    disabled={saving}
+                    onClick={() => setSelected(value)}
+                    className="relative flex min-h-20 min-w-0 flex-col items-center justify-center gap-2 rounded-xl border-2 border-border bg-card px-1.5 py-3 text-muted-foreground transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60"
+                    style={isSelected ? { backgroundColor: colors.background, borderColor: colors.border, color: colors.text } : undefined}
+                  >
+                    {isSelected && <Check className="absolute right-1 top-1 h-3 w-3" strokeWidth={3} aria-hidden="true" />}
+                    <span className="text-[1.75rem] leading-none" aria-hidden="true">{MOOD_EMOJI[value]}</span>
+                    <span className="break-words text-center text-xs font-semibold">{t.mood[value]}</span>
+                  </button>
+                );
+              })}
+            </div>
+            {saveError && <p role="alert" className="rounded-xl border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">{t.mood.failedSave}. {t.messages.tryAgainLater}</p>}
+            <Button type="button" className="h-12 w-full rounded-xl font-semibold" disabled={!selected || saving} onClick={saveMood}>
+              {saving && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
+              {saving ? t.common.loading : t.mood.saveMood}
+            </Button>
+            {canDismiss && <Button type="button" variant="ghost" className="w-full rounded-xl text-muted-foreground" onClick={() => setOpen(false)}>{t.common.close}</Button>}
           </div>
-          {saveError && <p role="alert" className="rounded-xl border border-rose-200 bg-white px-3 py-2 text-sm text-rose-700">{t.mood.failedSave}. {t.messages.tryAgainLater}</p>}
-          <Button type="button" className="h-11 w-full rounded-full bg-rose-600 font-semibold text-white hover:bg-rose-700" disabled={!selected || saving} onClick={saveMood}>
-            {saving && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
-            {saving ? t.common.loading : t.mood.saveMood}
-          </Button>
-          {canDismiss && <Button type="button" variant="ghost" className="rounded-full text-slate-500" onClick={() => setOpen(false)}>{t.common.close}</Button>}
         </DialogContent>
       </Dialog>
     </>

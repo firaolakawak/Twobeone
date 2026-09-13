@@ -23,8 +23,6 @@ import {
   Check,
   X,
   Heart,
-  Wifi,
-  WifiOff,
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
@@ -39,6 +37,8 @@ import {
 import { projectId } from "../utils/supabase/info";
 import { createClient } from "../utils/supabase/client";
 import { useLanguage } from "../contexts/LanguageContext";
+import { CoupleAvatarStack, PresenceDot } from "./CoupleAvatarStack";
+import { CoupleNameHeading } from "./CoupleMoodHeading";
 
 interface DistanceConnectorProps {
   userId: string;
@@ -51,7 +51,8 @@ interface DistanceConnectorProps {
   userOnline?: boolean;
   partnerOnline?: boolean;
   embedded?: boolean;
-  centerContent?: ReactNode;
+  summaryContent?: (distanceKm: number | null) => ReactNode;
+  partnerMood?: ReactNode;
 }
 
 interface UserLocation {
@@ -72,7 +73,8 @@ export function DistanceConnector({
   userOnline: userOnlineOverride,
   partnerOnline: partnerOnlineOverride,
   embedded = false,
-  centerContent,
+  summaryContent,
+  partnerMood,
 }: DistanceConnectorProps) {
   const { t } = useLanguage();
   const [userLocation, setUserLocation] =
@@ -360,43 +362,6 @@ export function DistanceConnector({
           0%   { transform: scale(1);   opacity: 0.5; }
           100% { transform: scale(1.7); opacity: 0; }
         }
-        @keyframes loveFlowRight {
-          0%   { left: 0%;   opacity: 0; transform: translate3d(0, 7px, 0) scale(0.45) rotate(-12deg); }
-          12%  { opacity: 0.8; }
-          48%  { transform: translate3d(-50%, -7px, 0) scale(1) rotate(6deg); }
-          88%  { opacity: 0.75; }
-          100% { left: 100%; opacity: 0; transform: translate3d(-100%, 5px, 0) scale(0.5) rotate(14deg); }
-        }
-        @keyframes loveFlowLeft {
-          0%   { right: 0%;   opacity: 0; transform: translate3d(0, 5px, 0) scale(0.45) rotate(12deg); }
-          12%  { opacity: 0.75; }
-          52%  { transform: translate3d(50%, -8px, 0) scale(0.95) rotate(-5deg); }
-          88%  { opacity: 0.7; }
-          100% { right: 100%; opacity: 0; transform: translate3d(100%, 7px, 0) scale(0.5) rotate(-14deg); }
-        }
-        .love-flow-heart {
-          position: absolute;
-          display: block;
-          line-height: 0;
-          transform-origin: center;
-          will-change: left, right, transform, opacity;
-          -webkit-transform-origin: center;
-          -webkit-backface-visibility: hidden;
-          backface-visibility: hidden;
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .love-flow-heart {
-            animation: none !important;
-            right: auto !important;
-            opacity: 0.42;
-            transform: none;
-          }
-          .love-flow-heart:nth-child(1) { left: 12%; }
-          .love-flow-heart:nth-child(2) { left: 31%; }
-          .love-flow-heart:nth-child(3) { left: 50%; }
-          .love-flow-heart:nth-child(4) { left: 69%; }
-          .love-flow-heart:nth-child(5) { left: 86%; }
-        }
       `}</style>
 
       {embedded ? (
@@ -406,101 +371,36 @@ export function DistanceConnector({
             onClick={() => setShowSettings(true)}
             aria-label={t.dashboard.locationSettings}
             title={t.dashboard.locationSettings}
-            className="absolute -right-1 -top-1 z-30 flex h-8 w-8 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-white/80 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+            className="absolute -right-2 -top-4 z-30 flex h-11 w-11 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
           >
             <Settings className="h-4 w-4" />
           </button>
 
-          <div
-            data-testid="love-flow"
-            aria-hidden="true"
-            className="pointer-events-none absolute left-[25%] right-[25%] top-4 z-20 h-14 overflow-hidden sm:left-[24%] sm:right-[24%]"
-          >
-            {[
-              { direction: 'right', top: 12, size: 10, duration: 4.8, delay: 0 },
-              { direction: 'left', top: 25, size: 8, duration: 5.6, delay: 1.1 },
-              { direction: 'right', top: 32, size: 7, duration: 6.2, delay: 2.4 },
-              { direction: 'left', top: 7, size: 6, duration: 5.1, delay: 3.3 },
-              { direction: 'right', top: 21, size: 6, duration: 5.8, delay: 4.2 },
-            ].map((heart, index) => (
-              <span
-                key={`${heart.direction}-${index}`}
-                className="love-flow-heart"
-                style={{
-                  top: heart.top,
-                  width: heart.size,
-                  height: heart.size,
-                  animation: `loveFlow${heart.direction === 'right' ? 'Right' : 'Left'} ${heart.duration}s ${heart.delay}s ease-in-out infinite`,
-                  WebkitAnimation: `loveFlow${heart.direction === 'right' ? 'Right' : 'Left'} ${heart.duration}s ${heart.delay}s ease-in-out infinite`,
-                }}
-              >
-                <Heart
-                  className="h-full w-full fill-rose-400 text-rose-400 drop-shadow-[0_2px_3px_rgba(244,63,94,0.25)]"
-                />
-              </span>
-            ))}
+          <div className="flex items-center justify-between gap-4 sm:gap-6">
+            <CoupleNameHeading userName={userName} partnerName={partnerName} partnerMood={partnerMood} />
+            <CoupleAvatarStack
+              userName={userName}
+              userAvatar={userAvatar}
+              userOnline={userOnline}
+              partnerName={partnerName}
+              partnerAvatar={partnerAvatar}
+              partnerOnline={partnerOnline}
+            />
           </div>
 
-          <div className="relative z-10 grid grid-cols-[minmax(0,1fr)_5.5rem_minmax(0,1fr)] items-start gap-2 px-3 text-center sm:grid-cols-[minmax(0,1fr)_6.5rem_minmax(0,1fr)]">
-            <div className="flex min-w-0 flex-col items-center">
-              <div className="relative">
-                {userLocation?.location && <span className="absolute -inset-1 rounded-full border-2 border-primary-300/50 [animation:pulseRing_2s_ease-out_infinite]" />}
-                <Avatar className="relative h-18 w-18 border-4 border-white shadow-xl ring-2 ring-primary-200 sm:h-20 sm:w-20">
-                  <AvatarImage src={userAvatar} alt={userName} />
-                  <AvatarFallback className="bg-gradient-to-br from-primary-400 to-primary-600 text-lg font-semibold text-white">{userInitials}</AvatarFallback>
-                </Avatar>
-                <PresenceBadge online={userOnline} label={`${userName}: ${userOnline ? t.dashboard.online : t.dashboard.offline}`} />
-              </div>
-              <p className="mt-2 max-w-full truncate text-sm font-semibold text-foreground">{userName}</p>
-              <p className="mt-0.5 flex max-w-full items-center justify-center gap-1 truncate text-[11px] font-medium text-muted-foreground">
-                <MapPin className="h-3 w-3 shrink-0 text-primary-500" />
-                {userLocation?.location?.city || <span className="font-normal italic">{t.dashboard.locationNotSet}</span>}
-              </p>
-            </div>
+          {summaryContent ? summaryContent(distance) : embeddedDistanceLabel && (
+            <p className="mt-5 text-sm text-muted-foreground">{embeddedDistanceLabel}</p>
+          )}
 
-            <div className="flex min-h-28 flex-col items-center justify-start pt-1">
-              {centerContent}
-              <AnimatePresence>
-                {embeddedDistanceLabel && (
-                  <motion.div
-                    initial={{ scale: 0.75, opacity: 0, y: 4 }}
-                    animate={{ scale: 1, opacity: 1, y: 0 }}
-                    exit={{ scale: 0.75, opacity: 0 }}
-                    className="mt-1 flex items-center gap-1 whitespace-nowrap rounded-full border border-primary-100 bg-white/90 px-2.5 py-1 shadow-[0_4px_14px_rgba(139,92,246,0.14)] backdrop-blur"
-                  >
-                    <Heart className="h-3 w-3 fill-primary-500 text-primary-500" />
-                    <span className="text-xs font-bold text-foreground">{embeddedDistanceLabel}</span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            <div className="flex min-w-0 flex-col items-center">
-              <div className="relative">
-                {partnerLocation?.location && <span className="absolute -inset-1 rounded-full border-2 border-sky-300/50 [animation:pulseRing_2s_ease-out_infinite_0.5s]" />}
-                <Avatar className="relative h-18 w-18 border-4 border-white shadow-xl ring-2 ring-sky-200 sm:h-20 sm:w-20">
-                  <AvatarImage src={partnerAvatar} alt={partnerName} />
-                  <AvatarFallback className="bg-gradient-to-br from-sky-400 to-sky-600 text-lg font-semibold text-white">{partnerInitials}</AvatarFallback>
-                </Avatar>
-                <PresenceBadge online={partnerOnline} label={`${partnerName}: ${partnerOnline ? t.dashboard.online : t.dashboard.offline}`} />
-              </div>
-              <p className="mt-2 max-w-full truncate text-sm font-semibold text-foreground">{partnerName}</p>
-              <p className="mt-0.5 flex max-w-full items-center justify-center gap-1 truncate text-[11px] font-medium text-muted-foreground">
-                <MapPin className="h-3 w-3 shrink-0 text-sky-500" />
-                {partnerLocation?.location?.city || <span className="font-normal italic">{t.dashboard.locationNotSet}</span>}
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-1 flex items-center justify-center" aria-label={embeddedDistanceLabel ? `${embeddedDistanceLabel} between you` : 'Couple distance unavailable'}>
+          {(!userLocation?.location || distance === null) && <div className="mt-3 flex items-center">
             {!userLocation?.location ? (
               <Button size="sm" variant="outline" onClick={() => setShowSettings(true)} className="h-8 rounded-xl px-4 text-xs font-semibold">
-                <MapPin className="mr-1.5 h-3.5 w-3.5 text-primary-500" /> {t.dashboard.shareLocation}
+                <MapPin className="mr-1.5 h-3.5 w-3.5 text-rose-500" /> {t.dashboard.shareLocation}
               </Button>
             ) : distance === null ? (
               <span className="text-[10px] italic text-muted-foreground">{t.dashboard.waitingForPartnerLocation}</span>
             ) : null}
-          </div>
+          </div>}
         </div>
       ) : (
       <div
@@ -563,7 +463,7 @@ export function DistanceConnector({
                     {userInitials}
                   </AvatarFallback>
                 </Avatar>
-                <PresenceBadge online={userOnline} label={`${userName}: ${userOnline ? t.dashboard.online : t.dashboard.offline}`} />
+                <PresenceDot online={userOnline} label={`${userName}: ${userOnline ? t.dashboard.online : t.dashboard.offline}`} />
               </div>
 
               {/* Bezier arc SVG canvas */}
@@ -641,7 +541,7 @@ export function DistanceConnector({
                     {partnerInitials}
                   </AvatarFallback>
                 </Avatar>
-                <PresenceBadge online={partnerOnline} label={`${partnerName}: ${partnerOnline ? t.dashboard.online : t.dashboard.offline}`} />
+                <PresenceDot online={partnerOnline} label={`${partnerName}: ${partnerOnline ? t.dashboard.online : t.dashboard.offline}`} />
               </div>
             </div>
 
@@ -806,19 +706,5 @@ export function DistanceConnector({
         </DialogContent>
       </Dialog>
     </>
-  );
-}
-
-function PresenceBadge({ online, label }: { online: boolean; label: string }) {
-  const Icon = online ? Wifi : WifiOff;
-  return (
-    <span
-      role="status"
-      aria-label={label}
-      title={label}
-      className={`absolute -bottom-0.5 -right-0.5 z-20 flex h-6 w-6 items-center justify-center rounded-full border-[3px] border-white shadow-sm transition-colors duration-300 ${online ? "bg-emerald-500" : "bg-slate-400"}`}
-    >
-      <Icon className="h-2.5 w-2.5 text-white" strokeWidth={3} />
-    </span>
   );
 }

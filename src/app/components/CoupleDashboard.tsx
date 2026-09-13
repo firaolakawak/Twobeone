@@ -1,14 +1,12 @@
 import { useLanguage } from '../contexts/LanguageContext';
-import { useState, useEffect, useMemo, memo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Progress } from './ui/progress';
 import { Separator } from './ui/separator';
 import { ScrollArea } from './ui/scroll-area';
 import {
-  Heart,
   BookOpen,
   PenLine,
   MessageCircleHeart,
@@ -27,7 +25,6 @@ import {
   BookHeart,
   HandHeart,
   Brain,
-  ChevronDown,
   RefreshCw,
   Hammer,
 } from 'lucide-react';
@@ -37,13 +34,15 @@ import { LearningModulesCard } from './LearningModulesCard';
 import { PushNotificationSetup } from './PushNotificationSetup';
 import { DistanceConnector } from './DistanceConnector';
 import { DailyMoodCheckIn } from './DailyMoodCheckIn';
-import { CoupleMoodHeading } from './CoupleMoodHeading';
+import { CoupleNameHeading, PartnerMoodEmoji } from './CoupleMoodHeading';
+import { RelationshipSummary, RelationshipGrowth } from './RelationshipJourney';
+import { CoupleAvatarStack } from './CoupleAvatarStack';
 import { useDailyMoods } from '../hooks/useDailyMoods';
 import { projectId } from '../utils/supabase/info';
 import { sendNotification } from '../utils/notifications';
 import { toast } from 'sonner';
 import type { User, JournalEntry, PrayerRequest, Progress as ProgressType, QuestionResponse } from '../types';
-import { moods as moodsApi, milestones as milestonesApi, questions as questionsApi } from '../utils/api';
+import { moods as moodsApi, questions as questionsApi } from '../utils/api';
 import { fetchAmharicChapter, getAmharicBookName } from '../utils/amharicBibleApi';
 import { ChampionsCard } from './ChampionsCard';
 import { coupleCalendarCopy } from '../data/couple-calendar';
@@ -103,44 +102,7 @@ export function pickRandomHomeSpotlight(
   return choices[Math.floor(random() * choices.length)] || 'devotion';
 }
 
-export const RELATIONSHIP_STAGE_START_DAYS = [0, 90, 180, 250, 360] as const;
-
-export function getElapsedRelationshipTime(start: string | Date | undefined, now = Date.now()) {
-  if (!start) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
-  const startTime = start instanceof Date ? start.getTime() : new Date(start).getTime();
-  if (!Number.isFinite(startTime)) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
-
-  const diffMs = Math.max(0, now - startTime);
-  return {
-    days: Math.floor(diffMs / 86_400_000),
-    hours: Math.floor((diffMs % 86_400_000) / 3_600_000),
-    minutes: Math.floor((diffMs % 3_600_000) / 60_000),
-    seconds: Math.floor((diffMs % 60_000) / 1_000),
-  };
-}
-
-export function getRelationshipStageProgress(daysTogetherInput: number) {
-  const daysTogether = Number.isFinite(daysTogetherInput)
-    ? Math.max(0, Math.floor(daysTogetherInput))
-    : 0;
-  let stageIndex = 0;
-
-  for (let index = RELATIONSHIP_STAGE_START_DAYS.length - 1; index >= 0; index--) {
-    if (daysTogether >= RELATIONSHIP_STAGE_START_DAYS[index]) {
-      stageIndex = index;
-      break;
-    }
-  }
-
-  const stageStart = RELATIONSHIP_STAGE_START_DAYS[stageIndex];
-  const nextStageStart = RELATIONSHIP_STAGE_START_DAYS[stageIndex + 1];
-  const daysLeft = nextStageStart === undefined ? null : Math.max(0, nextStageStart - daysTogether);
-  const progressPercent = nextStageStart === undefined
-    ? 100
-    : Math.min(100, Math.max(0, Math.floor(((daysTogether - stageStart) / (nextStageStart - stageStart)) * 100)));
-
-  return { daysTogether, stageIndex, daysLeft, progressPercent };
-}
+export { RELATIONSHIP_STAGE_START_DAYS, getElapsedRelationshipTime, getRelationshipStageProgress } from '../utils/relationshipJourney';
 
 interface CoupleData {
   relationshipStartDate?: string;
@@ -157,14 +119,6 @@ interface BibleVerse {
   amharicReference?: string;
 }
 
-interface Milestone {
-  id: string;
-  title: string;
-  date: string;
-  description: string;
-  icon: string;
-}
-
 interface Notification {
   id: string;
   userId: string;
@@ -175,58 +129,6 @@ interface Notification {
   read: boolean;
   createdAt: string;
 }
-
-// Isolated timer component — owns its own 1-second interval so the parent never re-renders from it
-const TimerDisplay = memo(function TimerDisplay({
-  profile,
-  coupleData,
-  partner,
-}: {
-  profile: any;
-  coupleData: any;
-  partner: any;
-}) {
-  const { t } = useLanguage();
-  function calc() {
-    const start = profile?.relationshipStart || coupleData?.relationshipStartDate || profile?.createdAt;
-    return getElapsedRelationshipTime(start);
-  }
-
-  const [time, setTime] = useState(calc);
-  useEffect(() => {
-    setTime(calc());
-    const id = setInterval(() => setTime(calc()), 1000);
-    return () => clearInterval(id);
-  }, [profile?.relationshipStart, coupleData?.relationshipStartDate, profile?.createdAt]);
-
-  if (!partner || time.days === 0) return null;
-
-  return (
-    <div className="day-counter" style={{ background: 'rgba(255,255,255,0.92)', padding: 'var(--spacing-2) var(--spacing-3)', borderRadius: 'var(--radius-lg)', boxShadow: '0 10px 30px -12px rgba(190,24,93,0.3)', border: '1px solid var(--primary-200)', backdropFilter: 'blur(12px)' }}>
-      <style>{`
-        @keyframes dayCounterRise {
-          0% { transform: translateY(5px) scale(.92); opacity: .35; }
-          55% { transform: translateY(-2px) scale(1.08); opacity: 1; text-shadow: 0 0 18px rgba(244,63,94,.3); }
-          100% { transform: translateY(0) scale(1); opacity: 1; }
-        }
-        .day-counter-value { animation: dayCounterRise .65s cubic-bezier(.2,.8,.2,1); }
-        @media (prefers-reduced-motion: reduce) { .day-counter-value { animation: none; } }
-      `}</style>
-      <div style={{ textAlign: 'center' }}>
-        <p key={time.days} className="day-counter-value" style={{ fontSize: 'var(--text-xl)', lineHeight: 1, fontWeight: 'var(--font-weight-bold)', color: 'var(--primary-600)', margin: 0, fontVariantNumeric: 'tabular-nums' }}>
-          {time.days}
-        </p>
-        <p style={{ fontSize: 'var(--text-caption-small)', color: 'var(--primary-500)', margin: 0 }}>
-          {time.days === 1 ? t.time.day : t.time.days}
-        </p>
-        <div style={{ height: '1px', background: 'var(--border)', margin: 'var(--spacing-1) 0' }} />
-        <p style={{ fontSize: 'var(--text-caption-small)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--primary-600)', margin: 0 }}>
-          {String(time.hours).padStart(2, '0')}:{String(time.minutes).padStart(2, '0')}:{String(time.seconds).padStart(2, '0')}
-        </p>
-      </div>
-    </div>
-  );
-});
 
 export function CoupleDashboard({
   profile,
@@ -248,25 +150,15 @@ export function CoupleDashboard({
 }: CoupleDashboardProps) {
   const { t, language } = useLanguage();
   const calendarCopy = coupleCalendarCopy[language];
-  // timeTogether state moved into TimerDisplay to prevent 60 re-renders/min on this component
 
-  const [showLocationSettings, setShowLocationSettings] = useState(false);
-  const [userLocation, setUserLocation] = useState<any>(null);
-  const [partnerLocation, setPartnerLocation] = useState<any>(null);
-  const [distance, setDistance] = useState<number | null>(null);
-  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
-  const [manualCity, setManualCity] = useState('');
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [coupleData, setCoupleData] = useState<CoupleData>({});
   const [dailyVerse, setDailyVerse] = useState<BibleVerse | null>(null);
   const [isLoadingVerse, setIsLoadingVerse] = useState(true);
   const [isBibleReaderOpen, setIsBibleReaderOpen] = useState(false);
   const [verseLanguage, setVerseLanguage] = useState<'en' | 'am'>(() => language === 'en' ? 'en' : 'am');
-  const [milestones, setMilestones] = useState<Milestone[]>([]);
   const { userMood, partnerMood, loaded: moodsLoaded, saveMood } = useDailyMoods(partner ? profile?.id : undefined, partner?.id);
   const [totalQuestionsCount, setTotalQuestionsCount] = useState(0);
-  const [stageExpanded, setStageExpanded] = useState(false);
-  const [countdownExpanded, setCountdownExpanded] = useState(false);
   const [spotlightQuestions, setSpotlightQuestions] = useState<DashboardQuestion[]>([]);
   const [spotlightKind, setSpotlightKind] = useState<HomeSpotlightKind>(() => pickRandomHomeSpotlight());
   const [spotlightShuffle, setSpotlightShuffle] = useState(0);
@@ -276,12 +168,9 @@ export function CoupleDashboard({
     setVerseLanguage(language === 'en' ? 'en' : 'am');
   }, [language]);
 
-  const userInitials = profile?.name?.split(' ').map(n => n[0]).join('') || '?';
-  const partnerInitials = partner?.name?.split(' ').map(n => n[0]).join('') || '?';
+  const relationshipStart = profile?.relationshipStart || coupleData.relationshipStartDate || profile?.createdAt;
   
   const unreadCount = notifications.filter(n => !n.read).length;
-
-  // 1-second timer is handled by TimerDisplay — removed from here
 
   // Fetch total questions count once on mount — uses lightweight /questions/count endpoint
   useEffect(() => {
@@ -454,42 +343,6 @@ export function CoupleDashboard({
     fetchDailyVerse();
   }, []);
 
-  useEffect(() => {
-    // Fetch milestones from backend
-    const fetchMilestones = async () => {
-      try {
-        const { milestones: fetchedMilestones } = await milestonesApi.list();
-        setMilestones(fetchedMilestones.map((m: any) => ({
-          id: m.id,
-          title: m.title,
-          date: m.date || m.createdAt,
-          description: m.description || '',
-          icon: 'heart'
-        })));
-      } catch (error: any) {
-        const isNetworkErr = error?.message?.includes('Unable to connect') ||
-          error?.message?.includes('Failed to fetch') ||
-          error?.message?.includes('Unauthorized') ||
-          error?.message?.includes('timeout');
-        if (!isNetworkErr) {
-          console.error('Error fetching milestones:', error);
-        }
-      }
-    };
-
-    if (profile?.id) {
-      // Defer 1s so it doesn't compete with the critical first render
-      const t = setTimeout(() => {
-        fetchMilestones();
-        // Polling is deliberately infrequent; writes already update the local UI.
-      }, 1000);
-      const interval = setInterval(() => {
-        if (document.visibilityState === 'visible') void fetchMilestones();
-      }, 5 * 60_000);
-      return () => { clearTimeout(t); clearInterval(interval); };
-    }
-  }, [profile?.id, partner?.id]);
-
   // Auto-check for weekly mood report (only if user has a partner)
   useEffect(() => {
     /** Returns "YYYY-Www" ISO week string so the key is unambiguous. */
@@ -658,392 +511,82 @@ export function CoupleDashboard({
         }} />
       </div>
 
-      {/* Couple Header */}
-      <Card className="overflow-hidden relative border-primary-100/80 bg-white/95 shadow-[0_24px_70px_-32px_rgba(190,24,93,0.42),0_8px_24px_-16px_rgba(15,23,42,0.2)]" style={{ zIndex: 1, borderRadius: '1.75rem' }}>
-        {/* Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-br from-rose-50 via-white to-violet-50 opacity-90" />
-        <div className="pointer-events-none absolute -left-20 -top-28 h-64 w-64 rounded-full bg-rose-200/25 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-32 -right-20 h-64 w-64 rounded-full bg-violet-200/25 blur-3xl" />
+      {/* Couple profile and shared journey */}
+      <Card className="relative overflow-hidden border-rose-100/80 dark:border-rose-900/30 bg-card shadow-[0_24px_70px_-32px_rgba(190,24,93,0.32),0_8px_24px_-16px_rgba(15,23,42,0.2)]" style={{ zIndex: 1, borderRadius: '1.75rem' }} data-couple-journey>
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-rose-50/70 via-card to-violet-50/40 dark:from-rose-950/20 dark:to-violet-950/20" />
+        <div className="pointer-events-none absolute -left-20 -top-28 h-64 w-64 rounded-full bg-rose-200/20 dark:bg-rose-500/5 blur-3xl" />
         {coupleData.couplePicture && (
-          <div className="absolute inset-0 overflow-hidden">
-            <img 
-              src={coupleData.couplePicture} 
-              alt="Couple" 
-              className="w-full h-full object-cover opacity-10 blur-sm"
-            />
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+            <img src={coupleData.couplePicture} alt="" className="h-full w-full object-cover opacity-10 blur-sm" />
           </div>
         )}
 
-        <CardContent className="relative px-5 pb-6 pt-6 sm:px-7">
-          <p className="mb-5 text-center text-[10px] font-bold uppercase tracking-[0.22em] text-primary-500/80">{t.dashboard.sharedJourney}</p>
-
-          {/* Unconnected profile fallback; connected couples render through the unified distance profile below */}
-          {(!partner || !profile?.id || !accessToken) && (
-          <div className="flex items-center justify-center gap-6 mb-4">
-            {/* User Avatar */}
-            <div className="flex flex-col items-center">
-              <Avatar className="w-20 h-20 border-4 border-white shadow-xl ring-2 ring-primary-200">
-                <AvatarImage src={profile?.profilePicture} alt={profile?.name} />
-                <AvatarFallback className="bg-gradient-to-br from-primary-400 to-primary-500 text-white text-xl">
-                  {userInitials}
-                </AvatarFallback>
-              </Avatar>
-              <p className="text-sm font-medium mt-2">{profile?.name || 'You'}</p>
-            </div>
-
-            {/* Heart Connector */}
-            <div className="relative">
-              <div className="flex flex-col items-center">
-                <Heart className={`w-10 h-10 ${partner ? 'text-primary-500 fill-primary-500 animate-pulse' : 'text-muted-foreground'} transition-all mb-2`} />
-                <TimerDisplay profile={profile} coupleData={coupleData} partner={partner} />
-              </div>
-            </div>
-
-            {/* Partner Avatar */}
-            <div className="flex flex-col items-center">
-              <Avatar className="w-20 h-20 border-4 border-white shadow-xl ring-2 ring-sky-200">
-                {partner ? (
-                  <>
-                    <AvatarImage src={partner.profilePicture} alt={partner.name} />
-                    <AvatarFallback className="bg-gradient-to-br from-sky-500 to-sky-500 text-white text-xl">
-                      {partnerInitials}
-                    </AvatarFallback>
-                  </>
-                ) : (
-                  <AvatarFallback className="bg-muted text-muted-foreground">
-                    <Users className="w-8 h-8" />
-                  </AvatarFallback>
-                )}
-              </Avatar>
-              <p className="text-sm font-medium mt-2">{partner?.name || 'Partner'}</p>
-            </div>
-          </div>
-          )}
-
-          {/* Location and distance now live inside the couple profile card */}
-          {partner && profile?.id && accessToken && (
+        <CardContent className="relative px-4 pb-5 pt-6 sm:px-6 sm:pb-6">
+          {partner && profile?.id && accessToken ? (
             <DistanceConnector
               embedded
               userId={profile.id}
-              userName={profile.name || 'You'}
+              userName={profile.name || t.mood.you}
               userAvatar={profile.profilePicture}
               partnerId={partner.id}
-              partnerName={partner.name || 'Partner'}
+              partnerName={partner.name || t.mood.partner}
               partnerAvatar={partner.profilePicture}
               accessToken={accessToken}
               userOnline={userOnline}
               partnerOnline={partnerOnline}
-              centerContent={(
-                <div className="flex flex-col items-center">
-                  <Heart className="mb-2 h-10 w-10 animate-pulse fill-primary-500 text-primary-500" />
-                  <TimerDisplay profile={profile} coupleData={coupleData} partner={partner} />
-                </div>
-              )}
+              partnerMood={<PartnerMoodEmoji partnerName={partner.name || t.mood.partner} partnerId={partner.id} partnerMood={partnerMood} />}
+              summaryContent={(distanceKm) => <RelationshipSummary startDate={relationshipStart} distanceKm={distanceKm} />}
             />
+          ) : (
+            <>
+              <div className="flex items-center justify-between gap-4 sm:gap-6">
+                <CoupleNameHeading
+                  userName={profile?.name || t.mood.you}
+                  partnerName={partner?.name || t.mood.partner}
+                  partnerMood={partner && <PartnerMoodEmoji partnerName={partner.name || t.mood.partner} partnerId={partner.id} partnerMood={partnerMood} />}
+                />
+                <CoupleAvatarStack
+                  userName={profile?.name || t.mood.you}
+                  userAvatar={profile?.profilePicture}
+                  userOnline={userOnline}
+                  partnerName={partner?.name}
+                  partnerAvatar={partner?.profilePicture}
+                  partnerOnline={partnerOnline}
+                />
+              </div>
+              {partner && <RelationshipSummary startDate={relationshipStart} />}
+            </>
           )}
 
-          {/* Status Message */}
           {partner ? (
-            <div className="mt-5 text-center space-y-1.5">
-              <CoupleMoodHeading
-                userName={profile?.name || t.mood.you}
-                partnerName={partner.name || t.mood.partner}
-                partnerId={partner.id}
-                partnerMood={partnerMood}
-              />
-              <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
-                <Sparkles className="w-4 h-4 text-warning-500" />
-                {t.dashboard.growingTogetherInFaith}
-              </p>
+            <>
               {profile?.id && (
-                <div className="flex justify-center pt-2">
-                  <DailyMoodCheckIn
-                    userId={profile.id}
-                    userName={profile.name || t.mood.you}
-                    partnerName={partner.name || t.mood.partner}
-                    mood={userMood?.mood || null}
-                    loaded={moodsLoaded}
-                    onSave={async (mood) => {
-                      await saveMood(mood);
-                      toast.success(t.mood.moodSaved);
-                    }}
-                    onViewAnalytics={() => onScreenNavigate?.('mood-analytics')}
-                  />
-                </div>
+                <DailyMoodCheckIn
+                  showControls={false}
+                  userId={profile.id}
+                  userName={profile.name || t.mood.you}
+                  partnerName={partner.name || t.mood.partner}
+                  mood={userMood?.mood || null}
+                  loaded={moodsLoaded}
+                  onSave={async (mood) => {
+                    await saveMood(mood);
+                    toast.success(t.mood.moodSaved);
+                  }}
+                />
               )}
-            </div>
+              <div className="mt-4">
+                <RelationshipGrowth startDate={relationshipStart} />
+              </div>
+            </>
           ) : (
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground mb-3">{t.dashboard.connectWithPartner} to begin your journey together</p>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => onNavigate?.('profile')}
-                className="bg-card/80 backdrop-blur-sm"
-              >
-                <Users className="w-4 h-4 mr-2" />
+            <div className="mt-5 text-center">
+              <p className="mb-3 text-sm text-muted-foreground">{t.dashboard.connectWithPartner} to begin your journey together</p>
+              <Button size="sm" variant="outline" onClick={() => onNavigate?.('profile')} className="bg-card/80 backdrop-blur-sm">
+                <Users className="mr-2 h-4 w-4" />
                 Add Partner
               </Button>
             </div>
           )}
-
-          {/* Readiness Stage Badge — only shown when connected with a partner */}
-          {partner && (() => {
-            const STAGES = [
-              { label: t.dashboard.stages.seed,       emoji: '🌱', minDays: RELATIONSHIP_STAGE_START_DAYS[0] },
-              { label: t.dashboard.stages.growth,     emoji: '🌿', minDays: RELATIONSHIP_STAGE_START_DAYS[1] },
-              { label: t.dashboard.stages.unity,      emoji: '💞', minDays: RELATIONSHIP_STAGE_START_DAYS[2] },
-              { label: t.dashboard.stages.commitment, emoji: '🤝', minDays: RELATIONSHIP_STAGE_START_DAYS[3] },
-              { label: t.dashboard.stages.covenant,   emoji: '👑', minDays: RELATIONSHIP_STAGE_START_DAYS[4] },
-            ];
-            const startStr = profile?.relationshipStart || coupleData?.relationshipStartDate || profile?.createdAt;
-            const elapsed = getElapsedRelationshipTime(startStr);
-            const { daysTogether, stageIndex: idx, daysLeft, progressPercent: pct } = getRelationshipStageProgress(elapsed.days);
-            const stage = STAGES[idx];
-            const accent =
-              idx === 4 ? 'var(--success-600, #16a34a)' :
-              idx === 3 ? 'var(--primary)' :
-              idx === 2 ? 'var(--info-600, #0284c7)' :
-              idx === 1 ? 'var(--warning-600, #d97706)' :
-                          'var(--muted-foreground)';
-            const nextStage = STAGES[idx + 1];
-            return (
-              <div style={{
-                margin: '14px 0 0',
-                borderRadius: 'var(--radius-lg, 14px)',
-                border: `1.5px solid ${accent}`,
-                background: 'var(--background)',
-                overflow: 'hidden',
-              }}>
-                {/* Tap-to-toggle header — always visible */}
-                <button
-                  onClick={() => setStageExpanded(v => !v)}
-                  style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    width: '100%', padding: '10px 14px',
-                    background: 'transparent', border: 'none', cursor: 'pointer',
-                    fontFamily: 'inherit',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 20, lineHeight: 1 }}>{stage.emoji}</span>
-                    <div style={{ textAlign: 'left' }}>
-                      <p style={{ margin: 0, fontSize: 'var(--text-caption)', fontWeight: 'var(--font-weight-bold)', color: 'var(--foreground)', lineHeight: 1.2 }}>
-                        {stage.label} {t.dashboard.stage}
-                      </p>
-                      <p style={{ margin: 0, fontSize: 'var(--text-label)', color: 'var(--muted-foreground)' }}>
-                        {daysTogether} {t.dashboard.daysTogether.toLocaleLowerCase()}
-                      </p>
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    {/* Mini progress pill — visible in collapsed state */}
-                    {!stageExpanded && (
-                      <div style={{
-                        display: 'flex', alignItems: 'center', gap: 5,
-                        padding: '3px 8px', borderRadius: 'var(--radius-full)',
-                        background: `color-mix(in srgb, ${accent} 12%, transparent)`,
-                      }}>
-                        <div style={{ width: 48, height: 3, borderRadius: 999, background: 'var(--border)', overflow: 'hidden' }}>
-                          <div style={{ height: '100%', width: `${pct}%`, background: accent, borderRadius: 999 }} />
-                        </div>
-                        <span style={{ fontSize: 'var(--text-label)', fontWeight: 'var(--font-weight-semibold)', color: accent }}>
-                          {pct}%
-                        </span>
-                      </div>
-                    )}
-                    {nextStage && !stageExpanded && (
-                      <span style={{ fontSize: 'var(--text-label)', color: 'var(--muted-foreground)' }}>
-                        {daysLeft} {t.dashboard.daysLeft}
-                      </span>
-                    )}
-                    <ChevronDown
-                      style={{
-                        width: 15, height: 15, color: 'var(--muted-foreground)',
-                        transform: stageExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                        transition: 'transform 0.22s ease',
-                        flexShrink: 0,
-                      }}
-                    />
-                  </div>
-                </button>
-
-                {/* Expandable body */}
-                <div style={{
-                  overflow: 'hidden',
-                  maxHeight: stageExpanded ? 160 : 0,
-                  transition: 'max-height 0.28s cubic-bezier(0.4,0,0.2,1)',
-                }}>
-                  <div style={{ padding: '0 14px 12px' }}>
-                    {/* Progress bar */}
-                    <div style={{ height: 5, borderRadius: 999, background: 'var(--border)', overflow: 'hidden', marginBottom: 12 }}>
-                      <div style={{ height: '100%', width: `${pct}%`, background: accent, borderRadius: 999, transition: 'width 1s ease' }} />
-                    </div>
-                    {/* Next stage label */}
-                    {nextStage && (
-                      <p style={{ margin: '0 0 10px', fontSize: 'var(--text-label)', color: 'var(--muted-foreground)', textAlign: 'right' }}>
-                        {nextStage.emoji} {t.dashboard.nextStage}: <strong style={{ color: accent }}>{nextStage.label}</strong> — {daysLeft} {t.time.days}
-                      </p>
-                    )}
-                    {/* 5 stage nodes */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      {STAGES.map((s, i) => {
-                        const done = i < idx;
-                        const active = i === idx;
-                        return (
-                          <div key={s.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: 1 }}>
-                            <div style={{
-                              width: active ? 30 : 22, height: active ? 30 : 22,
-                              borderRadius: '50%',
-                              fontSize: active ? 15 : 11,
-                              display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              background: active ? accent : done ? 'var(--muted-foreground)' : 'var(--muted)',
-                              opacity: i > idx ? 0.35 : 1,
-                              transition: 'all 0.3s ease',
-                              boxShadow: active ? `0 0 0 3px color-mix(in srgb, ${accent} 25%, transparent)` : 'none',
-                            }}>
-                              {s.emoji}
-                            </div>
-                            <span style={{
-                              fontSize: 9, fontWeight: active ? 700 : 500,
-                              color: active ? accent : i < idx ? 'var(--foreground)' : 'var(--muted-foreground)',
-                              whiteSpace: 'nowrap',
-                            }}>{s.label}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
-
-          {/* Upcoming Event Countdown */}
-          {(() => {
-            const now = new Date();
-            const upcoming = milestones
-              .filter(m => m.date && new Date(m.date) > now)
-              .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
-            if (!upcoming) return null;
-            const diff = new Date(upcoming.date).getTime() - now.getTime();
-            const days = Math.floor(diff / 86_400_000);
-            const hours = Math.floor((diff % 86_400_000) / 3_600_000);
-            const mins = Math.floor((diff % 3_600_000) / 60_000);
-            return (
-              <div
-                style={{
-                  marginTop: 'var(--spacing-4)',
-                  marginLeft: 'auto',
-                  marginRight: 'auto',
-                  maxWidth: 320,
-                  borderRadius: 'var(--radius-xl)',
-                  border: '1.5px solid var(--primary-200)',
-                  background: 'var(--primary-50)',
-                  overflow: 'hidden',
-                }}
-              >
-                {/* Tap-to-toggle header — always visible */}
-                <button
-                  onClick={() => setCountdownExpanded(v => !v)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    width: '100%',
-                    padding: 'var(--spacing-3) var(--spacing-4)',
-                    background: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
-                    
-                    <span style={{
-                      fontSize: 'var(--text-caption)',
-                      fontWeight: 'var(--font-weight-semibold)',
-                      color: 'var(--primary-700)',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.06em',
-                    }}>
-                      {upcoming.title}
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
-                    {/* Compact pill shown when collapsed */}
-                    {!countdownExpanded && (
-                      <span style={{
-                        fontSize: 'var(--text-label)',
-                        fontWeight: 'var(--font-weight-semibold)',
-                        color: 'var(--primary-600)',
-                        background: 'color-mix(in srgb, var(--primary-600) 10%, transparent)',
-                        padding: '2px 8px',
-                        borderRadius: 'var(--radius-full)',
-                        fontVariantNumeric: 'tabular-nums',
-                      }}>
-                        {days}d {String(hours).padStart(2, '0')}h
-                      </span>
-                    )}
-                    <ChevronDown style={{
-                      width: 15,
-                      height: 15,
-                      color: 'var(--primary-500)',
-                      transform: countdownExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                      transition: 'transform 0.22s ease',
-                      flexShrink: 0,
-                    }} />
-                  </div>
-                </button>
-
-                {/* Expandable countdown body */}
-                <div style={{
-                  overflow: 'hidden',
-                  maxHeight: countdownExpanded ? 120 : 0,
-                  transition: 'max-height 0.28s cubic-bezier(0.4,0,0.2,1)',
-                }}>
-                  <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: 'var(--spacing-1)',
-                    padding: '0 var(--spacing-4) var(--spacing-3)',
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--spacing-3)' }}>
-                      {[
-                        { val: days,  label: 'days' },
-                        { val: hours, label: 'hrs'  },
-                        { val: mins,  label: 'min'  },
-                      ].map(({ val, label }) => (
-                        <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                          <span style={{
-                            fontSize: 'var(--text-2xl)',
-                            fontWeight: 'var(--font-weight-bold)',
-                            color: 'var(--primary-700)',
-                            fontVariantNumeric: 'tabular-nums',
-                            lineHeight: 1,
-                          }}>
-                            {String(val).padStart(2, '0')}
-                          </span>
-                          <span style={{
-                            fontSize: 10,
-                            color: 'var(--muted-foreground)',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.08em',
-                          }}>
-                            {label}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                    <p style={{ margin: 0, fontSize: 'var(--text-label)', color: 'var(--muted-foreground)' }}>
-                      {new Date(upcoming.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
         </CardContent>
       </Card>
 

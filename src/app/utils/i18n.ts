@@ -171,6 +171,7 @@ export interface Translations {
     title: string;
     growingTogetherInFaith: string;
     daysTogether: string;
+    distanceApart: string;
     devotionalStreak: string;
     journalEntries: string;
     prayers: string;
@@ -685,6 +686,7 @@ export const translations: Record<Language, Translations> = {
       title: 'Dashboard',
       growingTogetherInFaith: 'Growing together in faith',
       daysTogether: 'Days Together',
+      distanceApart: 'apart',
       devotionalStreak: 'Devotional Streak',
       journalEntries: 'Journal Entries',
       prayers: 'Prayers',
@@ -1217,6 +1219,7 @@ export const translations: Record<Language, Translations> = {
       title: 'መነሻ ገጽ',
       growingTogetherInFaith: 'በእምነት አብረን እናድጋለን',
       daysTogether: 'አብረን የቆይንበት ቀናት',
+      distanceApart: 'ርቀት',
       devotionalStreak: 'የቀጣይነት ጥናት',
       journalEntries: 'የማስታወሻ ግቤቶች',
       prayers: 'ጸሎቶች',
@@ -1739,6 +1742,7 @@ export const translations: Record<Language, Translations> = {
       title: 'Fuula Jalqabaa',
       growingTogetherInFaith: 'Amantiin waliin guddachaa jirra',
       daysTogether: 'Guyyaa Waliin',
+      distanceApart: 'wal irraa',
       devotionalStreak: 'Taateen Amantii',
       journalEntries: 'Yaadannoo',
       prayers: 'Kadhannaa',
