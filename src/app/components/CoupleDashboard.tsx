@@ -649,69 +649,69 @@ export function CoupleDashboard({
 
       {/* Quick Stats Grid */}
       <div className="dashboard-stats">
-      <div className="dashboard-stats__grid">
-        {[
-          {
-            id: 'devotionals',
-            label: tr("Devotionals Read"),
-            value: devotionalCompletedCount,
-            sub: tr('{count} day streak', { count: devotionalStreakValue }),
-            icon: Calendar,
-            onClick: () => onNavigate?.('devotions'),
-            completed: devotionalStreakValue,
-            total: 30,
-          },
-          {
-            id: 'journal',
-            label: t.dashboard.journalEntries,
-            value: sharedJournalEntries,
-            sub: t.dashboard.shared,
-            icon: BookHeart,
-            onClick: () => onNavigate?.('journal'),
-            completed: sharedJournalEntries,
-            total: 50,
-          },
-          {
-            id: 'prayer',
-            label: t.dashboard.prayers,
-            value: `${answeredPrayers}/${totalPrayers}`,
-            sub: t.dashboard.answered,
-            icon: HandHeart,
-            onClick: () => onNavigate?.('prayer'),
-            completed: answeredPrayers,
-            total: totalPrayers,
-          },
-          {
-            id: 'questions',
-            label: t.dashboard.questions,
-            value: `${questionsAnswered}/${totalQuestionsCount}`,
-            sub: t.dashboard.answered,
-            icon: MessageCircleHeart,
-            onClick: () => onScreenNavigate?.('category-selection'),
-            completed: questionsAnswered,
-            total: totalQuestionsCount,
-          },
-        ].map(({ id, label, value, sub, icon: Icon, onClick, completed, total }) => (
-          <button
-            key={id}
-            type="button"
-            data-stat={id}
-            onClick={onClick}
-            className="dashboard-stat"
-          >
-            <Icon className="dashboard-stat__icon" strokeWidth={1.25} aria-hidden="true" />
-            <span className="dashboard-stat__value">{value}</span>
-            <span className="dashboard-stat__name tbo-card-title">{label}</span>
-            <span className="dashboard-stat__status tbo-supporting">{sub}</span>
-            <span className="dashboard-stat__track" aria-hidden="true">
-              <span
-                className="dashboard-stat__fill"
-                style={{ width: `${total > 0 ? Math.min(100, Math.max(0, completed / total * 100)) : 0}%` }}
-              />
-            </span>
-          </button>
-        ))}
-      </div>
+        <div className="dashboard-stats__grid">
+          {[
+            {
+              id: 'devotionals',
+              label: tr("Devotionals Read"),
+              value: devotionalCompletedCount,
+              sub: tr('{count} day streak', { count: devotionalStreakValue }),
+              icon: Calendar,
+              onClick: () => onNavigate?.('devotions'),
+              completed: devotionalStreakValue,
+              total: 30,
+            },
+            {
+              id: 'journal',
+              label: t.dashboard.journalEntries,
+              value: sharedJournalEntries,
+              sub: t.dashboard.shared,
+              icon: BookHeart,
+              onClick: () => onNavigate?.('journal'),
+              completed: sharedJournalEntries,
+              total: 50,
+            },
+            {
+              id: 'prayer',
+              label: t.dashboard.prayers,
+              value: `${answeredPrayers}/${totalPrayers}`,
+              sub: t.dashboard.answered,
+              icon: HandHeart,
+              onClick: () => onNavigate?.('prayer'),
+              completed: answeredPrayers,
+              total: totalPrayers,
+            },
+            {
+              id: 'questions',
+              label: t.dashboard.questions,
+              value: `${questionsAnswered}/${totalQuestionsCount}`,
+              sub: t.dashboard.answered,
+              icon: MessageCircleHeart,
+              onClick: () => onScreenNavigate?.('category-selection'),
+              completed: questionsAnswered,
+              total: totalQuestionsCount,
+            },
+          ].map(({ id, label, value, sub, icon: Icon, onClick, completed, total }) => (
+            <button
+              key={id}
+              type="button"
+              data-stat={id}
+              onClick={onClick}
+              className="dashboard-stat"
+            >
+              <Icon className="dashboard-stat__icon" strokeWidth={1.25} aria-hidden="true" />
+              <span className="dashboard-stat__value">{value}</span>
+              <span className="dashboard-stat__name tbo-card-title">{label}</span>
+              <span className="dashboard-stat__status tbo-supporting">{sub}</span>
+              <span className="dashboard-stat__track" aria-hidden="true">
+                <span
+                  className="dashboard-stat__fill"
+                  style={{ width: `${total > 0 ? Math.min(100, Math.max(0, completed / total * 100)) : 0}%` }}
+                />
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Daily Bible Verse */}

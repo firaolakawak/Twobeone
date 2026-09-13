@@ -52,7 +52,7 @@
   z-index: -1;
   top: .875rem;
   right: .875rem;
-  width: clamp(2.75rem, 32cqi, 5.5rem);
+  width: clamp(2.75rem, 28cqi, 5rem);
   height: auto;
   opacity: .28;
   pointer-events: none;
@@ -62,10 +62,10 @@
 .dashboard-stat__value {
   display: block;
   max-width: 100%;
-  margin-block: .5rem 1.5rem;
-  font-size: clamp(2rem, 24cqi, 4rem);
+  margin-block: .5rem .5rem;
+  font-size: clamp(1.6rem, 22.4cqi, 3.6rem);
   font-weight: 700;
-  line-height: 1.05;
+  line-height: 1.2;
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
@@ -100,9 +100,19 @@
 }
 
 /* Keep two columns on phones; allow a single column for enlarged text. */
+@container (max-width: 12rem) {
+  .dashboard-stat__value {
+    margin-top: 2.75rem;
+  }
+}
+
 @container (max-width: 16.5rem) {
   .dashboard-stats__grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboard-stat {
+    padding-inline: .5rem;
   }
 }
 
