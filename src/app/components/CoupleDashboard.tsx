@@ -4,6 +4,7 @@ import {
   BookOpen,
   PenLine,
   MessageCircleHeart,
+  MessageCircleQuestion,
   Calendar,
   Users,
   ArrowRight,
@@ -992,9 +993,15 @@ export function CoupleDashboard({
         role="group"
         aria-label={t.dashboard.quickActions}
       >
-        <button type="button" onClick={() => onNavigate?.("chat")}>
-          <MessageCircleHeart size={17} aria-hidden="true" />
-          {t.nav.chat}
+        <button
+          type="button"
+          onClick={() => {
+            if (onStartQuestion) onStartQuestion();
+            else onScreenNavigate?.("category-selection");
+          }}
+        >
+          <MessageCircleQuestion size={17} aria-hidden="true" />
+          {copy.qa}
         </button>
         <button type="button" onClick={() => onNavigate?.("journal")}>
           <PenLine size={17} aria-hidden="true" />
@@ -1022,7 +1029,7 @@ export function CoupleDashboard({
         {upcomingMilestone ? (
           <button
             type="button"
-            className="journey-plan"
+            className="journey-plan journey-plan--milestone"
             onClick={() => onScreenNavigate?.("milestones")}
           >
             <span className="journey-plan-date">

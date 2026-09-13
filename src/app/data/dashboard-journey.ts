@@ -1,5 +1,6 @@
 export const dashboardJourneyCopy = {
   en: {
+    qa: "Q&A",
     title: "Our Journey",
     you: "You",
     partner: "Partner",
@@ -55,6 +56,7 @@ export const dashboardJourneyCopy = {
     openJournal: "Open journal",
   },
   am: {
+    qa: "ጥያቄና መልስ",
     title: "ጉዟችን",
     you: "እርስዎ",
     partner: "አጋር",
@@ -108,6 +110,7 @@ export const dashboardJourneyCopy = {
     openJournal: "ማስታወሻ ይክፈቱ",
   },
   om: {
+    qa: "Gaaffii fi deebii",
     title: "Imala Keenya",
     you: "Ati",
     partner: "Hiriyaa",

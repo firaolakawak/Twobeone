@@ -206,7 +206,7 @@
   margin-top: var(--tbo-space-6);
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: var(--card);
+  background: #f5f1fa;
   padding: 0;
   overflow: hidden;
 }
@@ -217,7 +217,7 @@
   justify-content: center;
   gap: var(--tbo-space-2);
   padding: var(--tbo-space-4) var(--tbo-space-2);
-  background: var(--card);
+  background: transparent;
   border: 0;
   border-radius: 0;
   color: var(--foreground);
@@ -236,7 +236,7 @@
   height: 24px;
 }
 .journey-shortcuts button:hover {
-  background: var(--primary-50);
+  background: #ece5f5;
 }
 .journey-plans {
   margin-top: var(--journey-section-gap);
@@ -276,6 +276,17 @@
   font-size: var(--tbo-h2-size);
   line-height: var(--tbo-h2-line);
   font-weight: var(--tbo-weight-medium);
+}
+.journey-plan--milestone {
+  background: var(--primary-50);
+  border-color: var(--primary-100);
+}
+.journey-plan--milestone:hover {
+  background: var(--primary-100);
+}
+.journey-plan--milestone .journey-plan-date {
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px var(--primary-100);
 }
 .journey-plan-copy {
   flex: 1;

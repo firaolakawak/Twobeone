@@ -1,13 +1,22 @@
-import { act, cleanup, render, screen, within } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { LanguageProvider } from "../../contexts/LanguageContext";
+import { questions as questionsApi } from "../../utils/api";
 import {
+  CoupleDashboard,
   getElapsedRelationshipTime,
   JourneyCounter,
   parseRelationshipStart,
 } from "../CoupleDashboard";
 
-describe("Our Journey counter", () => {
+describe("Our Journey dashboard", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-09-13T12:00:00Z"));
@@ -17,6 +26,8 @@ describe("Our Journey counter", () => {
   afterEach(() => {
     cleanup();
     vi.useRealTimers();
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   it("treats a date from Settings as local midnight without shifting the calendar date", () => {
@@ -55,14 +66,18 @@ describe("Our Journey counter", () => {
       "59",
     );
     expect(within(timer).getByText("days together")).toBeVisible();
-    expect(timer.querySelector(".love-journey__clock-digits")).toHaveTextContent("23:59:59");
+    expect(
+      timer.querySelector(".love-journey__clock-digits"),
+    ).toHaveTextContent("23:59:59");
     expect(timer).toHaveTextContent("23 hours, 59 minutes, 59 seconds");
 
     act(() => {
       vi.advanceTimersByTime(1000);
     });
     expect(timer.querySelector('[data-unit="days"]')).toHaveTextContent("1");
-    expect(timer.querySelector(".love-journey__clock-digits")).toHaveTextContent("00:00:00");
+    expect(
+      timer.querySelector(".love-journey__clock-digits"),
+    ).toHaveTextContent("00:00:00");
     for (const unit of ["hours", "minutes", "seconds"])
       expect(timer.querySelector(`[data-unit="${unit}"]`)).toHaveTextContent(
         "00",
@@ -111,5 +126,55 @@ describe("Our Journey counter", () => {
     );
     unmount();
     expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("opens Q&A from quick actions through the question flow and its screen fallback", async () => {
+    vi.spyOn(questionsApi, "list").mockResolvedValue({ questions: [] });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          text: "Let all that you do be done in love.",
+          reference: "1 Corinthians 16:14",
+          translation_name: "KJV",
+          verses: [],
+        }),
+      }),
+    );
+    const onStartQuestion = vi.fn();
+    const onScreenNavigate = vi.fn();
+    const onNavigate = vi.fn();
+    const dashboard = (startQuestion?: () => void) => (
+      <LanguageProvider>
+        <CoupleDashboard
+          journalEntries={[]}
+          prayers={[]}
+          responses={{ user: [], partner: [] }}
+          onStartQuestion={startQuestion}
+          onScreenNavigate={onScreenNavigate}
+          onNavigate={onNavigate}
+        />
+      </LanguageProvider>
+    );
+    const view = render(dashboard(onStartQuestion));
+    await act(async () => {});
+
+    const shortcuts = screen.getByRole("group", { name: "Quick Actions" });
+    fireEvent.click(within(shortcuts).getByRole("button", { name: "Q&A" }));
+    expect(onStartQuestion).toHaveBeenCalledExactlyOnceWith();
+    expect(onScreenNavigate).not.toHaveBeenCalled();
+    expect(onNavigate).not.toHaveBeenCalled();
+    expect(
+      within(shortcuts).queryByRole("button", { name: "Chat" }),
+    ).toBeNull();
+
+    view.rerender(dashboard());
+    fireEvent.click(within(shortcuts).getByRole("button", { name: "Q&A" }));
+    expect(onScreenNavigate).toHaveBeenCalledExactlyOnceWith(
+      "category-selection",
+    );
+    expect(onStartQuestion).toHaveBeenCalledTimes(1);
+    expect(onNavigate).not.toHaveBeenCalled();
   });
 });

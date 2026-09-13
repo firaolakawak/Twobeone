@@ -292,7 +292,7 @@
   background: linear-gradient(110deg, #ffe3b1, #e6d5ff);
   -webkit-mask: url("/artwork/world-map.svg") center / cover no-repeat;
   mask: url("/artwork/world-map.svg") center / cover no-repeat;
-  opacity: 0.14;
+  opacity: 0.06;
   pointer-events: none;
 }
 .love-journey-places__place {
