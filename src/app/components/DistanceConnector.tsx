@@ -29,6 +29,8 @@ import {
   Wifi,
   WifiOff,
   Route,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
@@ -43,6 +45,7 @@ import {
 import { projectId } from "../utils/supabase/info";
 import { createClient } from "../utils/supabase/client";
 import { useLanguage } from "../contexts/LanguageContext";
+import { getLocationClock, type LocationClock } from "../utils/locationClock";
 import "../styles/distance-journey.css";
 
 interface DistanceConnectorProps {
@@ -69,6 +72,9 @@ interface UserLocation {
 
 const LOCATION_COPY = {
   en: {
+    localTime: "Local time",
+    daytime: "Daytime",
+    nighttime: "Nighttime",
     coupleLocations: "Your shared locations",
     notShared: "Not shared",
     locationShared: "Location shared",
@@ -115,6 +121,9 @@ const LOCATION_COPY = {
     removeError: "Could not remove your location. Please try again.",
   },
   am: {
+    localTime: "የአካባቢው ሰዓት",
+    daytime: "ቀን",
+    nighttime: "ሌሊት",
     coupleLocations: "ያጋራችሁት አካባቢ",
     notShared: "አልተጋራም",
     locationShared: "አካባቢ ተጋርቷል",
@@ -160,6 +169,9 @@ const LOCATION_COPY = {
     removeError: "አካባቢዎን ማስወገድ አልተቻለም። እንደገና ይሞክሩ።",
   },
   om: {
+    localTime: "Sa'aatii naannoo",
+    daytime: "Guyyaa",
+    nighttime: "Halkan",
     coupleLocations: "Bakkeewwan waliin qooddan",
     notShared: "Hin qoodamne",
     locationShared: "Bakki qoodameera",
@@ -273,6 +285,32 @@ export function DistanceConnector({
           partnerLocation.location.longitude,
         )
       : null;
+  const [clockNow, setClockNow] = useState(() => new Date());
+  const hasSharedCoordinates = Boolean(
+    userLocation?.location || partnerLocation?.location,
+  );
+  useEffect(() => {
+    if (variant !== "love-journey" || !partnerId || !hasSharedCoordinates)
+      return;
+    let timeout: number | undefined;
+    const refreshClock = () => {
+      window.clearTimeout(timeout);
+      if (document.visibilityState === "hidden") return;
+      setClockNow(new Date());
+      timeout = window.setTimeout(
+        refreshClock,
+        60_000 - (Date.now() % 60_000) + 30,
+      );
+    };
+    refreshClock();
+    document.addEventListener("visibilitychange", refreshClock);
+    window.addEventListener("focus", refreshClock);
+    return () => {
+      window.clearTimeout(timeout);
+      document.removeEventListener("visibilitychange", refreshClock);
+      window.removeEventListener("focus", refreshClock);
+    };
+  }, [variant, userId, partnerId, hasSharedCoordinates]);
   const [isLoading, setIsLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [manualCity, setManualCity] = useState("");
@@ -605,6 +643,43 @@ export function DistanceConnector({
     distance === null || sameManualCity
       ? journeyDistance
       : `${journeyDistance} ${copy.km}`;
+  const userClock =
+    variant === "love-journey"
+      ? getLocationClock(userLocation?.location, clockNow)
+      : null;
+  const partnerClock =
+    variant === "love-journey"
+      ? getLocationClock(partnerLocation?.location, clockNow)
+      : null;
+  const clockDescription = (clock: LocationClock) =>
+    `${copy.localTime}: ${clock.time}, ${clock.isDaylight ? copy.daytime : copy.nighttime}`;
+  const compactPlace = (
+    entry: UserLocation | null,
+    clock: LocationClock | null,
+  ) => (
+    <span className="love-journey-places__place">
+      <span className="love-journey-places__city">{compactCity(entry)}</span>
+      {clock && (
+        <span
+          className="love-journey-places__local-clock"
+          data-time-zone={clock.timeZone}
+          data-daylight={clock.isDaylight ? "day" : "night"}
+        >
+          {clock.isDaylight ? (
+            <Sun size={14} aria-hidden="true" focusable="false" />
+          ) : (
+            <Moon size={14} aria-hidden="true" focusable="false" />
+          )}
+          <time
+            dateTime={clock.time}
+            title={`${clockDescription(clock)} (${clock.timeZone})`}
+          >
+            {clock.time}
+          </time>
+        </span>
+      )}
+    </span>
+  );
   const compactDescription = [
     `${userName}: ${compactCity(userLocation)}${userLocation?.location?.country ? `, ${userLocation.location.country}` : ""}`,
     `${partnerName}: ${compactCity(partnerLocation)}${partnerLocation?.location?.country ? `, ${partnerLocation.location.country}` : ""}`,
@@ -620,6 +695,9 @@ export function DistanceConnector({
       `${userName}: ${sourceLabel(userLocation)}${updateLabel(userLocation) ? `. ${updateLabel(userLocation)}` : ""}`,
     partnerLocation &&
       `${partnerName}: ${sourceLabel(partnerLocation)}${updateLabel(partnerLocation) ? `. ${updateLabel(partnerLocation)}` : ""}`,
+    userClock && `${compactCity(userLocation)}: ${clockDescription(userClock)}`,
+    partnerClock &&
+      `${compactCity(partnerLocation)}: ${clockDescription(partnerClock)}`,
   ]
     .filter(Boolean)
     .join(". ");
@@ -731,9 +809,7 @@ export function DistanceConnector({
             aria-busy={locationReadState === "loading"}
             title={t.dashboard.locationSettings}
           >
-            <span className="love-journey-places__city">
-              {compactCity(userLocation)}
-            </span>
+            {compactPlace(userLocation, userClock)}
             <span className="love-journey-places__route">
               <span
                 className="love-journey-places__route-line"
@@ -747,9 +823,7 @@ export function DistanceConnector({
                 {compactDistance}
               </span>
             </span>
-            <span className="love-journey-places__city">
-              {compactCity(partnerLocation)}
-            </span>
+            {compactPlace(partnerLocation, partnerClock)}
           </button>
           <span
             className="love-journey-places__description"

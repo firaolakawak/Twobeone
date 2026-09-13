@@ -1,9 +1,12 @@
 /* Love Journey layout using the shared TwoBeOne typography tokens. */
 .love-journey {
   border: 1px solid var(--border);
-  border-radius: 23px;
+  border-radius: 26px 22px 25px 23px;
   background: var(--card);
-  box-shadow: 0 5px 18px #64273705;
+  box-shadow:
+    0 2px 4px #24212604,
+    0 14px 32px -22px #643d4530,
+    inset 0 1px 0 #ffffffb3;
   overflow: hidden;
   color: var(--foreground);
   font-family: var(--tbo-font-sans);
@@ -123,6 +126,7 @@
   letter-spacing: 0;
   color: var(--primary);
   font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 8px #e11d4812;
 }
 .love-journey__clock {
   display: inline-flex;
@@ -366,6 +370,7 @@
   border-color: var(--primary);
 }
 .love-journey-story h3 {
+  font-family: var(--tbo-font-serif);
   font-size: var(--tbo-h3-size);
   font-weight: var(--tbo-weight-medium);
   line-height: var(--tbo-h3-line);
@@ -398,6 +403,7 @@
 }
 .love-journey-story__memories strong {
   display: block;
+  font-family: var(--tbo-font-serif);
   font-size: var(--tbo-body-l-size);
   font-weight: var(--tbo-weight-medium);
   line-height: var(--tbo-body-l-line);
@@ -460,6 +466,7 @@
 
 .love-journey__identity h2 {
   margin: 0;
+  font-family: var(--tbo-font-serif);
   font-size: var(--tbo-h1-size);
   line-height: var(--tbo-h1-line);
   font-weight: var(--tbo-weight-bold);
@@ -471,7 +478,37 @@
   font-family: var(--tbo-font-amharic);
   letter-spacing: 0;
 }
+.love-journey__identity h2:lang(am) {
+  letter-spacing: 0;
+}
 .love-journey__elapsed-primary > span {
   min-width: 0;
   overflow-wrap: anywhere;
+}
+
+@keyframes tbo-journey-day-breathe {
+  0%,
+  100% {
+    text-shadow: 0 1px 8px #e11d4812;
+  }
+  50% {
+    text-shadow: 0 1px 12px #e11d4829;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .love-journey__elapsed-primary strong {
+    animation: tbo-journey-day-breathe 6s ease-in-out infinite;
+  }
+}
+
+html[data-tbo-ambient-motion="off"] .love-journey__elapsed-primary strong {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce), (forced-colors: active) {
+  .love-journey__elapsed-primary strong {
+    animation: none;
+    text-shadow: none;
+  }
 }

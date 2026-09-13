@@ -118,6 +118,90 @@ function journey(
   );
 }
 
+describe("saved-location clocks", () => {
+  beforeEach(() => {
+    localStorage.setItem("twobeone_language", "en");
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-09-13T08:59:59Z"));
+    vi.mocked(getCurrentLocation).mockReset();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        response({
+          userLocation: dubaiLocation,
+          partnerLocation: addisLocation,
+        }),
+      ),
+    );
+  });
+  afterEach(() => {
+    cleanup();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+    localStorage.removeItem("twobeone_language");
+  });
+
+  it("updates both clocks on the minute without fetching or requesting GPS", async () => {
+    const { container } = render(journey({ variant: "love-journey" }));
+    await act(async () => {});
+    const clocks = () =>
+      Array.from(container.querySelectorAll(".love-journey-places time")).map(
+        (clock) => clock.textContent,
+      );
+    expect(clocks()).toEqual(["12:59", "11:59"]);
+    expect(
+      container.querySelectorAll('[data-daylight="day"] .lucide-sun'),
+    ).toHaveLength(2);
+
+    await act(() => vi.advanceTimersByTimeAsync(1031));
+    expect(clocks()).toEqual(["13:00", "12:00"]);
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(getCurrentLocation).not.toHaveBeenCalled();
+  });
+
+  it("refreshes immediately when a hidden tab becomes visible or gains focus", async () => {
+    const visibility = vi
+      .spyOn(document, "visibilityState", "get")
+      .mockReturnValue("visible");
+    const { container } = render(journey({ variant: "love-journey" }));
+    await act(async () => {});
+    const firstClock = () => container.querySelector("time")?.textContent;
+    expect(firstClock()).toBe("12:59");
+
+    visibility.mockReturnValue("hidden");
+    act(() => document.dispatchEvent(new Event("visibilitychange")));
+    await act(() => vi.advanceTimersByTimeAsync(121_000));
+    expect(firstClock()).toBe("12:59");
+
+    visibility.mockReturnValue("visible");
+    act(() => document.dispatchEvent(new Event("visibilitychange")));
+    expect(firstClock()).toBe("13:02");
+
+    vi.setSystemTime(new Date("2026-09-13T09:15:00Z"));
+    act(() => window.dispatchEvent(new Event("focus")));
+    expect(firstClock()).toBe("13:15");
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("omits an unshared partner's clock and shows the saved city's night icon", async () => {
+    vi.setSystemTime(new Date("2026-09-13T20:00:00Z"));
+    vi.mocked(fetch).mockResolvedValue(
+      response({ userLocation: dubaiLocation, partnerLocation: null }),
+    );
+    const { container } = render(journey({ variant: "love-journey" }));
+    await act(async () => {});
+    expect(container.querySelectorAll("time")).toHaveLength(1);
+    expect(container.querySelector("time")).toHaveTextContent("00:00");
+    expect(
+      container.querySelector('[data-daylight="night"] .lucide-moon'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Location settings" }),
+    ).toHaveAccessibleDescription(/Not shared.*Distance unavailable/);
+  });
+});
+
 describe("compact journey locations", () => {
   beforeEach(() => {
     localStorage.setItem("twobeone_language", "en");
@@ -439,14 +523,12 @@ describe("compact journey locations", () => {
   });
 
   it("opens location settings from the keyboard-accessible love journey row without duplicating identity", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValue(
-        response({
-          userLocation: dubaiLocation,
-          partnerLocation: addisLocation,
-        }),
-      );
+    const fetchMock = vi.fn().mockResolvedValue(
+      response({
+        userLocation: dubaiLocation,
+        partnerLocation: addisLocation,
+      }),
+    );
     vi.stubGlobal("fetch", fetchMock);
     const user = userEvent.setup();
     render(journey({ variant: "love-journey" }));

@@ -90,7 +90,7 @@ export const BottomNavigation = memo(function BottomNavigation({
                   onClick={isMore ? undefined : () => onTabChange(tab.id)}
                   aria-label={actionLabel}
                   aria-current={isActive ? "page" : undefined}
-                  whileTap={prefersReducedMotion ? undefined : { scale: 0.92 }}
+                  whileTap={prefersReducedMotion ? undefined : { scale: 0.96 }}
                   transition={{ duration: 0.16 }}
                   title={tab.label}
                   className="tbo-bottom-navigation__action group rounded-[10px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"

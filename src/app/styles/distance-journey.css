@@ -233,122 +233,159 @@
   }
 }
 
-/* City-only row from the approved Love Journey concept. The parent owns spacing above it. */
+/* Twilight belongs only to the compact shared-location panel. */
 .love-journey-places {
+  position: relative;
+  isolation: isolate;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 86px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) 74px minmax(0, 1fr);
   align-items: center;
   gap: 7px;
   width: 100%;
-  min-height: 44px;
+  min-height: 90px;
   margin: 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
+  padding: 12px 10px;
+  border: 1px solid #9a859744;
+  border-radius: 17px;
+  background:
+    radial-gradient(ellipse at 2% 0%, #eab67545, transparent 65%),
+    radial-gradient(ellipse at 100% 105%, #b493e85c, transparent 65%),
+    linear-gradient(112deg, #58434b, #443750 52%, #3e345b);
+  box-shadow:
+    inset 0 1px 0 #ffffff16,
+    0 5px 13px #34263d0c;
+  color: #fffaf5;
   font: inherit;
   text-align: left;
   cursor: pointer;
-  border-radius: 5px;
 }
-
 .love-journey-places:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 4px;
 }
-
-.love-journey-places__city:last-child {
+.love-journey-places::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(ellipse at 15% 15%, #edc38838, transparent 60%),
+    radial-gradient(ellipse at 90% 85%, #b297e338, transparent 60%);
+  background-size: 140% 140%;
+  opacity: 0.65;
+  pointer-events: none;
+}
+.love-journey-places__place {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+}
+.love-journey-places__place:last-child {
+  align-items: flex-end;
   text-align: right;
 }
-
+.love-journey-places__city {
+  min-width: 0;
+  max-width: 100%;
+  color: #fffaf5;
+  font-size: var(--tbo-caption-size);
+  line-height: var(--tbo-caption-line);
+  font-weight: var(--tbo-weight-medium);
+  overflow-wrap: anywhere;
+}
+.love-journey-places__local-clock {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  max-width: 100%;
+  color: #fffaf5;
+  font-size: var(--tbo-caption-size);
+  line-height: var(--tbo-caption-line);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--tbo-weight-medium);
+}
+.love-journey-places__place:last-child .love-journey-places__local-clock {
+  justify-content: flex-end;
+}
+.love-journey-places__local-clock time {
+  white-space: nowrap;
+}
+.love-journey-places__local-clock svg {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  color: #f4e7ff;
+}
+.love-journey-places__local-clock[data-daylight="day"] svg {
+  color: #ffe2a8;
+}
 .love-journey-places__route {
   min-width: 0;
   text-align: center;
-  color: var(--muted-foreground);
 }
-
 .love-journey-places__route-line {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  color: var(--primary);
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 34px;
 }
-
 .love-journey-places__route-line::before,
 .love-journey-places__route-line::after {
   content: "";
-  flex: 1;
-  min-width: 0;
-  height: 6px;
-  background: radial-gradient(circle, currentColor 2px, transparent 2.4px) left
-    center / 9px 6px repeat-x;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  pointer-events: none;
 }
-
+.love-journey-places__route-line::before {
+  background: linear-gradient(90deg, #f6d6a563, #fff2dbd6, #ead8ff63);
+}
+.love-journey-places__route-line::after {
+  height: 3px;
+  margin-top: -1px;
+  background: linear-gradient(90deg, transparent, #ffedc2, transparent);
+  background-size: 35% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.8;
+}
 .love-journey-places__heart {
+  position: relative;
+  z-index: 1;
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
-  flex-shrink: 0;
+  width: 27px;
+  height: 27px;
+  border: 1px solid #f7dec254;
   border-radius: 50%;
-  background: var(--primary);
-  color: #fff;
-  box-shadow: 0 0 0 3px var(--primary-50);
+  background: #6b526e;
+  color: #fff9f2;
+  box-shadow: 0 0 12px #ffe2b72b;
 }
-
 .love-journey-places__heart svg {
-  width: 18px;
-  height: 18px;
+  width: 15px;
+  height: 15px;
   fill: currentColor;
   stroke: currentColor;
   stroke-width: 1.5;
 }
-
-@keyframes love-journey-connection-heart {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.07);
-  }
-}
-
-@keyframes love-journey-connection-dots {
-  0% {
-    background-position: 0 center;
-    opacity: 0.65;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    background-position: 9px center;
-    opacity: 0.65;
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .love-journey-places__heart {
-    animation: love-journey-connection-heart 3.6s ease-in-out infinite;
-  }
-
-  .love-journey-places__route-line::before,
-  .love-journey-places__route-line::after {
-    animation: love-journey-connection-dots 4.8s linear infinite;
-  }
-}
-
 .love-journey-places__distance {
   display: block;
+  margin-top: var(--tbo-space-1);
+  color: #fffaf5;
   font-size: var(--tbo-caption-size);
   line-height: var(--tbo-caption-line);
-  margin-top: var(--tbo-space-1);
-  color: var(--muted-foreground);
   font-variant-numeric: tabular-nums;
-  overflow-wrap: anywhere;
   font-weight: var(--tbo-weight-medium);
+  overflow-wrap: anywhere;
 }
-
 .love-journey-places__description {
   position: absolute;
   width: 1px;
@@ -360,19 +397,78 @@
   white-space: nowrap;
   border: 0;
 }
-
-@media (max-width: 360px) {
-  .love-journey-places {
-    grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1fr);
-    gap: 5px;
+@keyframes love-journey-heart-glide {
+  0%,
+  100% {
+    transform: translateX(-7px);
+  }
+  50% {
+    transform: translateX(7px);
   }
 }
-
-.love-journey-places__city {
-  min-width: 0;
-  font-size: var(--tbo-caption-size);
-  line-height: var(--tbo-caption-line);
-  font-weight: var(--tbo-weight-medium);
-  color: var(--muted-foreground);
-  overflow-wrap: anywhere;
+@keyframes love-journey-sky-drift {
+  0%,
+  100% {
+    background-position: 0% 0%;
+    opacity: 0.45;
+  }
+  50% {
+    background-position: 100% 100%;
+    opacity: 0.8;
+  }
+}
+@keyframes love-journey-light-beam {
+  0%,
+  100% {
+    background-position: 0% center;
+    opacity: 0.5;
+  }
+  50% {
+    background-position: 100% center;
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-tbo-ambient-motion="off"]) .love-journey-places::before {
+    animation: love-journey-sky-drift 22s ease-in-out infinite;
+  }
+  html:not([data-tbo-ambient-motion="off"]) .love-journey-places__heart {
+    animation: love-journey-heart-glide 7s ease-in-out infinite;
+  }
+  html:not([data-tbo-ambient-motion="off"])
+    .love-journey-places__route-line::after {
+    animation: love-journey-light-beam 7s ease-in-out infinite;
+  }
+}
+@media (max-width: 360px) {
+  .love-journey-places {
+    grid-template-columns: minmax(0, 1fr) 66px minmax(0, 1fr);
+    gap: 5px;
+    padding: 11px 8px;
+  }
+}
+@media (forced-colors: active) {
+  .love-journey-places::before {
+    display: none;
+  }
+  .love-journey-places {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+  }
+  .love-journey-places__city,
+  .love-journey-places__local-clock,
+  .love-journey-places__local-clock svg,
+  .love-journey-places__distance {
+    color: CanvasText;
+  }
+  .love-journey-places__route-line::before,
+  .love-journey-places__route-line::after {
+    background: CanvasText;
+  }
+  .love-journey-places__heart {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+  }
 }

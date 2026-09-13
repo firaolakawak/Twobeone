@@ -11,6 +11,8 @@ import {
   Brain,
   ChevronDown,
   Hammer,
+  Heart,
+  Waves,
 } from "lucide-react";
 import { ComprehensiveBibleReader } from "./ComprehensiveBibleReader";
 import { PushNotificationSetup } from "./PushNotificationSetup";
@@ -18,6 +20,7 @@ import { LoveJourneyHeader } from "./LoveJourneyHeader";
 import { CardArtwork } from "./CardArtwork";
 import { MoodCheckInDialog } from "./MoodCheckInDialog";
 import { useDailyMoodCheckIn } from "../hooks/useDailyMoodCheckIn";
+import { useAmbientMotion } from "../hooks/useAmbientMotion";
 import { moodCheckInCopy } from "../data/mood-check-in";
 import type { MoodValue } from "../utils/moodCheckIn";
 import { parseRelationshipStart } from "../utils/relationshipJourney";
@@ -48,6 +51,15 @@ import { ChampionsCard } from "./ChampionsCard";
 import { coupleCalendarCopy } from "../data/couple-calendar";
 import { dashboardJourneyCopy } from "../data/dashboard-journey";
 import "./dashboard-journey.css";
+
+function StreakHearts() {
+  return (
+    <span className="journey-rhythm-ambience" aria-hidden="true">
+      <Heart size={9} focusable="false" />
+      <Heart size={9} focusable="false" />
+    </span>
+  );
+}
 
 type DashboardUser = User & {
   name?: string;
@@ -196,6 +208,7 @@ export function CoupleDashboard({
   const { t, language } = useLanguage();
   const calendarCopy = coupleCalendarCopy[language];
   const copy = dashboardJourneyCopy[language];
+  const ambientMotion = useAmbientMotion();
   const moodCopy = moodCheckInCopy[language];
   const moodCheckIn = useDailyMoodCheckIn({
     userId: profile?.id,
@@ -786,6 +799,7 @@ export function CoupleDashboard({
   const questionsAnswered = uniqueQuestions.size;
 
   const devotionalStreakValue = devotionalStreak || 0;
+  const celebrateStreak = devotionalStreakValue >= 7 && ambientMotion.enabled;
 
   const spotlight = useMemo(() => {
     const choose = <T,>(items: T[]): T | undefined =>
@@ -937,39 +951,41 @@ export function CoupleDashboard({
         error={moodCheckIn.saveFailed ? moodCopy.saveError : null}
       />
 
-      <section
-        className="journey-card journey-spotlight"
-        data-spotlight-kind={spotlight.kind}
-        aria-labelledby="home-spotlight-title"
-      >
-        <CardArtwork variant={spotlight.kind} />
-        <div className="journey-spotlight-top">
-          <span className="journey-spotlight-label">
-            <SpotlightIcon size={16} aria-hidden="true" />
-            {copy.forToday} · {activityLabel}
-          </span>
-        </div>
-        <h2 id="home-spotlight-title">{spotlight.title}</h2>
-        <p>{spotlight.description}</p>
-        <div className="journey-daily-footer">
-          <button
-            type="button"
-            className="journey-primary"
-            onClick={openSpotlight}
-          >
-            {spotlight.actionLabel}
-            <ArrowRight size={15} aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            onClick={shuffleSpotlight}
-            className="journey-icon-button journey-shuffle"
-            aria-label={copy.shuffle}
-          >
-            <Shuffle size={14} aria-hidden="true" />
-          </button>
-        </div>
-      </section>
+      <div className="journey-paper-stage">
+        <section
+          className="journey-card journey-spotlight"
+          data-spotlight-kind={spotlight.kind}
+          aria-labelledby="home-spotlight-title"
+        >
+          <CardArtwork variant={spotlight.kind} />
+          <div className="journey-spotlight-top">
+            <span className="journey-spotlight-label">
+              <SpotlightIcon size={16} aria-hidden="true" />
+              {copy.forToday} · {activityLabel}
+            </span>
+          </div>
+          <h2 id="home-spotlight-title">{spotlight.title}</h2>
+          <p>{spotlight.description}</p>
+          <div className="journey-daily-footer">
+            <button
+              type="button"
+              className="journey-primary"
+              onClick={openSpotlight}
+            >
+              {spotlight.actionLabel}
+              <ArrowRight size={15} aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              onClick={shuffleSpotlight}
+              className="journey-icon-button journey-shuffle"
+              aria-label={copy.shuffle}
+            >
+              <Shuffle size={14} aria-hidden="true" />
+            </button>
+          </div>
+        </section>
+      </div>
 
       <div
         className="journey-shortcuts"
@@ -1075,8 +1091,9 @@ export function CoupleDashboard({
             onClick={() => onNavigate?.("devotions")}
           >
             <CardArtwork variant="devotion" />
+            {celebrateStreak && <StreakHearts />}
             <strong>{devotionalCompletedCount}</strong>
-            <span>{copy.read}</span>
+            <span className="journey-metric-label">{copy.read}</span>
           </button>
           <button
             type="button"
@@ -1084,10 +1101,11 @@ export function CoupleDashboard({
             onClick={() => onNavigate?.("prayer")}
           >
             <CardArtwork variant="prayer" />
+            {celebrateStreak && <StreakHearts />}
             <strong>
               {answeredPrayers}/{totalPrayers}
             </strong>
-            <span>{copy.answeredPrayers}</span>
+            <span className="journey-metric-label">{copy.answeredPrayers}</span>
           </button>
           <button
             type="button"
@@ -1095,8 +1113,9 @@ export function CoupleDashboard({
             onClick={() => onNavigate?.("journal")}
           >
             <CardArtwork variant="journal" />
+            {celebrateStreak && <StreakHearts />}
             <strong>{sharedJournalEntries}</strong>
-            <span>{copy.sharedJournals}</span>
+            <span className="journey-metric-label">{copy.sharedJournals}</span>
           </button>
         </div>
         <div
@@ -1115,6 +1134,23 @@ export function CoupleDashboard({
             <span>
               {t.dashboard.questions} · {t.dashboard.answered}
             </span>
+          </button>
+        </div>
+        <div className="journey-rhythm-footer">
+          <button
+            type="button"
+            className="journey-motion-toggle"
+            data-motion-toggle
+            onClick={ambientMotion.toggle}
+            disabled={ambientMotion.reducedMotion}
+            title={ambientMotion.reducedMotion ? copy.reducedMotion : undefined}
+          >
+            <Waves size={14} aria-hidden="true" />
+            {ambientMotion.reducedMotion
+              ? copy.motionPaused
+              : ambientMotion.enabled
+                ? copy.pauseMotion
+                : copy.resumeMotion}
           </button>
         </div>
       </section>
@@ -1183,63 +1219,68 @@ export function CoupleDashboard({
         )}
       </details>
 
-      <section
-        className="journey-card journey-verse"
-        aria-labelledby="journey-verse-title"
-      >
-        <CardArtwork variant="devotion" />
-        <h2 id="journey-verse-title" className="journey-verse-heading">
-          {t.dashboard.dailyVerse}
-        </h2>
-        {isLoadingVerse ? (
-          <p className="journey-verse-reference" role="status">
-            {t.common.loading}
-          </p>
-        ) : (
-          dailyVerse && (
-            <>
-              <blockquote
-                lang={
-                  verseLanguage === "am" && dailyVerse.amharicText ? "am" : "en"
-                }
-              >
-                {verseLanguage === "am" && dailyVerse.amharicText
-                  ? dailyVerse.amharicText
-                  : dailyVerse.text}
-              </blockquote>
-              <p className="journey-verse-reference">
-                {verseLanguage === "am" && dailyVerse.amharicReference
-                  ? dailyVerse.amharicReference
-                  : dailyVerse.reference}
-              </p>
+      <div className="journey-paper-stage journey-paper-stage--verse">
+        <section
+          className="journey-card journey-verse"
+          aria-labelledby="journey-verse-title"
+        >
+          <CardArtwork variant="devotion" />
+          <h2 id="journey-verse-title" className="journey-verse-heading">
+            {t.dashboard.dailyVerse}
+          </h2>
+          {isLoadingVerse ? (
+            <p className="journey-verse-reference" role="status">
+              {t.common.loading}
+            </p>
+          ) : (
+            dailyVerse && (
+              <>
+                <blockquote
+                  lang={
+                    verseLanguage === "am" && dailyVerse.amharicText
+                      ? "am"
+                      : "en"
+                  }
+                >
+                  {verseLanguage === "am" && dailyVerse.amharicText
+                    ? dailyVerse.amharicText
+                    : dailyVerse.text}
+                </blockquote>
+                <p className="journey-verse-reference">
+                  {verseLanguage === "am" && dailyVerse.amharicReference
+                    ? dailyVerse.amharicReference
+                    : dailyVerse.reference}
+                </p>
+                <button
+                  type="button"
+                  className="journey-primary"
+                  onClick={() => setIsBibleReaderOpen(true)}
+                >
+                  <BookOpen size={15} aria-hidden="true" />
+                  {t.dashboard.readFullChapter}{" "}
+                  <span aria-hidden="true">→</span>
+                </button>
+              </>
+            )
+          )}
+          <div
+            className="journey-verse-languages"
+            role="group"
+            aria-label={t.language.select}
+          >
+            {(["en", "am"] as const).map((lang) => (
               <button
                 type="button"
-                className="journey-primary"
-                onClick={() => setIsBibleReaderOpen(true)}
+                key={lang}
+                aria-pressed={verseLanguage === lang}
+                onClick={() => setVerseLanguage(lang)}
               >
-                <BookOpen size={15} aria-hidden="true" />
-                {t.dashboard.readFullChapter} <span aria-hidden="true">→</span>
+                {lang === "en" ? "English" : "አማርኛ"}
               </button>
-            </>
-          )
-        )}
-        <div
-          className="journey-verse-languages"
-          role="group"
-          aria-label={t.language.select}
-        >
-          {(["en", "am"] as const).map((lang) => (
-            <button
-              type="button"
-              key={lang}
-              aria-pressed={verseLanguage === lang}
-              onClick={() => setVerseLanguage(lang)}
-            >
-              {lang === "en" ? "English" : "አማርኛ"}
-            </button>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+      </div>
 
       {profile?.id && accessToken && (
         <PushNotificationSetup
