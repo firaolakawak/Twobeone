@@ -62,7 +62,11 @@ async function codeAssetNetworkFirst(request) {
   try {
     const response = await fetch(request);
     const contentType = response.headers.get('content-type') || '';
-    const expectedType = request.destination === 'style' || request.url.endsWith('.css') ? 'text/css' : 'javascript';
+    // Vite serves imported CSS modules as JavaScript during development.
+    // The browser's destination takes precedence over the URL extension.
+    const isStylesheet = request.destination === 'style' ||
+      (!request.destination && new URL(request.url).pathname.endsWith('.css'));
+    const expectedType = isStylesheet ? 'text/css' : 'javascript';
 
     // Vercel's SPA fallback can return index.html for an obsolete chunk URL.
     // Never cache or serve that HTML as JavaScript/CSS.

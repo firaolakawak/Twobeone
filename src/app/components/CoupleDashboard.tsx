@@ -24,7 +24,6 @@ import {
   Plus,
   Settings,
   Share2,
-  BarChart3,
   BookHeart,
   HandHeart,
   Brain,
@@ -37,6 +36,9 @@ import { ComprehensiveBibleReader } from './ComprehensiveBibleReader';
 import { LearningModulesCard } from './LearningModulesCard';
 import { PushNotificationSetup } from './PushNotificationSetup';
 import { DistanceConnector } from './DistanceConnector';
+import { DailyMoodCheckIn } from './DailyMoodCheckIn';
+import { CoupleMoodHeading } from './CoupleMoodHeading';
+import { useDailyMoods } from '../hooks/useDailyMoods';
 import { projectId } from '../utils/supabase/info';
 import { sendNotification } from '../utils/notifications';
 import { toast } from 'sonner';
@@ -47,7 +49,9 @@ import { ChampionsCard } from './ChampionsCard';
 import { coupleCalendarCopy } from '../data/couple-calendar';
 
 export interface CoupleDashboardProps {
-  profile?: User;
+  profile?: User & {
+    notificationSettings?: { pushNotifications?: boolean };
+  };
   partner?: User;
   journalEntries: JournalEntry[];
   prayers: PrayerRequest[];
@@ -161,13 +165,6 @@ interface Milestone {
   icon: string;
 }
 
-interface MoodEntry {
-  userId: string;
-  mood: 'great' | 'good' | 'okay' | 'sad';
-  date: string;
-  note?: string;
-}
-
 interface Notification {
   id: string;
   userId: string;
@@ -178,119 +175,6 @@ interface Notification {
   read: boolean;
   createdAt: string;
 }
-
-// Fancy SVG mood face illustrations
-const MoodFace = ({ mood, size = 44 }: { mood: string; size?: number }) => {
-  if (mood === 'great') return (
-    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <radialGradient id="mf-great" cx="42%" cy="32%" r="68%">
-          <stop offset="0%" stopColor="#FFFDE7"/>
-          <stop offset="55%" stopColor="#FFD600"/>
-          <stop offset="100%" stopColor="#FF8F00"/>
-        </radialGradient>
-      </defs>
-      <circle cx="24" cy="24" r="22" fill="url(#mf-great)"/>
-      <circle cx="24" cy="24" r="22" fill="none" stroke="#F9A825" strokeWidth="1.5"/>
-      {/* Excitement brows */}
-      <path d="M11 16 Q15 11 19 14" stroke="#7B5800" strokeWidth="2" strokeLinecap="round" fill="none"/>
-      <path d="M29 14 Q33 11 37 16" stroke="#7B5800" strokeWidth="2" strokeLinecap="round" fill="none"/>
-      {/* Star eyes */}
-      <path d="M16 24 L17.2 20.8 L18.4 24 L21.6 24 L19 26.2 L19.9 29.4 L16 27.2 L12.1 29.4 L13 26.2 L10.4 24 L13.6 24 Z" fill="#E65100"/>
-      <path d="M32 24 L33.2 20.8 L34.4 24 L37.6 24 L35 26.2 L35.9 29.4 L32 27.2 L28.1 29.4 L29 26.2 L26.4 24 L29.6 24 Z" fill="#E65100"/>
-      {/* Big open grin */}
-      <path d="M11 31 Q24 45 37 31" fill="white" stroke="#C17900" strokeWidth="2" strokeLinejoin="round"/>
-      <path d="M11 31 Q24 38 37 31" fill="#C17900"/>
-      <ellipse cx="24" cy="39" rx="5.5" ry="3.5" fill="#FF5252" opacity="0.65"/>
-      {/* Rosy cheeks */}
-      <ellipse cx="9" cy="31" rx="5.5" ry="3.5" fill="#FF8A65" opacity="0.5"/>
-      <ellipse cx="39" cy="31" rx="5.5" ry="3.5" fill="#FF8A65" opacity="0.5"/>
-      {/* Sparkles */}
-      <path d="M4 8 L4 12 M2 10 L6 10" stroke="#FFD600" strokeWidth="1.4" strokeLinecap="round"/>
-      <path d="M44 6 L44 10 M42 8 L46 8" stroke="#FFD600" strokeWidth="1.2" strokeLinecap="round"/>
-      <circle cx="5" cy="10" r="1.2" fill="#FFD600"/>
-      <circle cx="44" cy="8" r="1" fill="#FFD600"/>
-    </svg>
-  );
-  if (mood === 'good') return (
-    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <radialGradient id="mf-good" cx="42%" cy="32%" r="68%">
-          <stop offset="0%" stopColor="#FFFDE7"/>
-          <stop offset="55%" stopColor="#FFD54F"/>
-          <stop offset="100%" stopColor="#FFA000"/>
-        </radialGradient>
-      </defs>
-      <circle cx="24" cy="24" r="22" fill="url(#mf-good)"/>
-      <circle cx="24" cy="24" r="22" fill="none" stroke="#FFB300" strokeWidth="1.5"/>
-      {/* Gentle brows */}
-      <path d="M11 17 Q15.5 13.5 20 16" stroke="#7B5800" strokeWidth="2" strokeLinecap="round" fill="none"/>
-      <path d="M28 16 Q32.5 13.5 37 17" stroke="#7B5800" strokeWidth="2" strokeLinecap="round" fill="none"/>
-      {/* Happy crescent eyes */}
-      <path d="M11 23 Q16 18 21 23" stroke="#4E342E" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-      <path d="M27 23 Q32 18 37 23" stroke="#4E342E" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-      {/* Warm smile */}
-      <path d="M14 31 Q24 42 34 31" fill="none" stroke="#7B5800" strokeWidth="2.5" strokeLinecap="round"/>
-      {/* Cheeks */}
-      <ellipse cx="10" cy="29" rx="5.5" ry="3.5" fill="#FF8A65" opacity="0.45"/>
-      <ellipse cx="38" cy="29" rx="5.5" ry="3.5" fill="#FF8A65" opacity="0.45"/>
-    </svg>
-  );
-  if (mood === 'okay') return (
-    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <radialGradient id="mf-okay" cx="42%" cy="32%" r="68%">
-          <stop offset="0%" stopColor="#EDE7F6"/>
-          <stop offset="55%" stopColor="#B39DDB"/>
-          <stop offset="100%" stopColor="#673AB7"/>
-        </radialGradient>
-      </defs>
-      <circle cx="24" cy="24" r="22" fill="url(#mf-okay)"/>
-      <circle cx="24" cy="24" r="22" fill="none" stroke="#9575CD" strokeWidth="1.5"/>
-      {/* Flat brows */}
-      <path d="M11 17 L20 17" stroke="#311B92" strokeWidth="2.2" strokeLinecap="round"/>
-      <path d="M28 17 L37 17" stroke="#311B92" strokeWidth="2.2" strokeLinecap="round"/>
-      {/* Round eyes with pupils */}
-      <ellipse cx="16" cy="23" rx="4.5" ry="5" fill="white"/>
-      <circle cx="16" cy="24" r="2.8" fill="#1A237E"/>
-      <circle cx="17.2" cy="22.5" r="1.1" fill="white" opacity="0.7"/>
-      <ellipse cx="32" cy="23" rx="4.5" ry="5" fill="white"/>
-      <circle cx="32" cy="24" r="2.8" fill="#1A237E"/>
-      <circle cx="33.2" cy="22.5" r="1.1" fill="white" opacity="0.7"/>
-      {/* Neutral mouth */}
-      <path d="M17 34 Q24 31 31 34" fill="none" stroke="#311B92" strokeWidth="2.2" strokeLinecap="round"/>
-    </svg>
-  );
-  if (mood === 'sad') return (
-    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <radialGradient id="mf-sad" cx="42%" cy="32%" r="68%">
-          <stop offset="0%" stopColor="#E3F2FD"/>
-          <stop offset="55%" stopColor="#90CAF9"/>
-          <stop offset="100%" stopColor="#1565C0"/>
-        </radialGradient>
-      </defs>
-      <circle cx="24" cy="24" r="22" fill="url(#mf-sad)"/>
-      <circle cx="24" cy="24" r="22" fill="none" stroke="#42A5F5" strokeWidth="1.5"/>
-      {/* Sad brows — drooping inward */}
-      <path d="M11 16 Q15 19.5 19 17" stroke="#0D47A1" strokeWidth="2" strokeLinecap="round" fill="none"/>
-      <path d="M29 17 Q33 19.5 37 16" stroke="#0D47A1" strokeWidth="2" strokeLinecap="round" fill="none"/>
-      {/* Watery eyes */}
-      <ellipse cx="16" cy="23" rx="4.5" ry="5" fill="white" opacity="0.9"/>
-      <circle cx="16" cy="24" r="2.8" fill="#0D47A1"/>
-      <circle cx="17.2" cy="22.5" r="1.1" fill="white" opacity="0.6"/>
-      <ellipse cx="32" cy="23" rx="4.5" ry="5" fill="white" opacity="0.9"/>
-      <circle cx="32" cy="24" r="2.8" fill="#0D47A1"/>
-      <circle cx="33.2" cy="22.5" r="1.1" fill="white" opacity="0.6"/>
-      {/* Frown */}
-      <path d="M15 36 Q24 29 33 36" fill="none" stroke="#0D47A1" strokeWidth="2.5" strokeLinecap="round"/>
-      {/* Teardrop */}
-      <ellipse cx="32" cy="31.5" rx="2.2" ry="3.5" fill="#64B5F6" opacity="0.8"/>
-      <path d="M29.8 29.5 Q32 26 34.2 29.5" fill="#64B5F6" opacity="0.6"/>
-    </svg>
-  );
-  return null;
-};
 
 // Isolated timer component — owns its own 1-second interval so the parent never re-renders from it
 const TimerDisplay = memo(function TimerDisplay({
@@ -365,8 +249,6 @@ export function CoupleDashboard({
   const { t, language } = useLanguage();
   const calendarCopy = coupleCalendarCopy[language];
   // timeTogether state moved into TimerDisplay to prevent 60 re-renders/min on this component
-  const [showMoodDialog, setShowMoodDialog] = useState(false);
-  const [todayMood, setTodayMood] = useState<string | null>(null);
 
   const [showLocationSettings, setShowLocationSettings] = useState(false);
   const [userLocation, setUserLocation] = useState<any>(null);
@@ -381,8 +263,7 @@ export function CoupleDashboard({
   const [isBibleReaderOpen, setIsBibleReaderOpen] = useState(false);
   const [verseLanguage, setVerseLanguage] = useState<'en' | 'am'>(() => language === 'en' ? 'en' : 'am');
   const [milestones, setMilestones] = useState<Milestone[]>([]);
-  const [todaysMood, setTodaysMood] = useState<MoodEntry | null>(null);
-  const [partnerMood, setPartnerMood] = useState<MoodEntry | null>(null);
+  const { userMood, partnerMood, loaded: moodsLoaded, saveMood } = useDailyMoods(partner ? profile?.id : undefined, partner?.id);
   const [totalQuestionsCount, setTotalQuestionsCount] = useState(0);
   const [stageExpanded, setStageExpanded] = useState(false);
   const [countdownExpanded, setCountdownExpanded] = useState(false);
@@ -609,62 +490,6 @@ export function CoupleDashboard({
     }
   }, [profile?.id, partner?.id]);
 
-  useEffect(() => {
-    // Fetch moods from backend
-    const fetchMoods = async () => {
-      try {
-        const { moods: fetchedMoods } = await moodsApi.list();
-        
-        // Get today's date string
-        const today = new Date().toISOString().split('T')[0];
-        
-        // Find today's mood for user and partner
-        const userTodayMood = fetchedMoods.find((m: any) => 
-          m.userId === profile?.id && m.createdAt.startsWith(today)
-        );
-        const partnerTodayMood = fetchedMoods.find((m: any) => 
-          m.userId === partner?.id && m.createdAt.startsWith(today)
-        );
-        
-        if (userTodayMood) {
-          setTodaysMood({
-            userId: userTodayMood.userId,
-            mood: userTodayMood.mood,
-            date: userTodayMood.createdAt,
-            note: userTodayMood.note
-          });
-        }
-        
-        if (partnerTodayMood) {
-          setPartnerMood({
-            userId: partnerTodayMood.userId,
-            mood: partnerTodayMood.mood,
-            date: partnerTodayMood.createdAt,
-            note: partnerTodayMood.note
-          });
-        }
-      } catch (error: any) {
-        // Suppress expected network errors — moods polling is non-critical
-        const isNetworkErr = error?.message?.includes('Unable to connect') ||
-          error?.message?.includes('Failed to fetch') ||
-          error?.message?.includes('Unauthorized') ||
-          error?.message?.includes('timeout');
-        if (!isNetworkErr) {
-          console.warn('Could not fetch moods - non-critical feature:', error);
-        }
-      }
-    };
-
-    if (profile?.id) {
-      // Defer 1.5s — mood data is non-critical for initial render
-      setTimeout(() => fetchMoods(), 1500);
-      const interval = setInterval(() => {
-        if (document.visibilityState === 'visible') void fetchMoods();
-      }, 5 * 60_000);
-      return () => clearInterval(interval);
-    }
-  }, [profile?.id, partner?.id]);
-
   // Auto-check for weekly mood report (only if user has a partner)
   useEffect(() => {
     /** Returns "YYYY-Www" ISO week string so the key is unambiguous. */
@@ -716,33 +541,6 @@ export function CoupleDashboard({
     const interval = setInterval(checkWeeklyReport, 6 * 60 * 60 * 1000);
     return () => clearInterval(interval);
   }, [profile?.id, partner?.id]);
-
-  // Helper function to save mood and refetch
-  const handleMoodUpdate = async (moodValue: 'great' | 'good' | 'okay' | 'sad') => {
-    try {
-      await moodsApi.save(moodValue);
-      setTodaysMood({ userId: profile?.id || '', mood: moodValue, date: new Date().toISOString() });
-      toast.success('Mood saved!');
-      
-      // Refetch to get the saved mood from backend
-      const { moods: fetchedMoods } = await moodsApi.list();
-      const today = new Date().toISOString().split('T')[0];
-      const userTodayMood = fetchedMoods.find((m: any) => 
-        m.userId === profile?.id && m.createdAt.startsWith(today)
-      );
-      if (userTodayMood) {
-        setTodaysMood({
-          userId: userTodayMood.userId,
-          mood: userTodayMood.mood,
-          date: userTodayMood.createdAt,
-          note: userTodayMood.note
-        });
-      }
-    } catch (error) {
-      console.error('Error saving mood:', error);
-      toast.error('Failed to save mood');
-    }
-  };
 
   // Calculate stats
   const sharedJournalEntries = journalEntries.filter(e => e.isShared).length;
@@ -947,13 +745,32 @@ export function CoupleDashboard({
           {/* Status Message */}
           {partner ? (
             <div className="mt-5 text-center space-y-1.5">
-              <h2 className="text-[1.35rem] font-bold tracking-[-0.025em] bg-gradient-to-r from-rose-700 via-primary-600 to-violet-700 bg-clip-text text-transparent">
-                {profile?.name} & {partner.name}
-              </h2>
+              <CoupleMoodHeading
+                userName={profile?.name || t.mood.you}
+                partnerName={partner.name || t.mood.partner}
+                partnerId={partner.id}
+                partnerMood={partnerMood}
+              />
               <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
                 <Sparkles className="w-4 h-4 text-warning-500" />
                 {t.dashboard.growingTogetherInFaith}
               </p>
+              {profile?.id && (
+                <div className="flex justify-center pt-2">
+                  <DailyMoodCheckIn
+                    userId={profile.id}
+                    userName={profile.name || t.mood.you}
+                    partnerName={partner.name || t.mood.partner}
+                    mood={userMood?.mood || null}
+                    loaded={moodsLoaded}
+                    onSave={async (mood) => {
+                      await saveMood(mood);
+                      toast.success(t.mood.moodSaved);
+                    }}
+                    onViewAnalytics={() => onScreenNavigate?.('mood-analytics')}
+                  />
+                </div>
+              )}
             </div>
           ) : (
             <div className="text-center">
@@ -1494,115 +1311,6 @@ export function CoupleDashboard({
         />
       )}
 
-      {/* Mood Tracker */}
-      {partner && (
-        <Card className="overflow-hidden rounded-[1.75rem] border-rose-100 bg-gradient-to-br from-white via-white to-rose-50/35 shadow-[0_18px_48px_-34px_rgba(190,24,93,.3)]">
-          <CardHeader className="p-5 pb-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="flex items-center gap-3 text-base font-black text-slate-950">
-                  <span className="grid h-10 w-10 place-items-center rounded-2xl bg-rose-100 text-rose-600"><Heart className="h-5 w-5" /></span>
-                  {t.dashboard.todaysMood}
-                </CardTitle>
-                <CardDescription>{t.mood.shareEmotionalState}</CardDescription>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onScreenNavigate?.('mood-analytics')}
-                className="h-8 w-8 text-primary-600 hover:text-primary-700 hover:bg-primary-50"
-                title="View Analytics"
-              >
-                <BarChart3 className="w-5 h-5" />
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="px-5 pb-5">
-            <div className="grid sm:grid-cols-2 gap-6">
-              {/* {t.dashboard.yourMood} */}
-              <div className="space-y-3">
-                <p style={{ fontSize: 'var(--text-callout)', fontWeight: 'var(--font-weight-medium)', color: 'var(--muted-foreground)' }}>{t.dashboard.yourMood}</p>
-                <div className="grid grid-cols-4 gap-2">
-                  {([
-                    { mood: 'great', label: 'Great', bg: 'linear-gradient(135deg, var(--success-50), var(--warning-50))', border: 'var(--success-400)', labelColor: 'var(--success-700)', glow: 'var(--success-200)' },
-                    { mood: 'good',  label: 'Good',  bg: 'linear-gradient(135deg, var(--warning-50), var(--secondary-50))', border: 'var(--warning-400)', labelColor: 'var(--warning-700)', glow: 'var(--warning-200)' },
-                    { mood: 'okay',  label: 'Okay',  bg: 'linear-gradient(135deg, var(--secondary-50), var(--primary-50))', border: 'var(--secondary-400)', labelColor: 'var(--secondary-700)', glow: 'var(--secondary-200)' },
-                    { mood: 'sad',   label: 'Sad',   bg: 'linear-gradient(135deg, var(--primary-50), var(--neutral-100))', border: 'var(--primary-300)', labelColor: 'var(--primary-700)', glow: 'var(--primary-100)' },
-                  ] as const).map(({ mood, label, bg, border, labelColor, glow }) => {
-                    const isSelected = todaysMood?.mood === mood;
-                    return (
-                      <button
-                        key={mood}
-                        onClick={() => handleMoodUpdate(mood)}
-                        style={{
-                          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                          gap: 'var(--spacing-1)',
-                          paddingTop: 'var(--spacing-3)',
-                          paddingBottom: 'var(--spacing-2)',
-                          borderRadius: '18px',
-                          border: `1.5px solid ${isSelected ? border : 'var(--neutral-200)'}`,
-                          background: isSelected ? bg : 'var(--card)',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s cubic-bezier(0.34,1.56,0.64,1)',
-                          transform: isSelected ? 'translateY(-2px)' : 'none',
-                          boxShadow: isSelected ? `0 10px 24px -14px ${border}` : '0 8px 24px -20px rgba(15,23,42,.35)',
-                        }}
-                      >
-                        <MoodFace mood={mood} size={44} />
-                        <span style={{ fontSize: 'var(--text-label)', fontWeight: isSelected ? 'var(--font-weight-semibold)' : 'var(--font-weight-medium)', color: isSelected ? labelColor : 'var(--neutral-500)' }}>{label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-                {!todaysMood && (
-                  <p style={{ fontSize: 'var(--text-caption-small)', color: 'var(--muted-foreground)' }}>Tap to share how you feel</p>
-                )}
-              </div>
-
-              {/* {t.dashboard.partnersMood} */}
-              <div className="space-y-3">
-                <p style={{ fontSize: 'var(--text-callout)', fontWeight: 'var(--font-weight-medium)', color: 'var(--muted-foreground)' }}>{partner.name}'s Mood</p>
-                {partnerMood ? (() => {
-                  const moodMap: Record<string, { label: string; bg: string; border: string; color: string; glow: string }> = {
-                    great: { label: 'Feeling great!', bg: 'linear-gradient(135deg, var(--success-50), var(--warning-50))', border: 'var(--success-400)', color: 'var(--success-700)', glow: 'var(--success-100)' },
-                    good:  { label: 'Feeling good',   bg: 'linear-gradient(135deg, var(--warning-50), var(--secondary-50))', border: 'var(--warning-400)', color: 'var(--warning-700)', glow: 'var(--warning-100)' },
-                    okay:  { label: 'Feeling okay',   bg: 'linear-gradient(135deg, var(--secondary-50), var(--primary-50))', border: 'var(--secondary-400)', color: 'var(--secondary-700)', glow: 'var(--secondary-100)' },
-                    sad:   { label: 'Feeling sad',    bg: 'linear-gradient(135deg, var(--primary-50), var(--neutral-100))', border: 'var(--primary-300)', color: 'var(--primary-700)', glow: 'var(--primary-50)' },
-                  };
-                  const m = moodMap[partnerMood.mood] ?? moodMap.okay;
-                  return (
-                    <div style={{
-                      display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)',
-                      padding: 'var(--spacing-3) var(--spacing-4)',
-                      background: m.bg,
-                      border: `1px solid ${m.border}`,
-                      borderRadius: '20px',
-                      boxShadow: `0 12px 28px -22px ${m.border}`,
-                    }}>
-                      <MoodFace mood={partnerMood.mood} size={52} />
-                      <div>
-                        <p style={{ fontSize: 'var(--text-callout)', fontWeight: 'var(--font-weight-semibold)', color: m.color, margin: 0 }}>{m.label}</p>
-                        <p style={{ fontSize: 'var(--text-caption-small)', color: 'var(--muted-foreground)', margin: 0 }}>{t.common.today}</p>
-                      </div>
-                    </div>
-                  );
-                })() : (
-                  <div style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    minHeight: 'var(--touch-target-comfortable)',
-                    background: 'var(--neutral-50)',
-                    borderRadius: 'var(--radius-md)',
-                    border: '1.5px dashed var(--neutral-300)',
-                  }}>
-                    <p style={{ fontSize: 'var(--text-caption-small)', color: 'var(--muted-foreground)', margin: 0 }}>{t.dashboard.notSharedYet}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Journey Progress */}
       {partner && (
         <Card className="cursor-pointer overflow-hidden rounded-[1.75rem] border-violet-100 bg-gradient-to-br from-white via-white to-violet-50/45 shadow-[0_18px_48px_-34px_rgba(109,40,217,.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_54px_-32px_rgba(109,40,217,.38)]" onClick={() => onNavigate?.('devotions')}>
@@ -1668,6 +1376,7 @@ export function CoupleDashboard({
         <PushNotificationSetup
           userId={profile.id}
           accessToken={accessToken}
+          notificationsEnabled={profile.notificationSettings?.pushNotifications !== false}
           reminderOnly
         />
       )}

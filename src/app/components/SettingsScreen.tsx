@@ -40,6 +40,7 @@ import { PartnerDisconnectDialog } from './PartnerDisconnectDialog';
 import { useLanguage } from '../contexts/LanguageContext';
 import { languages } from '../utils/i18n';
 import { PWAStatus } from './PWAStatus';
+import { PushNotificationSetup } from './PushNotificationSetup';
 import { InstallBanner } from './InstallPrompt';
 import { PrivacyPolicy } from '../legal/privacy-policy';
 import { TermsOfService } from '../legal/terms-of-service';
@@ -1292,10 +1293,19 @@ export function SettingsScreen({
                     <p className="font-medium">{t.notifications.pushNotifications}</p>
                     <p className="text-sm text-muted-foreground">Receive notifications on your device</p>
                   </div>
-                  <Switch
-                    checked={pushNotifications}
-                    onCheckedChange={setPushNotifications}
-                  />
+                  <div className="flex items-center gap-2">
+                    {pushNotifications && profile?.id && accessToken && (
+                      <PushNotificationSetup
+                        userId={profile.id}
+                        accessToken={accessToken}
+                        notificationsEnabled={pushNotifications}
+                      />
+                    )}
+                    <Switch
+                      checked={pushNotifications}
+                      onCheckedChange={setPushNotifications}
+                    />
+                  </div>
                 </div>
                 <Separator />
                 

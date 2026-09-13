@@ -14,11 +14,13 @@ interface PushNotificationSetupProps {
   accessToken: string;
   onComplete?: () => void;
   reminderOnly?: boolean;
+  notificationsEnabled?: boolean;
 }
 
-export function PushNotificationSetup({ userId, accessToken, onComplete, reminderOnly = false }: PushNotificationSetupProps) {
+export function PushNotificationSetup({ userId, accessToken, onComplete, reminderOnly = false, notificationsEnabled = true }: PushNotificationSetupProps) {
   const { t } = useLanguage();
   const isApkUrl = isApkUrlEnvironment();
+  const isSupported = 'Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window;
   const [showDialog, setShowDialog] = useState(false);
   const [notificationStatus, setNotificationStatus] = useState<'unknown' | 'granted' | 'denied' | 'prompt'>('unknown');
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -26,70 +28,134 @@ export function PushNotificationSetup({ userId, accessToken, onComplete, reminde
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (isApkUrl) return;
-    checkNotificationStatus();
-  }, [isApkUrl]);
+    setShowDialog(false);
+    setIsSubscribed(false);
+    setHasCheckedSubscription(false);
+    setNotificationStatus('unknown');
+    if (isApkUrl || !isSupported) return;
+
+    let cancelled = false;
+    const controller = new AbortController();
+    const checkNotificationStatus = async () => {
+      const permission = Notification.permission;
+      setNotificationStatus(permission === 'default' ? 'prompt' : permission);
+
+      if (permission !== 'granted') {
+        setHasCheckedSubscription(true);
+        return;
+      }
+
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        if (cancelled) return;
+        let subscription = await registration.pushManager.getSubscription();
+        if (cancelled) return;
+        if (notificationsEnabled && (!subscription || !pushSubscriptionMatchesCurrentKey(subscription))) {
+          if (subscription) await subscription.unsubscribe();
+          if (cancelled) return;
+          // Permission is already granted. Restore a missing subscription or
+          // repair one created before a VAPID rotation without another prompt.
+          subscription = await subscribeToPushNotifications();
+        }
+        if (cancelled) return;
+
+        // Browser state is independent of whether the server is reachable.
+        setIsSubscribed(!!subscription);
+        setHasCheckedSubscription(true);
+
+        // Re-sync on signed-in loads/account changes to repair stale server records.
+        if (subscription) {
+          try {
+            const response = await fetch(
+              `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/push-subscription`,
+              {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${accessToken}`,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ subscription: subscription.toJSON() }),
+                signal: controller.signal,
+              }
+            );
+            if (!response.ok) throw new Error('Failed to synchronize push subscription');
+          } catch (error) {
+            if (!cancelled) console.error('[PushNotification] Error synchronizing subscription:', error);
+          }
+        }
+      } catch (error) {
+        // An incomplete check is not evidence that notifications are disabled.
+        if (!cancelled) console.error('[PushNotification] Error checking subscription:', error);
+      }
+    };
+
+    void checkNotificationStatus();
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [accessToken, isApkUrl, isSupported, notificationsEnabled, userId]);
 
   useEffect(() => {
-    // Wait for the full subscription check before deciding whether to remind.
-    // This allows a reminder for every genuinely disabled state without flashing
-    // a dialog while an enabled subscription is still loading.
-    if (isApkUrl || !reminderOnly || !hasCheckedSubscription || notificationStatus === 'unknown' || isSubscribed) return;
+    // Offer setup once per user/browser, only while permission is undecided.
+    if (isApkUrl || !isSupported || !notificationsEnabled || !reminderOnly || !hasCheckedSubscription || notificationStatus !== 'prompt' || isSubscribed) return;
     const reminderKey = `twobeone_push_reminder:${userId}`;
-    if (sessionStorage.getItem(reminderKey)) return;
-
-    const timer = window.setTimeout(() => {
-      sessionStorage.setItem(reminderKey, 'shown');
-      setShowDialog(true);
-    }, 1200);
-    return () => window.clearTimeout(timer);
-  }, [hasCheckedSubscription, isApkUrl, isSubscribed, notificationStatus, reminderOnly, userId]);
-
-  const checkNotificationStatus = async () => {
-    if (!('Notification' in window)) {
-      setNotificationStatus('denied');
-      setHasCheckedSubscription(true);
+    try {
+      if (localStorage.getItem(reminderKey)) return;
+      // Preserve reminders already shown before persistence moved to localStorage.
+      if (sessionStorage.getItem(reminderKey)) {
+        localStorage.setItem(reminderKey, 'shown');
+        return;
+      }
+    } catch {
+      // Skip automatic prompts when the user's choice cannot be remembered.
       return;
     }
 
-    const permission = Notification.permission;
-    setNotificationStatus(permission === 'default' ? 'prompt' : permission);
-
-    // Check if already subscribed
-    if (permission === 'granted' && 'serviceWorker' in navigator) {
-      try {
-        const registration = await navigator.serviceWorker.ready;
-        let subscription = await registration.pushManager.getSubscription();
-        if (subscription && !pushSubscriptionMatchesCurrentKey(subscription)) {
-          await subscription.unsubscribe();
-          // Permission is already granted, so repair a subscription created
-          // before a VAPID rotation without requiring another user prompt.
-          subscription = await subscribeToPushNotifications();
-        }
-
-        // Re-sync the browser's current subscription on every signed-in app
-        // load. This repairs a missing or stale server-side KV record.
-        if (subscription) {
-          const response = await fetch(
-            `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/push-subscription`,
-            {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ subscription: subscription.toJSON() })
-            }
-          );
-          if (!response.ok) throw new Error('Failed to synchronize push subscription');
-        }
-        setIsSubscribed(!!subscription);
-      } catch (error) {
-        console.error('[PushNotification] Error checking subscription:', error);
+    let timer: number | undefined;
+    let finished = false;
+    const hasOpenDialog = () => Array.from(document.querySelectorAll('[role="dialog"], [role="alertdialog"]'))
+      .some(dialog => !dialog.closest('[hidden], [aria-hidden="true"], [data-state="closed"]'));
+    const scheduleReminder = () => {
+      if (finished) return;
+      if (hasOpenDialog()) {
+        if (timer !== undefined) window.clearTimeout(timer);
+        timer = undefined;
+        return;
       }
-    }
-    setHasCheckedSubscription(true);
-  };
+      if (timer !== undefined) return;
+
+      timer = window.setTimeout(() => {
+        timer = undefined;
+        if (hasOpenDialog()) return;
+        try {
+          if (!localStorage.getItem(reminderKey)) {
+            localStorage.setItem(reminderKey, 'shown');
+            setShowDialog(true);
+          }
+        } catch {
+          // Skip automatic prompts when the user's choice cannot be remembered.
+        }
+        finished = true;
+        observer.disconnect();
+      }, 1200);
+    };
+
+    // Give check-ins and other dialogs time to close before offering push setup.
+    const observer = new MutationObserver(scheduleReminder);
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['role', 'hidden', 'aria-hidden', 'data-state'],
+    });
+    scheduleReminder();
+    return () => {
+      finished = true;
+      if (timer !== undefined) window.clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, [hasCheckedSubscription, isApkUrl, isSupported, isSubscribed, notificationsEnabled, notificationStatus, reminderOnly, userId]);
 
   const handleEnableNotifications = async () => {
     setIsLoading(true);
@@ -236,7 +302,7 @@ export function PushNotificationSetup({ userId, accessToken, onComplete, reminde
     }
   };
 
-  if (isApkUrl) return null;
+  if (isApkUrl || !isSupported) return null;
 
   return (
     <>
@@ -247,6 +313,7 @@ export function PushNotificationSetup({ userId, accessToken, onComplete, reminde
         onClick={() => setShowDialog(true)}
         className={`h-8 w-8 ${isSubscribed ? 'text-success-700 hover:bg-success-50' : 'text-muted-foreground hover:bg-muted'}`}
         title={isSubscribed ? t.notifications.notificationsOn : t.notifications.enableNotifications}
+        aria-label={isSubscribed ? t.notifications.notificationsOn : t.notifications.enableNotifications}
       >
         {isSubscribed ? (
           <Bell className="w-5 h-5" />
