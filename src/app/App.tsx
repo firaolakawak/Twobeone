@@ -1430,6 +1430,8 @@ export default function App() {
     );
   }
 
+  const isCoupleDashboard = activeTab === "home" && selectedScreen === "dashboard";
+
   return (
     <LanguageProvider>
       <SEOHead />
@@ -1533,8 +1535,8 @@ export default function App() {
         </header>
 
         {/* Content Flow Layout Window Context */}
-        <div className="flex-1 w-full pt-4 pb-28">
-          <div className="max-w-6xl mx-auto px-4">
+        <div className={`flex-1 w-full pb-28 ${isCoupleDashboard && !loadError ? "pt-0" : "pt-4"}`}>
+          <div className={isCoupleDashboard ? "w-full" : "max-w-6xl mx-auto px-4"}>
             <Toaster />
             <Suspense fallback={null}>
               <PWAUpdateAvailable />
@@ -1545,7 +1547,7 @@ export default function App() {
 
             {/* Error Banner */}
             {loadError && (
-              <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 mb-4 max-w-2xl mx-auto">
+              <div className={`bg-rose-50 border border-rose-200 rounded-xl p-4 mb-4 max-w-2xl mx-auto ${isCoupleDashboard ? "w-[calc(100%-2rem)]" : ""}`}>
                 <div className="flex items-start gap-3">
                   <AlertCircle className="w-5 h-5 text-rose-500 flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
@@ -1569,7 +1571,7 @@ export default function App() {
             )}
 
             {/* Main Application Interface Core Components Render Frame */}
-            <main className="container mx-auto px-2 max-w-2xl">
+            <main className={isCoupleDashboard ? "w-full" : "container mx-auto px-2 max-w-2xl"}>
               <Suspense fallback={<ScreenLoader />}>
               {activeTab === "home" &&
                 selectedScreen === "dashboard" && (

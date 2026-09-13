@@ -187,7 +187,6 @@ export function LearningModulesCard({
         background: "linear-gradient(145deg, #ffffff 0%, #fff7f9 58%, #f8f5ff 100%)",
         borderRadius: "28px",
         border: "1px solid #ffe4e6",
-        boxShadow: "0 18px 48px -34px rgba(190,24,93,.32)",
         overflow: "hidden",
       }}
     >

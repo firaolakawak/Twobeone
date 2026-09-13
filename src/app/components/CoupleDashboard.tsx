@@ -500,7 +500,7 @@ export function CoupleDashboard({
   const SpotlightIcon = spotlight.icon;
 
   return (
-    <div className="space-y-6 relative">
+    <div className="couple-dashboard">
       {/* Page-level ambient radial glow */}
       <div className="pointer-events-none absolute -top-8 left-0 right-0 overflow-hidden" style={{ height: 260, zIndex: 0 }}>
         <div style={{
@@ -512,7 +512,7 @@ export function CoupleDashboard({
       </div>
 
       {/* Couple profile and shared journey */}
-      <Card className="relative overflow-hidden border-rose-100/80 dark:border-rose-900/30 bg-card shadow-[0_24px_70px_-32px_rgba(190,24,93,0.32),0_8px_24px_-16px_rgba(15,23,42,0.2)]" style={{ zIndex: 1, borderRadius: '1.75rem' }} data-couple-journey>
+      <Card className="relative overflow-hidden border-x-0 border-rose-100/80 dark:border-rose-900/30 bg-card pt-4" style={{ zIndex: 1, borderRadius: '0 0 1.75rem 1.75rem' }} data-couple-journey>
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-rose-50/70 via-card to-violet-50/40 dark:from-rose-950/20 dark:to-violet-950/20" />
         <div className="pointer-events-none absolute -left-20 -top-28 h-64 w-64 rounded-full bg-rose-200/20 dark:bg-rose-500/5 blur-3xl" />
         {coupleData.couplePicture && (
@@ -521,7 +521,7 @@ export function CoupleDashboard({
           </div>
         )}
 
-        <CardContent className="relative px-4 pb-5 pt-6 sm:px-6 sm:pb-6">
+        <CardContent className="couple-hero-content relative px-4 pb-5 pt-6 sm:px-6 sm:pb-6">
           {partner && profile?.id && accessToken ? (
             <DistanceConnector
               embedded
@@ -591,7 +591,7 @@ export function CoupleDashboard({
       </Card>
 
       {/* Randomized next step — devotion, conversation, or journal */}
-      <section className={`relative overflow-hidden rounded-[1.75rem] border bg-gradient-to-br p-5 shadow-[0_16px_46px_rgba(83,45,67,0.09)] ${spotlight.surfaceClass}`} aria-labelledby="home-spotlight-title">
+      <section className={`relative overflow-hidden rounded-[1.75rem] border bg-gradient-to-br p-5 ${spotlight.surfaceClass}`} aria-labelledby="home-spotlight-title">
         <div className="pointer-events-none absolute -right-10 -top-12 h-36 w-36 rounded-full bg-white/70 blur-3xl" />
         <div className="relative">
           <div className="flex items-start justify-between gap-3">
@@ -623,7 +623,7 @@ export function CoupleDashboard({
       <button
         type="button"
         onClick={() => onScreenNavigate?.('couple-calendar')}
-        className="group relative w-full overflow-hidden rounded-[1.75rem] border border-rose-100 bg-gradient-to-br from-rose-50 via-white to-violet-50 p-5 text-left shadow-[0_16px_46px_rgba(83,45,67,0.08)] transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_52px_rgba(83,45,67,0.13)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
+        className="group relative w-full overflow-hidden rounded-[1.75rem] border border-rose-100 bg-gradient-to-br from-rose-50 via-white to-violet-50 p-5 text-left transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
       >
         <div className="pointer-events-none absolute -right-8 -top-10 h-32 w-32 rounded-full bg-violet-200/30 blur-3xl" />
         <div className="relative flex items-center gap-4">
@@ -684,7 +684,7 @@ export function CoupleDashboard({
           <button
             key={label}
             onClick={onClick}
-            className={`group rounded-[1.5rem] border p-4 text-left shadow-[0_14px_38px_-28px_rgba(15,23,42,.35)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_42px_-26px_rgba(15,23,42,.42)] active:scale-[0.98] ${surface}`}
+            className={`group rounded-[1.5rem] border p-4 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${surface}`}
           >
             <div className="flex items-start justify-between">
               <div className="space-y-0.5">
@@ -703,7 +703,7 @@ export function CoupleDashboard({
 
       {/* Daily Bible Verse */}
       <Card 
-        className="cursor-pointer overflow-hidden rounded-[1.75rem] border-amber-100 bg-gradient-to-br from-white via-amber-50/35 to-rose-50/40 shadow-[0_18px_48px_-32px_rgba(180,83,9,.35)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_54px_-30px_rgba(180,83,9,.42)]"
+        className="cursor-pointer overflow-hidden rounded-[1.75rem] border-amber-100 bg-gradient-to-br from-white via-amber-50/35 to-rose-50/40 transition-all hover:-translate-y-0.5"
         onClick={() => setIsBibleReaderOpen(true)}
       >
         <CardHeader className="p-5 pb-3">
@@ -760,7 +760,7 @@ export function CoupleDashboard({
 
               {verseLanguage === 'am' && dailyVerse.amharicText ? (
                 <>
-                  <blockquote lang="am" className="rounded-2xl border border-white bg-white/80 p-4 text-sm leading-8 text-slate-700 shadow-sm">
+                  <blockquote lang="am" className="rounded-2xl border border-white bg-white/80 p-4 text-sm leading-8 text-slate-700">
                     "{dailyVerse.amharicText}"
                   </blockquote>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -770,7 +770,7 @@ export function CoupleDashboard({
                 </>
               ) : (
                 <>
-                  <blockquote className="rounded-2xl border border-white bg-white/80 p-4 text-sm italic leading-7 text-slate-700 shadow-sm">
+                  <blockquote className="rounded-2xl border border-white bg-white/80 p-4 text-sm italic leading-7 text-slate-700">
                     "{dailyVerse.text}"
                   </blockquote>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -856,7 +856,7 @@ export function CoupleDashboard({
 
       {/* Journey Progress */}
       {partner && (
-        <Card className="cursor-pointer overflow-hidden rounded-[1.75rem] border-violet-100 bg-gradient-to-br from-white via-white to-violet-50/45 shadow-[0_18px_48px_-34px_rgba(109,40,217,.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_54px_-32px_rgba(109,40,217,.38)]" onClick={() => onNavigate?.('devotions')}>
+        <Card className="cursor-pointer overflow-hidden rounded-[1.75rem] border-violet-100 bg-gradient-to-br from-white via-white to-violet-50/45 transition-all hover:-translate-y-0.5" onClick={() => onNavigate?.('devotions')}>
           <CardHeader className="p-5 pb-3">
             <CardTitle className="flex items-center gap-3 text-base font-black text-slate-950">
               <span className="grid h-10 w-10 place-items-center rounded-2xl bg-violet-100 text-violet-600"><TrendingUp className="h-5 w-5" /></span>
@@ -867,7 +867,7 @@ export function CoupleDashboard({
           <CardContent className="space-y-2 px-5 pb-5">
             {/* Devotionals Progress */}
             <div 
-              className="cursor-pointer space-y-2 rounded-2xl border border-white bg-white/80 p-3 shadow-sm transition-all hover:border-rose-100 hover:bg-white"
+              className="cursor-pointer space-y-2 rounded-2xl border border-white bg-white/80 p-3 transition-all hover:border-rose-100 hover:bg-white"
               onClick={(e) => {
                 e.stopPropagation();
                 onNavigate?.('devotions');
@@ -884,7 +884,7 @@ export function CoupleDashboard({
 
             {/* Questions Progress */}
             <div 
-              className="cursor-pointer space-y-2 rounded-2xl border border-white bg-white/80 p-3 shadow-sm transition-all hover:border-emerald-100 hover:bg-white"
+              className="cursor-pointer space-y-2 rounded-2xl border border-white bg-white/80 p-3 transition-all hover:border-emerald-100 hover:bg-white"
               onClick={(e) => {
                 e.stopPropagation();
                 onScreenNavigate?.('category-selection');
@@ -899,7 +899,7 @@ export function CoupleDashboard({
 
             {/* Journal Progress */}
             <div 
-              className="cursor-pointer space-y-2 rounded-2xl border border-white bg-white/80 p-3 shadow-sm transition-all hover:border-sky-100 hover:bg-white"
+              className="cursor-pointer space-y-2 rounded-2xl border border-white bg-white/80 p-3 transition-all hover:border-sky-100 hover:bg-white"
               onClick={(e) => {
                 e.stopPropagation();
                 onNavigate?.('journal');
@@ -926,7 +926,7 @@ export function CoupleDashboard({
 
       {/* Character Development House */}
       <Card
-        className="group cursor-pointer overflow-hidden rounded-[1.75rem] border-amber-200 bg-gradient-to-br from-[#fffdf7] via-amber-50/55 to-rose-50/45 shadow-[0_18px_48px_-34px_rgba(146,64,14,.42)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_54px_-30px_rgba(146,64,14,.4)]"
+        className="group cursor-pointer overflow-hidden rounded-[1.75rem] border-amber-200 bg-gradient-to-br from-[#fffdf7] via-amber-50/55 to-rose-50/45 transition-all hover:-translate-y-0.5"
         onClick={() => onScreenNavigate?.('character-house')}
       >
         <CardContent className="flex items-center gap-4 p-5">
@@ -952,7 +952,7 @@ export function CoupleDashboard({
       />
 
       {/* Scripture Memory */}
-      <Card className="overflow-hidden rounded-[1.75rem] border-rose-100 bg-gradient-to-br from-white via-rose-50/35 to-violet-50/45 shadow-[0_18px_48px_-34px_rgba(190,24,93,.32)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_54px_-32px_rgba(190,24,93,.4)]">
+      <Card className="overflow-hidden rounded-[1.75rem] border-rose-100 bg-gradient-to-br from-white via-rose-50/35 to-violet-50/45 transition-all hover:-translate-y-0.5">
         <CardHeader className="p-5 pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -964,7 +964,7 @@ export function CoupleDashboard({
           <CardDescription>Memorize God's Word together</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3 px-5 pb-5">
-          <div className="rounded-2xl border border-white bg-white/85 p-4 shadow-sm">
+          <div className="rounded-2xl border border-white bg-white/85 p-4">
             <p className="text-xs text-muted-foreground dark:text-muted-foreground mb-2">Featured Verse</p>
             <p className="text-sm mb-2">"Love is patient and kind..."</p>
             <p className="text-xs text-primary-600">1 Corinthians 13:4</p>

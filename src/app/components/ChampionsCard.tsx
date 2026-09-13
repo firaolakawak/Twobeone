@@ -34,7 +34,7 @@ export function ChampionsCard() {
   const levelLabel = labels[summary.champion.level];
 
   return (
-    <section className="relative overflow-hidden rounded-[1.75rem] border border-amber-100 bg-gradient-to-br from-white via-amber-50/35 to-rose-50/50 p-5 shadow-[0_18px_48px_-34px_rgba(180,83,9,.35)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_54px_-32px_rgba(180,83,9,.42)]" aria-label={labels.title}>
+    <section className="relative overflow-hidden rounded-[1.75rem] border border-amber-100 bg-gradient-to-br from-white via-amber-50/35 to-rose-50/50 p-5 transition-all hover:-translate-y-0.5" aria-label={labels.title}>
       <div className="absolute -right-8 -top-10 h-32 w-32 rounded-full bg-amber-200/30 blur-3xl" />
       <div className="relative">
         <div className="flex items-center gap-3">
@@ -48,7 +48,7 @@ export function ChampionsCard() {
 
         <div className="mt-4 grid grid-cols-3 gap-2">
           {([['today', summary.today], ['week', summary.week], ['month', summary.month]] as const).map(([key, period]) => (
-            <div key={key} className="rounded-2xl border border-white/80 bg-white/75 px-2 py-3 text-center shadow-sm">
+            <div key={key} className="rounded-2xl border border-white/80 bg-white/75 px-2 py-3 text-center">
               <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{labels[key]}</p>
               <p className="mt-1 text-sm font-bold tabular-nums text-slate-900">{formatEngagementTime(period.totalSeconds, language)}</p>
             </div>
