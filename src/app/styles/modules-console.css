@@ -39,10 +39,3 @@
 @media (max-width:1050px) { .module-console__toolbar { grid-template-columns:1fr auto auto; }.module-console__search { grid-column:1/-1; }.module-console__workspace { grid-template-columns:1fr; }.module-console__preview { position:static; }.module-console__metrics { grid-template-columns:repeat(2,1fr); } }
 @media (max-width:680px) { .module-console { gap:16px; }.module-console__hero { flex-direction:column; padding:22px; }.module-console__hero-actions { align-items:stretch; flex-direction:column; }.module-console__hero-actions button { width:100%; }.module-console__metrics { gap:8px; }.module-console__metrics article { padding:12px; }.module-console__toolbar { grid-template-columns:1fr auto; }.module-console__segments { grid-column:1/-1; }.module-console__segments button { flex:1; }.module-console__select { min-width:0; }.module-console__select select { max-width:115px; }.module-console__row-main { grid-template-columns:46px minmax(0,1fr); }.module-console__row-main>svg { display:none; }.module-console__module-icon { height:46px; width:46px; }.module-console__row-title { align-items:flex-start; flex-direction:column; }.module-editor>section { padding:15px; }.module-editor__grid,.module-editor__grid--title,.module-editor__grid--lesson { grid-template-columns:1fr; }.module-editor__lessons-head { align-items:flex-start; flex-wrap:wrap; }.module-editor__lessons-head>button { margin-left:46px; }.module-console__preview-body { padding:18px; } }
 @media (prefers-reduced-motion:reduce) { .module-console * { animation:none!important; scroll-behavior:auto!important; transition:none!important; } }
-
-/* Keep Amharic headings clear of tight Latin tracking and leading. */
-.module-console__hero h1:lang(am),
-.module-console__preview-body h2:lang(am) {
-  letter-spacing: 0;
-  line-height: 1.3;
-}

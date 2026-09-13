@@ -247,13 +247,13 @@ export function RelationshipTimeline({
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-b from-primary-50/30 to-primary-50/30">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-card border-b">
         <div className="px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center">
                 <Heart className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -266,7 +266,7 @@ export function RelationshipTimeline({
             <Button 
               onClick={() => setIsOpen(true)}
               size="sm"
-              className="bg-primary hover:bg-primary-700"
+              className="bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add
@@ -276,15 +276,15 @@ export function RelationshipTimeline({
           {/* Stats Bar */}
           {stats && (
             <div className="grid grid-cols-4 gap-2 mb-4">
-              <div className="bg-card rounded-lg p-3 text-center">
+              <div className="bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg p-3 text-center">
                 <div className="text-2xl font-bold text-primary-700">{stats.totalMilestones}</div>
                 <div className="text-xs text-primary-600">{t.milestones.title}</div>
               </div>
-              <div className="bg-card rounded-lg p-3 text-center">
+              <div className="bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg p-3 text-center">
                 <div className="text-2xl font-bold text-primary-700">{stats.daysTogether}</div>
                 <div className="text-xs text-primary-600">Days</div>
               </div>
-              <div className="bg-card rounded-lg p-3 text-center">
+              <div className="bg-gradient-to-br from-sky-50 to-sky-100 rounded-lg p-3 text-center">
                 <div className="text-2xl font-bold text-sky-700">{stats.avgEmotion}</div>
                 <div className="text-xs text-sky-600">Avg Joy</div>
               </div>
@@ -301,7 +301,7 @@ export function RelationshipTimeline({
               variant={activeView === 'timeline' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setActiveView('timeline')}
-              className={activeView === 'timeline' ? 'bg-primary hover:bg-primary-700' : ''}
+              className={activeView === 'timeline' ? 'bg-gradient-to-r from-primary-600 to-primary-700' : ''}
             >
               <Clock className="w-4 h-4 mr-2" />
               Timeline
@@ -310,7 +310,7 @@ export function RelationshipTimeline({
               variant={activeView === 'graph' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setActiveView('graph')}
-              className={activeView === 'graph' ? 'bg-primary hover:bg-primary-700' : ''}
+              className={activeView === 'graph' ? 'bg-gradient-to-r from-primary-600 to-primary-700' : ''}
             >
               <TrendingUp className="w-4 h-4 mr-2" />
               Emotions
@@ -319,7 +319,7 @@ export function RelationshipTimeline({
               variant={activeView === 'badges' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setActiveView('badges')}
-              className={activeView === 'badges' ? 'bg-primary hover:bg-primary-700' : ''}
+              className={activeView === 'badges' ? 'bg-gradient-to-r from-primary-600 to-primary-700' : ''}
             >
               <Award className="w-4 h-4 mr-2" />
               Badges
@@ -335,7 +335,7 @@ export function RelationshipTimeline({
           <div className="space-y-6 mt-6">
             {milestones.length === 0 ? (
               <div className="text-center py-16">
-                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-primary-50 flex items-center justify-center">
+                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
                   <Heart className="w-12 h-12 text-primary-500" />
                 </div>
                 <h3 className="text-xl font-semibold text-foreground mb-2">{t.milestones.noMilestones}</h3>
@@ -344,7 +344,7 @@ export function RelationshipTimeline({
                 </p>
                 <Button
                   onClick={() => setIsOpen(true)}
-                  className="bg-primary hover:bg-primary-700"
+                  className="bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
                 >
                   <Plus className="w-5 h-5 mr-2" />
                   {t.milestones.addFirstMilestone}
@@ -353,7 +353,7 @@ export function RelationshipTimeline({
             ) : (
               <div className="relative">
                 {/* Timeline Line */}
-                <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-border"></div>
+                <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary-200 via-primary-200 to-primary-200"></div>
 
                 {milestones.map((milestone, index) => {
                   const catData = getCategoryData(milestone.category);
@@ -652,7 +652,7 @@ export function RelationshipTimeline({
               <Button 
                 type="submit" 
                 disabled={isLoading}
-                className="bg-primary hover:bg-primary-700"
+                className="bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
               >
                 {isLoading ? t.common.loading : editingMilestone ? t.common.save : t.milestones.addMilestone}
               </Button>

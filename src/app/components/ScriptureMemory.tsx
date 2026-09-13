@@ -248,17 +248,17 @@ export function ScriptureMemory({ onBack, accessToken, userName, partnerName }: 
   const categories = Array.from(new Set(curatedVerses.map(v => v.category)));
 
   return (
-    <div className="min-h-screen bg-background p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-primary-50 to-primary-50 dark:from-neutral-900 dark:via-primary-900/20 dark:to-primary-900/20 p-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="tbo-section-hero mb-6 flex flex-wrap items-center justify-between gap-3 rounded-3xl border p-4">
-          <div className="flex min-w-0 items-center gap-3">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={onBack}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <div className="min-w-0">
-              <h1 className="tbo-h1 flex items-center gap-2">
-                <Brain className="w-6 h-6 shrink-0 text-primary-600" />
+            <div>
+              <h1 className="flex items-center gap-2">
+                <Brain className="w-6 h-6 text-primary-600" />
                 {t.bible.title}
               </h1>
               <p className="text-sm text-muted-foreground mt-1">
@@ -437,7 +437,7 @@ export function ScriptureMemory({ onBack, accessToken, userName, partnerName }: 
 
                 <CardContent className="space-y-4">
                   {/* Verse Display */}
-                  <div className="bg-card rounded-lg p-6 min-h-[150px] flex items-center justify-center">
+                  <div className="bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-900/20 rounded-lg p-6 min-h-[150px] flex items-center justify-center">
                     <div className="text-center">
                       {showText ? (
                         <>
@@ -515,7 +515,7 @@ export function ScriptureMemory({ onBack, accessToken, userName, partnerName }: 
 
                 <CardContent className="space-y-4">
                   {/* Question */}
-                  <div className="bg-card rounded-lg p-6">
+                  <div className="bg-gradient-to-br from-sky-50 to-primary-50 dark:from-sky-900/20 dark:to-primary-900/20 rounded-lg p-6">
                     <div className="text-center">
                       <p className="text-base mb-4">
                         What verse is this?

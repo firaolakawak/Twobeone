@@ -13,7 +13,7 @@
     radial-gradient(circle at 84% 18%, rgba(255, 224, 197, .72), transparent 27%),
     radial-gradient(circle at 13% 72%, rgba(238, 218, 250, .8), transparent 30%),
     linear-gradient(125deg, #fffdfb 0%, #fff7fa 36%, #f7efff 72%, #fff8ec 100%);
-  font-family: var(--tbo-font-sans);
+  font-family: Nunito, Inter, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
 }
 
 .launch-hero::before {
@@ -94,7 +94,7 @@
   border-radius: 50%;
   background: linear-gradient(145deg, #8d63aa, #c76387);
   color: #fff;
-  font-family: var(--tbo-font-serif);
+  font-family: Georgia, "Times New Roman", serif;
   font-size: .88rem;
   font-weight: 700;
   box-shadow: 0 4px 12px rgba(130, 75, 142, .22);
@@ -104,7 +104,7 @@
   max-width: 41rem;
   margin: 1.35rem 0 1.2rem;
   color: var(--hero-ink);
-  font-family: var(--tbo-font-sans);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
   font-size: clamp(3rem, 5.2vw, 5.15rem);
   font-weight: 780;
   letter-spacing: -.065em;
@@ -327,7 +327,7 @@
 
 .launch-phone__content { padding: .1rem 1rem 5.25rem; }
 .launch-phone__greeting { color: #7f7487; font-size: .65rem; font-weight: 750; }
-.launch-phone__title { margin: .18rem 0 .9rem; color: #2b2131; font-family: var(--tbo-font-sans); font-size: 1.22rem; font-weight: 850; letter-spacing: -.035em; }
+.launch-phone__title { margin: .18rem 0 .9rem; color: #2b2131; font-family: Inter, -apple-system, sans-serif; font-size: 1.22rem; font-weight: 850; letter-spacing: -.035em; }
 
 .launch-screen-card {
   overflow: hidden;
@@ -358,14 +358,14 @@
   top: .85rem;
   right: 1rem;
   color: #ffedc6;
-  font-family: var(--tbo-font-serif);
+  font-family: Georgia, serif;
   font-size: 1.15rem;
 }
 
 .launch-screen-card__label { margin-bottom: .35rem; font-size: .58rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
-.launch-screen-card__art h3 { margin: 0; font-family: var(--tbo-font-serif); font-size: 1.18rem; line-height: 1.15; }
+.launch-screen-card__art h3 { margin: 0; font-family: Georgia, "Playfair Display", serif; font-size: 1.18rem; line-height: 1.15; }
 .launch-screen-card__body { padding: 1rem; }
-.launch-screen-card__verse { margin: 0; color: #51425a; font-family: var(--tbo-font-serif); font-size: .75rem; font-style: italic; line-height: 1.55; }
+.launch-screen-card__verse { margin: 0; color: #51425a; font-family: "Playfair Display", Georgia, serif; font-size: .75rem; font-style: italic; line-height: 1.55; }
 .launch-screen-card__reference { display: block; margin-top: .38rem; color: #a64f78; font-size: .57rem; font-weight: 900; }
 .launch-screen-card__button { width: 100%; min-height: 2.45rem; margin-top: .85rem; border: 0; border-radius: .78rem; background: linear-gradient(135deg,#8d5ca4,#c64e79); color:#fff; font-size:.67rem; font-weight:900; box-shadow:0 7px 16px rgba(158,75,126,.2); }
 
@@ -375,7 +375,7 @@
 .launch-prayer-card__icon svg { width:1.2rem; height:1.2rem; }
 .launch-prayer-card__live { display:inline-flex; align-items:center; gap:.3rem; color:#8c5c91; font-size:.57rem; font-weight:900; }
 .launch-prayer-card__live i { width:.38rem; height:.38rem; border-radius:50%; background:#58ad82; box-shadow:0 0 0 4px rgba(88,173,130,.12); }
-.launch-prayer-card h3 { margin:1rem 0 .35rem; color:#32263a; font-family:var(--tbo-font-serif); font-size:1.08rem; }
+.launch-prayer-card h3 { margin:1rem 0 .35rem; color:#32263a; font-family:Georgia,serif; font-size:1.08rem; }
 .launch-prayer-card p { margin:0; color:#776b7e; font-size:.68rem; line-height:1.5; }
 .launch-prayer-card__couple { display:flex; align-items:center; gap:.65rem; margin-top:1rem; padding:.72rem; border-radius:.85rem; background:#fff; box-shadow:0 5px 15px rgba(70,43,82,.06); }
 .launch-prayer-card__faces { display:flex; }
@@ -392,7 +392,7 @@
 .launch-sync-card__pair span:last-child { margin-left:-.55rem; background:linear-gradient(145deg,#f3c6d3,#da7ea0); }
 .launch-sync-card__heart { position:absolute; left:50%; bottom:-.4rem; display:grid; place-items:center; width:1.45rem; height:1.45rem; border:2px solid #fff; border-radius:50%; background:#b55b87; color:#fff; transform:translateX(-50%); }
 .launch-sync-card__heart svg { width:.7rem; height:.7rem; fill:currentColor; }
-.launch-sync-card h3 { margin:.35rem 0 .25rem; color:#33263b; font-family:var(--tbo-font-serif); font-size:1.05rem; }
+.launch-sync-card h3 { margin:.35rem 0 .25rem; color:#33263b; font-family:Georgia,serif; font-size:1.05rem; }
 .launch-sync-card p { margin:0; color:#807285; font-size:.64rem; }
 .launch-sync-card__stats { display:grid; grid-template-columns:repeat(3,1fr); gap:.35rem; margin-top:.9rem; }
 .launch-sync-card__stats span { padding:.55rem .2rem; border-radius:.65rem; background:#fff; color:#86788d; font-size:.48rem; box-shadow:0 4px 12px rgba(72,44,84,.05); }
@@ -486,14 +486,4 @@
 @media (prefers-reduced-motion: reduce) {
   .launch-phone,.launch-device-stage__ring,.launch-float-card,.launch-heart-particle,.launch-screen-card,.launch-phone__uploaded-screen { animation:none !important; }
   .launch-store-button { transition:none; }
-}
-
-/* Keep Amharic headings clear of tight Latin tracking and leading. */
-.launch-hero h1:lang(am),
-.launch-screen-card__art h3:lang(am) {
-  letter-spacing: 0;
-  line-height: 1.3;
-}
-.launch-phone__title:lang(am) {
-  letter-spacing: 0;
 }

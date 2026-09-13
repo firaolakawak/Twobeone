@@ -25,7 +25,6 @@ import { BottomNavigation } from "./components/BottomNavigation";
 import { OfflineIndicator } from "./components/OfflineIndicator";
 import { CalendarAlarmManager } from "./components/CalendarAlarmManager";
 import { Button } from "./components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "./components/ui/avatar";
 import {
   Heart,
   Loader2,
@@ -422,7 +421,35 @@ export default function App() {
   }, [profile?.language, currentLangCode]);
 
   useEffect(() => {
-    void registerServiceWorker();
+    if (!("serviceWorker" in navigator)) return;
+    navigator.serviceWorker
+      .register("/service-worker.js", { scope: "/" })
+      .then((reg) => {
+        console.log(
+          "[PWA] Service Worker registered:",
+          reg.scope,
+        );
+        if (reg.waiting)
+          reg.waiting.postMessage({ type: "SKIP_WAITING" });
+        reg.addEventListener("updatefound", () => {
+          const w = reg.installing;
+          if (w)
+            w.addEventListener("statechange", () => {
+              if (
+                w.state === "installed" &&
+                navigator.serviceWorker.controller
+              )
+                w.postMessage({ type: "SKIP_WAITING" });
+            });
+        });
+      })
+      .catch((err) => {
+        if (!String(err).includes("SecurityError"))
+          console.warn(
+            "[PWA] Service Worker registration failed:",
+            err,
+          );
+      });
   }, []);
 
   useEffect(() => {
@@ -1403,13 +1430,6 @@ export default function App() {
     );
   }
 
-  const isJourneyDashboard = activeTab === "home" && selectedScreen === "dashboard";
-  const headerProfile = profile as (UserType & { name?: string; profilePicture?: string }) | null;
-  const headerProfileName = headerProfile?.name
-    || headerProfile?.full_name || user?.user_metadata?.full_name || user?.email || "";
-  const headerProfileInitial = Array.from(String(headerProfileName).trim())[0]?.toLocaleUpperCase() || "?";
-  const headerProfileAvatar = headerProfile?.profilePicture || headerProfile?.avatar_url || undefined;
-
   return (
     <LanguageProvider>
       <SEOHead />
@@ -1423,23 +1443,20 @@ export default function App() {
         />
       )}
       <div className="app-mobile-shell min-h-screen bg-background flex flex-col">
-        <header data-tbo-header={isJourneyDashboard || undefined} className="sticky top-0 left-0 right-0 z-50 flex min-h-16 items-center pt-[env(safe-area-inset-top,0px)]" style={{ background: 'var(--background)', borderBottom: '1px solid var(--border)' }}>
-          <div className={`w-full max-w-2xl mx-auto flex min-h-16 items-center justify-between gap-2 ${isJourneyDashboard ? 'px-5 max-[380px]:px-[15px]' : 'px-4'}`}>
+        {/* SOLID OPAQUE HEADER TRUNK BAR CONTAINER */}
+        <header className="sticky top-0 left-0 right-0 z-50 flex min-h-16 items-center pt-[env(safe-area-inset-top,0px)]" style={{ background: 'var(--card)', borderBottom: '1px solid var(--border)', boxShadow: '0 1px 0 0 var(--border)' }}>
+          <div className="w-full max-w-2xl mx-auto px-4 flex min-h-16 items-center justify-between">
             {/* Platform Brand Title Identification */}
-            <div className={`flex shrink-0 items-center ${isJourneyDashboard ? 'gap-[10px]' : 'gap-2'}`}>
-              {isJourneyDashboard ? (
-                <span className="grid h-[29px] w-[29px] place-items-center rounded-[9px] text-white" style={{ background: 'linear-gradient(135deg, #ff6391, #e11d48)' }}>
-                  <Heart className="h-[19px] w-[19px] fill-current" strokeWidth={0} aria-hidden="true" />
-                </span>
-              ) : <Heart className="tbo-app-mark-heart h-6 w-6 fill-rose-500 text-rose-500 animate-pulse" />}
-              <span className="text-[19px] font-[750] tracking-[-.7px] text-foreground">
+            <div className="flex items-center gap-2">
+              <Heart className="h-6 w-6 fill-rose-500 text-rose-500 animate-pulse" />
+              <span className="text-base font-extrabold text-slate-950 tracking-tight">
                 TwoBeOne
               </span>
             </div>
 
             {/* Consolidated Switcher Operations Header End Block */}
-            <div className={`flex shrink-0 items-center ${isJourneyDashboard ? 'gap-0.5' : 'gap-2'}`}>
-              {partner && !isJourneyDashboard && (
+            <div className="flex items-center gap-2">
+              {partner && (
                 <div
                   className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-1"
                   role="status"
@@ -1455,14 +1472,11 @@ export default function App() {
                   </span>
                 </div>
               )}
-              <div className={isJourneyDashboard ? '[&>div>button]:h-11 [&>div>button]:w-11 [&>div>button]:justify-center' : undefined}>
-                <LanguageSelector
-                  accessToken={accessToken || undefined}
-                  userId={profile?.id}
-                />
-              </div>
+              <LanguageSelector
+                accessToken={accessToken || undefined}
+                userId={profile?.id}
+              />
               {user && (
-                <div className={isJourneyDashboard ? "[&>button:first-child]:text-[#6b7280] [&>button:first-child>svg]:h-5 [&>button:first-child>svg]:w-5 [&>button:first-child>svg]:stroke-[1.7] [&>button:first-child]:before:absolute [&>button:first-child]:before:inset-[4.5px] [&>button:first-child]:before:rounded-full [&>button:first-child]:before:border [&>button:first-child]:before:border-[#f3f4f6] [&>button:first-child]:before:content-['']" : undefined}>
                 <Suspense fallback={null}>
                 <NotificationCenter
                   accessToken={accessToken}
@@ -1513,25 +1527,14 @@ export default function App() {
                   }}
                 />
                 </Suspense>
-                </div>
-              )}
-              {isJourneyDashboard && (
-                <button type="button" onClick={() => setActiveTab('profile')} aria-label={uiTranslations.nav.profile} title={headerProfileName || uiTranslations.nav.profile} className="flex h-11 w-11 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 focus-visible:ring-offset-1">
-                  <Avatar className="size-[35px] ring-1 ring-rose-200" aria-hidden="true">
-                    <AvatarImage src={headerProfileAvatar} alt="" />
-                    <AvatarFallback className="bg-[#ffe0e8] text-xs font-bold text-[#9f1239]">
-                      {headerProfileInitial}
-                    </AvatarFallback>
-                  </Avatar>
-                </button>
               )}
             </div>
           </div>
         </header>
 
         {/* Content Flow Layout Window Context */}
-        <div className={`flex-1 w-full bg-background pb-28 ${isJourneyDashboard ? 'pt-5' : 'pt-4'}`}>
-          <div className={isJourneyDashboard ? 'max-w-2xl mx-auto px-[18px]' : 'max-w-6xl mx-auto px-4'}>
+        <div className="flex-1 w-full pt-4 pb-28">
+          <div className="max-w-6xl mx-auto px-4">
             <Toaster />
             <Suspense fallback={null}>
               <PWAUpdateAvailable />
@@ -1566,7 +1569,7 @@ export default function App() {
             )}
 
             {/* Main Application Interface Core Components Render Frame */}
-            <main className={isJourneyDashboard ? 'mx-auto w-full max-w-2xl' : 'container mx-auto px-2 max-w-2xl'}>
+            <main className="container mx-auto px-2 max-w-2xl">
               <Suspense fallback={<ScreenLoader />}>
               {activeTab === "home" &&
                 selectedScreen === "dashboard" && (

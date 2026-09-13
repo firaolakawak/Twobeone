@@ -305,7 +305,9 @@ export function CommunityGroups() {
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-7 pb-28">
-      <header className="tbo-section-hero relative isolate overflow-hidden rounded-[2rem] px-6 py-7 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)] ring-1 ring-rose-100/80 sm:px-9 sm:py-9">
+      <header className="relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-rose-50 via-white to-amber-50 px-6 py-7 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)] ring-1 ring-rose-100/80 sm:px-9 sm:py-9">
+        <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-rose-200/30 blur-3xl" aria-hidden="true" />
+        <div className="pointer-events-none absolute -bottom-24 -left-16 h-52 w-52 rounded-full bg-amber-200/30 blur-3xl" aria-hidden="true" />
         <div className="relative">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -313,7 +315,7 @@ export function CommunityGroups() {
                 <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" aria-hidden="true" />
                 Growing in faith together
               </div>
-              <h1 className="tbo-h1 text-slate-950">{t.community.title}</h1>
+              <h1 className="text-3xl font-bold tracking-[-0.035em] text-slate-950 sm:text-4xl">{t.community.title}</h1>
               <p className="mt-2 max-w-lg text-[15px] leading-7 text-slate-600">Find belonging, share encouragement, and build meaningful connections with other couples.</p>
             </div>
             <Button type="button" onClick={() => setIsCreateDialogOpen(true)} aria-label="Create New Group" className="h-11 rounded-full bg-rose-600 px-5 font-bold text-white shadow-lg shadow-rose-200 hover:bg-rose-700">
@@ -331,7 +333,7 @@ export function CommunityGroups() {
 
       {/* Live Sessions Banner */}
       {liveSessions.length > 0 && (
-        <Card className="overflow-hidden rounded-2xl border border-red-200 bg-red-50 shadow-sm">
+        <Card className="overflow-hidden rounded-2xl border border-red-200 bg-gradient-to-r from-red-50 to-rose-50 shadow-sm">
           <CardContent className="p-4 sm:p-5">
             <div className="flex items-center gap-3">
               <div className="relative">
@@ -359,7 +361,7 @@ export function CommunityGroups() {
 
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogContent className="gap-0 overflow-hidden rounded-[1.75rem] border-rose-100 p-0 sm:max-w-xl">
-          <DialogHeader className="tbo-section-hero border-b border-rose-100 px-6 py-6 pr-12 text-left">
+          <DialogHeader className="border-b border-rose-100 bg-gradient-to-br from-rose-50 via-white to-amber-50 px-6 py-6 pr-12 text-left">
             <DialogTitle className="text-2xl font-bold text-slate-900">Create Community Group</DialogTitle>
             <DialogDescription className="leading-6 text-slate-600">
               Start a new community group to connect with other couples
@@ -372,9 +374,9 @@ export function CommunityGroups() {
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="gap-6">
         <TabsList className="grid h-14 w-full grid-cols-3 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-[inset_0_1px_2px_rgba(15,23,42,0.04),0_10px_30px_-24px_rgba(15,23,42,0.45)]" aria-label="Community sections">
-          <TabsTrigger value="discover" className="h-full gap-2 rounded-[0.9rem] text-xs font-semibold text-slate-500 transition-all hover:text-slate-800 data-[state=active]:bg-primary-50 data-[state=active]:text-rose-700 data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-rose-100 sm:text-sm"><Search className="h-4 w-4" aria-hidden="true" /><span className="hidden sm:inline">Discover</span><span className="sm:hidden">Explore</span></TabsTrigger>
-          <TabsTrigger value="my-groups" className="h-full gap-2 rounded-[0.9rem] text-xs font-semibold text-slate-500 transition-all hover:text-slate-800 data-[state=active]:bg-primary-50 data-[state=active]:text-rose-700 data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-rose-100 sm:text-sm"><Users className="h-4 w-4" aria-hidden="true" /><span className="hidden sm:inline">{t.community.myGroups}</span><span className="sm:hidden">Joined</span></TabsTrigger>
-          <TabsTrigger value="live" className="h-full gap-2 rounded-[0.9rem] text-xs font-semibold text-slate-500 transition-all hover:text-slate-800 data-[state=active]:bg-primary-50 data-[state=active]:text-rose-700 data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-rose-100 sm:text-sm"><Radio className="h-4 w-4" aria-hidden="true" />Live</TabsTrigger>
+          <TabsTrigger value="discover" className="h-full gap-2 rounded-[0.9rem] text-xs font-semibold text-slate-500 transition-all hover:text-slate-800 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-rose-100 sm:text-sm"><Search className="h-4 w-4" aria-hidden="true" /><span className="hidden sm:inline">Discover</span><span className="sm:hidden">Explore</span></TabsTrigger>
+          <TabsTrigger value="my-groups" className="h-full gap-2 rounded-[0.9rem] text-xs font-semibold text-slate-500 transition-all hover:text-slate-800 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-rose-100 sm:text-sm"><Users className="h-4 w-4" aria-hidden="true" /><span className="hidden sm:inline">{t.community.myGroups}</span><span className="sm:hidden">Joined</span></TabsTrigger>
+          <TabsTrigger value="live" className="h-full gap-2 rounded-[0.9rem] text-xs font-semibold text-slate-500 transition-all hover:text-slate-800 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-rose-100 sm:text-sm"><Radio className="h-4 w-4" aria-hidden="true" />Live</TabsTrigger>
         </TabsList>
 
         {/* Discover Tab */}
@@ -415,7 +417,7 @@ export function CommunityGroups() {
             ))}
 
             {filteredGroups.length === 0 && (
-              <Card className="rounded-[2rem] border-rose-100 bg-card p-12 text-center shadow-sm">
+              <Card className="rounded-[2rem] border-rose-100 bg-gradient-to-br from-white to-rose-50/60 p-12 text-center shadow-sm">
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 text-rose-600"><Users className="h-7 w-7" /></div>
                 <h3 className="mb-2 text-xl font-bold text-slate-900">No Groups Found</h3>
                 <p className="mb-4 text-slate-500">
@@ -442,7 +444,7 @@ export function CommunityGroups() {
             ))}
 
             {myGroups.length === 0 && (
-              <Card className="rounded-[2rem] border-rose-100 bg-card p-12 text-center shadow-sm">
+              <Card className="rounded-[2rem] border-rose-100 bg-gradient-to-br from-white to-rose-50/60 p-12 text-center shadow-sm">
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 text-rose-600"><Users className="h-7 w-7" /></div>
                 <h3 className="mb-2 text-xl font-bold text-slate-900">No Groups Yet</h3>
                 <p className="mb-4 text-slate-500">Join or create a group to get started!</p>
@@ -466,7 +468,7 @@ export function CommunityGroups() {
             ))}
 
             {liveSessions.length === 0 && (
-              <Card className="rounded-[2rem] border-rose-100 bg-card p-12 text-center shadow-sm">
+              <Card className="rounded-[2rem] border-rose-100 bg-gradient-to-br from-white to-rose-50/60 p-12 text-center shadow-sm">
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 text-rose-600"><Video className="h-7 w-7" /></div>
                 <h3 className="mb-2 text-xl font-bold text-slate-900">No Live Sessions</h3>
                 <p className="text-slate-500">Check back later for live streams from your groups!</p>
@@ -488,11 +490,11 @@ interface CommunityGroupCardProps {
 
 function CommunityGroupCard({ group, member, onView, onJoin }: CommunityGroupCardProps) {
   return (
-    <Card className="group overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-card shadow-[0_12px_36px_-28px_rgba(15,23,42,0.45)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-rose-200 hover:shadow-[0_18px_42px_-26px_rgba(190,24,93,0.3)] focus-within:border-rose-300 focus-within:ring-4 focus-within:ring-rose-100/70">
+    <Card className="group overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-[0_12px_36px_-28px_rgba(15,23,42,0.45)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-rose-200 hover:shadow-[0_18px_42px_-26px_rgba(190,24,93,0.3)] focus-within:border-rose-300 focus-within:ring-4 focus-within:ring-rose-100/70">
       <CardContent className="p-5 sm:p-6">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
           <div className="flex min-w-0 flex-1 gap-4 sm:gap-5">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary-50 text-rose-600 ring-1 ring-rose-100 transition-transform duration-200 group-hover:scale-[1.03] sm:h-18 sm:w-18">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-rose-100 via-rose-50 to-amber-100 text-rose-600 ring-1 ring-rose-100 transition-transform duration-200 group-hover:scale-[1.03] sm:h-18 sm:w-18">
               {group.imageUrl ? (
                 <img src={group.imageUrl} alt="" className="h-full w-full object-cover" />
               ) : (
@@ -607,18 +609,19 @@ function GroupDetails({ group, onBack, isMember, onLeave }: {
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-7 pb-28">
-      <header className="tbo-section-hero relative isolate overflow-hidden rounded-[2rem] px-6 py-7 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)] ring-1 ring-rose-100/80 sm:px-9 sm:py-9">
+      <header className="relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-rose-50 via-white to-amber-50 px-6 py-7 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)] ring-1 ring-rose-100/80 sm:px-9 sm:py-9">
+        <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-rose-200/30 blur-3xl" aria-hidden="true" />
         <div className="relative">
           <button type="button" onClick={onBack} className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition-colors hover:text-rose-700" aria-label="Back to communities">
             <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Communities
           </button>
           <div className="flex items-start gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[var(--tbo-section-border)] text-primary ring-1 ring-rose-100">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-rose-100 to-amber-100 text-rose-600 ring-1 ring-rose-100">
               {group.imageUrl ? <img src={group.imageUrl} alt="" className="h-full w-full object-cover" /> : <Users className="h-7 w-7" />}
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="tbo-h1 text-slate-950">{group.name}</h1>
+                <h1 className="text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">{group.name}</h1>
                 <Badge className="border-0 bg-white/80 text-rose-700 shadow-sm hover:bg-white">{group.memberCount} members</Badge>
               </div>
               <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600">{group.description || 'A welcoming space for couples to connect and grow together.'}</p>
@@ -635,15 +638,15 @@ function GroupDetails({ group, onBack, isMember, onLeave }: {
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="gap-6">
         <TabsList className="grid h-14 w-full grid-cols-3 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-inner">
-          <TabsTrigger value="chat" className="h-full rounded-[0.9rem] text-slate-500 data-[state=active]:bg-primary-50 data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
+          <TabsTrigger value="chat" className="h-full rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
             <MessageCircle className="mr-2 h-4 w-4" />
             Chat
           </TabsTrigger>
-          <TabsTrigger value="events" className="h-full rounded-[0.9rem] text-slate-500 data-[state=active]:bg-primary-50 data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
+          <TabsTrigger value="events" className="h-full rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
             <Calendar className="mr-2 h-4 w-4" />
             Events
           </TabsTrigger>
-          <TabsTrigger value="live" className="h-full rounded-[0.9rem] text-slate-500 data-[state=active]:bg-primary-50 data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
+          <TabsTrigger value="live" className="h-full rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
             <Video className="mr-2 h-4 w-4" />
             Go Live
           </TabsTrigger>
@@ -1439,7 +1442,7 @@ function GoLive({ groupId }: { groupId: string }) {
     <Card>
       <CardContent className="p-6 space-y-4">
         <div className="text-center space-y-4">
-          <div className="w-16 h-16 bg-error-50 rounded-full flex items-center justify-center mx-auto">
+          <div className="w-16 h-16 bg-gradient-to-br from-error-50 to-primary-100 rounded-full flex items-center justify-center mx-auto">
             <Video className="w-8 h-8 text-error-500" />
           </div>
           <div>
@@ -1552,7 +1555,7 @@ function StartLiveForm({ onSubmit, isLoading }: { onSubmit: (title: string, desc
       </div>
       <Button
         type="submit"
-        className="w-full bg-error-500 hover:bg-error-700"
+        className="w-full bg-gradient-to-r from-error-500 to-primary-600 hover:from-error-700 hover:to-primary-700"
         disabled={isLoading}
       >
         <Radio className="w-4 h-4 mr-2" />
@@ -1600,7 +1603,7 @@ function LiveSessionCard({ session }: { session: LiveSession }) {
   }
 
   return (
-    <Card className="border-2 border-error-500 bg-error-50">
+    <Card className="border-2 border-error-500 bg-gradient-to-r from-error-50 to-primary-50">
       <CardContent className="p-4 space-y-3">
         <div className="flex items-start gap-3">
           <div className="relative">
@@ -1822,7 +1825,7 @@ function LiveStreamViewer({ session, onClose }: { session: LiveSession; onClose:
           ) : (
             <>
               {/* Fallback if no video stream */}
-              <div className="absolute inset-0 bg-neutral-900">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary-900 via-sky-800 to-primary-900">
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-6">
                   <div className="relative mb-6">
                     <div className="w-32 h-32 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center border-4 border-white/20">
@@ -1899,7 +1902,7 @@ function LiveStreamViewer({ session, onClose }: { session: LiveSession; onClose:
             Leave Stream
           </Button>
           <Button
-            className="flex-1 bg-primary"
+            className="flex-1 bg-gradient-to-r from-primary-600 to-sky-600"
             onClick={() => toast.info('Live chat coming soon!')}
           >
             <MessageCircle className="w-4 h-4 mr-2" />

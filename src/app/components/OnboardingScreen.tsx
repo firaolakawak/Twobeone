@@ -328,7 +328,7 @@ function OnboardingPage({
       <div className={`${styles.artwork} ${compact ? styles.compactArtwork : ""}`}>{artwork}</div>
       <div className="min-w-0">
         <p className="mb-2 text-xs font-extrabold uppercase tracking-[0.18em] text-rose-500">{eyebrow}</p>
-        <h1 className="tbo-display m-0 text-slate-950">
+        <h1 className="m-0 text-[clamp(1.75rem,7vw,2.25rem)] font-black leading-[1.12] tracking-[-0.035em] text-slate-950">
           {title}
         </h1>
         <p className="mt-3 text-[15px] font-medium leading-6 text-slate-500">{body}</p>

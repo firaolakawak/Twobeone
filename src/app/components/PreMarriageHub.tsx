@@ -236,9 +236,9 @@ const ACCENT_PALETTES = [
     accentBorder: "#fef3c7",
   }, // Amber / Warning
   {
-    accentColor: "var(--muted-foreground)",
+    accentColor: "#475569",
     accentBg: "#f8fafc",
-    accentBorder: "var(--border)",
+    accentBorder: "#e2e8f0",
   }, // Slate / Neutral
 ];
 
@@ -335,7 +335,7 @@ function LinearProgress({
       style={{
         height: 6,
         borderRadius: "9999px",
-        backgroundColor: "var(--border)",
+        backgroundColor: "#e2e8f0",
         overflow: "hidden",
         width: "100%",
       }}
@@ -390,9 +390,9 @@ function ModuleCard({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        backgroundColor: "var(--card)",
+        backgroundColor: "#ffffff",
         borderRadius: "12px",
-        border: `1px solid ${hovered && !module.isLocked ? module.accentColor : "var(--border)"}`,
+        border: `1px solid ${hovered && !module.isLocked ? module.accentColor : "#e2e8f0"}`,
         boxShadow:
           hovered && !module.isLocked
             ? "0 4px 6px -1px rgba(0,0,0,0.1)"
@@ -442,7 +442,7 @@ function ModuleCard({
               style={{
                 width: 22,
                 height: 22,
-                color: "var(--muted-foreground)",
+                color: "#94a3b8",
               }}
             />
           ) : (
@@ -466,7 +466,7 @@ function ModuleCard({
               style={{
                 fontSize: "16px",
                 fontWeight: 600,
-                color: "var(--foreground)",
+                color: "#0f172a",
                 margin: 0,
                 lineHeight: 1.3,
               }}
@@ -511,7 +511,7 @@ function ModuleCard({
         <p
           style={{
             fontSize: "13px",
-            color: "var(--foreground)",
+            color: "#334155",
             fontStyle: "italic",
             margin: "0 0 4px 0",
             lineHeight: 1.5,
@@ -534,7 +534,7 @@ function ModuleCard({
       <p
         style={{
           fontSize: "14px",
-          color: "var(--muted-foreground)",
+          color: "#475569",
           lineHeight: 1.6,
           margin: 0,
         }}
@@ -569,13 +569,12 @@ function ModuleCard({
             />
             <span
               style={{
-                fontSize: "var(--tbo-body-s-size)",
-                lineHeight: "var(--tbo-body-s-line)",
-                color: "var(--muted-foreground)",
+                fontSize: "13px",
+                color: "#475569",
                 flex: 1,
-                minWidth: 0,
-                overflowWrap: "anywhere",
-                whiteSpace: "normal",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
               }}
             >
               {lesson.title}
@@ -583,7 +582,7 @@ function ModuleCard({
             <span
               style={{
                 fontSize: "12px",
-                color: "var(--muted-foreground)",
+                color: "#94a3b8",
                 flexShrink: 0,
               }}
             >
@@ -595,7 +594,7 @@ function ModuleCard({
           <span
             style={{
               fontSize: "12px",
-              color: "var(--muted-foreground)",
+              color: "#94a3b8",
               paddingLeft: 14,
             }}
           >
@@ -623,7 +622,7 @@ function ModuleCard({
             }}
           >
             <span
-              style={{ fontSize: "12px", color: "var(--muted-foreground)" }}
+              style={{ fontSize: "12px", color: "#64748b" }}
             >
               {module.lessons?.length || 0} lessons ·{" "}
               {module.duration}
@@ -631,7 +630,7 @@ function ModuleCard({
             <span
               style={{
                 fontSize: "12px",
-                color: isComplete ? "#16a34a" : "var(--muted-foreground)",
+                color: isComplete ? "#16a34a" : "#64748b",
                 fontWeight: 500,
               }}
             >
@@ -644,7 +643,7 @@ function ModuleCard({
           </div>
           <LinearProgress
             value={progress}
-            color={isComplete ? "#16a34a" : "var(--primary)"}
+            color={isComplete ? "#16a34a" : module.accentColor}
           />
         </div>
 
@@ -654,8 +653,8 @@ function ModuleCard({
               display: "flex",
               alignItems: "center",
               gap: 4,
-              backgroundColor: "var(--primary)",
-              color: "var(--primary-foreground)",
+              backgroundColor: module.accentColor,
+              color: "#ffffff",
               borderRadius: "9999px",
               padding: "6px 14px",
               fontSize: "13px",
@@ -837,7 +836,7 @@ export function PreMarriageHub({
             alignItems: "center",
             gap: "4px",
             fontSize: "14px",
-            color: "var(--muted-foreground)",
+            color: "#475569",
             fontWeight: 500,
             background: "none",
             border: "none",
@@ -853,12 +852,12 @@ export function PreMarriageHub({
 
       {/* Hero Banner */}
       <div
-        className="tbo-section-hero"
         style={{
-          background: "var(--tbo-section-wash)",
+          background:
+            "linear-gradient(135deg, #be123c 0%, #f43f5e 100%)",
           borderRadius: "16px",
           padding: "24px",
-          color: "var(--foreground)",
+          color: "#ffffff",
         }}
       >
         <div
@@ -874,7 +873,7 @@ export function PreMarriageHub({
               width: 44,
               height: 44,
               borderRadius: "8px",
-              backgroundColor: "var(--tbo-section-border)",
+              backgroundColor: "rgba(255,255,255,0.2)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -884,17 +883,16 @@ export function PreMarriageHub({
               style={{
                 width: 24,
                 height: 24,
-                color: "var(--primary)",
+                color: "#ffffff",
               }}
             />
           </div>
           <div>
             <h1
               style={{
-                fontSize: "var(--tbo-h2-size)",
-                lineHeight: "var(--tbo-h2-line)",
-                fontWeight: 500,
-                color: "var(--foreground)",
+                fontSize: "20px",
+                fontWeight: 700,
+                color: "#ffffff",
                 margin: 0,
               }}
             >
@@ -903,7 +901,7 @@ export function PreMarriageHub({
             <p
               style={{
                 fontSize: "14px",
-                color: "var(--muted-foreground)",
+                color: "rgba(255,255,255,0.85)",
                 margin: "2px 0 0 0",
               }}
             >
@@ -914,7 +912,7 @@ export function PreMarriageHub({
 
         <div
           style={{
-            backgroundColor: "var(--card)",
+            backgroundColor: "rgba(255,255,255,0.15)",
             borderRadius: "8px",
             padding: "12px",
           }}
@@ -930,7 +928,7 @@ export function PreMarriageHub({
             <span
               style={{
                 fontSize: "14px",
-                color: "var(--foreground)",
+                color: "rgba(255,255,255,0.9)",
                 fontWeight: 500,
               }}
             >
@@ -940,7 +938,7 @@ export function PreMarriageHub({
               style={{
                 fontSize: "18px",
                 fontWeight: 700,
-                color: "var(--foreground)",
+                color: "#ffffff",
               }}
             >
               {isLoadingProgress ? "–" : `${overallProgress}%`}
@@ -950,7 +948,7 @@ export function PreMarriageHub({
             style={{
               height: 8,
               borderRadius: "9999px",
-              backgroundColor: "var(--tbo-section-border)",
+              backgroundColor: "rgba(255,255,255,0.3)",
               overflow: "hidden",
             }}
           >
@@ -958,7 +956,7 @@ export function PreMarriageHub({
               style={{
                 height: "100%",
                 width: `${overallProgress}%`,
-                background: "var(--primary)",
+                backgroundColor: "#ffffff",
                 transition: "width 0.6s ease",
               }}
             />
@@ -1018,7 +1016,7 @@ export function PreMarriageHub({
           style={{
             fontSize: "16px",
             fontWeight: 600,
-            color: "var(--foreground)",
+            color: "#1e293b",
             margin: "0 0 2px 0",
           }}
         >
@@ -1027,7 +1025,7 @@ export function PreMarriageHub({
         <p
           style={{
             fontSize: "14px",
-            color: "var(--muted-foreground)",
+            color: "#64748b",
             margin: 0,
           }}
         >
@@ -1086,16 +1084,16 @@ export function PreMarriageHub({
           style={{
             textAlign: "center",
             padding: "40px 16px",
-            backgroundColor: "var(--card)",
+            backgroundColor: "#f8fafc",
             borderRadius: "12px",
-            border: "1px dashed var(--border)",
+            border: "1px dashed #cbd5e1",
           }}
         >
           <p
             style={{
               fontSize: "16px",
               fontWeight: 600,
-              color: "var(--foreground)",
+              color: "#334155",
               margin: "0 0 8px 0",
             }}
           >
@@ -1104,7 +1102,7 @@ export function PreMarriageHub({
           <p
             style={{
               fontSize: "14px",
-              color: "var(--muted-foreground)",
+              color: "#64748b",
               margin: 0,
             }}
           >

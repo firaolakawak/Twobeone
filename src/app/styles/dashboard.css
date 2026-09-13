@@ -216,8 +216,3 @@
 @media (prefers-reduced-motion: reduce) {
   .admin-shell *, .admin-shell *::before, .admin-shell *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
-
-/* Keep Amharic headings clear of tight Latin tracking and leading. */
-.admin-dashboard h1:lang(am) {
-  letter-spacing: 0;
-}

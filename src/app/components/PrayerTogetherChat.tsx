@@ -171,9 +171,9 @@ export function PrayerTogetherChat({
   }, {} as Record<string, PrayerMessage[]>);
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-[1.5rem] border border-border bg-card shadow-sm">
+    <div className="flex flex-col overflow-hidden rounded-[1.5rem] border border-rose-100 bg-gradient-to-br from-white to-rose-50/45 shadow-[0_14px_45px_-34px_rgba(190,24,93,0.45)]">
       {/* Chat Header - Fixed height with 16dp padding */}
-      <div className="flex-shrink-0 bg-primary px-4 py-3.5 text-white">
+      <div className="flex-shrink-0 bg-gradient-to-r from-rose-600 to-pink-600 px-4 py-3.5 text-white">
         <div className="flex items-center gap-2">
           <Heart className="h-5 w-5 fill-white" aria-hidden="true" />
           <div>
@@ -267,8 +267,8 @@ export function PrayerTogetherChat({
             onKeyPress={handleKeyPress}
             placeholder="Share your prayer or reflection..."
             aria-label="Shared devotional reflection"
-            className="min-h-[72px] max-h-40 min-w-0 flex-1 field-sizing-content resize-none rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-2 text-base leading-6 text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-rose-300 focus:bg-white focus:ring-4 focus:ring-rose-100"
-            rows={2}
+            className="min-h-[44px] max-h-[120px] flex-1 resize-none rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3 text-sm text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-rose-300 focus:bg-white focus:ring-4 focus:ring-rose-100"
+            rows={1}
             disabled={isSending}
           />
           <Button

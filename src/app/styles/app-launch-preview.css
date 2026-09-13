@@ -5,7 +5,7 @@
   height: 660px;
   margin-inline: auto;
   isolation: isolate;
-  color: var(--foreground);
+  color: #302334;
   font-family: inherit;
 }
 .alp-stage *,
@@ -18,7 +18,7 @@
   cursor: pointer;
 }
 .alp-stage button:focus-visible {
-  outline: 2px solid var(--primary);
+  outline: 2px solid #be185d;
   outline-offset: 3px;
 }
 .alp-backdrop {
@@ -30,7 +30,7 @@
   left: 50%;
   transform: translateX(-50%);
   border-radius: 50%;
-  background: var(--card);
+  background: linear-gradient(135deg, #fce7f3 0%, #fae8ff 100%);
   z-index: -2;
 }
 .alp-backdrop-ring {
@@ -41,7 +41,7 @@
   top: 44px;
   left: 50%;
   transform: translateX(-50%);
-  border: 1px solid var(--border);
+  border: 1px solid #f6dcec;
   border-radius: 50%;
   z-index: -1;
 }
@@ -51,7 +51,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: var(--background);
+  background: #ffffff;
   border: 6px solid #27272a;
   border-radius: 41px;
   box-shadow:
@@ -75,7 +75,7 @@
   border-radius: 34px;
   transform: rotate(7deg);
   z-index: 1;
-  background: var(--background);
+  background: #fff8fc;
   box-shadow:
     0 22px 35px -20px #27272a40,
     0 0 0 1px #a1a1aa;
@@ -139,7 +139,7 @@
   font-size: 12px;
   font-weight: 700;
   letter-spacing: -0.45px;
-  color: var(--foreground);
+  color: #302334;
 }
 .alp-brand > span {
   width: 25px;
@@ -148,14 +148,14 @@
   justify-content: center;
   align-items: center;
   border-radius: 8px;
-  background: var(--primary);
-  color: var(--primary-foreground);
+  background: linear-gradient(135deg, #db2777 0%, #c026d3 100%);
+  color: #ffffff;
 }
 .alp-connected {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: var(--muted-foreground);
+  color: #c026d3;
   font-size: 7px;
   font-weight: 600;
 }
@@ -163,7 +163,7 @@
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: var(--primary);
+  background: #ec4899;
 }
 .alp-greeting {
   display: flex;
@@ -174,13 +174,13 @@
 }
 .alp-greeting p {
   margin: 0 0 5px;
-  color: var(--muted-foreground);
+  color: #87758b;
   font-size: 8px;
   line-height: 1.4;
 }
 .alp-greeting h3 {
   font-family: inherit;
-  color: var(--foreground);
+  color: #302334;
   font-size: 22px;
   line-height: 1.11;
   font-weight: 650;
@@ -201,16 +201,16 @@
   width: 29px;
   height: 29px;
   border: 2px solid #ffffff;
-  background: var(--accent);
-  color: var(--primary);
+  background: #f5d0fe;
+  color: #a21caf;
   border-radius: 50%;
   font-size: 10px;
   font-weight: 700;
 }
 .alp-couple-avatars > span + span {
   margin-left: -8px;
-  background: var(--card);
-  color: var(--primary);
+  background: #fbcfe8;
+  color: #a21caf;
 }
 .alp-couple-avatars i {
   position: absolute;
@@ -223,8 +223,8 @@
   align-items: center;
   width: 16px;
   height: 16px;
-  color: var(--primary);
-  background: var(--accent);
+  color: #db2777;
+  background: #fff0f7;
 }
 .alp-devotional-card {
   position: relative;
@@ -232,8 +232,8 @@
   overflow: hidden;
   padding: 13px 14px;
   border-radius: 14px;
-  background: var(--card);
-  color: var(--foreground);
+  background: linear-gradient(135deg, #db2777 0%, #c026d3 100%);
+  color: #ffffff;
 }
 .alp-card-topline,
 .alp-card-bottomline {
@@ -245,7 +245,7 @@
   z-index: 1;
 }
 .alp-card-topline > svg {
-  color: var(--primary);
+  color: #ffffff;
 }
 .alp-card-label {
   display: block;
@@ -255,7 +255,7 @@
   line-height: 1.5;
 }
 .alp-devotional-card .alp-card-label {
-  color: var(--primary);
+  color: #ffffff;
 }
 .alp-devotional-card h4 {
   position: relative;
@@ -271,34 +271,34 @@
   position: relative;
   z-index: 1;
   font-size: 8px;
-  color: var(--muted-foreground);
+  color: #ffffff;
   line-height: 1.4;
   margin: 0 0 11px;
 }
 .alp-card-bottomline > span {
   font-size: 7px;
-  color: var(--muted-foreground);
+  color: #ffffff;
 }
 .alp-card-bottomline button {
   display: inline-flex;
   align-items: center;
   gap: 9px;
   padding: 7px 9px;
-  background: var(--primary);
-  color: var(--primary-foreground);
+  background: #ffffff;
+  color: #a21caf;
   border: 0;
   border-radius: 6px;
   font-size: 8px;
   font-weight: 650;
 }
 .alp-card-bottomline button:hover {
-  background: var(--primary-700);
+  background: #fce7f3;
 }
 .alp-card-leaf {
   position: absolute;
   right: -5px;
   top: 40px;
-  color: var(--border);
+  color: #fbcfe8;
   opacity: 0.45;
   transform: rotate(-28deg);
   pointer-events: none;
@@ -310,34 +310,34 @@
 }
 .alp-quick-actions button {
   text-align: left;
-  border: 1px solid var(--border);
+  border: 1px solid #f6dcec;
   border-radius: 11px;
-  background: var(--card);
+  background: #fff0f7;
   padding: 10px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 .alp-quick-actions button + button {
-  background: var(--card);
-  border-color: var(--border);
+  background: #faf0ff;
+  border-color: #f1e3f0;
 }
 .alp-quick-actions button:hover {
-  border-color: var(--border);
+  border-color: #f9a8d4;
 }
 .alp-quick-actions button + button:hover {
-  border-color: var(--border);
+  border-color: #e879f9;
 }
 .alp-quick-icon {
   display: flex;
-  color: var(--primary);
+  color: #db2777;
   margin-bottom: 6px;
 }
 .alp-quick-icon-sage {
-  color: var(--primary);
+  color: #c026d3;
 }
 .alp-quick-actions strong {
-  color: var(--foreground);
+  color: #514156;
   font-size: 9px;
   font-weight: 650;
   letter-spacing: -0.1px;
@@ -349,7 +349,7 @@
   justify-content: space-between;
   gap: 2px;
   font-size: 6.5px;
-  color: var(--muted-foreground);
+  color: #87758b;
   margin-top: 4px;
 }
 .alp-rhythm-card {
@@ -365,13 +365,13 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  color: var(--muted-foreground);
+  color: #87758b;
   font-size: 8px;
   font-weight: 600;
 }
 .alp-rhythm-heading strong {
   font-size: 7px;
-  color: var(--muted-foreground);
+  color: #c026d3;
   font-weight: 500;
 }
 .alp-week {
@@ -396,20 +396,20 @@
 }
 .alp-week small {
   font-size: 6px;
-  color: var(--muted-foreground);
+  color: #87758b;
 }
 .alp-day-done {
-  color: var(--primary-foreground);
-  background: var(--primary);
+  color: #ffffff;
+  background: linear-gradient(135deg, #db2777 0%, #c026d3 100%);
 }
 .alp-day-next {
-  border: 1px solid var(--border);
+  border: 1px solid #f1e3f0;
 }
 .alp-day-next > span {
   width: 3px;
   height: 3px;
   border-radius: 50%;
-  background: var(--border);
+  background: #e9d5ee;
 }
 .alp-phone-nav {
   height: 49px;
@@ -417,8 +417,8 @@
   display: flex;
   align-items: center;
   justify-content: space-around;
-  border-top: 1px solid var(--border);
-  background: var(--background);
+  border-top: 1px solid #f1e3f0;
+  background: #ffffff;
 }
 .alp-phone-nav button {
   display: flex;
@@ -428,15 +428,14 @@
   padding: 6px 15px;
   background: transparent;
   border: 0;
-  color: var(--muted-foreground);
+  color: #ab9eaf;
 }
 .alp-phone-nav button span {
   font-size: 7px;
   font-weight: 500;
 }
 .alp-phone-nav button[aria-pressed="true"] {
-  color: var(--primary);
-  background: var(--accent);
+  color: #db2777;
 }
 .alp-home-indicator {
   background: #3f3f46;
@@ -453,10 +452,10 @@
 }
 .alp-prayer-feature {
   position: relative;
-  background: var(--card);
+  background: #fff0f7;
   border-radius: 13px;
   padding: 14px;
-  color: var(--foreground);
+  color: #a21caf;
   overflow: hidden;
 }
 .alp-prayer-symbol {
@@ -465,9 +464,9 @@
   right: 15px;
   display: flex;
   padding: 9px;
-  border: 1px solid var(--border);
+  border: 1px solid #f9a8d4;
   border-radius: 50%;
-  color: var(--primary);
+  color: #db2777;
 }
 .alp-prayer-feature .alp-card-label {
   max-width: 120px;
@@ -485,7 +484,7 @@
   font-size: 8px;
   line-height: 1.5;
   margin: 0;
-  color: var(--muted-foreground);
+  color: #95648d;
 }
 .alp-list-heading {
   display: flex;
@@ -496,18 +495,18 @@
 .alp-list-heading strong {
   font-size: 9px;
   font-weight: 650;
-  color: var(--foreground);
+  color: #514156;
 }
 .alp-list-heading > span {
   font-size: 7px;
-  color: var(--muted-foreground);
+  color: #87758b;
 }
 .alp-prayer-item {
   display: flex;
   align-items: center;
   gap: 7px;
   padding: 10px 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid #f1e3f0;
 }
 .alp-prayer-item > div {
   flex: 1;
@@ -516,16 +515,16 @@
   display: block;
   font-size: 8px;
   font-weight: 600;
-  color: var(--foreground);
+  color: #514156;
 }
 .alp-prayer-item div > span {
   display: block;
   font-size: 6.5px;
-  color: var(--muted-foreground);
+  color: #87758b;
   margin-top: 4px;
 }
 .alp-prayer-item > svg {
-  color: var(--primary);
+  color: #c026d3;
   flex-shrink: 0;
 }
 .alp-item-icon {
@@ -535,19 +534,19 @@
   width: 29px;
   height: 29px;
   flex-shrink: 0;
-  background: var(--accent);
+  background: #faf0ff;
   border-radius: 8px;
-  color: var(--primary);
+  color: #c026d3;
 }
 .alp-item-icon-coral {
-  background: var(--accent);
-  color: var(--primary);
+  background: #fff0f7;
+  color: #db2777;
 }
 .alp-primary-action {
   width: 100%;
   border: 0;
-  background: var(--primary);
-  color: var(--primary-foreground);
+  background: linear-gradient(135deg, #db2777 0%, #c026d3 100%);
+  color: #ffffff;
   padding: 10px;
   border-radius: 8px;
   display: flex;
@@ -558,16 +557,16 @@
   font-weight: 600;
 }
 .alp-primary-action:hover {
-  background: var(--primary-700);
+  background: linear-gradient(135deg, #be185d 0%, #a21caf 100%);
 }
 .alp-checkin-card {
-  background: var(--card);
+  background: #faf0ff;
   border-radius: 13px;
   padding: 12px;
-  color: var(--foreground);
+  color: #a21caf;
 }
 .alp-checkin-card .alp-card-label {
-  color: var(--primary);
+  color: #c026d3;
 }
 .alp-checkin-card h4 {
   font-family: inherit;
@@ -579,7 +578,7 @@
 }
 .alp-checkin-card > p {
   font-size: 8px;
-  color: var(--muted-foreground);
+  color: #c026d3;
   margin: 0;
 }
 .alp-feeling-options {
@@ -593,13 +592,13 @@
   align-items: center;
   flex-direction: column;
   gap: 6px;
-  color: var(--primary);
+  color: #c026d3;
 }
 .alp-feeling-options > span:first-child {
-  color: var(--primary);
+  color: #db2777;
 }
 .alp-feeling-options > span:last-child {
-  color: var(--primary);
+  color: #db2777;
 }
 .alp-feeling-options small {
   font-size: 7px;
@@ -607,8 +606,8 @@
 .alp-checkin-card button {
   border: 0;
   width: 100%;
-  background: var(--primary);
-  color: var(--primary-foreground);
+  background: linear-gradient(135deg, #db2777 0%, #c026d3 100%);
+  color: #ffffff;
   border-radius: 7px;
   padding: 9px;
   display: flex;
@@ -619,31 +618,31 @@
   font-weight: 600;
 }
 .alp-checkin-card button:hover {
-  background: var(--primary-700);
+  background: linear-gradient(135deg, #be185d 0%, #a21caf 100%);
 }
 .alp-conversation-card {
-  border: 1px solid var(--border);
+  border: 1px solid #f1e3f0;
   border-radius: 11px;
-  background: var(--card);
+  background: #fff8fc;
   padding: 12px;
 }
 .alp-conversation-card > .alp-card-label {
   display: flex;
   align-items: center;
   gap: 5px;
-  color: var(--muted-foreground);
+  color: #95648d;
   font-size: 6px;
 }
 .alp-conversation-card p {
   font-size: 14px;
-  color: var(--foreground);
+  color: #514156;
   line-height: 1.35;
   letter-spacing: -0.25px;
   margin: 7px 0;
   font-weight: 500;
 }
 .alp-conversation-card button {
-  color: var(--primary);
+  color: #db2777;
   background: transparent;
   border: 0;
   display: flex;
@@ -658,7 +657,7 @@
   gap: 5px;
   align-items: center;
   justify-content: center;
-  color: var(--muted-foreground);
+  color: #c026d3;
   font-size: 7px;
 }
 .alp-companion-phone .alp-status {
@@ -701,7 +700,7 @@
   font-size: 5px;
   font-weight: 600;
   letter-spacing: 1px;
-  color: var(--muted-foreground);
+  color: #87758b;
 }
 .alp-companion-heading h3 {
   font-family: inherit;
@@ -709,7 +708,7 @@
   font-weight: 550;
   letter-spacing: -0.6px;
   margin: 4px 0 0;
-  color: var(--foreground);
+  color: #514156;
 }
 .alp-companion-phone .alp-prayer-feature {
   padding: 12px;
@@ -750,7 +749,7 @@
   justify-content: center;
   gap: 4px;
   font-size: 6px;
-  color: var(--muted-foreground);
+  color: #c026d3;
   padding-top: 6px;
 }
 .alp-companion-nav {
@@ -759,11 +758,11 @@
   display: flex;
   align-items: center;
   justify-content: space-around;
-  border-top: 1px solid var(--border);
-  color: var(--muted-foreground);
+  border-top: 1px solid #f1e3f0;
+  color: #87758b;
 }
 .alp-companion-nav > svg:nth-child(2) {
-  color: var(--primary);
+  color: #db2777;
 }
 .alp-companion-phone .alp-home-indicator {
   width: 62px;
@@ -781,8 +780,8 @@
   display: inline-flex;
   gap: 3px;
   padding: 5px;
-  border: 1px solid var(--border);
-  background: var(--card);
+  border: 1px solid #f6dcec;
+  background: #fff1f8;
   border-radius: 30px;
 }
 .alp-preview-tabs button {
@@ -792,7 +791,7 @@
   padding: 9px 12px;
   font-size: 10px;
   font-weight: 500;
-  color: var(--muted-foreground);
+  color: #87758b;
   background: transparent;
   border: 0;
   border-radius: 24px;
@@ -802,11 +801,11 @@
     box-shadow 0.15s ease;
 }
 .alp-preview-tabs button:hover {
-  color: var(--foreground);
+  color: #514156;
 }
 .alp-preview-tabs button[aria-pressed="true"] {
-  color: var(--primary);
-  background: var(--accent);
+  color: #ffffff;
+  background: linear-gradient(135deg, #db2777 0%, #c026d3 100%);
   box-shadow: 0 2px 6px #8318430c;
 }
 .alp-preview-caption {
@@ -815,7 +814,7 @@
   gap: 8px;
   font-size: 6.5px;
   letter-spacing: 1.2px;
-  color: var(--muted-foreground);
+  color: #87758b;
 }
 
 @media (max-width: 1100px) and (min-width: 601px) {

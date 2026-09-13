@@ -52,13 +52,22 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
     };
   }, []);
 
-  // Keep browser accessibility metadata in sync. fonts.css provides local
-  // Ethiopic glyphs automatically when the selected language needs them.
+  // Keep browser accessibility metadata and the Ethiopic font in sync on every change.
   useEffect(() => {
     document.documentElement.lang = language;
     document.documentElement.dir = 'ltr';
     document.body.dataset.language = language;
 
+    if (language === 'am' || language === 'om') {
+      const id = 'ethiopic-font';
+      if (!document.getElementById(id)) {
+        const link = document.createElement('link');
+        link.id = id;
+        link.rel = 'stylesheet';
+        link.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wdth,wght@75..125,100..900&display=swap';
+        document.head.appendChild(link);
+      }
+    }
   }, [language]);
 
   return (

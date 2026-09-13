@@ -79,8 +79,8 @@ export function QuestionsSection({ responses, onSaveResponse }: QuestionsSection
 
   return (
     <div className="space-y-6">
-      <div className="tbo-section-hero flex flex-wrap items-center gap-3 rounded-2xl border p-4">
-        <MessageCircleHeart className="w-6 h-6 text-primary" />
+      <div className="flex items-center gap-2">
+        <MessageCircleHeart className="w-6 h-6 text-sky-500" />
         <h2 className="text-2xl">Know Each Other</h2>
       </div>
 

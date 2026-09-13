@@ -19,7 +19,7 @@
   background: #211e23;
   color: #fff;
   text-align: left;
-  font-family: var(--tbo-font-sans);
+  font-family: "Segoe UI", Arial, sans-serif;
   line-height: 1.1;
   box-shadow: 0 3px 0 #2b1b320a;
   transition:

@@ -1,15 +1,15 @@
 .launch-landing {
-  --ll-bg: var(--background);
-  --ll-ink: var(--foreground);
-  --ll-muted: var(--muted-foreground);
-  --ll-accent: var(--primary);
-  --ll-line: var(--border);
-  --ll-gradient: var(--primary);
-  --ll-gradient-hover: var(--primary-700);
-  --ll-soft-gradient: var(--card);
+  --ll-bg: #fffafd;
+  --ll-ink: #2b1b32;
+  --ll-muted: #766679;
+  --ll-accent: #db2777;
+  --ll-line: #efdfed;
+  --ll-gradient: linear-gradient(135deg, #db2777 0%, #c026d3 100%);
+  --ll-gradient-hover: linear-gradient(135deg, #be185d 0%, #a21caf 100%);
+  --ll-soft-gradient: linear-gradient(135deg, #fff1f7 0%, #faf0ff 100%);
   color: var(--ll-ink);
   background: var(--ll-bg);
-  font-family: var(--tbo-font-sans);
+  font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   line-height: 1.6;
   overflow-x: clip;
@@ -51,7 +51,7 @@
   outline: none;
 }
 .launch-landing :is(h1, h2) {
-  font-family: var(--tbo-font-serif);
+  font-family: Georgia, "Times New Roman", serif;
   font-weight: 400;
   letter-spacing: -0.045em;
 }
@@ -91,7 +91,7 @@
 }
 .ll-announcement {
   min-height: 35px;
-  background: var(--background);
+  background: var(--ll-soft-gradient);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -99,7 +99,7 @@
   gap: 8px;
   padding: 7px 16px;
   font-size: 11px;
-  color: var(--muted-foreground);
+  color: #5b3f63;
   letter-spacing: 0.025em;
 }
 .ll-announcement-dot {
@@ -122,7 +122,7 @@
   position: sticky;
   top: 0;
   z-index: 40;
-  background: var(--background);
+  background: rgb(255 250 253 / 96%);
   border-bottom: 1px solid var(--ll-line);
   backdrop-filter: blur(16px);
 }
@@ -177,7 +177,7 @@
   gap: 30px;
   margin-left: 36px;
   font-size: 13px;
-  color: var(--muted-foreground);
+  color: #5b3f63;
   font-weight: 500;
 }
 .ll-desktop-links a {
@@ -208,7 +208,7 @@
   border: 1px solid transparent;
   border-radius: 6px;
   background: var(--ll-gradient);
-  color: var(--primary-foreground);
+  color: #fffcff;
   padding: 14px 24px;
   font-size: 13px;
   font-weight: 600;
@@ -273,7 +273,7 @@
   display: flex;
   align-items: center;
   gap: 9px;
-  color: var(--muted-foreground);
+  color: #76617d;
   font-size: 9px;
   font-weight: 650;
   letter-spacing: 0.17em;
@@ -332,7 +332,7 @@
   gap: 19px;
   margin-top: 16px;
   font-size: 10px;
-  color: var(--muted-foreground);
+  color: #76617d;
 }
 .ll-hero-notes span {
   display: inline-flex;
@@ -379,11 +379,11 @@
 }
 .ll-hero-bottom p {
   font-size: 10px;
-  color: var(--muted-foreground);
+  color: #76617d;
   line-height: 1.6;
 }
 .ll-hero-bottom strong {
-  color: var(--muted-foreground);
+  color: #5b3f63;
   font-weight: 500;
 }
 .ll-hero-spark {
@@ -398,9 +398,9 @@
   stroke-width: 1;
 }
 .ll-beliefs {
-  background: var(--background);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+  background: #fbe5f5;
+  border-top: 1px solid #fbe5f5;
+  border-bottom: 1px solid #fbe5f5;
 }
 .ll-beliefs-inner {
   display: flex;
@@ -414,12 +414,12 @@
   align-items: center;
   gap: 10px;
   font-size: 11px;
-  color: var(--muted-foreground);
+  color: #76617d;
 }
 .ll-beliefs-inner > span:first-child {
   font-size: 17px;
-  color: var(--muted-foreground);
-  font-family: var(--tbo-font-serif);
+  color: #5b3f63;
+  font-family: Georgia, serif;
   gap: 5px;
 }
 .ll-beliefs-inner svg {
@@ -458,13 +458,13 @@
   position: relative;
 }
 .ll-feature--pink {
-  background: var(--card);
+  background: linear-gradient(150deg, #fce7f3, #fff5fb);
 }
 .ll-feature--blush {
-  background: var(--card);
+  background: linear-gradient(150deg, #ffe4f1, #fff4f8);
 }
 .ll-feature--lilac {
-  background: var(--card);
+  background: linear-gradient(150deg, #f5e5ff, #fcf4ff);
 }
 .ll-feature-art {
   height: 252px;
@@ -482,16 +482,16 @@
   font-size: 8px;
   letter-spacing: 0.12em;
   font-weight: 650;
-  color: var(--muted-foreground);
+  color: #76617d;
 }
 .ll-feature--blush .ll-feature-label {
-  color: var(--muted-foreground);
+  color: #76617d;
 }
 .ll-feature--lilac .ll-feature-label {
-  color: var(--muted-foreground);
+  color: #76617d;
 }
 .launch-landing .ll-feature h3 {
-  font-family: var(--tbo-font-serif);
+  font-family: Georgia, serif;
   font-weight: 400;
   font-size: 27px;
   line-height: 1.15;
@@ -499,7 +499,7 @@
   margin-top: 12px;
 }
 .ll-feature-copy p {
-  color: var(--muted-foreground);
+  color: #76617d;
   font-size: 14px;
   line-height: 1.8;
   margin-top: 14px;
@@ -516,7 +516,7 @@
   border: 1px solid #d2a0cb80;
   border-radius: 50%;
   background: transparent;
-  color: var(--muted-foreground);
+  color: #5b3f63;
   transition: background 0.2s;
 }
 .ll-feature-copy button:hover {
@@ -543,7 +543,7 @@
   letter-spacing: 0.1em;
 }
 .ll-paper > span {
-  font-family: var(--tbo-font-serif);
+  font-family: Georgia, serif;
   font-size: 24px;
   text-align: center;
   line-height: 1.15;
@@ -604,7 +604,7 @@
   letter-spacing: 0.13em;
 }
 .ll-question-card > span {
-  font-family: var(--tbo-font-serif);
+  font-family: Georgia, serif;
   font-size: 21px;
   text-align: center;
   line-height: 1.18;
@@ -648,7 +648,7 @@
   place-items: center;
   background: #efc5e7;
   border: 4px solid #fff2fa;
-  font-family: var(--tbo-font-serif);
+  font-family: Georgia, serif;
   font-size: 32px;
   color: #946d96;
   transform: rotate(-9deg);
@@ -702,7 +702,7 @@
   gap: 16px;
   padding-top: 32px;
   font-size: 10px;
-  color: var(--muted-foreground);
+  color: #76617d;
 }
 .ll-more-features span {
   display: flex;
@@ -710,7 +710,7 @@
   gap: 7px;
 }
 .ll-more-features span:first-child {
-  color: var(--muted-foreground);
+  color: #946d96;
 }
 .ll-more-features svg {
   stroke-width: 1.4;
@@ -727,7 +727,7 @@
 .ll-how-visual {
   border-radius: 10px;
   min-height: 506px;
-  background: var(--card);
+  background: var(--ll-soft-gradient);
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -773,7 +773,7 @@
   color: #5b3f63;
   display: grid;
   place-content: center;
-  font-family: var(--tbo-font-serif);
+  font-family: Georgia, serif;
   font-size: 26px;
   line-height: 1.05;
   transform: rotate(-8deg);
@@ -802,15 +802,15 @@
   transform: rotate(9deg);
 }
 .launch-landing .ll-how-visual > p {
-  font-family: var(--tbo-font-serif);
+  font-family: Georgia, serif;
   font-size: 36px;
   line-height: 1.2;
   letter-spacing: -0.035em;
-  color: var(--muted-foreground);
+  color: #5b3f63;
   margin-top: 5px;
 }
 .ll-how-visual > p em {
-  color: var(--muted-foreground);
+  color: #76617d;
 }
 .ll-how-caption {
   font-size: 9px;
@@ -818,7 +818,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: var(--muted-foreground);
+  color: #76617d;
 }
 .ll-how-copy h2 {
   margin-top: 16px;
@@ -838,8 +838,8 @@
   padding-bottom: 0;
 }
 .ll-steps li > span {
-  color: var(--muted-foreground);
-  font-family: var(--tbo-font-serif);
+  color: #946d96;
+  font-family: Georgia, serif;
   font-size: 15px;
   border-bottom: 1px solid #efc5e7;
   padding: 3px 0 7px;
@@ -898,10 +898,10 @@
   border-radius: 50%;
 }
 .ll-mission blockquote {
-  font-family: var(--tbo-font-serif);
+  font-family: Georgia, serif;
   font-size: 20px;
   font-style: italic;
-  color: var(--muted-foreground);
+  color: #76617d;
   margin: 36px auto 0;
   padding-top: 30px;
   border-top: 1px solid var(--ll-line);
@@ -910,16 +910,16 @@
 }
 .ll-mission cite {
   display: block;
-  font-family: var(--tbo-font-sans);
+  font-family: "Segoe UI", sans-serif;
   font-size: 7px;
   font-style: normal;
   letter-spacing: 0.18em;
   margin-top: 10px;
-  color: var(--muted-foreground);
+  color: #946d96;
 }
 .ll-faq-section {
-  background: var(--background);
-  border-block: 1px solid var(--border);
+  background: #fbe5f5;
+  border-block: 1px solid #efc5e7;
   padding-block: 84px;
 }
 .ll-faq-grid {
@@ -941,10 +941,10 @@
   margin-top: 17px;
 }
 .ll-faq-item {
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid #efc5e7;
 }
 .ll-faq-item:first-child {
-  border-top: 1px solid var(--border);
+  border-top: 1px solid #efc5e7;
 }
 .ll-faq-item h3 button {
   display: flex;
@@ -961,7 +961,7 @@
 }
 .ll-faq-item h3 svg {
   flex-shrink: 0;
-  color: var(--muted-foreground);
+  color: #76617d;
   transition: transform 0.2s;
 }
 .ll-faq-item.is-open h3 svg {
@@ -977,14 +977,14 @@
   padding-block: 78px 0;
 }
 .ll-download {
-  background: var(--card);
+  background: var(--ll-gradient);
   border-radius: 11px;
   text-align: center;
   padding: 51px 30px 40px;
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  color: var(--foreground);
+  color: #fff2fa;
 }
 .ll-download-icon {
   margin: 0 auto 21px;
@@ -993,8 +993,8 @@
   width: 47px;
   height: 47px;
   border-radius: 13px;
-  background: var(--primary-50);
-  border: 1px solid var(--border);
+  background: #ffffff12;
+  border: 1px solid #ffffff22;
 }
 .ll-download-icon svg {
   width: 22px;
@@ -1002,7 +1002,7 @@
 }
 .ll-download .ll-eyebrow {
   justify-content: center;
-  color: var(--muted-foreground);
+  color: #fff0fa;
   font-size: 8px;
 }
 .ll-download h2 {
@@ -1010,23 +1010,23 @@
   font-size: clamp(38px, 4vw, 52px);
 }
 .ll-download h2 em {
-  color: var(--primary);
+  color: #fff;
   background: none;
-  -webkit-text-fill-color: var(--primary);
+  -webkit-text-fill-color: #fff;
 }
 .ll-download > p:not(.ll-eyebrow) {
-  color: var(--muted-foreground);
+  color: #fff0fa;
   font-size: 12px;
   line-height: 1.85;
   margin-top: 19px;
 }
 .launch-landing .ll-button--light {
-  background: var(--primary);
-  color: var(--primary-foreground);
+  background: #fff2fa;
+  color: #a21caf;
   margin-top: 26px;
 }
 .launch-landing .ll-button--light:hover {
-  background: var(--primary-700);
+  background: #fbe5f5;
 }
 .ll-platforms {
   display: flex;
@@ -1041,20 +1041,20 @@
   align-items: center;
   gap: 6px;
   font-size: 9px;
-  color: var(--muted-foreground);
+  color: #efc5e7;
   background: none;
   border: none;
   padding: 7px 0;
 }
 .ll-platforms button:hover,
 .ll-platforms a:hover {
-  color: var(--primary);
+  color: #fff;
   text-decoration: underline;
 }
 .ll-platforms > span {
   height: 12px;
   width: 1px;
-  background: var(--border);
+  background: #ffffff35;
 }
 .ll-download-rings {
   position: absolute;
@@ -1100,16 +1100,16 @@
   place-items: center;
   width: 48px;
   height: 48px;
-  background: var(--primary-50);
+  background: #fbe5f5;
   border-radius: 50%;
-  color: var(--primary);
+  color: #76617d;
   flex-shrink: 0;
 }
 .ll-newsletter-icon svg {
   stroke-width: 1.2;
 }
 .ll-newsletter h2 {
-  font-family: var(--tbo-font-serif);
+  font-family: Georgia, serif;
   font-size: 21px;
   letter-spacing: -0.025em;
 }
@@ -1120,11 +1120,11 @@
 }
 .ll-email-field {
   display: flex;
-  border: 1px solid var(--border);
+  border: 1px solid #efc5e7;
   border-radius: 5px;
   padding: 5px;
   gap: 8px;
-  background: var(--background);
+  background: #fffcff;
 }
 .ll-email-field input {
   border: 0;
@@ -1137,7 +1137,7 @@
   color: var(--ll-ink);
 }
 .ll-email-field input::placeholder {
-  color: var(--muted-foreground);
+  color: #946d96;
 }
 .ll-email-field button {
   display: inline-flex;
@@ -1149,7 +1149,7 @@
   border-radius: 3px;
   padding: 10px 16px;
   background: var(--ll-gradient);
-  color: var(--primary-foreground);
+  color: #fffafd;
   font-size: 10px;
 }
 .ll-email-field button:hover {
@@ -1183,7 +1183,7 @@
 }
 .ll-footer {
   border-top: 1px solid var(--ll-line);
-  background: var(--background);
+  background: #fbe5f5;
 }
 .ll-footer-top {
   display: grid;
@@ -1196,14 +1196,14 @@
 }
 .ll-footer-brand p {
   font-size: 12px;
-  color: var(--muted-foreground);
+  color: #76617d;
   margin-top: 15px;
 }
 .ll-footer-brand > span {
   display: block;
   margin-top: 15px;
   font-size: 9px;
-  color: var(--muted-foreground);
+  color: #946d96;
 }
 .ll-footer h3 {
   font-size: 11px;
@@ -1220,7 +1220,7 @@
 }
 .ll-footer-column a {
   font-size: 12px;
-  color: var(--muted-foreground);
+  color: #76617d;
   padding: 2px 0;
   width: fit-content;
 }
@@ -1229,7 +1229,7 @@
   border-left: 1px solid var(--ll-line);
 }
 .ll-footer-note > svg {
-  color: var(--muted-foreground);
+  color: #946d96;
   margin-bottom: 16px;
   stroke-width: 1.4;
 }
@@ -1238,10 +1238,10 @@
 }
 .ll-footer-note p {
   font-size: 9px;
-  color: var(--muted-foreground);
+  color: #76617d;
 }
 .ll-footer-note .ll-text-link {
-  color: var(--muted-foreground);
+  color: #76617d;
   font-size: 10px;
   margin-top: 17px;
 }
@@ -1254,7 +1254,7 @@
   border-top: 1px solid var(--ll-line);
   padding-block: 21px;
   font-size: 8px;
-  color: var(--muted-foreground);
+  color: #946d96;
 }
 .ll-footer-bottom > div {
   display: flex;
@@ -1266,7 +1266,7 @@
   align-items: center;
 }
 .ll-footer-bottom svg {
-  color: var(--muted-foreground);
+  color: #946d96;
 }
 @media (min-width: 1500px) {
   .ll-hero {
@@ -1906,11 +1906,4 @@
     transition: none !important;
     scroll-behavior: auto !important;
   }
-}
-
-/* Keep Amharic headings clear of tight Latin tracking and leading. */
-.launch-landing :is(h1, h2, h3):lang(am),
-.launch-landing .ll-how-visual > p:lang(am) {
-  letter-spacing: 0;
-  line-height: 1.3;
 }

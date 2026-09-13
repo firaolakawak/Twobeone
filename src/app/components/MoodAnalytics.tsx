@@ -104,7 +104,7 @@ function EngagementReportSummary({ summary, language }: { summary: any; language
     : language === 'om'
       ? { title: 'Yeroo waliinii torban kanaa', reading: 'Dubbisuu', answering: 'Deebisuu', journaling: 'Yaadannoo', praying: 'Kadhachuu' }
       : { title: 'Intentional time this week', reading: 'Reading', answering: 'Answering', journaling: 'Journaling', praying: 'Praying' };
-  return <div className="mt-4 rounded-xl bg-card p-3"><p className="mb-2 text-xs font-semibold text-rose-700">{words.title} · {Math.round(summary.week.totalSeconds / 60)} min</p><div className="grid grid-cols-2 gap-2 text-xs text-slate-600">{(['reading', 'answering', 'journaling', 'praying'] as const).map(key => <span key={key}>{words[key]} <strong>{Math.round((summary.week.byCategory[key] || 0) / 60)}m</strong></span>)}</div></div>;
+  return <div className="mt-4 rounded-xl bg-rose-50/70 p-3"><p className="mb-2 text-xs font-semibold text-rose-700">{words.title} · {Math.round(summary.week.totalSeconds / 60)} min</p><div className="grid grid-cols-2 gap-2 text-xs text-slate-600">{(['reading', 'answering', 'journaling', 'praying'] as const).map(key => <span key={key}>{words[key]} <strong>{Math.round((summary.week.byCategory[key] || 0) / 60)}m</strong></span>)}</div></div>;
 }
 
 export function MoodAnalytics({
@@ -445,7 +445,7 @@ export function MoodAnalytics({
             </Button>
           )}
           <div>
-            <h1 className="tbo-h1">
+            <h1 className="text-2xl font-semibold">
               {t.mood.analytics}
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -457,7 +457,7 @@ export function MoodAnalytics({
           <Button
             onClick={handleGenerateWeeklyReport}
             disabled={weeklyReportLoading}
-            className="bg-primary hover:bg-primary-700"
+            className="bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
           >
             {weeklyReportLoading ? (
               <>
@@ -475,7 +475,7 @@ export function MoodAnalytics({
       </div>
 
       {/* Track Today's Mood */}
-      <Card className="border-2 border-border bg-card">
+      <Card className="border-2 border-primary-200 bg-gradient-to-br from-primary-50 to-primary-100">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Heart className="w-5 h-5 text-primary-600" />
@@ -560,7 +560,7 @@ export function MoodAnalytics({
           <Button
             onClick={handleSaveMood}
             disabled={isSaving}
-            className="w-full bg-primary hover:bg-primary-700"
+            className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-600"
           >
             {isSaving ? (
               <>
@@ -586,7 +586,7 @@ export function MoodAnalytics({
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-primary-50 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
                   <Activity className="w-6 h-6 text-primary-600" />
                 </div>
                 <div>
@@ -614,7 +614,7 @@ export function MoodAnalytics({
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-primary-50 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
                   <Heart className="w-6 h-6 text-primary-600" />
                 </div>
                 <div>
@@ -954,7 +954,7 @@ export function MoodAnalytics({
 
       {/* Relationship reflection */}
       {partner && (
-        <Card className="border-2 border-border bg-card">
+        <Card className="border-2 border-primary-200 bg-gradient-to-br from-primary-50/50 to-primary-50/50">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Brain className="w-5 h-5 text-primary-600" />
@@ -1077,7 +1077,7 @@ export function MoodAnalytics({
             <Button
               onClick={handleAnalyze}
               disabled={isAnalyzing}
-              className="w-full bg-primary hover:bg-primary-700"
+              className="w-full bg-gradient-to-r from-primary-600 to-sky-600 hover:from-primary-700 hover:to-sky-700"
             >
               {isAnalyzing ? (
                 <>
@@ -1268,7 +1268,7 @@ export function MoodAnalytics({
             {/* Closing encouragement */}
             <div
               className="rounded-2xl px-5 py-6 text-center"
-              style={{ background: "var(--card)" }}
+              style={{ background: "color-mix(in srgb, var(--primary) 8%, transparent)" }}
             >
               <Heart className="w-6 h-6 mx-auto mb-2" style={{ color: "var(--primary)" }} />
               <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>

@@ -28,6 +28,16 @@ function authConnectionMessage() {
   return 'Cannot reach the sign-in service right now. Please tap Sign In again or switch between Wi-Fi and mobile data.';
 }
 
+const FloatingOrb = ({ style }: { style: React.CSSProperties }) => (
+  <div style={{
+    position: 'absolute',
+    borderRadius: '50%',
+    filter: 'blur(80px)',
+    pointerEvents: 'none',
+    ...style,
+  }} />
+);
+
 export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProps) {
   const [authMode, setAuthMode] = useState<AuthMode>(initialMode);
   const [isLoading, setIsLoading] = useState(false);
@@ -294,6 +304,11 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
       position: 'relative',
       overflow: 'hidden',
     }}>
+      {/* Ambient background orbs */}
+      <FloatingOrb style={{ width: 400, height: 400, background: 'var(--primary-100)', top: '-120px', right: '-100px', opacity: 0.6 }} />
+      <FloatingOrb style={{ width: 300, height: 300, background: 'var(--primary-50)', bottom: '-80px', left: '-80px', opacity: 0.8 }} />
+      <FloatingOrb style={{ width: 200, height: 200, background: 'var(--secondary-100)', top: '40%', left: '5%', opacity: 0.5 }} />
+
       {/* Language selector */}
       <div style={{ position: 'fixed', top: 'var(--spacing-4)', right: 'var(--spacing-4)', zIndex: 50 }}>
         <LanguageSelector />
@@ -316,7 +331,7 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
         <div style={{
           padding: 'var(--spacing-8) var(--spacing-6) var(--spacing-6)',
           textAlign: 'center',
-          background: 'var(--card)',
+          background: 'linear-gradient(160deg, var(--primary-50) 0%, var(--card) 60%)',
           borderBottom: '1px solid var(--border)',
         }}>
           <div style={{
@@ -325,7 +340,7 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
             justifyContent: 'center',
             width: 64, height: 64,
             borderRadius: '50%',
-            background: 'var(--primary)',
+            background: 'linear-gradient(135deg, var(--primary-400), var(--primary-600))',
             boxShadow: '0 8px 24px -4px color-mix(in srgb, var(--primary-500) 40%, transparent)',
             marginBottom: 'var(--spacing-4)',
           }}>
@@ -468,7 +483,7 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
                       fontSize: 'var(--text-caption)',
                       fontWeight: authMode === mode ? 'var(--font-weight-semibold)' : 'var(--font-weight-medium)',
                       color: authMode === mode ? 'var(--foreground)' : 'var(--muted-foreground)',
-                      background: authMode === mode ? 'var(--primary-50)' : 'transparent',
+                      background: authMode === mode ? 'var(--card)' : 'transparent',
                       boxShadow: authMode === mode ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
                       transition: 'all 0.15s ease',
                     }}
@@ -621,7 +636,7 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
                     <div style={{
                       padding: 'var(--spacing-4)',
                       borderRadius: 'var(--radius-xl)',
-                      background: 'var(--card)',
+                      background: 'linear-gradient(135deg, var(--primary-50), var(--primary-100))',
                       border: '1.5px solid var(--primary-200)',
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--spacing-2)' }}>

@@ -288,6 +288,6 @@ export function CharacterHouse3D(props: CharacterHouse3DProps) {
       <Suspense fallback={null}><SoilGround width={dimensions.width} depth={dimensions.depth} landscaped={props.reveal > .88} /><HouseScene {...props} /><ContactShadows position={[0, -.92, 0]} opacity={.5} scale={34} blur={2.15} far={20} color="#24170f" /></Suspense>
       <CameraControls props={props} width={dimensions.width} depth={dimensions.depth} />
     </Canvas>
-    <div className="pointer-events-none absolute bottom-3 left-1/2 max-w-[calc(100%-1.5rem)] -translate-x-1/2 whitespace-normal text-center rounded-2xl bg-stone-950/78 px-3 py-1.5 tbo-caption text-white backdrop-blur">{props.viewMode === 'room' ? 'Room detail · Drag to inspect · Pinch to zoom' : 'Full house · Drag to orbit · Tap a room'}</div>
+    <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-stone-950/78 px-3 py-1.5 text-[11px] font-semibold text-white backdrop-blur">{props.viewMode === 'room' ? 'Room detail · Drag to inspect · Pinch to zoom' : 'Full house · Drag to orbit · Tap a room'}</div>
   </div>;
 }

@@ -372,8 +372,10 @@ export function QADiscussionHub({
       <motion.section
         initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="tbo-section-hero relative overflow-hidden rounded-[2rem] border border-primary-100/80 p-5 shadow-[0_18px_50px_rgba(83,45,67,0.08)] sm:p-7"
+        className="relative overflow-hidden rounded-[2rem] border border-primary-100/80 bg-gradient-to-br from-primary-50/70 via-white to-sky-50/45 p-5 shadow-[0_18px_50px_rgba(83,45,67,0.08)] sm:p-7"
       >
+        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary-200/25 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-20 -left-10 h-44 w-44 rounded-full bg-sky-200/25 blur-3xl" />
 
         <div className="relative">
           <div className="mb-6 flex items-center justify-between gap-3">
@@ -392,11 +394,11 @@ export function QADiscussionHub({
             <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-100 text-primary-700 ring-1 ring-primary-200/60">
               <MessageSquare className="h-6 w-6" />
             </div>
-            <h1 className="tbo-h1 text-foreground">A conversation worth having</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">A conversation worth having</h1>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">Answer honestly, discover each other gently, and grow closer one question at a time.</p>
           </div>
 
-          <div className="mt-6 rounded-3xl border border-border bg-card p-4 shadow-sm backdrop-blur-sm">
+          <div className="mt-6 rounded-3xl border border-white/80 bg-white/65 p-4 shadow-sm backdrop-blur-sm">
             <div className="mb-2 flex items-end justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary-600">Your progress</p>
@@ -405,7 +407,7 @@ export function QADiscussionHub({
               <span className="text-2xl font-bold text-primary-700">{completionPercentage}%</span>
             </div>
             <div className="h-2.5 overflow-hidden rounded-full bg-primary-100/80" role="progressbar" aria-label="Category completion" aria-valuemin={0} aria-valuemax={100} aria-valuenow={completionPercentage}>
-              <motion.div className="h-full rounded-full" style={{ background: "var(--primary)" }} initial={prefersReducedMotion ? false : { width: 0 }} animate={{ width: `${completionPercentage}%` }} transition={{ duration: prefersReducedMotion ? 0 : 0.65, ease: 'easeOut' }} />
+              <motion.div className="h-full rounded-full bg-gradient-to-r from-primary-500 to-primary-700" initial={prefersReducedMotion ? false : { width: 0 }} animate={{ width: `${completionPercentage}%` }} transition={{ duration: prefersReducedMotion ? 0 : 0.65, ease: 'easeOut' }} />
             </div>
             <div className="mt-4 grid grid-cols-3 divide-x divide-primary-100 text-center">
               {[
@@ -471,7 +473,7 @@ export function QADiscussionHub({
       {/* Question Carousel */}
       {!isLoadingQuestions && filteredQuestions.length > 0 && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-card p-2 shadow-sm">
+          <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-white/80 p-2 shadow-sm">
             <button type="button" onClick={handlePrevious} aria-label="Previous question" className="inline-flex min-h-10 items-center gap-1 rounded-xl px-3 text-sm font-semibold text-muted-foreground transition-colors hover:bg-primary-50 hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
               <ChevronLeft className="h-4 w-4" /><span className="hidden sm:inline">Previous</span>
             </button>
@@ -1059,8 +1061,9 @@ function QuestionCard({
   };
 
   return (
-    <Card className="overflow-hidden rounded-[2rem] border-primary-100/80 bg-card shadow-[0_22px_70px_rgba(83,45,67,0.11)]">
-      <CardHeader className="tbo-section-hero relative overflow-hidden border-b border-primary-100/70 p-5 sm:p-7">
+    <Card className="overflow-hidden rounded-[2rem] border-primary-100/80 bg-white/90 shadow-[0_22px_70px_rgba(83,45,67,0.11)]">
+      <CardHeader className="relative overflow-hidden border-b border-primary-100/70 bg-gradient-to-br from-primary-50 via-white to-secondary-50/70 p-5 sm:p-7">
+        <div className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-primary-200/25 blur-3xl" />
         <div className="flex items-start justify-between gap-4">
           <div className="relative flex-1">
             <div className="flex items-center gap-2 mb-2 flex-wrap">
@@ -1107,8 +1110,9 @@ function QuestionCard({
       <CardContent className="space-y-6 p-4 sm:p-7">
         {/* Scripture */}
         <div
-          className="relative overflow-hidden rounded-3xl border border-amber-100 bg-card p-4 shadow-sm sm:p-5"
+          className="relative overflow-hidden rounded-3xl border border-amber-100 bg-gradient-to-br from-amber-50/90 to-orange-50/55 p-4 shadow-sm sm:p-5"
         >
+          <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-amber-200/25 blur-2xl" />
           <div className="flex items-start gap-3">
             <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/75 text-amber-700 shadow-sm"><BookOpen className="h-5 w-5" /></span>
             <div className="relative">
@@ -1169,12 +1173,12 @@ function QuestionCard({
                   {question.prompts.map((prompt) => (
                     <div key={prompt.id} className="space-y-1.5">
                       <p className="text-sm font-semibold text-foreground">{prompt.text}</p>
-                      <div className="rounded-2xl border border-emerald-100 bg-card px-4 py-3 shadow-sm">
+                      <div className="rounded-2xl border border-emerald-100 bg-white/80 px-4 py-3 shadow-sm">
                         <p className="text-sm leading-relaxed text-foreground">{formatAnswerForDisplay(myAnswers[prompt.id])}</p>
                       </div>
                     </div>
                   ))}
-                  <Button onClick={onNextQuestion} className="h-12 w-full rounded-2xl bg-primary text-base font-semibold text-white shadow-[0_10px_25px_rgba(190,68,112,0.22)] transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(190,68,112,0.28)] motion-reduce:transform-none">
+                  <Button onClick={onNextQuestion} className="h-12 w-full rounded-2xl bg-gradient-to-r from-primary-600 to-primary-700 text-base font-semibold text-white shadow-[0_10px_25px_rgba(190,68,112,0.22)] transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(190,68,112,0.28)] motion-reduce:transform-none">
                     <ChevronRight className="mr-2 h-4 w-4" /> Next Question
                   </Button>
                 </div>
@@ -1202,7 +1206,7 @@ function QuestionCard({
               <Button
                 onClick={handleSaveAndContinue}
                 disabled={isSaving || !canContinue}
-                className="h-12 w-full rounded-2xl text-base transition-all enabled:bg-primary enabled:text-white enabled:shadow-[0_10px_25px_rgba(190,68,112,0.22)] enabled:hover:-translate-y-0.5 enabled:hover:shadow-[0_14px_30px_rgba(190,68,112,0.28)] disabled:bg-neutral-100 disabled:text-muted-foreground motion-reduce:transform-none"
+                className="h-12 w-full rounded-2xl text-base transition-all enabled:bg-gradient-to-r enabled:from-primary-600 enabled:to-primary-700 enabled:text-white enabled:shadow-[0_10px_25px_rgba(190,68,112,0.22)] enabled:hover:-translate-y-0.5 enabled:hover:shadow-[0_14px_30px_rgba(190,68,112,0.28)] disabled:bg-neutral-100 disabled:text-muted-foreground motion-reduce:transform-none"
                 style={{
                   fontWeight: 'var(--font-weight-semibold)',
                   cursor: (isSaving || !canContinue) ? 'not-allowed' : 'pointer',
@@ -1249,7 +1253,7 @@ function QuestionCard({
                   return (
                     <div key={prompt.id} className="space-y-1.5">
                       <p className="text-xs font-semibold text-muted-foreground">{prompt.text}</p>
-                      <div className="rounded-2xl border border-primary-100 bg-card px-4 py-3 shadow-sm">
+                      <div className="rounded-2xl border border-primary-100 bg-white/85 px-4 py-3 shadow-sm">
                         <p className="text-sm font-medium leading-relaxed text-foreground">{displayValue}</p>
                       </div>
                     </div>
@@ -1303,7 +1307,7 @@ function QuestionCard({
 
         {/* AI-Powered Compatibility Match */}
         {bothAnswered && (
-          <Collapsible defaultOpen={false} className="rounded-2xl border border-violet-200 bg-card">
+          <Collapsible defaultOpen={false} className="rounded-2xl border border-violet-200 bg-gradient-to-br from-violet-50/80 to-primary-50/60">
             <CollapsibleTrigger className="group flex min-h-16 w-full items-center justify-between gap-3 rounded-2xl px-4 py-3 text-left transition-colors hover:bg-violet-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 [&[data-state=open]_.compatibility-chevron]:rotate-180">
               <span className="flex min-w-0 items-center gap-3">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/80 text-violet-600 shadow-sm"><Sparkles className={`h-5 w-5 ${isLoadingAI ? 'animate-pulse' : ''}`} /></span>

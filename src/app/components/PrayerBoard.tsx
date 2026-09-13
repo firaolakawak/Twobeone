@@ -333,41 +333,43 @@ export function PrayerBoard({
   };
 
   return (
-    <div className="mx-auto min-h-screen min-w-0 w-full max-w-3xl space-y-7 pb-28 [overflow-wrap:anywhere]">
-      <header className="tbo-section-hero relative isolate overflow-hidden rounded-[2rem] px-6 py-7 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)] ring-1 ring-rose-100/80 sm:px-9 sm:py-9">
+    <div className="mx-auto min-h-screen w-full max-w-3xl space-y-7 pb-28">
+      <header className="relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-rose-50 via-white to-amber-50 px-6 py-7 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)] ring-1 ring-rose-100/80 sm:px-9 sm:py-9">
+        <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-rose-200/30 blur-3xl" aria-hidden="true" />
+        <div className="pointer-events-none absolute -bottom-24 -left-16 h-52 w-52 rounded-full bg-amber-200/30 blur-3xl" aria-hidden="true" />
         <div className="relative">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 tbo-caption text-rose-700 shadow-sm ring-1 ring-rose-100">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-xs font-semibold tracking-wide text-rose-700 shadow-sm ring-1 ring-rose-100">
                 <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" aria-hidden="true" />
                 Held together in prayer
               </div>
-              <h1 className="tbo-h1 tbo-emotional text-slate-950">{t.prayer.title}</h1>
-              <p className="mt-2 max-w-lg tbo-body-l tbo-supportive text-slate-600">Bring your hopes, needs, and gratitude into one shared sacred space.</p>
+              <h1 className="text-3xl font-bold tracking-[-0.035em] text-slate-950 sm:text-4xl">{t.prayer.title}</h1>
+              <p className="mt-2 max-w-lg text-[15px] leading-7 text-slate-600">Bring your hopes, needs, and gratitude into one shared sacred space.</p>
             </div>
-            <Button type="button" onClick={openPrayerForm} className="h-auto min-h-11 whitespace-normal rounded-full bg-rose-600 px-5 py-2 font-medium text-white shadow-lg shadow-rose-200 hover:bg-rose-700">
+            <Button type="button" onClick={openPrayerForm} className="h-11 rounded-full bg-rose-600 px-5 font-bold text-white shadow-lg shadow-rose-200 hover:bg-rose-700">
               <Plus className="h-4 w-4" aria-hidden="true" />
               {t.prayer.newRequest}
             </Button>
           </div>
           <div className="mt-7 grid grid-cols-3 gap-3 border-t border-rose-100/80 pt-5">
-            <div><p className="tbo-h2 text-slate-900">{activePrayerCount}</p><p className="mt-0.5 text-xs font-medium text-slate-500">Active</p></div>
-            <div className="border-l border-rose-100 pl-3"><p className="tbo-h2 text-slate-900">{togetherPrayerCount}</p><p className="mt-0.5 text-xs font-medium text-slate-500">Together</p></div>
-            <div className="border-l border-rose-100 pl-3"><p className="tbo-h2 text-slate-900">{answeredPrayerCount}</p><p className="mt-0.5 text-xs font-medium text-slate-500">Answered</p></div>
+            <div><p className="text-xl font-bold text-slate-900">{activePrayerCount}</p><p className="mt-0.5 text-xs font-medium text-slate-500">Active</p></div>
+            <div className="border-l border-rose-100 pl-3"><p className="text-xl font-bold text-slate-900">{togetherPrayerCount}</p><p className="mt-0.5 text-xs font-medium text-slate-500">Together</p></div>
+            <div className="border-l border-rose-100 pl-3"><p className="text-xl font-bold text-slate-900">{answeredPrayerCount}</p><p className="mt-0.5 text-xs font-medium text-slate-500">Answered</p></div>
           </div>
         </div>
       </header>
 
       <div className="space-y-5">
-        <div className="grid h-auto min-h-14 w-full grid-cols-3 gap-1 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-[inset_0_1px_2px_rgba(15,23,42,0.04),0_10px_30px_-24px_rgba(15,23,42,0.45)]" role="tablist" aria-label="Prayer sections">
+        <div className="grid h-14 w-full grid-cols-3 gap-1 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-[inset_0_1px_2px_rgba(15,23,42,0.04),0_10px_30px_-24px_rgba(15,23,42,0.45)]" role="tablist" aria-label="Prayer sections">
           <button
             type="button"
             role="tab"
             aria-selected={activeTab === "requests"}
             onClick={() => setActiveTab("requests")}
-            className={`flex h-auto min-h-11 min-w-0 flex-wrap items-center justify-center gap-2 whitespace-normal rounded-[0.9rem] px-2 py-2 tbo-caption transition-all ${
+            className={`flex h-full items-center justify-center gap-2 rounded-[0.9rem] px-2 text-xs font-semibold transition-all sm:text-sm ${
               activeTab === "requests"
-                ? "bg-primary-50 text-rose-700 shadow-sm ring-1 ring-rose-100"
+                ? "bg-white text-rose-700 shadow-sm ring-1 ring-rose-100"
                 : "text-slate-500 hover:bg-white/65 hover:text-slate-800"
             }`}
           >
@@ -379,9 +381,9 @@ export function PrayerBoard({
             role="tab"
             aria-selected={activeTab === "answered"}
             onClick={() => setActiveTab("answered")}
-            className={`flex h-auto min-h-11 min-w-0 flex-wrap items-center justify-center gap-2 whitespace-normal rounded-[0.9rem] px-2 py-2 tbo-caption transition-all ${
+            className={`flex h-full items-center justify-center gap-2 rounded-[0.9rem] px-2 text-xs font-semibold transition-all sm:text-sm ${
               activeTab === "answered"
-                ? "bg-primary-50 text-rose-700 shadow-sm ring-1 ring-rose-100"
+                ? "bg-white text-rose-700 shadow-sm ring-1 ring-rose-100"
                 : "text-slate-500 hover:bg-white/65 hover:text-slate-800"
             }`}
           >
@@ -393,9 +395,9 @@ export function PrayerBoard({
             role="tab"
             aria-selected={activeTab === "together"}
             onClick={() => setActiveTab("together")}
-            className={`flex h-auto min-h-11 min-w-0 flex-wrap items-center justify-center gap-2 whitespace-normal rounded-[0.9rem] px-2 py-2 tbo-caption transition-all ${
+            className={`flex h-full items-center justify-center gap-2 rounded-[0.9rem] px-2 text-xs font-semibold transition-all sm:text-sm ${
               activeTab === "together"
-                ? "bg-primary-50 text-rose-700 shadow-sm ring-1 ring-rose-100"
+                ? "bg-white text-rose-700 shadow-sm ring-1 ring-rose-100"
                 : "text-slate-500 hover:bg-white/65 hover:text-slate-800"
             }`}
           >
@@ -426,25 +428,25 @@ export function PrayerBoard({
       {/* Prayer List */}
       <div className="space-y-4">
         {!hasPartner && activeTab === "together" ? (
-          <Card className="rounded-[2rem] border-rose-100 bg-card p-10 text-center shadow-sm">
+          <Card className="rounded-[2rem] border-rose-100 bg-gradient-to-br from-white to-rose-50/50 p-10 text-center shadow-sm">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 text-rose-500">
               <Users className="h-8 w-8" aria-hidden="true" />
             </div>
-            <h3 className="mb-2 tbo-h3 text-slate-900">
+            <h3 className="mb-2 text-lg font-bold text-slate-900">
               Connect with Your Partner
             </h3>
-            <p className="mx-auto max-w-md tbo-body-s text-slate-500">
+            <p className="mx-auto max-w-md text-sm leading-6 text-slate-500">
               Prayer sharing is available when you're connected
               as a couple. Share your invite code or enter your
               partner's code to start praying together.
             </p>
           </Card>
         ) : filteredPrayers.length === 0 ? (
-          <Card className="rounded-[2rem] border-rose-100 bg-card p-10 text-center shadow-sm">
+          <Card className="rounded-[2rem] border-rose-100 bg-gradient-to-br from-white to-rose-50/50 p-10 text-center shadow-sm">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 text-rose-500">
               {searchQuery ? <Search className="h-7 w-7" aria-hidden="true" /> : <Heart className="h-8 w-8" aria-hidden="true" />}
             </div>
-            <h3 className="mb-2 tbo-h3 text-slate-900">
+            <h3 className="mb-2 text-lg font-bold text-slate-900">
               {searchQuery
                 ? "No matching prayers"
                 : activeTab === "together"
@@ -453,7 +455,7 @@ export function PrayerBoard({
                   ? t.prayer.answered
                   : t.prayer.noRequests}
             </h3>
-            <p className="tbo-body-s text-slate-500">
+            <p className="text-sm leading-6 text-slate-500">
               {searchQuery
                 ? "Try a different title, category, or prayer detail."
                 : activeTab === "together"
@@ -479,7 +481,7 @@ export function PrayerBoard({
             return (
               <Card
                 key={prayer.id}
-                className="group overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-card shadow-[0_12px_36px_-28px_rgba(15,23,42,0.45)] transition-all hover:-translate-y-0.5 hover:border-rose-200 hover:shadow-[0_18px_42px_-26px_rgba(190,24,93,0.3)]"
+                className="group overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-[0_12px_36px_-28px_rgba(15,23,42,0.45)] transition-all hover:-translate-y-0.5 hover:border-rose-200 hover:shadow-[0_18px_42px_-26px_rgba(190,24,93,0.3)]"
               >
                 <CardContent className="p-0">
                   <div className="p-5 sm:p-6">
@@ -499,21 +501,21 @@ export function PrayerBoard({
                           {formatDate(prayer.createdAt)}
                         </span>
                         {prayer.isAnswered && (
-                          <Badge className="border-0 bg-emerald-50 px-2 py-0.5 tbo-caption text-emerald-700 shadow-none hover:bg-emerald-50">
+                          <Badge className="border-0 bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 shadow-none hover:bg-emerald-50">
                             Answered
                           </Badge>
                         )}
                         {!prayer.isPartner && (
-                          <Badge variant="outline" className="border-slate-200 bg-slate-50 px-2 py-0.5 tbo-caption text-slate-600">
+                          <Badge variant="outline" className="border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] text-slate-600">
                             {prayer.isSharedWithPartner === false ? <><UserRound className="mr-1 h-3 w-3" />Private</> : prayer.isSurprise ? <><Lock className="mr-1 h-3 w-3" />Surprise</> : <><Users className="mr-1 h-3 w-3" />Shared</>}
                           </Badge>
                         )}
                       </div>
-                      <h3 className="mb-1.5 tbo-h3 text-slate-900">
+                      <h3 className="mb-1.5 text-base font-bold leading-snug text-slate-900 sm:text-lg">
                         {prayer.title}
                       </h3>
                       <p
-                        className={`tbo-body-l text-slate-600 ${
+                        className={`text-sm leading-6 text-slate-600 ${
                           isExpanded ? "" : "line-clamp-2"
                         }`}
                       >
@@ -540,7 +542,7 @@ export function PrayerBoard({
                         onClick={() => handleTogglePrayed(prayer, "you")}
                         disabled={!canTrack}
                         aria-pressed={Boolean(prayer.isPartner ? prayer.partnerPrayed : prayer.youPrayed)}
-                        className={`flex min-h-10 items-center gap-2 rounded-full px-3.5 tbo-caption transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${(prayer.isPartner ? prayer.partnerPrayed : prayer.youPrayed) ? "bg-rose-100 text-rose-700" : "bg-slate-50 text-slate-600 hover:bg-rose-50 hover:text-rose-700"}`}
+                        className={`flex min-h-10 items-center gap-2 rounded-full px-3.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${(prayer.isPartner ? prayer.partnerPrayed : prayer.youPrayed) ? "bg-rose-100 text-rose-700" : "bg-slate-50 text-slate-600 hover:bg-rose-50 hover:text-rose-700"}`}
                       >
                         <span className={`flex h-5 w-5 items-center justify-center rounded-full ${(prayer.isPartner ? prayer.partnerPrayed : prayer.youPrayed) ? "bg-rose-500 text-white" : "border border-slate-300 bg-white"}`}>
                           {(prayer.isPartner ? prayer.partnerPrayed : prayer.youPrayed) && <Check className="h-3.5 w-3.5" aria-hidden="true" />}
@@ -552,7 +554,7 @@ export function PrayerBoard({
                         onClick={() => handleTogglePrayed(prayer, "partner")}
                         disabled={!canTrack}
                         aria-pressed={Boolean(prayer.partnerPrayed)}
-                        className={`flex min-h-10 items-center gap-2 rounded-full px-3.5 tbo-caption transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${prayer.partnerPrayed ? "bg-amber-100 text-amber-800" : "bg-slate-50 text-slate-600 hover:bg-amber-50 hover:text-amber-800"}`}
+                        className={`flex min-h-10 items-center gap-2 rounded-full px-3.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${prayer.partnerPrayed ? "bg-amber-100 text-amber-800" : "bg-slate-50 text-slate-600 hover:bg-amber-50 hover:text-amber-800"}`}
                       >
                         <span className={`flex h-5 w-5 items-center justify-center rounded-full ${prayer.partnerPrayed ? "bg-amber-500 text-white" : "border border-slate-300 bg-white"}`}>
                           {prayer.partnerPrayed && <Check className="h-3.5 w-3.5" aria-hidden="true" />}
@@ -618,13 +620,13 @@ export function PrayerBoard({
         }}
       >
         <DialogContent className="max-h-[92dvh] gap-0 overflow-y-auto rounded-[1.75rem] border-rose-100 p-0 sm:max-w-xl">
-          <DialogHeader className="tbo-section-hero border-b border-rose-100 px-6 py-6 pr-12 text-left">
-            <DialogTitle className="tbo-h2 text-slate-900">
+          <DialogHeader className="border-b border-rose-100 bg-gradient-to-br from-rose-50 via-white to-amber-50 px-6 py-6 pr-12 text-left">
+            <DialogTitle className="text-2xl font-bold text-slate-900">
               {editingPrayer
                 ? "Edit Prayer"
                 : "New Prayer Request"}
             </DialogTitle>
-            <DialogDescription className="tbo-body-s tbo-supportive text-slate-600">
+            <DialogDescription className="leading-6 text-slate-600">
               Create a space to return to this prayer together.
             </DialogDescription>
           </DialogHeader>
@@ -649,7 +651,7 @@ export function PrayerBoard({
                     <span className="text-2xl mb-1">
                       {cat.emoji}
                     </span>
-                    <span className="tbo-caption text-center">
+                    <span className="text-xs text-center leading-tight">
                       {cat.value}
                     </span>
                   </button>
@@ -666,7 +668,7 @@ export function PrayerBoard({
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                className="h-11 rounded-xl border-slate-200 tbo-body-l focus-visible:ring-rose-400"
+                className="h-11 rounded-xl border-slate-200 focus-visible:ring-rose-400"
               />
             </div>
 
@@ -680,7 +682,7 @@ export function PrayerBoard({
                 onChange={(e) => setDescription(e.target.value)}
                 rows={4}
                 required
-                className="rounded-xl border-slate-200 tbo-body-l focus-visible:ring-rose-400"
+                className="rounded-xl border-slate-200 focus-visible:ring-rose-400"
               />
             </div>
 
@@ -698,7 +700,7 @@ export function PrayerBoard({
                   setReminderDate(e.target.value)
                 }
                 min={new Date().toISOString().split("T")[0]}
-                className="h-11 rounded-xl border-slate-200 tbo-body-l focus-visible:ring-rose-400"
+                className="h-11 rounded-xl border-slate-200 focus-visible:ring-rose-400"
               />
             </div>
 
@@ -725,7 +727,7 @@ export function PrayerBoard({
             </div>
 
             {/* Community Sharing */}
-            <div className="flex items-center justify-between rounded-2xl border border-rose-100 bg-card p-4">
+            <div className="flex items-center justify-between rounded-2xl border border-rose-100 bg-gradient-to-r from-rose-50 to-amber-50 p-4">
               <div className="flex-1">
                 <Label
                   htmlFor="community"

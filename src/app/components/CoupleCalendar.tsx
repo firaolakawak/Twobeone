@@ -335,9 +335,9 @@ export function CoupleCalendar({
     const selected = isSameLocalDay(day, selectedDay);
     const today = isSameLocalDay(day, new Date());
     const emoji = emojiForDay(day);
-    return <span className={`relative grid shrink-0 place-items-center rounded-full font-medium transition-all ${compact ? 'h-8 w-8 tbo-caption' : 'h-10 w-10 text-sm sm:h-12 sm:w-12 sm:text-sm'} ${selected ? 'bg-rose-600 text-white shadow-md shadow-rose-200 ring-2 ring-rose-300 ring-offset-2' : marks.length ? 'bg-rose-50 text-slate-950 ring-2 ring-rose-500 ring-offset-1' : today ? 'bg-rose-50 text-rose-700 ring-1 ring-rose-300' : 'text-slate-800'}`}>
+    return <span className={`relative grid shrink-0 place-items-center rounded-full font-black transition-all ${compact ? 'h-8 w-8 text-xs' : 'h-10 w-10 text-sm sm:h-12 sm:w-12 sm:text-sm'} ${selected ? 'bg-rose-600 text-white shadow-md shadow-rose-200 ring-2 ring-rose-300 ring-offset-2' : marks.length ? 'bg-rose-50 text-slate-950 ring-2 ring-rose-500 ring-offset-1' : today ? 'bg-rose-50 text-rose-700 ring-1 ring-rose-300' : 'text-slate-800'}`}>
       {day.getDate()}
-      {emoji && <span aria-hidden="true" className={`pointer-events-none absolute z-10 drop-shadow-sm motion-safe:animate-[bounce_1.8s_ease-in-out_infinite] ${compact ? '-right-1.5 -top-1.5 tbo-caption' : '-right-2 -top-2 text-lg'}`}>{emoji}</span>}
+      {emoji && <span aria-hidden="true" className={`pointer-events-none absolute z-10 drop-shadow-sm motion-safe:animate-[bounce_1.8s_ease-in-out_infinite] ${compact ? '-right-1.5 -top-1.5 text-xs' : '-right-2 -top-2 text-lg'}`}>{emoji}</span>}
     </span>;
   };
 
@@ -426,25 +426,25 @@ export function CoupleCalendar({
 
   const renderItem = (item: CoupleCalendarItem) => (
     <article key={item.id} className={`group rounded-2xl border p-4 transition-all hover:-translate-y-0.5 hover:shadow-md ${itemAccent(item.type)} ${item.status === 'completed' ? 'opacity-60' : ''}`}>
-      <div className="flex flex-wrap items-start gap-3">
+      <div className="flex items-start gap-3">
         <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/80 text-lg shadow-sm">{item.isLockedForPartner ? <Lock className="h-5 w-5 text-violet-600" /> : item.emoji || CALENDAR_CATEGORY_EMOJI[item.category]}</div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className={`tbo-h3 text-slate-900 ${item.status === 'completed' ? 'line-through' : ''}`}>{item.title}</h3>
-            {item.isPartner && <Badge variant="outline" className="border-white/80 bg-white/70 tbo-caption">{copy.partner}</Badge>}
-            {!item.isPartner && <Badge variant="outline" className="border-white/80 bg-white/70 tbo-caption">{item.isSharedWithPartner === false ? <><UserRound className="mr-1 h-3 w-3" />{copy.private}</> : item.isSurprise ? <><Lock className="mr-1 h-3 w-3" />{copy.surprise}</> : <><Users className="mr-1 h-3 w-3" />{copy.shared}</>}</Badge>}
+            <h3 className={`font-bold text-slate-900 ${item.status === 'completed' ? 'line-through' : ''}`}>{item.title}</h3>
+            {item.isPartner && <Badge variant="outline" className="border-white/80 bg-white/70 text-[10px]">{copy.partner}</Badge>}
+            {!item.isPartner && <Badge variant="outline" className="border-white/80 bg-white/70 text-[10px]">{item.isSharedWithPartner === false ? <><UserRound className="mr-1 h-3 w-3" />{copy.private}</> : item.isSurprise ? <><Lock className="mr-1 h-3 w-3" />{copy.surprise}</> : <><Users className="mr-1 h-3 w-3" />{copy.shared}</>}</Badge>}
             {item.recurrence !== 'none' && <Repeat2 className="h-3.5 w-3.5" aria-label={copy.repeats} />}
           </div>
-          <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 tbo-caption opacity-80">
-            <span className="flex min-w-0 items-start gap-1 [&>svg]:shrink-0"><Clock3 className="h-3.5 w-3.5" />{formatTime(item)}</span>
-            {item.location && <span className="flex min-w-0 items-start gap-1 [&>svg]:shrink-0"><MapPin className="h-3.5 w-3.5" />{item.location}</span>}
-            {item.reminderMinutes !== null && <span className="flex min-w-0 items-start gap-1 [&>svg]:shrink-0"><Bell className="h-3.5 w-3.5" />{copy.reminderLabel}</span>}
+          <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-medium opacity-80">
+            <span className="flex items-center gap-1"><Clock3 className="h-3.5 w-3.5" />{formatTime(item)}</span>
+            {item.location && <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{item.location}</span>}
+            {item.reminderMinutes !== null && <span className="flex items-center gap-1"><Bell className="h-3.5 w-3.5" />{copy.reminderLabel}</span>}
           </p>
-          {item.isLockedForPartner ? <p className="mt-2 text-sm font-medium leading-6 text-violet-700">{copy.lockedUntil} {new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(item.unlockAt || item.startsAt))}</p> : item.description && <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{item.description}</p>}
-          {item.prayerId && <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/75 px-2.5 py-1 tbo-caption text-rose-700"><Heart className="h-3 w-3 fill-rose-500" />{copy.prayerReady}</div>}
+          {item.isLockedForPartner ? <p className="mt-2 text-sm font-semibold leading-6 text-violet-700">{copy.lockedUntil} {new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(item.unlockAt || item.startsAt))}</p> : item.description && <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{item.description}</p>}
+          {item.prayerId && <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/75 px-2.5 py-1 text-[11px] font-bold text-rose-700"><Heart className="h-3 w-3 fill-rose-500" />{copy.prayerReady}</div>}
         </div>
         {!item.isPartner && (
-          <div className="flex basis-full justify-end gap-1 sm:basis-auto">
+          <div className="flex shrink-0 gap-1">
             <button type="button" onClick={() => openEdit(item)} className="grid h-9 w-9 place-items-center rounded-full bg-white/75 text-slate-600 hover:bg-white" aria-label={copy.edit}><Pencil className="h-4 w-4" /></button>
             <button type="button" onClick={() => void updateStatus(item)} className="grid h-9 w-9 place-items-center rounded-full bg-white/75 text-slate-600 hover:bg-white" aria-label={copy.complete}><Check className="h-4 w-4" /></button>
             <button type="button" onClick={() => void deleteItem(item)} className="grid h-9 w-9 place-items-center rounded-full bg-white/75 text-slate-400 hover:bg-red-50 hover:text-red-600" aria-label={copy.delete}><Trash2 className="h-4 w-4" /></button>
@@ -457,30 +457,32 @@ export function CoupleCalendar({
   const prayerPreview = buildPrayerFallback(draft.title, draft.category, language);
 
   return (
-    <div className="couple-calendar-mobile mx-auto min-h-screen min-w-0 w-full [overflow-wrap:anywhere] max-w-4xl pb-32">
-      <header className="tbo-section-hero relative isolate overflow-hidden rounded-[2rem] border border-rose-100 px-5 py-6 shadow-[0_24px_70px_-45px_rgba(190,24,93,.5)] sm:px-8 sm:py-8">
+    <div className="couple-calendar-mobile mx-auto min-h-screen w-full max-w-4xl pb-32">
+      <header className="relative isolate overflow-hidden rounded-[2rem] border border-rose-100 bg-gradient-to-br from-rose-50 via-white to-violet-50 px-5 py-6 shadow-[0_24px_70px_-45px_rgba(190,24,93,.5)] sm:px-8 sm:py-8">
+        <div className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-violet-200/30 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-28 -left-16 h-64 w-64 rounded-full bg-rose-200/35 blur-3xl" />
         <div className="relative">
           <div className="flex items-center justify-between gap-3">
-            <button type="button" onClick={onBack} className="app-icon-button grid h-11 w-11 shrink-0 place-items-center rounded-full border border-white bg-white/90 text-slate-700 shadow-sm" aria-label={copy.back}><ArrowLeft className="h-6 w-6" /></button>
-            <div className="inline-flex min-h-9 min-w-0 items-center gap-2 rounded-full bg-white/90 px-3 py-2 tbo-caption uppercase text-rose-700 shadow-sm ring-1 ring-rose-100"><Heart className="h-4 w-4 shrink-0 fill-rose-500" />{copy.eyebrow}</div>
-            <button type="button" onClick={() => openCreate()} className="app-icon-button grid h-11 w-11 shrink-0 place-items-center rounded-full bg-rose-600 text-white shadow-lg shadow-rose-200" aria-label={copy.newItem}><Plus className="h-6 w-6" /></button>
+            <button type="button" onClick={onBack} className="app-icon-button grid h-11 w-11 place-items-center rounded-full border border-white bg-white/90 text-slate-700 shadow-sm" aria-label={copy.back}><ArrowLeft className="h-6 w-6" /></button>
+            <div className="inline-flex min-h-9 items-center gap-2 rounded-full bg-white/90 px-3 py-2 text-xs font-extrabold uppercase tracking-[.12em] text-rose-700 shadow-sm ring-1 ring-rose-100"><Heart className="h-4 w-4 shrink-0 fill-rose-500" />{copy.eyebrow}</div>
+            <button type="button" onClick={() => openCreate()} className="app-icon-button grid h-11 w-11 place-items-center rounded-full bg-rose-600 text-white shadow-lg shadow-rose-200" aria-label={copy.newItem}><Plus className="h-6 w-6" /></button>
           </div>
           <div className="mt-7 max-w-2xl">
-            <p className="text-sm font-medium text-rose-600">{userName || copy.you} {partnerName ? `& ${partnerName}` : ''}</p>
-            <h1 className="mt-1 tbo-h1 text-slate-950">{copy.title}</h1>
-            <p className="mt-3 max-w-xl tbo-body-l text-slate-700">{copy.subtitle}</p>
+            <p className="text-sm font-semibold text-rose-600">{userName || copy.you} {partnerName ? `& ${partnerName}` : ''}</p>
+            <h1 className="mt-1 text-3xl font-black tracking-[-.04em] text-slate-950 sm:text-4xl">{copy.title}</h1>
+            <p className="mt-3 max-w-xl text-base leading-7 text-slate-700">{copy.subtitle}</p>
           </div>
           <div className="mt-7 grid grid-cols-3 gap-2 border-t border-rose-100 pt-5 sm:gap-4">
-            <div><p className="tbo-h1 text-slate-950">{weekCount}</p><p className="tbo-caption text-slate-500">{copy.plansThisWeek}</p></div>
-            <div className="border-l border-rose-100 pl-3"><p className="tbo-h1 text-slate-950">{linkedPrayerItems.length}</p><p className="tbo-caption text-slate-500">{copy.linkedPrayers}</p></div>
-            <div className="border-l border-rose-100 pl-3"><p className="tbo-h1 text-slate-950">{items.filter(item => item.type === 'routine').length}</p><p className="tbo-caption text-slate-500">{copy.routines}</p></div>
+            <div><p className="text-2xl font-black text-slate-950">{weekCount}</p><p className="text-xs font-semibold text-slate-500">{copy.plansThisWeek}</p></div>
+            <div className="border-l border-rose-100 pl-3"><p className="text-2xl font-black text-slate-950">{linkedPrayerItems.length}</p><p className="text-xs font-semibold text-slate-500">{copy.linkedPrayers}</p></div>
+            <div className="border-l border-rose-100 pl-3"><p className="text-2xl font-black text-slate-950">{items.filter(item => item.type === 'routine').length}</p><p className="text-xs font-semibold text-slate-500">{copy.routines}</p></div>
           </div>
         </div>
       </header>
 
       <div className="mt-6 grid grid-cols-4 gap-2">
         {(['plan', 'event', 'reminder', 'routine'] as CalendarItemType[]).map(type => (
-          <button key={type} type="button" onClick={() => openCreate(type)} className={`flex min-h-24 min-w-0 flex-col items-center justify-center gap-2 whitespace-normal rounded-2xl border px-1 py-2 text-sm font-medium shadow-sm transition-all hover:-translate-y-0.5 ${itemAccent(type)}`}>
+          <button key={type} type="button" onClick={() => openCreate(type)} className={`flex min-h-24 flex-col items-center justify-center gap-2 rounded-2xl border text-sm font-extrabold shadow-sm transition-all hover:-translate-y-0.5 ${itemAccent(type)}`}>
             <span className="text-2xl">{CALENDAR_TYPE_META[type].icon}</span>{copy[type]}
           </button>
         ))}
@@ -490,7 +492,7 @@ export function CoupleCalendar({
         {([
           ['calendar', CalendarDays, copy.calendar], ['events', ListTodo, copy.events],
         ] as const).map(([id, Icon, label]) => (
-          <button key={id} type="button" onClick={() => setView(id)} className={`flex min-h-12 min-w-0 flex-wrap items-center justify-center gap-2 whitespace-normal rounded-xl px-2 py-2 text-base font-medium transition-all ${view === id ? 'bg-primary-50 text-rose-700 shadow-sm' : 'text-slate-600'}`}><Icon className="h-5 w-5" />{label}</button>
+          <button key={id} type="button" onClick={() => setView(id)} className={`flex min-h-12 items-center justify-center gap-2 rounded-xl px-2 text-sm font-extrabold transition-all ${view === id ? 'bg-white text-rose-700 shadow-sm' : 'text-slate-600'}`}><Icon className="h-5 w-5" />{label}</button>
         ))}
       </nav>
 
@@ -500,22 +502,22 @@ export function CoupleCalendar({
         <section className="mt-6 space-y-5">
           <div className="grid grid-cols-3 gap-1 rounded-2xl border border-rose-100 bg-rose-50/60 p-1.5">
             {([['weekly', copy.weekly], ['monthly', copy.monthlyView], ['yearly', copy.yearly]] as const).map(([id, label]) => (
-              <button key={id} type="button" onClick={() => setPeriod(id)} className={`min-h-12 min-w-0 whitespace-normal rounded-xl px-2 py-2 text-sm font-medium transition-all ${period === id ? 'bg-primary-50 text-rose-700 shadow-sm ring-1 ring-rose-100' : 'text-slate-600 hover:text-slate-900'}`}>{label}</button>
+              <button key={id} type="button" onClick={() => setPeriod(id)} className={`min-h-12 rounded-xl px-3 text-sm font-black transition-all ${period === id ? 'bg-white text-rose-700 shadow-sm ring-1 ring-rose-100' : 'text-slate-600 hover:text-slate-900'}`}>{label}</button>
             ))}
           </div>
 
-          <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-card p-2 shadow-sm">
-            <button type="button" onClick={() => moveCalendar(-1)} className="app-icon-button grid h-11 w-11 shrink-0 place-items-center rounded-full text-slate-700 hover:bg-slate-100" aria-label="Previous"><ChevronLeft className="h-5 w-5" /></button>
-            <div className="min-w-0 flex-1 text-center"><p className="tbo-h2 text-slate-950">{periodTitle}</p><button type="button" onClick={() => { setCalendarAnchor(new Date()); setSelectedDay(new Date()); }} className="mt-1 min-h-8 rounded-full px-3 tbo-caption uppercase text-rose-700">{copy.today}</button></div>
-            <button type="button" onClick={() => moveCalendar(1)} className="app-icon-button grid h-11 w-11 shrink-0 place-items-center rounded-full text-slate-700 hover:bg-slate-100" aria-label="Next"><ChevronRight className="h-5 w-5" /></button>
+          <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
+            <button type="button" onClick={() => moveCalendar(-1)} className="app-icon-button grid h-11 w-11 place-items-center rounded-full text-slate-700 hover:bg-slate-100" aria-label="Previous"><ChevronLeft className="h-5 w-5" /></button>
+            <div className="text-center"><p className="text-base font-black text-slate-950">{periodTitle}</p><button type="button" onClick={() => { setCalendarAnchor(new Date()); setSelectedDay(new Date()); }} className="mt-1 min-h-8 rounded-full px-3 text-xs font-black uppercase tracking-wider text-rose-700">{copy.today}</button></div>
+            <button type="button" onClick={() => moveCalendar(1)} className="app-icon-button grid h-11 w-11 place-items-center rounded-full text-slate-700 hover:bg-slate-100" aria-label="Next"><ChevronRight className="h-5 w-5" /></button>
           </div>
 
           {period === 'weekly' && (
-            <div className="grid grid-cols-7 divide-x divide-slate-100 overflow-hidden rounded-[1.5rem] border border-slate-200 bg-card px-2 shadow-sm">
+            <div className="grid grid-cols-7 divide-x divide-slate-100 overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white px-2 shadow-sm">
               {weekDays.map(day => {
                 const marks = marksForDay(day);
                 return <button type="button" key={day.toISOString()} onClick={() => selectCalendarDay(day)} aria-label={`${new Intl.DateTimeFormat(locale, { dateStyle: 'full' }).format(day)}, ${marks.length} ${copy.items}`} className="relative flex min-h-28 flex-col items-center justify-center border-y border-rose-200/90 py-3 text-center transition-colors hover:bg-rose-50/50">
-                  <span className="mb-3 tbo-caption uppercase text-slate-600">{new Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format(day)}</span>
+                  <span className="mb-3 text-xs font-black uppercase text-slate-600">{new Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format(day)}</span>
                   {renderDayCircle(day)}
                 </button>;
               })}
@@ -523,8 +525,8 @@ export function CoupleCalendar({
           )}
 
           {period === 'monthly' && (
-            <div className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-card px-4 py-4 shadow-sm sm:px-7 sm:py-6">
-              <div className="grid grid-cols-7 border-b-2 border-rose-300">{weekDays.map(day => <div key={day.getDay()} className="pb-3 text-center tbo-caption uppercase text-slate-600">{new Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format(day)}</div>)}</div>
+            <div className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white px-4 py-4 shadow-sm sm:px-7 sm:py-6">
+              <div className="grid grid-cols-7 border-b-2 border-rose-300">{weekDays.map(day => <div key={day.getDay()} className="pb-3 text-center text-xs font-black uppercase text-slate-600">{new Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format(day)}</div>)}</div>
               <div className="grid grid-cols-7">
                 {monthDays.map(day => {
                   const inMonth = day.getMonth() === calendarAnchor.getMonth();
@@ -540,9 +542,9 @@ export function CoupleCalendar({
           {period === 'yearly' && (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {yearMonths.map(month => {
-                return <article key={month.getMonth()} className="overflow-hidden rounded-2xl border border-slate-200 bg-card p-3 shadow-sm">
-                  <button type="button" onClick={() => { setCalendarAnchor(month); setPeriod('monthly'); }} className="mb-3 w-full text-left text-sm font-medium text-slate-900 hover:text-rose-700">{new Intl.DateTimeFormat(locale, { month: 'long' }).format(month)}</button>
-                  <div className="grid grid-cols-7 border-b border-rose-300">{getWeekDays(month).map(day => <span key={day.getDay()} className="pb-1.5 text-center text-[0.625rem] leading-3 font-medium uppercase text-slate-500">{new Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format(day)}</span>)}</div>
+                return <article key={month.getMonth()} className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+                  <button type="button" onClick={() => { setCalendarAnchor(month); setPeriod('monthly'); }} className="mb-3 w-full text-left text-sm font-black text-slate-900 hover:text-rose-700">{new Intl.DateTimeFormat(locale, { month: 'long' }).format(month)}</button>
+                  <div className="grid grid-cols-7 border-b border-rose-300">{getWeekDays(month).map(day => <span key={day.getDay()} className="pb-1.5 text-center text-[8px] font-black uppercase text-slate-300">{new Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format(day)}</span>)}</div>
                   <div className="grid grid-cols-7">{getMonthGridDays(month).map(day => {
                     const inMonth = day.getMonth() === month.getMonth();
                     const marks = marksForDay(day);
@@ -555,83 +557,83 @@ export function CoupleCalendar({
             </div>
           )}
 
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl bg-slate-50 px-4 py-3 tbo-caption text-slate-500"><span className="mr-1 uppercase text-slate-400">{copy.markedDays}</span>{(['plan', 'event', 'reminder', 'routine', 'milestone', 'journal'] as DayMark[]).map(type => <span key={type} className="flex items-center gap-1.5"><span className={`h-2 w-2 rounded-full ${markerColor[type]}`} />{copy[type]}</span>)}</div>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl bg-slate-50 px-4 py-3 text-[10px] font-bold text-slate-500"><span className="mr-1 uppercase tracking-wider text-slate-400">{copy.markedDays}</span>{(['plan', 'event', 'reminder', 'routine', 'milestone', 'journal'] as DayMark[]).map(type => <span key={type} className="flex items-center gap-1.5"><span className={`h-2 w-2 rounded-full ${markerColor[type]}`} />{copy[type]}</span>)}</div>
 
-          <section className="rounded-2xl border border-indigo-100 bg-card p-4" aria-label={copy.syncedActivity}>
-            <div className="mb-3 flex flex-wrap items-center justify-between gap-3"><div><p className="tbo-caption uppercase text-indigo-600">{copy.syncedActivity}</p><p className="mt-1 tbo-caption text-slate-500">{copy.syncedActivityHint}</p></div><span className="rounded-full bg-white px-3 py-1 tbo-caption text-indigo-700 shadow-sm">{recordedActivities.length}</span></div>
+          <section className="rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50/70 via-white to-rose-50/70 p-4" aria-label={copy.syncedActivity}>
+            <div className="mb-3 flex items-center justify-between gap-3"><div><p className="text-[10px] font-black uppercase tracking-[.14em] text-indigo-600">{copy.syncedActivity}</p><p className="mt-1 text-xs text-slate-500">{copy.syncedActivityHint}</p></div><span className="rounded-full bg-white px-3 py-1 text-xs font-black text-indigo-700 shadow-sm">{recordedActivities.length}</span></div>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{(['prayer', 'devotional', 'qa', 'journal', 'verse', 'mood', 'stage'] as RecordedActivityType[]).map(type => {
               const count = recordedActivities.filter(activity => activity.type === type).length;
               const emoji = { prayer: '🙏', devotional: '📖', qa: '💬', journal: '✍️', verse: '📜', mood: '😊', stage: '🌱' }[type];
-              return <div key={type} className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 shadow-sm"><span className="text-base">{emoji}</span><span className="min-w-0"><span className="block tbo-caption text-slate-500">{activityLabels[type]}</span><span className="block text-sm font-medium text-slate-900">{count}</span></span></div>;
+              return <div key={type} className="flex items-center gap-2 rounded-xl border border-white bg-white/80 px-3 py-2 shadow-sm"><span className="text-base">{emoji}</span><span className="min-w-0"><span className="block truncate text-[10px] font-bold text-slate-500">{activityLabels[type]}</span><span className="block text-sm font-black text-slate-900">{count}</span></span></div>;
             })}</div>
           </section>
 
           <div className="flex items-end justify-between gap-3">
-            <div><p className="tbo-caption uppercase text-rose-600">{copy.selectedAgenda} · {new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(selectedDay)}</p><h2 className="mt-1 tbo-h2 text-slate-950">{new Intl.DateTimeFormat(locale, { month: 'long', day: 'numeric', year: 'numeric' }).format(selectedDay)}</h2></div>
+            <div><p className="text-xs font-bold uppercase tracking-[.14em] text-rose-600">{copy.selectedAgenda} · {new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(selectedDay)}</p><h2 className="mt-1 text-xl font-black text-slate-950">{new Intl.DateTimeFormat(locale, { month: 'long', day: 'numeric', year: 'numeric' }).format(selectedDay)}</h2></div>
             <Button onClick={() => openCreate('plan', selectedDay)} className="rounded-full bg-slate-950 text-white"><Plus className="h-4 w-4" />{copy.newItem}</Button>
           </div>
           <div className="space-y-3">
             {selectedItems.map(renderItem)}
-            {selectedMilestones.map(milestone => <button type="button" key={`milestone-${milestone.id}`} onClick={onOpenMilestones} className="flex w-full items-start gap-3 rounded-2xl border border-fuchsia-100 bg-fuchsia-50/60 p-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-md"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-xl shadow-sm">{milestone.icon && milestone.icon.length <= 4 ? milestone.icon : '🏆'}</span><span><span className="tbo-caption uppercase text-fuchsia-600">{copy.milestone}</span><span className="mt-1 block tbo-h3 text-slate-900">{milestone.title}</span>{milestone.description && <span className="mt-1 line-clamp-2 block text-sm text-slate-600">{milestone.description}</span>}</span></button>)}
-            {selectedJournalEntries.map(entry => <button type="button" key={`journal-${entry.id}`} onClick={onOpenJournal} className="flex w-full items-start gap-3 rounded-2xl border border-sky-100 bg-sky-50/60 p-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-md"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-xl shadow-sm">{entry.emoji || '📖'}</span><span><span className="tbo-caption uppercase text-sky-600">{copy.journal}</span><span className="mt-1 block tbo-h3 text-slate-900">{entry.title || copy.untitledJournal}</span><span className="mt-1 line-clamp-2 block text-sm text-slate-600">{entry.content}</span></span></button>)}
-            {selectedRecordedActivities.map(activity => <article key={activity.id} className="flex items-start gap-3 rounded-2xl border border-indigo-100 bg-card p-4"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white text-xl shadow-sm ring-1 ring-indigo-100">{activity.emoji}</span><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><span className="tbo-caption uppercase text-indigo-600">{activityLabels[activity.type]}</span>{activity.isPartner && <Badge variant="outline" className="bg-white tbo-caption">{copy.partner}</Badge>}</div><h3 className="mt-1 tbo-h3 text-slate-900">{activityTitle(activity)}</h3>{activity.description && <p className="mt-1 line-clamp-2 text-sm leading-6 text-slate-600">{activity.description}</p>}</div></article>)}
-            {selectedItems.length === 0 && selectedMilestones.length === 0 && selectedJournalEntries.length === 0 && selectedRecordedActivities.length === 0 && <Card className="rounded-[1.75rem] border-dashed border-rose-200 bg-card"><CardContent className="p-9 text-center"><Sparkles className="mx-auto h-8 w-8 text-amber-400" /><h3 className="mt-3 tbo-h3 text-slate-900">{copy.emptyDay}</h3><p className="mt-1 text-sm text-slate-500">{copy.emptyDayHint}</p></CardContent></Card>}
+            {selectedMilestones.map(milestone => <button type="button" key={`milestone-${milestone.id}`} onClick={onOpenMilestones} className="flex w-full items-start gap-3 rounded-2xl border border-fuchsia-100 bg-fuchsia-50/60 p-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-md"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-xl shadow-sm">{milestone.icon && milestone.icon.length <= 4 ? milestone.icon : '🏆'}</span><span><span className="text-[10px] font-black uppercase tracking-wider text-fuchsia-600">{copy.milestone}</span><span className="mt-1 block font-black text-slate-900">{milestone.title}</span>{milestone.description && <span className="mt-1 line-clamp-2 block text-sm text-slate-600">{milestone.description}</span>}</span></button>)}
+            {selectedJournalEntries.map(entry => <button type="button" key={`journal-${entry.id}`} onClick={onOpenJournal} className="flex w-full items-start gap-3 rounded-2xl border border-sky-100 bg-sky-50/60 p-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-md"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-xl shadow-sm">{entry.emoji || '📖'}</span><span><span className="text-[10px] font-black uppercase tracking-wider text-sky-600">{copy.journal}</span><span className="mt-1 block font-black text-slate-900">{entry.title || copy.untitledJournal}</span><span className="mt-1 line-clamp-2 block text-sm text-slate-600">{entry.content}</span></span></button>)}
+            {selectedRecordedActivities.map(activity => <article key={activity.id} className="flex items-start gap-3 rounded-2xl border border-indigo-100 bg-gradient-to-r from-white to-indigo-50/50 p-4"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white text-xl shadow-sm ring-1 ring-indigo-100">{activity.emoji}</span><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><span className="text-[10px] font-black uppercase tracking-wider text-indigo-600">{activityLabels[activity.type]}</span>{activity.isPartner && <Badge variant="outline" className="bg-white text-[9px]">{copy.partner}</Badge>}</div><h3 className="mt-1 font-black text-slate-900">{activityTitle(activity)}</h3>{activity.description && <p className="mt-1 line-clamp-2 text-sm leading-6 text-slate-600">{activity.description}</p>}</div></article>)}
+            {selectedItems.length === 0 && selectedMilestones.length === 0 && selectedJournalEntries.length === 0 && selectedRecordedActivities.length === 0 && <Card className="rounded-[1.75rem] border-dashed border-rose-200 bg-gradient-to-br from-white to-rose-50/50"><CardContent className="p-9 text-center"><Sparkles className="mx-auto h-8 w-8 text-amber-400" /><h3 className="mt-3 font-black text-slate-900">{copy.emptyDay}</h3><p className="mt-1 text-sm text-slate-500">{copy.emptyDayHint}</p></CardContent></Card>}
           </div>
         </section>
       ) : (
         <section className="mt-6 space-y-4">
-          <div><p className="tbo-caption uppercase text-rose-600">{copy.upcoming}</p><h2 className="mt-1 tbo-h2 text-slate-950">{copy.events}</h2></div>
-          {upcomingItems.length ? upcomingItems.map(item => <div key={item.id}><p className="mb-2 ml-1 tbo-caption text-slate-400">{new Intl.DateTimeFormat(locale, { weekday: 'short', month: 'short', day: 'numeric' }).format(new Date(item.startsAt))}</p>{renderItem(item)}</div>) : <p className="rounded-2xl border border-dashed p-8 text-center text-sm text-slate-500">{copy.noUpcoming}</p>}
+          <div><p className="text-xs font-bold uppercase tracking-[.14em] text-rose-600">{copy.upcoming}</p><h2 className="mt-1 text-2xl font-black text-slate-950">{copy.events}</h2></div>
+          {upcomingItems.length ? upcomingItems.map(item => <div key={item.id}><p className="mb-2 ml-1 text-xs font-bold text-slate-400">{new Intl.DateTimeFormat(locale, { weekday: 'short', month: 'short', day: 'numeric' }).format(new Date(item.startsAt))}</p>{renderItem(item)}</div>) : <p className="rounded-2xl border border-dashed p-8 text-center text-sm text-slate-500">{copy.noUpcoming}</p>}
         </section>
       )}
 
       <section className="mt-8 grid gap-5 lg:grid-cols-2" aria-label={copy.sharedMemories}>
-        <article className="overflow-hidden rounded-[1.75rem] border border-fuchsia-100 bg-card shadow-sm">
-          <header className="flex flex-wrap items-center justify-between gap-3 border-b border-fuchsia-100 px-5 py-4">
-            <div className="flex min-w-0 items-center gap-3"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-fuchsia-100 text-fuchsia-700"><Trophy className="h-5 w-5" /></span><div><p className="tbo-caption uppercase text-fuchsia-600">{copy.ourJourney}</p><h2 className="tbo-h2 text-slate-950">{copy.relationshipMilestones}</h2></div></div>
-            {onOpenMilestones && <button type="button" onClick={onOpenMilestones} className="rounded-full px-3 py-2 tbo-caption text-fuchsia-700 hover:bg-fuchsia-50">{copy.viewAll}</button>}
+        <article className="overflow-hidden rounded-[1.75rem] border border-fuchsia-100 bg-gradient-to-br from-white via-white to-fuchsia-50/60 shadow-sm">
+          <header className="flex items-center justify-between gap-3 border-b border-fuchsia-100 px-5 py-4">
+            <div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-xl bg-fuchsia-100 text-fuchsia-700"><Trophy className="h-5 w-5" /></span><div><p className="text-[10px] font-black uppercase tracking-[.14em] text-fuchsia-600">{copy.ourJourney}</p><h2 className="font-black text-slate-950">{copy.relationshipMilestones}</h2></div></div>
+            {onOpenMilestones && <button type="button" onClick={onOpenMilestones} className="rounded-full px-3 py-2 text-xs font-black text-fuchsia-700 hover:bg-fuchsia-50">{copy.viewAll}</button>}
           </header>
           <div className="space-y-1 p-3">
-            {recentMilestones.length ? recentMilestones.map((milestone, index) => <button type="button" key={milestone.id} onClick={onOpenMilestones} className="flex w-full items-start gap-3 rounded-2xl p-3 text-left hover:bg-white hover:shadow-sm"><span className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full bg-fuchsia-100 text-lg">{milestone.icon && milestone.icon.length <= 4 ? milestone.icon : '💞'}{index < recentMilestones.length - 1 && <span className="absolute left-1/2 top-10 h-5 w-px bg-fuchsia-200" />}</span><span className="min-w-0"><span className="block tbo-h3 text-slate-900">{milestone.title}</span><span className="mt-1 block tbo-caption text-slate-500">{formatRelatedDate(milestone.date || milestone.createdAt)}{milestone.category ? ` · ${milestone.category}` : ''}</span></span></button>) : <div className="p-7 text-center"><Trophy className="mx-auto h-7 w-7 text-fuchsia-200" /><p className="mt-2 text-sm font-medium text-slate-500">{copy.noMilestones}</p></div>}
+            {recentMilestones.length ? recentMilestones.map((milestone, index) => <button type="button" key={milestone.id} onClick={onOpenMilestones} className="flex w-full items-start gap-3 rounded-2xl p-3 text-left hover:bg-white hover:shadow-sm"><span className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full bg-fuchsia-100 text-lg">{milestone.icon && milestone.icon.length <= 4 ? milestone.icon : '💞'}{index < recentMilestones.length - 1 && <span className="absolute left-1/2 top-10 h-5 w-px bg-fuchsia-200" />}</span><span className="min-w-0"><span className="block truncate text-sm font-black text-slate-900">{milestone.title}</span><span className="mt-1 block text-xs font-semibold text-slate-500">{formatRelatedDate(milestone.date || milestone.createdAt)}{milestone.category ? ` · ${milestone.category}` : ''}</span></span></button>) : <div className="p-7 text-center"><Trophy className="mx-auto h-7 w-7 text-fuchsia-200" /><p className="mt-2 text-sm font-bold text-slate-500">{copy.noMilestones}</p></div>}
           </div>
         </article>
 
-        <article className="overflow-hidden rounded-[1.75rem] border border-sky-100 bg-card shadow-sm">
-          <header className="flex flex-wrap items-center justify-between gap-3 border-b border-sky-100 px-5 py-4">
-            <div className="flex min-w-0 items-center gap-3"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-sky-100 text-sky-700"><BookHeart className="h-5 w-5" /></span><div><p className="tbo-caption uppercase text-sky-600">{copy.sharedMemories}</p><h2 className="tbo-h2 text-slate-950">{copy.recentJournalEntries}</h2></div></div>
-            {onOpenJournal && <button type="button" onClick={onOpenJournal} className="rounded-full px-3 py-2 tbo-caption text-sky-700 hover:bg-sky-50">{copy.viewAll}</button>}
+        <article className="overflow-hidden rounded-[1.75rem] border border-sky-100 bg-gradient-to-br from-white via-white to-sky-50/60 shadow-sm">
+          <header className="flex items-center justify-between gap-3 border-b border-sky-100 px-5 py-4">
+            <div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-xl bg-sky-100 text-sky-700"><BookHeart className="h-5 w-5" /></span><div><p className="text-[10px] font-black uppercase tracking-[.14em] text-sky-600">{copy.sharedMemories}</p><h2 className="font-black text-slate-950">{copy.recentJournalEntries}</h2></div></div>
+            {onOpenJournal && <button type="button" onClick={onOpenJournal} className="rounded-full px-3 py-2 text-xs font-black text-sky-700 hover:bg-sky-50">{copy.viewAll}</button>}
           </header>
           <div className="space-y-1 p-3">
             {recentJournalEntries.length ? recentJournalEntries.map(entry => {
               const isPartner = entry.isPartner || (entry.userId && entry.userId !== userId) || (entry.author_id && entry.author_id !== userId);
-              return <button type="button" key={entry.id} onClick={onOpenJournal} className="flex w-full items-start gap-3 rounded-2xl p-3 text-left hover:bg-white hover:shadow-sm"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-sky-100 text-lg">{entry.emoji || '📖'}</span><span className="min-w-0 flex-1"><span className="flex flex-wrap items-center gap-2"><span className="min-w-0 tbo-h3 text-slate-900">{entry.title || copy.untitledJournal}</span>{isPartner && <Badge variant="outline" className="shrink-0 bg-white tbo-caption">{copy.partner}</Badge>}</span><span className="mt-1 line-clamp-2 block tbo-body-s text-slate-500">{entry.content}</span><span className="mt-1 block tbo-caption text-sky-700">{formatRelatedDate(entry.createdAt || entry.created_at)}</span></span></button>;
-            }) : <div className="p-7 text-center"><BookHeart className="mx-auto h-7 w-7 text-sky-200" /><p className="mt-2 text-sm font-medium text-slate-500">{copy.noJournalEntries}</p></div>}
+              return <button type="button" key={entry.id} onClick={onOpenJournal} className="flex w-full items-start gap-3 rounded-2xl p-3 text-left hover:bg-white hover:shadow-sm"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-sky-100 text-lg">{entry.emoji || '📖'}</span><span className="min-w-0 flex-1"><span className="flex items-center gap-2"><span className="truncate text-sm font-black text-slate-900">{entry.title || copy.untitledJournal}</span>{isPartner && <Badge variant="outline" className="shrink-0 bg-white text-[9px]">{copy.partner}</Badge>}</span><span className="mt-1 line-clamp-2 block text-xs leading-5 text-slate-500">{entry.content}</span><span className="mt-1 block text-[10px] font-bold text-sky-700">{formatRelatedDate(entry.createdAt || entry.created_at)}</span></span></button>;
+            }) : <div className="p-7 text-center"><BookHeart className="mx-auto h-7 w-7 text-sky-200" /><p className="mt-2 text-sm font-bold text-slate-500">{copy.noJournalEntries}</p></div>}
           </div>
         </article>
       </section>
 
       <Dialog open={dialogOpen} onOpenChange={open => { setDialogOpen(open); if (!open) setEditingItem(null); }}>
-        <DialogContent className="max-h-[94dvh] min-w-0 overflow-y-auto [overflow-wrap:anywhere] rounded-[1.75rem] border-rose-100 p-0 sm:max-w-2xl">
-          <DialogHeader className="tbo-section-hero border-b border-rose-100 px-6 py-6 pr-12 text-left">
-            <DialogTitle className="tbo-h2 text-slate-950">{editingItem ? copy.editTitle : copy.newTitle}</DialogTitle>
+        <DialogContent className="max-h-[94dvh] overflow-y-auto rounded-[1.75rem] border-rose-100 p-0 sm:max-w-2xl">
+          <DialogHeader className="border-b border-rose-100 bg-gradient-to-br from-rose-50 via-white to-violet-50 px-6 py-6 pr-12 text-left">
+            <DialogTitle className="text-2xl font-black text-slate-950">{editingItem ? copy.editTitle : copy.newTitle}</DialogTitle>
             <DialogDescription className="leading-6 text-slate-600">{copy.newDescription}</DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSave} className="space-y-5 p-6">
-            <div className="space-y-2"><Label>{copy.itemType}</Label><div className="grid grid-cols-4 gap-2">{(['plan', 'event', 'reminder', 'routine'] as CalendarItemType[]).map(type => <button key={type} type="button" onClick={() => updateDraft('type', type)} className={`min-h-16 min-w-0 whitespace-normal rounded-xl border px-2 py-2 tbo-caption ${draft.type === type ? itemAccent(type) + ' ring-2 ring-current/10' : 'border-slate-200 bg-white text-slate-500'}`}><span className="block text-lg">{CALENDAR_TYPE_META[type].icon}</span>{copy[type]}</button>)}</div></div>
-            <div className="space-y-2"><div><Label>{copy.chooseEmoji}</Label><p className="mt-1 tbo-caption text-slate-500">{copy.chooseEmojiHint}</p></div><div className="grid grid-cols-8 gap-2 rounded-2xl border border-rose-100 bg-rose-50/40 p-3">{CALENDAR_EVENT_EMOJIS.map(emoji => <button key={emoji} type="button" onClick={() => updateDraft('emoji', emoji)} aria-label={`${copy.chooseEmoji}: ${emoji}`} aria-pressed={draft.emoji === emoji} className={`grid aspect-square place-items-center rounded-full text-xl transition-all hover:-translate-y-0.5 ${draft.emoji === emoji ? 'bg-white shadow-md ring-2 ring-rose-500 ring-offset-2' : 'hover:bg-white/80'}`}>{emoji}</button>)}</div></div>
+            <div className="space-y-2"><Label>{copy.itemType}</Label><div className="grid grid-cols-4 gap-2">{(['plan', 'event', 'reminder', 'routine'] as CalendarItemType[]).map(type => <button key={type} type="button" onClick={() => updateDraft('type', type)} className={`min-h-16 rounded-xl border px-2 text-xs font-bold ${draft.type === type ? itemAccent(type) + ' ring-2 ring-current/10' : 'border-slate-200 bg-white text-slate-500'}`}><span className="block text-lg">{CALENDAR_TYPE_META[type].icon}</span>{copy[type]}</button>)}</div></div>
+            <div className="space-y-2"><div><Label>{copy.chooseEmoji}</Label><p className="mt-1 text-xs text-slate-500">{copy.chooseEmojiHint}</p></div><div className="grid grid-cols-8 gap-2 rounded-2xl border border-rose-100 bg-rose-50/40 p-3">{CALENDAR_EVENT_EMOJIS.map(emoji => <button key={emoji} type="button" onClick={() => updateDraft('emoji', emoji)} aria-label={`${copy.chooseEmoji}: ${emoji}`} aria-pressed={draft.emoji === emoji} className={`grid aspect-square place-items-center rounded-full text-xl transition-all hover:-translate-y-0.5 ${draft.emoji === emoji ? 'bg-white shadow-md ring-2 ring-rose-500 ring-offset-2' : 'hover:bg-white/80'}`}>{emoji}</button>)}</div></div>
             <div className="space-y-2"><Label htmlFor="calendar-title">{copy.titleLabel}</Label><Input id="calendar-title" required value={draft.title} onChange={e => updateDraft('title', e.target.value)} placeholder={copy.titlePlaceholder} className="h-12 rounded-xl" /></div>
             <div className="space-y-2"><Label htmlFor="calendar-notes">{copy.descriptionLabel}</Label><Textarea id="calendar-notes" value={draft.description} onChange={e => updateDraft('description', e.target.value)} placeholder={copy.descriptionPlaceholder} className="min-h-24 rounded-xl" /></div>
-            <div className="space-y-2"><Label>{copy.category}</Label><div className="grid grid-cols-4 gap-2 sm:grid-cols-7">{(['faith', 'relationship', 'family', 'health', 'finance', 'service', 'other'] as CalendarCategory[]).map(category => <button key={category} type="button" onClick={() => updateDraft('category', category)} className={`min-h-16 min-w-0 whitespace-normal rounded-xl border px-1 py-2 tbo-caption ${draft.category === category ? 'border-rose-300 bg-rose-50 text-rose-800' : 'border-slate-200 bg-white text-slate-500'}`}><span className="block text-lg">{CALENDAR_CATEGORY_EMOJI[category]}</span>{copy[category]}</button>)}</div></div>
+            <div className="space-y-2"><Label>{copy.category}</Label><div className="grid grid-cols-4 gap-2 sm:grid-cols-7">{(['faith', 'relationship', 'family', 'health', 'finance', 'service', 'other'] as CalendarCategory[]).map(category => <button key={category} type="button" onClick={() => updateDraft('category', category)} className={`min-h-16 rounded-xl border px-1 text-[10px] font-bold ${draft.category === category ? 'border-rose-300 bg-rose-50 text-rose-800' : 'border-slate-200 bg-white text-slate-500'}`}><span className="block text-lg">{CALENDAR_CATEGORY_EMOJI[category]}</span>{copy[category]}</button>)}</div></div>
             <div className="grid gap-4 sm:grid-cols-2"><div className="space-y-2"><Label htmlFor="calendar-start">{copy.starts}</Label><Input id="calendar-start" type="datetime-local" required value={draft.startsAt} onChange={e => updateDraft('startsAt', e.target.value)} className="h-12 rounded-xl" /></div><div className="space-y-2"><Label htmlFor="calendar-end">{copy.ends}</Label><Input id="calendar-end" type="datetime-local" value={draft.endsAt} onChange={e => updateDraft('endsAt', e.target.value)} className="h-12 rounded-xl" /></div></div>
-            <label className="flex min-w-0 items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700"><span className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-rose-500" />{copy.allDay}</span><Switch checked={draft.allDay} onCheckedChange={checked => updateDraft('allDay', checked)} /></label>
+            <label className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-700"><span className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-rose-500" />{copy.allDay}</span><Switch checked={draft.allDay} onCheckedChange={checked => updateDraft('allDay', checked)} /></label>
             <div className="grid gap-4 sm:grid-cols-2"><div className="space-y-2"><Label htmlFor="calendar-repeat">{copy.repeats}</Label><select id="calendar-repeat" value={draft.recurrence} onChange={e => updateDraft('recurrence', e.target.value as CalendarRecurrence)} className="h-12 w-full rounded-xl border border-input bg-white px-3 text-sm"><option value="none">{copy.none}</option><option value="daily">{copy.daily}</option><option value="weekly">{copy.weeklyRepeat}</option><option value="monthly">{copy.monthly}</option></select></div><div className="space-y-2"><Label htmlFor="calendar-reminder">{copy.reminderLabel}</Label><select id="calendar-reminder" value={draft.reminderMinutes ?? 'none'} onChange={e => updateDraft('reminderMinutes', e.target.value === 'none' ? null : Number(e.target.value))} className="h-12 w-full rounded-xl border border-input bg-white px-3 text-sm"><option value="none">{copy.noReminder}</option><option value="0">{copy.atTime}</option><option value="15">{copy.fifteen}</option><option value="60">{copy.hour}</option><option value="1440">{copy.day}</option></select></div></div>
             <div className="space-y-2"><Label htmlFor="calendar-location">{copy.location}</Label><Input id="calendar-location" value={draft.location} onChange={e => updateDraft('location', e.target.value)} placeholder={copy.locationPlaceholder} className="h-12 rounded-xl" /></div>
             <div className="space-y-3 rounded-2xl border border-violet-100 bg-violet-50/60 p-4">
-              <label className="flex items-center justify-between gap-4 text-sm font-medium text-slate-800"><span><span className="flex items-center gap-2"><Users className="h-4 w-4 text-violet-600" />{copy.shareWithPartner}</span><span className="mt-1 block tbo-body-s text-slate-500">{copy.shareWithPartnerHint}</span></span><Switch checked={draft.isSharedWithPartner} onCheckedChange={checked => setDraft(current => ({ ...current, isSharedWithPartner: checked, isSurprise: checked ? current.isSurprise : false }))} /></label>
-              {draft.isSharedWithPartner && <label className="flex items-center justify-between gap-4 border-t border-violet-100 pt-3 text-sm font-medium text-slate-800"><span><span className="flex items-center gap-2"><Lock className="h-4 w-4 text-violet-600" />{copy.makeSurprise}</span><span className="mt-1 block tbo-body-s text-slate-500">{copy.makeSurpriseHint}</span></span><Switch checked={draft.isSurprise} onCheckedChange={checked => updateDraft('isSurprise', checked)} /></label>}
+              <label className="flex items-center justify-between gap-4 text-sm font-bold text-slate-800"><span><span className="flex items-center gap-2"><Users className="h-4 w-4 text-violet-600" />{copy.shareWithPartner}</span><span className="mt-1 block text-xs font-normal text-slate-500">{copy.shareWithPartnerHint}</span></span><Switch checked={draft.isSharedWithPartner} onCheckedChange={checked => setDraft(current => ({ ...current, isSharedWithPartner: checked, isSurprise: checked ? current.isSurprise : false }))} /></label>
+              {draft.isSharedWithPartner && <label className="flex items-center justify-between gap-4 border-t border-violet-100 pt-3 text-sm font-bold text-slate-800"><span><span className="flex items-center gap-2"><Lock className="h-4 w-4 text-violet-600" />{copy.makeSurprise}</span><span className="mt-1 block text-xs font-normal text-slate-500">{copy.makeSurpriseHint}</span></span><Switch checked={draft.isSurprise} onCheckedChange={checked => updateDraft('isSurprise', checked)} /></label>}
             </div>
-            <div className="rounded-2xl border border-rose-100 bg-card p-4"><div className="flex min-w-0 items-start justify-between gap-4"><div className="min-w-0"><p className="flex items-center gap-2 font-medium text-slate-900"><Sparkles className="h-4 w-4 text-amber-500" />{copy.prayerLink}</p><p className="mt-1 tbo-body-s text-slate-600">{copy.prayerLinkHint}</p></div><Switch checked={draft.createPrayer} disabled={Boolean(editingItem?.prayerId)} onCheckedChange={checked => updateDraft('createPrayer', checked)} aria-label={copy.prayerLink} /></div>{draft.createPrayer && <div className="mt-4 rounded-xl bg-card p-4 ring-1 ring-rose-100"><p className="tbo-caption uppercase text-rose-600">{copy.prayerPreview}</p><p className="mt-2 text-sm font-medium text-slate-900">{prayerPreview.title}</p><p className="mt-1 tbo-body-s text-slate-600">{prayerPreview.text}</p><p className="mt-2 tbo-caption text-rose-700">{prayerPreview.scripture}</p></div>}</div>
-            <div className="flex gap-3 pt-1"><Button type="button" variant="outline" className="h-auto min-h-12 min-w-0 flex-1 whitespace-normal rounded-xl py-3" onClick={() => { setDialogOpen(false); setEditingItem(null); }}>{copy.cancel}</Button><Button type="submit" disabled={saving || !draft.title.trim()} className="h-auto min-h-12 min-w-0 flex-[1.4] whitespace-normal rounded-xl py-3 bg-rose-600 font-medium text-white hover:bg-rose-700">{saving ? <><Loader2 className="h-4 w-4 animate-spin" />{editingItem ? copy.updating : copy.creating}</> : editingItem ? <><Pencil className="h-4 w-4" />{copy.update}</> : <><Plus className="h-4 w-4" />{copy.create}</>}</Button></div>
+            <div className="rounded-2xl border border-rose-100 bg-gradient-to-br from-rose-50 to-amber-50 p-4"><div className="flex items-start justify-between gap-4"><div><p className="flex items-center gap-2 font-black text-slate-900"><Sparkles className="h-4 w-4 text-amber-500" />{copy.prayerLink}</p><p className="mt-1 text-xs leading-5 text-slate-600">{copy.prayerLinkHint}</p></div><Switch checked={draft.createPrayer} disabled={Boolean(editingItem?.prayerId)} onCheckedChange={checked => updateDraft('createPrayer', checked)} aria-label={copy.prayerLink} /></div>{draft.createPrayer && <div className="mt-4 rounded-xl bg-white/80 p-4 ring-1 ring-rose-100"><p className="text-[10px] font-black uppercase tracking-[.14em] text-rose-600">{copy.prayerPreview}</p><p className="mt-2 text-sm font-bold text-slate-900">{prayerPreview.title}</p><p className="mt-1 text-xs leading-5 text-slate-600">{prayerPreview.text}</p><p className="mt-2 text-[11px] font-bold text-rose-700">{prayerPreview.scripture}</p></div>}</div>
+            <div className="flex gap-3 pt-1"><Button type="button" variant="outline" className="h-12 flex-1 rounded-xl" onClick={() => { setDialogOpen(false); setEditingItem(null); }}>{copy.cancel}</Button><Button type="submit" disabled={saving || !draft.title.trim()} className="h-12 flex-[1.4] rounded-xl bg-rose-600 font-bold text-white hover:bg-rose-700">{saving ? <><Loader2 className="h-4 w-4 animate-spin" />{editingItem ? copy.updating : copy.creating}</> : editingItem ? <><Pencil className="h-4 w-4" />{copy.update}</> : <><Plus className="h-4 w-4" />{copy.create}</>}</Button></div>
           </form>
         </DialogContent>
       </Dialog>

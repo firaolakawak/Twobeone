@@ -109,9 +109,3 @@
 @media (max-width: 1050px) { .push-console__layout { grid-template-columns: 1fr; } }
 @media (max-width: 680px) { .push-console { gap: 16px; } .push-console__hero { flex-direction: column; padding: 22px; } .push-console__hero-actions { align-items: flex-start; margin-top: 16px; } }
 @media (max-width: 520px) { .push-console__subscribers-heading { display: grid; } .push-console__subscribers-actions { justify-content: flex-start; } .push-console__pagination { align-items: stretch; flex-direction: column; } .push-console__pagination > div { justify-content: space-between; } .push-console__pagination button { font-size: 0; } .push-console__pagination button svg { width: 16px; } .push-console__templates-heading { display: grid; } .push-console__templates-heading > span { justify-self: start; } .push-console__composer { padding: 18px; } .push-console__preview { grid-template-columns: 40px 1fr; padding: 14px; } .push-console__app-icon { width: 40px; height: 40px; } .push-console__send { width: 100%; } }
-
-/* Keep Amharic headings clear of tight Latin tracking and leading. */
-.push-console__hero h1:lang(am) {
-  letter-spacing: 0;
-  line-height: 1.3;
-}

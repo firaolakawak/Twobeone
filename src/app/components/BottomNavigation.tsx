@@ -1,27 +1,7 @@
-import { memo, useState } from "react";
-import {
-  BookOpen,
-  ChevronRight,
-  Ellipsis,
-  Globe2,
-  Heart,
-  Home,
-  MessageCircle,
-  User,
-  X,
-} from "lucide-react";
-import { motion, useReducedMotion } from "motion/react";
-import { useLanguage } from "../contexts/LanguageContext";
-import "../styles/bottom-navigation.css";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
+import { memo } from 'react';
+import { BookOpen, Globe2, HandHeart, Home, MessageCircleHeart, User } from 'lucide-react';
+import { motion, useReducedMotion } from 'motion/react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface BottomNavigationProps {
   activeTab: string;
@@ -29,151 +9,69 @@ interface BottomNavigationProps {
   chatUnreadCount?: number;
 }
 
-export const BottomNavigation = memo(function BottomNavigation({
-  activeTab,
-  onTabChange,
-  chatUnreadCount = 0,
-}: BottomNavigationProps) {
-  const { t, language } = useLanguage();
+export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTabChange, chatUnreadCount = 0 }: BottomNavigationProps) {
+  const { t } = useLanguage();
   const prefersReducedMotion = useReducedMotion();
-  const [isMoreOpen, setIsMoreOpen] = useState(false);
-  const moreLabel = { en: "More", am: "ተጨማሪ", om: "Dabalata" }[language];
 
   const tabs = [
-    { id: "home", label: t.nav.home, icon: Home },
-    {
-      id: "devotions",
-      label: t.nav.devotions,
-      icon: BookOpen,
-    },
-    { id: "prayer", label: t.nav.prayer, icon: Heart },
-    {
-      id: "chat",
-      label: t.nav.chat,
-      icon: MessageCircle,
-    },
-    { id: "more", label: moreLabel, icon: Ellipsis },
-  ];
-  const moreTabs = [
-    {
-      id: "community",
-      label: t.nav.community,
-      icon: Globe2,
-    },
-    { id: "profile", label: t.nav.profile, icon: User },
+    { id: 'home', label: t.nav.home, icon: Home },
+    { id: 'devotions', label: t.nav.devotions, icon: BookOpen },
+    { id: 'prayer', label: t.nav.prayer, icon: HandHeart },
+    { id: 'chat', label: t.nav.chat, icon: MessageCircleHeart },
+    { id: 'community', label: t.nav.community, icon: Globe2 },
+    { id: 'profile', label: t.nav.profile, icon: User },
   ];
 
   return (
-    <Dialog open={isMoreOpen} onOpenChange={setIsMoreOpen}>
-      <div className="tbo-bottom-navigation fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background">
-        <nav
-          aria-label={t.nav.primaryNavigation}
-          className="tbo-bottom-navigation__container mx-auto w-full max-w-2xl"
-        >
-          <div className="tbo-bottom-navigation__tabs">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              const isMore = tab.id === "more";
-              const isActive = isMore
-                ? moreTabs.some((item) => item.id === activeTab)
-                : activeTab === tab.id;
-              const unreadCount = tab.id === "chat" ? chatUnreadCount : 0;
-              const actionLabel =
-                unreadCount > 0
-                  ? `${tab.label}, ${unreadCount} unread ${unreadCount === 1 ? "message" : "messages"}`
-                  : tab.label;
-
-              const button = (
-                <motion.button
-                  type="button"
-                  key={tab.id}
-                  onClick={isMore ? undefined : () => onTabChange(tab.id)}
-                  aria-label={actionLabel}
-                  aria-current={isActive ? "page" : undefined}
-                  whileTap={prefersReducedMotion ? undefined : { scale: 0.96 }}
-                  transition={{ duration: 0.16 }}
-                  title={tab.label}
-                  className="tbo-bottom-navigation__action group rounded-[10px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
-                >
-                  <span className="tbo-bottom-navigation__icon">
-                    <Icon aria-hidden="true" size={24} strokeWidth={1.7} />
-                    {unreadCount > 0 && (
-                      <span
-                        className="tbo-bottom-navigation__badge rounded-full text-white ring-2 ring-white"
-                        aria-hidden="true"
-                      >
-                        {unreadCount > 99 ? "99+" : unreadCount}
-                      </span>
-                    )}
-                  </span>
-                  <span className="tbo-bottom-navigation__label">
-                    {tab.label}
-                  </span>
-                </motion.button>
-              );
-              return isMore ? (
-                <DialogTrigger asChild key={tab.id}>
-                  {button}
-                </DialogTrigger>
-              ) : (
-                button
-              );
-            })}
-          </div>
-        </nav>
-      </div>
-      <DialogContent
-        showCloseButton={false}
-        className="tbo-navigation-more max-w-[calc(100%-2rem)] rounded-3xl border-border bg-background p-5 shadow-xl motion-reduce:animate-none motion-reduce:transition-none sm:max-w-sm"
+    <div
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-50 bg-gradient-to-t from-white via-white/95 to-transparent px-3 pt-5"
+      style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)' }}
+    >
+      <nav
+        aria-label={t.nav.primaryNavigation}
+        className="pointer-events-auto mx-auto max-w-lg rounded-[1.75rem] border border-white/90 bg-white/90 px-2 shadow-[0_-2px_10px_rgba(83,45,67,0.03),0_16px_45px_rgba(83,45,67,0.18)] ring-1 ring-neutral-950/[0.04] backdrop-blur-2xl"
       >
-        <DialogHeader className="pr-12 text-left">
-          <DialogTitle className="tbo-navigation-more__title font-medium text-foreground">
-            {moreLabel}
-          </DialogTitle>
-          <DialogDescription className="tbo-navigation-more__description text-muted-foreground">
-            {t.nav.community} · {t.nav.profile}
-          </DialogDescription>
-        </DialogHeader>
-        <DialogClose asChild>
-          <button
-            type="button"
-            aria-label={t.common.close}
-            className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground hover:bg-primary-50 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-          >
-            <X size={24} aria-hidden="true" />
-          </button>
-        </DialogClose>
-        <div className="grid gap-2">
-          {moreTabs.map((tab) => {
+        <div className="flex h-16 items-center justify-between gap-0.5 py-1.5">
+          {tabs.map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
+            const unreadCount = tab.id === 'chat' ? chatUnreadCount : 0;
+            const actionLabel = unreadCount > 0 ? `${tab.label}, ${unreadCount} unread ${unreadCount === 1 ? 'message' : 'messages'}` : tab.label;
+
             return (
-              <button
-                key={tab.id}
+              <motion.button
                 type="button"
-                aria-current={isActive ? "page" : undefined}
-                onClick={() => {
-                  setIsMoreOpen(false);
-                  onTabChange(tab.id);
-                }}
-                className="tbo-navigation-more__action flex min-h-14 items-center gap-3 rounded-2xl border px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                key={tab.id}
+                onClick={() => onTabChange(tab.id)}
+                aria-label={actionLabel}
+                aria-current={isActive ? 'page' : undefined}
+                whileTap={prefersReducedMotion ? undefined : { scale: 0.92 }}
+                transition={{ duration: 0.16 }}
+                title={tab.label}
+                className={`group relative flex h-14 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${isActive ? 'text-primary' : 'text-neutral-600 hover:text-neutral-900'}`}
               >
-                <span className="tbo-navigation-more__icon flex h-9 w-9 items-center justify-center rounded-xl">
-                  <Icon size={24} aria-hidden="true" />
+                <span className="relative flex h-7 w-9 shrink-0 items-center justify-center">
+                  <Icon
+                    aria-hidden="true"
+                    className={`h-6 w-6 transition-transform duration-200 ${isActive ? 'scale-105 text-primary' : 'group-hover:scale-105'}`}
+                    strokeWidth={isActive ? 2.4 : 1.9}
+                  />
+                  {unreadCount > 0 && (
+                    <span className="absolute -right-1 -top-1 grid min-h-4 min-w-4 place-items-center rounded-full bg-rose-600 px-1 text-[9px] font-black leading-none text-white shadow-sm ring-2 ring-white" aria-hidden="true">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
                 </span>
-                <span className="tbo-navigation-more__item-label flex-1">
-                  {tab.label}
-                </span>
-                <ChevronRight
-                  size={22}
-                  className="text-current"
-                  aria-hidden="true"
-                />
-              </button>
+                {isActive && (
+                  <span className="relative w-full break-words text-center text-[9px] font-extrabold leading-[1.05] text-primary">
+                    {tab.label}
+                  </span>
+                )}
+              </motion.button>
             );
           })}
         </div>
-      </DialogContent>
-    </Dialog>
+      </nav>
+    </div>
   );
 });
