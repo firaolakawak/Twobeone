@@ -171,9 +171,9 @@ export function PrayerTogetherChat({
   }, {} as Record<string, PrayerMessage[]>);
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-[1.5rem] border border-rose-100 bg-gradient-to-br from-white to-rose-50/45 shadow-[0_14px_45px_-34px_rgba(190,24,93,0.45)]">
+    <div className="flex flex-col overflow-hidden rounded-[1.5rem] border border-border bg-card shadow-sm">
       {/* Chat Header - Fixed height with 16dp padding */}
-      <div className="flex-shrink-0 bg-gradient-to-r from-rose-600 to-pink-600 px-4 py-3.5 text-white">
+      <div className="flex-shrink-0 bg-primary px-4 py-3.5 text-white">
         <div className="flex items-center gap-2">
           <Heart className="h-5 w-5 fill-white" aria-hidden="true" />
           <div>

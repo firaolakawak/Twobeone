@@ -296,13 +296,13 @@ export function MarriageReadinessReport({ onBack }: Props) {
 
         {/* Narrative */}
         {report?.overallNarrative && (
-          <div className="report-section" style={{ margin: '12px 16px 0', padding: '18px', borderRadius: 14, border: '1px solid var(--border)', background: 'var(--background)' }}>
+          <div className="report-section" style={{ margin: '12px 16px 0', padding: '18px', borderRadius: 14, border: '1px solid var(--border)', background: 'var(--card)' }}>
             <p style={{ margin: 0, fontSize: 14, color: 'var(--foreground)', lineHeight: 1.75 }}>{report.overallNarrative}</p>
           </div>
         )}
 
         {/* Category breakdown */}
-        <div style={{ margin: '12px 16px 0', borderRadius: 14, border: '1px solid var(--border)', overflow: 'hidden', background: 'var(--background)' }}>
+        <div style={{ margin: '12px 16px 0', borderRadius: 14, border: '1px solid var(--border)', overflow: 'hidden', background: 'var(--card)' }}>
           <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', background: 'var(--muted)' }}>
             <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: 'var(--foreground)' }}>Activity Breakdown</p>
           </div>
@@ -325,7 +325,7 @@ export function MarriageReadinessReport({ onBack }: Props) {
             { label: 'Devotions', value: `${categories.devotional.completions}`, sub: 'completed' },
             { label: 'Daily Entries', value: `${categories.activity.entries}`, sub: 'mood + journal' },
           ].map(({ label, value, sub }) => (
-            <div key={label} style={{ padding: '12px 10px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--background)', textAlign: 'center' }}>
+            <div key={label} style={{ padding: '12px 10px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--card)', textAlign: 'center' }}>
               <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--foreground)', lineHeight: 1 }}>{value}</div>
               <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--foreground)', marginTop: 3 }}>{label}</div>
               <div style={{ fontSize: 10, color: 'var(--muted-foreground)', marginTop: 1 }}>{sub}</div>
@@ -337,7 +337,7 @@ export function MarriageReadinessReport({ onBack }: Props) {
         {(report?.strengths?.length || report?.growthAreas?.length) && (
           <div className="report-section" style={{ margin: '12px 16px 0', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             {report?.strengths?.length ? (
-              <div style={{ padding: '14px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--muted)' }}>
+              <div style={{ padding: '14px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--card)' }}>
                 <p style={{ margin: '0 0 8px', fontSize: 12, fontWeight: 700, color: 'var(--foreground)' }}>Strengths</p>
                 {report.strengths.map((s, i) => (
                   <div key={i} style={{ fontSize: 12, color: 'var(--foreground)', marginBottom: 5, lineHeight: 1.4, display: 'flex', gap: 6 }}>
@@ -347,7 +347,7 @@ export function MarriageReadinessReport({ onBack }: Props) {
               </div>
             ) : null}
             {report?.growthAreas?.length ? (
-              <div style={{ padding: '14px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--muted)' }}>
+              <div style={{ padding: '14px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--card)' }}>
                 <p style={{ margin: '0 0 8px', fontSize: 12, fontWeight: 700, color: 'var(--foreground)' }}>Growth Areas</p>
                 {report.growthAreas.map((g, i) => (
                   <div key={i} style={{ fontSize: 12, color: 'var(--foreground)', marginBottom: 5, lineHeight: 1.4, display: 'flex', gap: 6 }}>
@@ -361,14 +361,14 @@ export function MarriageReadinessReport({ onBack }: Props) {
 
         {/* Bible verse */}
         {report?.bibleVerse && (
-          <div className="report-section" style={{ margin: '12px 16px 0', padding: '18px 20px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--muted)', textAlign: 'center' }}>
+          <div className="report-section" style={{ margin: '12px 16px 0', padding: '18px 20px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--card)', textAlign: 'center' }}>
             <p style={{ margin: 0, fontSize: 14, fontStyle: 'italic', color: 'var(--foreground)', lineHeight: 1.7 }}>"{report.bibleVerse}"</p>
           </div>
         )}
 
         {/* Closing encouragement */}
         {report?.closingEncouragement && (
-          <div className="report-section" style={{ margin: '12px 16px 0', padding: '16px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--background)' }}>
+          <div className="report-section" style={{ margin: '12px 16px 0', padding: '16px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--card)' }}>
             <p style={{ margin: 0, fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.7 }}>{report.closingEncouragement}</p>
           </div>
         )}
@@ -378,7 +378,7 @@ export function MarriageReadinessReport({ onBack }: Props) {
           margin: '20px 16px 0',
           borderRadius: 16, overflow: 'hidden',
           border: `2px solid ${eligible ? accent : 'var(--border)'}`,
-          background: 'var(--background)',
+          background: 'var(--card)',
         }}>
           <div style={{
             padding: '24px 24px 18px', textAlign: 'center',

@@ -135,7 +135,7 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary-50/30 to-primary-50/30 pb-6">
+    <div className="min-h-screen bg-background pb-6">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-card border-b">
         <div className="px-4 py-4">
@@ -156,9 +156,9 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
 
       {/* Cover/Hero Section */}
       <div className="relative">
-        <div className="h-32 bg-gradient-to-r from-primary-400 via-primary-500 to-primary-400"></div>
+        <div className="h-32 bg-card"></div>
         <div className="absolute -bottom-10 left-4">
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center border-4 border-white shadow-lg">
+          <div className="w-20 h-20 rounded-2xl bg-primary flex items-center justify-center border-4 border-white shadow-lg">
             <Heart className="w-10 h-10 text-white" />
           </div>
         </div>
@@ -202,7 +202,7 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
           {group.isJoined ? (
             <>
               <Button 
-                className="flex-1 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
+                className="flex-1 bg-primary hover:bg-primary-700"
                 onClick={handleJoinLiveRoom}
               >
                 <Video className="w-4 h-4 mr-2" />
@@ -224,7 +224,7 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
             </>
           ) : (
             <Button 
-              className="flex-1 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
+              className="flex-1 bg-primary hover:bg-primary-700"
               onClick={handleJoinGroup}
             >
               <Heart className="w-4 h-4 mr-2" />
@@ -235,10 +235,10 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
 
         {/* Next Meeting Card */}
         {group.nextMeeting && (
-          <Card className="border-2 border-primary-200 bg-gradient-to-r from-primary-50 to-primary-100">
+          <Card className="border-2 border-border bg-card">
             <CardContent className="p-4">
               <div className="flex items-start gap-3">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center flex-shrink-0">
                   <Calendar className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1">
@@ -314,7 +314,7 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
                   <div key={idx} className="flex items-start gap-3">
                     <Avatar className="w-12 h-12">
                       <AvatarImage src={leader.avatar} />
-                      <AvatarFallback className="bg-gradient-to-br from-primary-400 to-primary-400 text-white">
+                      <AvatarFallback className="bg-primary text-white">
                         {leader.name.split(' ').map((n: string) => n[0]).join('')}
                       </AvatarFallback>
                     </Avatar>
@@ -371,7 +371,7 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
                 {group.recentActivity.map((activity: any, idx: number) => (
                   <div key={idx} className="flex items-center gap-3 text-sm">
                     <Avatar className="w-8 h-8">
-                      <AvatarFallback className="bg-gradient-to-br from-primary-200 to-primary-200 text-primary-700 text-xs">
+                      <AvatarFallback className="bg-primary-50 text-primary text-xs">
                         {activity.user.split(' ').map((n: string) => n[0]).join('')}
                       </AvatarFallback>
                     </Avatar>
@@ -394,7 +394,7 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
               </CardHeader>
               <CardContent className="space-y-3">
                 {group.upcomingMeetings?.map((meeting: any, idx: number) => (
-                  <div key={idx} className="p-4 rounded-lg border bg-gradient-to-r from-primary-50 to-primary-100">
+                  <div key={idx} className="p-4 rounded-lg border bg-card">
                     <div className="flex items-start justify-between mb-2">
                       <div>
                         <h4 className="font-semibold">{meeting.topic}</h4>
@@ -432,7 +432,7 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
                   {['John & Sarah M.', 'David & Emily T.', 'Michael & Lisa R.', 'Chris & Anna P.'].map((member, idx) => (
                     <div key={idx} className="flex items-center gap-3">
                       <Avatar>
-                        <AvatarFallback className="bg-gradient-to-br from-primary-200 to-primary-200 text-primary-700">
+                        <AvatarFallback className="bg-primary-50 text-primary">
                           {member.split(' ').slice(0, 2).map(n => n[0]).join('')}
                         </AvatarFallback>
                       </Avatar>
@@ -467,7 +467,7 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
                     ].map((msg, idx) => (
                       <div key={idx} className="flex items-start gap-3">
                         <Avatar className="w-8 h-8">
-                          <AvatarFallback className="bg-gradient-to-br from-primary-200 to-primary-200 text-primary-700 text-xs">
+                          <AvatarFallback className="bg-primary-50 text-primary text-xs">
                             {msg.user.split(' ').map(n => n[0]).join('')}
                           </AvatarFallback>
                         </Avatar>
@@ -503,7 +503,7 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
                 <p className="text-muted-foreground mb-4">
                   Join this group to participate in group discussions
                 </p>
-                <Button className="bg-gradient-to-r from-primary-600 to-primary-700" onClick={handleJoinGroup}>
+                <Button className="bg-primary hover:bg-primary-700" onClick={handleJoinGroup}>
                   Join Group
                 </Button>
               </Card>

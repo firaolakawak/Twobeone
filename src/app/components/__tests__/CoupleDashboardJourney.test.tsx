@@ -54,13 +54,15 @@ describe("Our Journey counter", () => {
     expect(timer.querySelector('[data-unit="seconds"]')).toHaveTextContent(
       "59",
     );
-    for (const label of ["days together", "hours", "minutes", "seconds"])
-      expect(within(timer).getByText(label)).toBeVisible();
+    expect(within(timer).getByText("days together")).toBeVisible();
+    expect(timer.querySelector(".love-journey__clock-digits")).toHaveTextContent("23:59:59");
+    expect(timer).toHaveTextContent("23 hours, 59 minutes, 59 seconds");
 
     act(() => {
       vi.advanceTimersByTime(1000);
     });
     expect(timer.querySelector('[data-unit="days"]')).toHaveTextContent("1");
+    expect(timer.querySelector(".love-journey__clock-digits")).toHaveTextContent("00:00:00");
     for (const unit of ["hours", "minutes", "seconds"])
       expect(timer.querySelector(`[data-unit="${unit}"]`)).toHaveTextContent(
         "00",

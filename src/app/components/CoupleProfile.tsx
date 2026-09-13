@@ -293,7 +293,7 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
 
       {/* Profile Overview Card */}
       <Card className="overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-primary-50 to-primary-100 border-b">
+        <CardHeader className="bg-card border-b">
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>My Profile</CardTitle>
@@ -333,7 +333,7 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
             <div className="relative group">
               <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
                 <AvatarImage src={userPicture} alt={userName} />
-                <AvatarFallback className="bg-gradient-to-br from-primary-400 to-primary-500 text-white text-2xl">
+                <AvatarFallback className="bg-primary text-white text-2xl">
                   {userInitials}
                 </AvatarFallback>
               </Avatar>
@@ -373,7 +373,7 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
       {/* Partner Linking Card */}
       {!partner && (
         <Card>
-          <CardHeader className="bg-gradient-to-r from-primary-50 to-primary-100 border-b">
+          <CardHeader className="bg-card border-b">
             <CardTitle className="flex items-center gap-2">
               <Link2 className="w-5 h-5 text-primary-600" />
               Connect with Your Partner
@@ -385,7 +385,7 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
           <CardContent className="pt-6">
             <Button 
               onClick={() => setIsLinkDialogOpen(true)}
-              className="w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
+              className="w-full bg-primary hover:bg-primary-700"
             >
               <Users className="w-4 h-4 mr-2" />
               Add Partner

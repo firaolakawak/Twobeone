@@ -425,11 +425,9 @@ export function EnhancedJournal({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 text-slate-900 selection:bg-rose-200 dark:bg-neutral-950 dark:text-neutral-50">
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary-50">
       <main className="mx-auto min-w-0 w-full max-w-3xl space-y-7 px-4 [overflow-wrap:anywhere] pb-32 pt-5 sm:px-6 sm:pt-8">
-        <header className="relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-rose-50 via-white to-amber-50 px-6 py-7 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)] ring-1 ring-rose-100/80 sm:px-9 sm:py-9">
-          <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-rose-200/30 blur-3xl" aria-hidden="true" />
-          <div className="pointer-events-none absolute -bottom-24 -left-16 h-52 w-52 rounded-full bg-amber-200/30 blur-3xl" aria-hidden="true" />
+        <header className="tbo-section-hero relative isolate overflow-hidden rounded-[2rem] px-6 py-7 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)] ring-1 ring-rose-100/80 sm:px-9 sm:py-9">
           <div className="relative">
             <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
               <div>
@@ -460,7 +458,7 @@ export function EnhancedJournal({
               { value: "journal", label: "Reflections", icon: Heart },
               { value: "event", label: "Moments", icon: Sparkles },
             ] as const).map(({ value, label, icon: Icon }) => (
-              <button key={value} type="button" role="tab" aria-label={label} aria-selected={entryFilter === value} onClick={() => setEntryFilter(value)} className={`flex h-auto min-h-11 min-w-0 flex-wrap items-center justify-center gap-2 whitespace-normal rounded-[0.9rem] px-2 py-2 tbo-caption transition-all ${entryFilter === value ? "bg-white text-rose-700 shadow-sm ring-1 ring-rose-100" : "text-slate-500 hover:bg-white/65 hover:text-slate-800"}`}>
+              <button key={value} type="button" role="tab" aria-label={label} aria-selected={entryFilter === value} onClick={() => setEntryFilter(value)} className={`flex h-auto min-h-11 min-w-0 flex-wrap items-center justify-center gap-2 whitespace-normal rounded-[0.9rem] px-2 py-2 tbo-caption transition-all ${entryFilter === value ? "bg-primary-50 text-rose-700 shadow-sm ring-1 ring-rose-100" : "text-slate-500 hover:bg-white/65 hover:text-slate-800"}`}>
                 <Icon className="h-4 w-4" aria-hidden="true" />
                 <span className="hidden sm:inline">{label}</span><span className="sm:hidden">{value === "all" ? "All" : label}</span>
               </button>
@@ -489,7 +487,7 @@ export function EnhancedJournal({
           return (
             <div key={dateKey} className="mb-10 last:mb-0">
               {/* Date Header Segment */}
-              <div className="sticky top-0 z-20 mb-6 flex items-center gap-4 rounded-2xl bg-slate-50/90 py-2 backdrop-blur-sm dark:bg-neutral-950/90">
+              <div className="sticky top-0 z-20 mb-6 flex items-center gap-4 rounded-2xl bg-background py-2 backdrop-blur-sm">
                 <div className="flex min-h-14 min-w-14 shrink-0 flex-col items-center justify-center py-1 rounded-2xl bg-rose-50 text-rose-700 shadow-sm ring-1 ring-rose-100 dark:bg-rose-500/20 dark:text-rose-300">
                   <span className="tbo-caption uppercase opacity-80">
                     {month.slice(0, 3)}
@@ -537,7 +535,7 @@ export function EnhancedJournal({
                       {/* Timeline Indicator Node */}
                       <div className="absolute -left-[31px] top-6 h-2.5 w-2.5 rounded-full border-2 border-rose-500 bg-white shadow-sm transition-colors duration-300 group-hover:bg-rose-500" />
 
-                      <Card className="overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-[0_12px_36px_-28px_rgba(15,23,42,0.45)] transition-all duration-300 hover:-translate-y-0.5 hover:border-rose-200 hover:shadow-[0_18px_42px_-26px_rgba(190,24,93,0.3)] dark:border-neutral-800/60 dark:bg-neutral-900">
+                      <Card className="overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-card shadow-[0_12px_36px_-28px_rgba(15,23,42,0.45)] transition-all duration-300 hover:-translate-y-0.5 hover:border-rose-200 hover:shadow-[0_18px_42px_-26px_rgba(190,24,93,0.3)] dark:border-neutral-800/60">
                         {/* Hero Block Media */}
                         {imageMedia && imageMedia.url && (
                           <div
@@ -670,7 +668,7 @@ export function EnhancedJournal({
                                   .map((media, idx) => (
                                     <div
                                       key={idx}
-                                      className="rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 flex items-center gap-2 bg-neutral-50/50 dark:bg-neutral-900/50"
+                                      className="rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 flex items-center gap-2 bg-card"
                                     >
                                       <Mic className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                                       <span className="text-xs text-muted-foreground truncate flex-1">
@@ -779,7 +777,7 @@ export function EnhancedJournal({
         })}
 
         {visibleEntries.length === 0 && (
-          <div className="mx-auto max-w-sm rounded-[2rem] border border-rose-100 bg-gradient-to-br from-white to-rose-50/60 px-8 py-14 text-center shadow-sm">
+          <div className="mx-auto max-w-sm rounded-[2rem] border border-rose-100 bg-card px-8 py-14 text-center shadow-sm">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 text-rose-600">
               {searchQuery ? <Search className="h-6 w-6" /> : <BookOpen className="h-6 w-6" />}
             </div>
@@ -808,7 +806,7 @@ export function EnhancedJournal({
         }}
       >
         <DialogContent className="max-h-[92dvh] min-w-0 gap-0 overflow-y-auto [overflow-wrap:anywhere] rounded-[1.75rem] border-rose-100 p-0 sm:max-w-xl">
-          <DialogHeader className="border-b border-rose-100 bg-gradient-to-br from-rose-50 via-white to-amber-50 px-6 py-6 pr-12 text-left">
+          <DialogHeader className="tbo-section-hero border-b border-rose-100 px-6 py-6 pr-12 text-left">
             <DialogTitle className="tbo-h2 text-slate-900">
               {editingEntry
                 ? t.journal.edit
@@ -848,7 +846,7 @@ export function EnhancedJournal({
               className="mt-5 space-y-5"
             >
               {/* Chronological Configurations Segment */}
-              <div className="grid grid-cols-1 gap-3 rounded-2xl border border-rose-100 sm:grid-cols-2 bg-gradient-to-r from-rose-50/70 to-amber-50/70 p-4">
+              <div className="grid grid-cols-1 gap-3 rounded-2xl border border-rose-100 sm:grid-cols-2 bg-card p-4">
                 <div className="space-y-1.5">
                   <Label
                     htmlFor="date"
@@ -1090,7 +1088,7 @@ export function EnhancedJournal({
               </div>
 
               {/* Privacy Config Segment */}
-              <div className="flex items-center justify-between gap-3 rounded-2xl border border-rose-100 bg-gradient-to-r from-rose-50 to-amber-50 p-4">
+              <div className="flex items-center justify-between gap-3 rounded-2xl border border-rose-100 bg-card p-4">
                 <Label
                   htmlFor="shared"
                   className="min-w-0 cursor-pointer tbo-caption"
@@ -1169,7 +1167,7 @@ export function EnhancedJournal({
               <Button
                 size="sm"
                 onClick={handleAddComment}
-                className="rounded-lg px-4 bg-gradient-to-r from-orange-500 to-amber-600 text-white border-0 hover:opacity-95"
+                className="rounded-lg px-4 bg-primary text-white border-0 hover:opacity-95"
               >
                 <Send className="w-3.5 h-3.5 mr-1.5" /> Send
               </Button>

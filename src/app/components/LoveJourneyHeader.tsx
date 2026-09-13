@@ -1,5 +1,13 @@
 import { memo, useEffect, useState } from "react";
-import { ArrowRight, Calendar, Heart, Sparkles, Users, X } from "lucide-react";
+import {
+  ArrowRight,
+  Calendar,
+  Heart,
+  HeartHandshake,
+  Sparkles,
+  Users,
+  X,
+} from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
 import { dashboardJourneyCopy } from "../data/dashboard-journey";
 import { loveJourneyCopy } from "../data/love-journey";
@@ -20,6 +28,7 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { DistanceConnector } from "./DistanceConnector";
+import { CardEmblem } from "./CardEmblem";
 import "./love-journey.css";
 
 interface JourneyPerson {
@@ -83,20 +92,31 @@ export const JourneyCounter = memo(function JourneyCounter({
           <span>{loveJourneyCopy[language].daysTogether}</span>
         </p>
         <div className="love-journey__clock">
-          {(
-            [
-              ["hours", time.hours, t.time.hours],
-              ["minutes", time.minutes, t.time.minutes],
-              ["seconds", time.seconds, t.time.seconds],
-            ] as const
-          ).map(([unit, value, label]) => (
-            <span className="love-journey__clock-unit" key={unit}>
-              <b data-unit={unit}>{String(value).padStart(2, "0")}</b>{" "}
-              <span>{label}</span>
-            </span>
-          ))}
+          <span className="love-journey__clock-digits" aria-hidden="true">
+            {(
+              [
+                ["hours", time.hours],
+                ["minutes", time.minutes],
+                ["seconds", time.seconds],
+              ] as const
+            ).map(([unit, value], index) => (
+              <span className="love-journey__clock-unit" key={unit}>
+                {index > 0 && ":"}
+                <b data-unit={unit}>{String(value).padStart(2, "0")}</b>
+              </span>
+            ))}
+          </span>
+          <span className="sr-only">
+            {time.hours} {t.time.hours}, {time.minutes} {t.time.minutes},{" "}
+            {time.seconds} {t.time.seconds}
+          </span>
         </div>
       </div>
+      <CardEmblem
+        icon={HeartHandshake}
+        size="compact"
+        className="love-journey__emblem"
+      />
     </div>
   );
 });

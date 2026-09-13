@@ -739,7 +739,9 @@ export function DistanceConnector({
                 className="love-journey-places__route-line"
                 aria-hidden="true"
               >
-                <Heart />
+                <span className="love-journey-places__heart">
+                  <Heart />
+                </span>
               </span>
               <span className="love-journey-places__distance">
                 {compactDistance}
@@ -830,12 +832,12 @@ export function DistanceConnector({
             <button
               type="button"
               onClick={() => setShowSettings(true)}
-              className="min-h-11 w-full rounded-xl px-3 text-xs font-semibold text-rose-700 hover:bg-rose-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
+              className="min-h-11 w-full rounded-xl px-3 text-xs font-semibold text-primary hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               {t.dashboard.shareLocation}
             </button>
           ) : !partnerLocation ? (
-            <p className="text-center text-[10px] leading-4 text-slate-500">
+            <p className="text-center text-[10px] leading-4 text-muted-foreground">
               {t.dashboard.waitingForPartnerLocation}
             </p>
           ) : null}
@@ -899,7 +901,7 @@ export function DistanceConnector({
                   WebkitAnimation: `loveFlow${heart.direction === "right" ? "Right" : "Left"} ${heart.duration}s ${heart.delay}s ease-in-out infinite`,
                 }}
               >
-                <Heart className="h-full w-full fill-rose-400 text-rose-400 drop-shadow-[0_2px_3px_rgba(244,63,94,0.25)]" />
+                <Heart className="h-full w-full fill-primary text-primary drop-shadow-[0_2px_3px_rgba(36,33,38,0.25)]" />
               </span>
             ))}
           </div>
@@ -912,7 +914,7 @@ export function DistanceConnector({
                 )}
                 <Avatar className="relative h-18 w-18 border-4 border-white shadow-xl ring-2 ring-primary-200 sm:h-20 sm:w-20">
                   <AvatarImage src={userAvatar} alt={userName} />
-                  <AvatarFallback className="bg-gradient-to-br from-primary-400 to-primary-600 text-lg font-semibold text-white">
+                  <AvatarFallback className="bg-card text-lg font-semibold text-primary">
                     {userInitials}
                   </AvatarFallback>
                 </Avatar>
@@ -925,7 +927,7 @@ export function DistanceConnector({
                 {userName}
               </p>
               <p className="mt-0.5 flex max-w-full items-center justify-center gap-1 truncate text-[11px] font-medium text-muted-foreground">
-                <MapPin className="h-3 w-3 shrink-0 text-primary-500" />
+                <MapPin className="h-3 w-3 shrink-0 text-primary" />
                 {userLocation?.location?.city || (
                   <span className="font-normal italic">
                     {t.dashboard.locationNotSet}
@@ -942,9 +944,9 @@ export function DistanceConnector({
                     initial={{ scale: 0.75, opacity: 0, y: 4 }}
                     animate={{ scale: 1, opacity: 1, y: 0 }}
                     exit={{ scale: 0.75, opacity: 0 }}
-                    className="mt-1 flex items-center gap-1 whitespace-nowrap rounded-full border border-primary-100 bg-white/90 px-2.5 py-1 shadow-[0_4px_14px_rgba(139,92,246,0.14)] backdrop-blur"
+                    className="mt-1 flex items-center gap-1 whitespace-nowrap rounded-full border border-primary-100 bg-white/90 px-2.5 py-1 shadow-[0_4px_14px_rgba(36,33,38,0.14)] backdrop-blur"
                   >
-                    <Heart className="h-3 w-3 fill-primary-500 text-primary-500" />
+                    <Heart className="h-3 w-3 fill-primary text-primary" />
                     <span className="text-xs font-bold text-foreground">
                       {embeddedDistanceLabel}
                     </span>
@@ -956,11 +958,11 @@ export function DistanceConnector({
             <div className="flex min-w-0 flex-col items-center">
               <div className="relative">
                 {partnerLocation?.location && (
-                  <span className="absolute -inset-1 rounded-full border-2 border-sky-300/50 [animation:pulseRing_2s_ease-out_infinite_0.5s]" />
+                  <span className="absolute -inset-1 rounded-full border-2 border-primary-300/50 [animation:pulseRing_2s_ease-out_infinite_0.5s]" />
                 )}
-                <Avatar className="relative h-18 w-18 border-4 border-white shadow-xl ring-2 ring-sky-200 sm:h-20 sm:w-20">
+                <Avatar className="relative h-18 w-18 border-4 border-white shadow-xl ring-2 ring-primary-200 sm:h-20 sm:w-20">
                   <AvatarImage src={partnerAvatar} alt={partnerName} />
-                  <AvatarFallback className="bg-gradient-to-br from-sky-400 to-sky-600 text-lg font-semibold text-white">
+                  <AvatarFallback className="bg-card text-lg font-semibold text-primary">
                     {partnerInitials}
                   </AvatarFallback>
                 </Avatar>
@@ -973,7 +975,7 @@ export function DistanceConnector({
                 {partnerName}
               </p>
               <p className="mt-0.5 flex max-w-full items-center justify-center gap-1 truncate text-[11px] font-medium text-muted-foreground">
-                <MapPin className="h-3 w-3 shrink-0 text-sky-500" />
+                <MapPin className="h-3 w-3 shrink-0 text-primary" />
                 {partnerLocation?.location?.city || (
                   <span className="font-normal italic">
                     {t.dashboard.locationNotSet}
@@ -998,7 +1000,7 @@ export function DistanceConnector({
                 onClick={() => setShowSettings(true)}
                 className="h-8 rounded-xl px-4 text-xs font-semibold"
               >
-                <MapPin className="mr-1.5 h-3.5 w-3.5 text-primary-500" />{" "}
+                <MapPin className="mr-1.5 h-3.5 w-3.5 text-primary" />{" "}
                 {t.dashboard.shareLocation}
               </Button>
             ) : distance === null ? (
@@ -1014,53 +1016,9 @@ export function DistanceConnector({
           style={{
             background: "var(--card)",
             boxShadow:
-              "0 2px 0 0 var(--neutral-200), 0 12px 32px -6px rgba(244,63,94,0.12), 0 4px 8px -2px rgba(0,0,0,0.06)",
+              "0 2px 0 0 var(--neutral-200), 0 12px 32px -6px rgba(36,33,38,0.12), 0 4px 8px -2px rgba(0,0,0,0.06)",
           }}
         >
-          {/* Radial ambient glow — directs focus to avatars */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <div
-              style={{
-                position: "absolute",
-                top: "10%",
-                left: "8%",
-                width: 120,
-                height: 120,
-                borderRadius: "50%",
-                background:
-                  "radial-gradient(circle, rgba(244,63,94,0.18) 0%, transparent 70%)",
-                filter: "blur(12px)",
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                top: "10%",
-                right: "8%",
-                width: 120,
-                height: 120,
-                borderRadius: "50%",
-                background:
-                  "radial-gradient(circle, rgba(14,165,233,0.16) 0%, transparent 70%)",
-                filter: "blur(12px)",
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                bottom: 0,
-                left: "50%",
-                transform: "translateX(-50%)",
-                width: 160,
-                height: 60,
-                borderRadius: "50%",
-                background:
-                  "radial-gradient(ellipse, rgba(139,92,246,0.08) 0%, transparent 70%)",
-                filter: "blur(8px)",
-              }}
-            />
-          </div>
-
           <div className="relative z-10 p-5">
             {/* Settings button — ghost, no border */}
             <button
@@ -1091,7 +1049,7 @@ export function DistanceConnector({
                         position: "absolute",
                         inset: -4,
                         borderRadius: "50%",
-                        border: "2px solid rgba(244,63,94,0.35)",
+                        border: "2px solid var(--primary-300)",
                         animation: "pulseRing 2s ease-out infinite",
                       }}
                     />
@@ -1100,15 +1058,14 @@ export function DistanceConnector({
                     className="w-16 h-16 z-10 relative"
                     style={{
                       border: "3px solid var(--card)",
-                      boxShadow: "0 4px 12px rgba(244,63,94,0.25)",
+                      boxShadow: "0 4px 12px rgba(36,33,38,0.25)",
                     }}
                   >
                     <AvatarImage src={userAvatar} alt={userName} />
                     <AvatarFallback
                       style={{
-                        background:
-                          "linear-gradient(135deg, var(--primary-400), var(--primary-600))",
-                        color: "#fff",
+                        background: "var(--card)",
+                        color: "var(--primary)",
                         fontWeight: 600,
                       }}
                     >
@@ -1134,15 +1091,15 @@ export function DistanceConnector({
                         style={{
                           background: "var(--card)",
                           boxShadow:
-                            "0 2px 8px rgba(139,92,246,0.18), 0 1px 3px rgba(0,0,0,0.08)",
-                          border: "1px solid rgba(139,92,246,0.15)",
+                            "0 2px 8px rgba(36,33,38,0.18), 0 1px 3px rgba(0,0,0,0.08)",
+                          border: "1px solid var(--border)",
                         }}
                       >
                         <Heart
                           className="w-3 h-3"
                           style={{
-                            fill: "var(--primary-500)",
-                            color: "var(--primary-500)",
+                            fill: "var(--primary)",
+                            color: "var(--primary)",
                           }}
                         />
                         <span
@@ -1165,24 +1122,13 @@ export function DistanceConnector({
                     preserveAspectRatio="none"
                   >
                     <defs>
-                      <linearGradient
-                        id="arcGrad"
-                        x1="0%"
-                        y1="0%"
-                        x2="100%"
-                        y2="0%"
-                      >
-                        <stop offset="0%" stopColor="var(--primary-400)" />
-                        <stop offset="48%" stopColor="#8b5cf6" />
-                        <stop offset="100%" stopColor="var(--secondary-400)" />
-                      </linearGradient>
                       <path id="arcPath" d="M 4 40 Q 100 4, 196 40" />
                     </defs>
 
                     {/* Faint base arc */}
                     <use
                       href="#arcPath"
-                      stroke="url(#arcGrad)"
+                      stroke="var(--primary)"
                       strokeWidth="2"
                       fill="none"
                       strokeLinecap="round"
@@ -1192,7 +1138,7 @@ export function DistanceConnector({
                     {/* Animated dashed pulse */}
                     <use
                       href="#arcPath"
-                      stroke="url(#arcGrad)"
+                      stroke="var(--primary)"
                       strokeWidth="2"
                       fill="none"
                       strokeLinecap="round"
@@ -1218,7 +1164,7 @@ export function DistanceConnector({
                             cx="0"
                             cy="0"
                             r="4"
-                            fill="var(--primary-500)"
+                            fill="var(--primary)"
                             opacity="0.9"
                           />
                         </g>
@@ -1234,7 +1180,7 @@ export function DistanceConnector({
                         position: "absolute",
                         inset: -4,
                         borderRadius: "50%",
-                        border: "2px solid rgba(14,165,233,0.35)",
+                        border: "2px solid var(--primary-300)",
                         animation: "pulseRing 2s ease-out infinite 0.5s",
                       }}
                     />
@@ -1243,15 +1189,14 @@ export function DistanceConnector({
                     className="w-16 h-16 z-10 relative"
                     style={{
                       border: "3px solid var(--card)",
-                      boxShadow: "0 4px 12px rgba(14,165,233,0.22)",
+                      boxShadow: "0 4px 12px rgba(36,33,38,0.22)",
                     }}
                   >
                     <AvatarImage src={partnerAvatar} alt={partnerName} />
                     <AvatarFallback
                       style={{
-                        background:
-                          "linear-gradient(135deg, var(--secondary-400), var(--secondary-600))",
-                        color: "#fff",
+                        background: "var(--card)",
+                        color: "var(--primary)",
                         fontWeight: 600,
                       }}
                     >
@@ -1288,7 +1233,7 @@ export function DistanceConnector({
                       className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full"
                       style={{
                         background: "var(--primary-50)",
-                        color: "var(--primary-600)",
+                        color: "var(--primary)",
                         border: "1px solid var(--primary-200)",
                       }}
                     >
@@ -1337,7 +1282,7 @@ export function DistanceConnector({
                   >
                     <MapPin
                       className="w-3.5 h-3.5 mr-1.5"
-                      style={{ color: "var(--primary-500)" }}
+                      style={{ color: "var(--primary)" }}
                     />
                     Share Your Location
                   </Button>
@@ -1352,11 +1297,11 @@ export function DistanceConnector({
       <Dialog open={showSettings} onOpenChange={setShowSettings}>
         <DialogContent className="max-w-md rounded-2xl p-5 border-none shadow-2xl bg-white">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-base font-bold text-slate-950">
-              <MapPin className="w-5 h-5 text-rose-500" />
+            <DialogTitle className="flex items-center gap-2 text-base font-bold text-foreground">
+              <MapPin className="w-5 h-5 text-primary" />
               {copy.settings}
             </DialogTitle>
-            <DialogDescription className="text-xs text-slate-500">
+            <DialogDescription className="text-xs text-muted-foreground">
               {copy.description}
             </DialogDescription>
           </DialogHeader>
@@ -1368,10 +1313,10 @@ export function DistanceConnector({
                   <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-slate-900">
+                  <h4 className="text-xs font-bold text-foreground">
                     {copy.savedLocation}
                   </h4>
-                  <p className="text-sm font-semibold text-slate-950 mt-0.5">
+                  <p className="text-sm font-semibold text-foreground mt-0.5">
                     {userLocation.location.city}
                     {userLocation.location.country
                       ? `, ${userLocation.location.country}`
@@ -1381,7 +1326,7 @@ export function DistanceConnector({
                     {sourceLabel(userLocation)}
                   </span>
                   {updateLabel(userLocation) && (
-                    <p className="mt-1 text-[10px] text-slate-500">
+                    <p className="mt-1 text-[10px] text-muted-foreground">
                       {updateLabel(userLocation)}
                     </p>
                   )}
@@ -1391,15 +1336,15 @@ export function DistanceConnector({
 
             {/* GPS Link Option */}
             <div className="space-y-1.5">
-              <h4 className="font-bold text-xs text-slate-900 flex items-center gap-1.5">
-                <Navigation className="w-3.5 h-3.5 text-rose-600" />
+              <h4 className="font-bold text-xs text-foreground flex items-center gap-1.5">
+                <Navigation className="w-3.5 h-3.5 text-primary" />
                 {copy.deviceHeading}
               </h4>
-              <p className="text-xs leading-5 text-slate-500">
+              <p className="text-xs leading-5 text-muted-foreground">
                 {copy.deviceHint}
               </p>
               <Button
-                className="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs min-h-11 rounded-xl shadow-sm"
+                className="w-full bg-primary hover:bg-primary-700 text-white font-semibold text-xs min-h-11 rounded-xl shadow-sm"
                 onClick={handleEnableLiveLocation}
                 disabled={isLoading || isSubmitting}
               >
@@ -1416,9 +1361,9 @@ export function DistanceConnector({
 
             <div className="relative py-1">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-100" />
+                <div className="w-full border-t border-border" />
               </div>
-              <div className="relative flex justify-center text-[10px] font-bold text-slate-400 uppercase">
+              <div className="relative flex justify-center text-[10px] font-bold text-muted-foreground uppercase">
                 <span className="bg-white px-2">{copy.or}</span>
               </div>
             </div>
@@ -1427,9 +1372,9 @@ export function DistanceConnector({
             <div className="space-y-2">
               <Label
                 htmlFor="manual-city"
-                className="font-bold text-xs text-slate-900 flex items-center gap-1.5"
+                className="font-bold text-xs text-foreground flex items-center gap-1.5"
               >
-                <MapPin className="w-3.5 h-3.5 text-rose-600" />
+                <MapPin className="w-3.5 h-3.5 text-primary" />
                 {copy.manualHeading}
               </Label>
               <div className="flex gap-2">
@@ -1439,7 +1384,7 @@ export function DistanceConnector({
                   value={manualCity}
                   onChange={(e) => setManualCity(e.target.value)}
                   disabled={isLoading || isSubmitting}
-                  className="min-h-11 text-xs border-slate-200 focus:border-rose-500 rounded-xl"
+                  className="min-h-11 text-xs border-border focus:border-primary rounded-xl"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") handleSetManualLocation();
                   }}
@@ -1448,7 +1393,7 @@ export function DistanceConnector({
                   variant="outline"
                   onClick={handleSetManualLocation}
                   disabled={isLoading || isSubmitting || !manualCity.trim()}
-                  className="min-h-11 text-xs font-bold px-4 border-slate-200 rounded-xl whitespace-nowrap"
+                  className="min-h-11 text-xs font-bold px-4 border-border rounded-xl whitespace-nowrap"
                 >
                   {isSubmitting ? copy.searching : copy.set}
                 </Button>
@@ -1459,7 +1404,7 @@ export function DistanceConnector({
             {userLocation?.location && (
               <Button
                 variant="ghost"
-                className="w-full text-xs font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 min-h-11 rounded-xl border border-transparent hover:border-rose-100"
+                className="w-full text-xs font-bold text-primary hover:text-primary hover:bg-primary-50 min-h-11 rounded-xl border border-transparent hover:border-primary-100"
                 onClick={handleRemoveLocation}
                 disabled={isLoading || isSubmitting}
               >
@@ -1467,7 +1412,7 @@ export function DistanceConnector({
               </Button>
             )}
 
-            <p className="text-[10px] text-slate-400 text-center font-medium pt-1">
+            <p className="text-[10px] text-muted-foreground text-center font-medium pt-1">
               {copy.privacy}
             </p>
           </div>

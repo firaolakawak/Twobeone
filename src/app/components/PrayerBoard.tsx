@@ -334,9 +334,7 @@ export function PrayerBoard({
 
   return (
     <div className="mx-auto min-h-screen min-w-0 w-full max-w-3xl space-y-7 pb-28 [overflow-wrap:anywhere]">
-      <header className="relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-rose-50 via-white to-amber-50 px-6 py-7 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)] ring-1 ring-rose-100/80 sm:px-9 sm:py-9">
-        <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-rose-200/30 blur-3xl" aria-hidden="true" />
-        <div className="pointer-events-none absolute -bottom-24 -left-16 h-52 w-52 rounded-full bg-amber-200/30 blur-3xl" aria-hidden="true" />
+      <header className="tbo-section-hero relative isolate overflow-hidden rounded-[2rem] px-6 py-7 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)] ring-1 ring-rose-100/80 sm:px-9 sm:py-9">
         <div className="relative">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -369,7 +367,7 @@ export function PrayerBoard({
             onClick={() => setActiveTab("requests")}
             className={`flex h-auto min-h-11 min-w-0 flex-wrap items-center justify-center gap-2 whitespace-normal rounded-[0.9rem] px-2 py-2 tbo-caption transition-all ${
               activeTab === "requests"
-                ? "bg-white text-rose-700 shadow-sm ring-1 ring-rose-100"
+                ? "bg-primary-50 text-rose-700 shadow-sm ring-1 ring-rose-100"
                 : "text-slate-500 hover:bg-white/65 hover:text-slate-800"
             }`}
           >
@@ -383,7 +381,7 @@ export function PrayerBoard({
             onClick={() => setActiveTab("answered")}
             className={`flex h-auto min-h-11 min-w-0 flex-wrap items-center justify-center gap-2 whitespace-normal rounded-[0.9rem] px-2 py-2 tbo-caption transition-all ${
               activeTab === "answered"
-                ? "bg-white text-rose-700 shadow-sm ring-1 ring-rose-100"
+                ? "bg-primary-50 text-rose-700 shadow-sm ring-1 ring-rose-100"
                 : "text-slate-500 hover:bg-white/65 hover:text-slate-800"
             }`}
           >
@@ -397,7 +395,7 @@ export function PrayerBoard({
             onClick={() => setActiveTab("together")}
             className={`flex h-auto min-h-11 min-w-0 flex-wrap items-center justify-center gap-2 whitespace-normal rounded-[0.9rem] px-2 py-2 tbo-caption transition-all ${
               activeTab === "together"
-                ? "bg-white text-rose-700 shadow-sm ring-1 ring-rose-100"
+                ? "bg-primary-50 text-rose-700 shadow-sm ring-1 ring-rose-100"
                 : "text-slate-500 hover:bg-white/65 hover:text-slate-800"
             }`}
           >
@@ -428,7 +426,7 @@ export function PrayerBoard({
       {/* Prayer List */}
       <div className="space-y-4">
         {!hasPartner && activeTab === "together" ? (
-          <Card className="rounded-[2rem] border-rose-100 bg-gradient-to-br from-white to-rose-50/50 p-10 text-center shadow-sm">
+          <Card className="rounded-[2rem] border-rose-100 bg-card p-10 text-center shadow-sm">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 text-rose-500">
               <Users className="h-8 w-8" aria-hidden="true" />
             </div>
@@ -442,7 +440,7 @@ export function PrayerBoard({
             </p>
           </Card>
         ) : filteredPrayers.length === 0 ? (
-          <Card className="rounded-[2rem] border-rose-100 bg-gradient-to-br from-white to-rose-50/50 p-10 text-center shadow-sm">
+          <Card className="rounded-[2rem] border-rose-100 bg-card p-10 text-center shadow-sm">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 text-rose-500">
               {searchQuery ? <Search className="h-7 w-7" aria-hidden="true" /> : <Heart className="h-8 w-8" aria-hidden="true" />}
             </div>
@@ -481,7 +479,7 @@ export function PrayerBoard({
             return (
               <Card
                 key={prayer.id}
-                className="group overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-[0_12px_36px_-28px_rgba(15,23,42,0.45)] transition-all hover:-translate-y-0.5 hover:border-rose-200 hover:shadow-[0_18px_42px_-26px_rgba(190,24,93,0.3)]"
+                className="group overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-card shadow-[0_12px_36px_-28px_rgba(15,23,42,0.45)] transition-all hover:-translate-y-0.5 hover:border-rose-200 hover:shadow-[0_18px_42px_-26px_rgba(190,24,93,0.3)]"
               >
                 <CardContent className="p-0">
                   <div className="p-5 sm:p-6">
@@ -620,7 +618,7 @@ export function PrayerBoard({
         }}
       >
         <DialogContent className="max-h-[92dvh] gap-0 overflow-y-auto rounded-[1.75rem] border-rose-100 p-0 sm:max-w-xl">
-          <DialogHeader className="border-b border-rose-100 bg-gradient-to-br from-rose-50 via-white to-amber-50 px-6 py-6 pr-12 text-left">
+          <DialogHeader className="tbo-section-hero border-b border-rose-100 px-6 py-6 pr-12 text-left">
             <DialogTitle className="tbo-h2 text-slate-900">
               {editingPrayer
                 ? "Edit Prayer"
@@ -727,7 +725,7 @@ export function PrayerBoard({
             </div>
 
             {/* Community Sharing */}
-            <div className="flex items-center justify-between rounded-2xl border border-rose-100 bg-gradient-to-r from-rose-50 to-amber-50 p-4">
+            <div className="flex items-center justify-between rounded-2xl border border-rose-100 bg-card p-4">
               <div className="flex-1">
                 <Label
                   htmlFor="community"

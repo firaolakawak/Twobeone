@@ -144,6 +144,7 @@ describe("LoveJourneyHeader", () => {
     const timer = screen.getByRole("timer", { name: "Days Together" });
     expect(timer).toHaveAttribute("aria-live", "off");
     expect(timer).toHaveTextContent("364days together");
+    expect(timer.querySelector(".love-journey__clock-digits")).toHaveTextContent("12:34:56");
     expect(timer).toHaveTextContent("12 hours");
     expect(timer).toHaveTextContent("34 minutes");
     expect(timer).toHaveTextContent("56 seconds");
@@ -151,6 +152,7 @@ describe("LoveJourneyHeader", () => {
     expect(screen.getByText("Tomorrow")).toBeVisible();
 
     act(() => vi.advanceTimersByTime(1000));
+    expect(timer.querySelector(".love-journey__clock-digits")).toHaveTextContent("12:34:57");
     expect(timer).toHaveTextContent("57 seconds");
   });
 

@@ -11,7 +11,13 @@ import {
   Brain,
   ChevronDown,
   Hammer,
+  BookHeart,
+  NotebookPen,
+  CalendarHeart,
+  Compass,
+  Sprout,
 } from "lucide-react";
+import { CardEmblem } from "./CardEmblem";
 import { ComprehensiveBibleReader } from "./ComprehensiveBibleReader";
 import { PushNotificationSetup } from "./PushNotificationSetup";
 import { LoveJourneyHeader } from "./LoveJourneyHeader";
@@ -815,10 +821,6 @@ export function CoupleDashboard({
           copy.devotionDescription,
         actionLabel: copy.readDevotion,
         icon: BookOpen,
-        iconClass: "bg-amber-100 text-amber-700",
-        surfaceClass:
-          "from-amber-50 via-white to-orange-50/80 border-amber-100",
-        accentClass: "text-amber-800",
       };
     }
 
@@ -840,10 +842,6 @@ export function CoupleDashboard({
         description: copy.questionDescription,
         actionLabel: copy.startQuestions,
         icon: MessageCircleHeart,
-        iconClass: "bg-primary-100 text-primary-700",
-        surfaceClass:
-          "from-primary-50 via-white to-rose-50/80 border-primary-100",
-        accentClass: "text-primary-700",
       };
     }
 
@@ -857,9 +855,6 @@ export function CoupleDashboard({
       description: entry?.content || copy.journalDescription,
       actionLabel: copy.openJournal,
       icon: PenLine,
-      iconClass: "bg-sky-100 text-sky-700",
-      surfaceClass: "from-sky-50 via-white to-cyan-50/80 border-sky-100",
-      accentClass: "text-sky-800",
     };
   }, [
     copy,
@@ -977,6 +972,15 @@ export function CoupleDashboard({
             {spotlight.actionLabel}
             <ArrowRight size={15} aria-hidden="true" />
           </button>
+          <CardEmblem
+            icon={
+              spotlight.kind === "devotion"
+                ? BookHeart
+                : spotlight.kind === "journal"
+                  ? NotebookPen
+                  : MessageCircleHeart
+            }
+          />
         </div>
       </section>
 
@@ -1036,6 +1040,7 @@ export function CoupleDashboard({
                 })}
               </small>
             </span>
+            <CardEmblem icon={CalendarHeart} size="compact" />
             <ArrowRight size={16} aria-hidden="true" />
           </button>
         ) : (
@@ -1051,6 +1056,7 @@ export function CoupleDashboard({
               <strong>{calendarCopy.calendarCta}</strong>
               <small>{calendarCopy.calendarCtaHint}</small>
             </span>
+            <CardEmblem icon={CalendarHeart} size="compact" />
             <ArrowRight size={16} aria-hidden="true" />
           </button>
         )}
@@ -1071,12 +1077,15 @@ export function CoupleDashboard({
             {copy.viewProgress}
           </button>
         </div>
-        <p>
-          <strong>
-            {devotionalStreakValue} {copy.streak}.
-          </strong>{" "}
-          {copy.rhythmHint}
-        </p>
+        <div className="journey-rhythm-intro">
+          <p>
+            <strong>
+              {devotionalStreakValue} {copy.streak}.
+            </strong>{" "}
+            {copy.rhythmHint}
+          </p>
+          <CardEmblem icon={Sprout} size="compact" />
+        </div>
         <div className="journey-metrics">
           <button type="button" onClick={() => onNavigate?.("devotions")}>
             <strong>{devotionalCompletedCount}</strong>
@@ -1115,6 +1124,7 @@ export function CoupleDashboard({
 
       <details
         className="journey-card journey-explore"
+        open
         onToggle={(event) => {
           if (!event.currentTarget.open) setChampionsExpanded(false);
         }}
@@ -1123,14 +1133,31 @@ export function CoupleDashboard({
           <span>
             <strong>{copy.explore}</strong>
           </span>
+          <CardEmblem icon={Compass} size="compact" />
           <ChevronDown size={18} aria-hidden="true" />
         </summary>
         <div className="journey-tools">
           {[
-            { label: copy.learning, icon: BookOpen, screen: "guidance" },
-            { label: copy.character, icon: Hammer, screen: "character-house" },
-            { label: copy.scripture, icon: Brain, screen: "scripture-memory" },
-            { label: copy.milestones, icon: Calendar, screen: "milestones" },
+            {
+              label: copy.learning,
+              icon: BookOpen,
+              screen: "guidance",
+            },
+            {
+              label: copy.character,
+              icon: Hammer,
+              screen: "character-house",
+            },
+            {
+              label: copy.scripture,
+              icon: Brain,
+              screen: "scripture-memory",
+            },
+            {
+              label: copy.milestones,
+              icon: Calendar,
+              screen: "milestones",
+            },
           ].map(({ label, icon: Icon, screen }) => (
             <button
               key={screen}
@@ -1164,9 +1191,10 @@ export function CoupleDashboard({
         className="journey-card journey-verse"
         aria-labelledby="journey-verse-title"
       >
-        <h2 id="journey-verse-title" className="sr-only">
-          {t.dashboard.dailyVerse}
-        </h2>
+        <div className="journey-verse-heading">
+          <h2 id="journey-verse-title">{t.dashboard.dailyVerse}</h2>
+          <CardEmblem icon={BookHeart} size="compact" />
+        </div>
         {isLoadingVerse ? (
           <p className="journey-verse-reference" role="status">
             {t.common.loading}

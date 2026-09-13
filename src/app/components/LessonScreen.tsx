@@ -406,8 +406,8 @@ export function LessonScreen({
             width: 40,
             height: 40,
             borderRadius: "50%",
-            border: "1px solid #e2e8f0",
-            backgroundColor: "#ffffff",
+            border: "1px solid var(--border)",
+            backgroundColor: "var(--card)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -459,9 +459,9 @@ export function LessonScreen({
       {/* Module progress bar */}
       <div
         style={{
-          backgroundColor: "#ffffff",
+          backgroundColor: "var(--card)",
           borderRadius: "8px",
-          border: "1px solid #e2e8f0",
+          border: "1px solid var(--border)",
           padding: "12px 16px",
           boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
         }}
@@ -571,9 +571,9 @@ export function LessonScreen({
       {/* Lesson navigation */}
       <div
         style={{
-          backgroundColor: "#ffffff",
+          backgroundColor: "var(--card)",
           borderRadius: "8px",
-          border: "1px solid #e2e8f0",
+          border: "1px solid var(--border)",
           padding: "12px 16px",
           display: "flex",
           alignItems: "center",
@@ -643,7 +643,7 @@ export function LessonScreen({
       {/* Lesson content */}
       <div
         style={{
-          backgroundColor: "var(--background)",
+          backgroundColor: "var(--card)",
           borderRadius: "12px",
           border: "1px solid var(--border)",
           boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
@@ -689,9 +689,9 @@ export function LessonScreen({
       {/* Notes */}
       <div
         style={{
-          backgroundColor: "#ffffff",
+          backgroundColor: "var(--card)",
           borderRadius: "12px",
-          border: "1px solid #e2e8f0",
+          border: "1px solid var(--border)",
           boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
           overflow: "hidden",
         }}
@@ -702,7 +702,7 @@ export function LessonScreen({
             alignItems: "center",
             gap: "8px",
             padding: "16px",
-            borderBottom: "1px solid #e2e8f0",
+            borderBottom: "1px solid var(--border)",
           }}
         >
           <FileText
@@ -808,9 +808,9 @@ export function LessonScreen({
       {/* All lessons list */}
       <div
         style={{
-          backgroundColor: "#ffffff",
+          backgroundColor: "var(--card)",
           borderRadius: "12px",
-          border: "1px solid #e2e8f0",
+          border: "1px solid var(--border)",
           boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
           overflow: "hidden",
         }}
@@ -818,7 +818,7 @@ export function LessonScreen({
         <div
           style={{
             padding: "16px",
-            borderBottom: "1px solid #e2e8f0",
+            borderBottom: "1px solid var(--border)",
           }}
         >
           <span

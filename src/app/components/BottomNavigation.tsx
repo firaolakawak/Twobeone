@@ -41,19 +41,31 @@ export const BottomNavigation = memo(function BottomNavigation({
 
   const tabs = [
     { id: "home", label: t.nav.home, icon: Home },
-    { id: "devotions", label: t.nav.devotions, icon: BookOpen },
+    {
+      id: "devotions",
+      label: t.nav.devotions,
+      icon: BookOpen,
+    },
     { id: "prayer", label: t.nav.prayer, icon: Heart },
-    { id: "chat", label: t.nav.chat, icon: MessageCircle },
+    {
+      id: "chat",
+      label: t.nav.chat,
+      icon: MessageCircle,
+    },
     { id: "more", label: moreLabel, icon: Ellipsis },
   ];
   const moreTabs = [
-    { id: "community", label: t.nav.community, icon: Globe2 },
+    {
+      id: "community",
+      label: t.nav.community,
+      icon: Globe2,
+    },
     { id: "profile", label: t.nav.profile, icon: User },
   ];
 
   return (
     <Dialog open={isMoreOpen} onOpenChange={setIsMoreOpen}>
-      <div className="tbo-bottom-navigation fixed inset-x-0 bottom-0 z-50 border-t border-[#eceef1] bg-white">
+      <div className="tbo-bottom-navigation fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background">
         <nav
           aria-label={t.nav.primaryNavigation}
           className="tbo-bottom-navigation__container mx-auto w-full max-w-2xl"
@@ -81,13 +93,13 @@ export const BottomNavigation = memo(function BottomNavigation({
                   whileTap={prefersReducedMotion ? undefined : { scale: 0.92 }}
                   transition={{ duration: 0.16 }}
                   title={tab.label}
-                  className={`tbo-bottom-navigation__action group rounded-[10px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 focus-visible:ring-offset-1 ${isActive ? "bg-[#fef1f4] text-[#e11d48]" : "text-[#6b7280] hover:bg-rose-50/60 hover:text-neutral-900"}`}
+                  className="tbo-bottom-navigation__action group rounded-[10px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
                 >
                   <span className="tbo-bottom-navigation__icon">
                     <Icon aria-hidden="true" size={24} strokeWidth={1.7} />
                     {unreadCount > 0 && (
                       <span
-                        className="tbo-bottom-navigation__badge rounded-full bg-[#f43f5e] text-white ring-2 ring-white"
+                        className="tbo-bottom-navigation__badge rounded-full text-white ring-2 ring-white"
                         aria-hidden="true"
                       >
                         {unreadCount > 99 ? "99+" : unreadCount}
@@ -112,13 +124,13 @@ export const BottomNavigation = memo(function BottomNavigation({
       </div>
       <DialogContent
         showCloseButton={false}
-        className="tbo-navigation-more max-w-[calc(100%-2rem)] rounded-3xl border-rose-100 bg-white p-5 shadow-xl motion-reduce:animate-none motion-reduce:transition-none sm:max-w-sm"
+        className="tbo-navigation-more max-w-[calc(100%-2rem)] rounded-3xl border-border bg-background p-5 shadow-xl motion-reduce:animate-none motion-reduce:transition-none sm:max-w-sm"
       >
         <DialogHeader className="pr-12 text-left">
-          <DialogTitle className="tbo-navigation-more__title font-medium text-neutral-900">
+          <DialogTitle className="tbo-navigation-more__title font-medium text-foreground">
             {moreLabel}
           </DialogTitle>
-          <DialogDescription className="tbo-navigation-more__description text-neutral-500">
+          <DialogDescription className="tbo-navigation-more__description text-muted-foreground">
             {t.nav.community} · {t.nav.profile}
           </DialogDescription>
         </DialogHeader>
@@ -126,7 +138,7 @@ export const BottomNavigation = memo(function BottomNavigation({
           <button
             type="button"
             aria-label={t.common.close}
-            className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full text-neutral-500 hover:bg-rose-50 hover:text-rose-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground hover:bg-primary-50 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             <X size={24} aria-hidden="true" />
           </button>
@@ -144,9 +156,9 @@ export const BottomNavigation = memo(function BottomNavigation({
                   setIsMoreOpen(false);
                   onTabChange(tab.id);
                 }}
-                className={`flex min-h-14 items-center gap-3 rounded-2xl border px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${isActive ? "border-rose-200 bg-rose-50 text-primary" : "border-neutral-100 bg-white text-neutral-700 hover:border-rose-100 hover:bg-rose-50/60"}`}
+                className="tbo-navigation-more__action flex min-h-14 items-center gap-3 rounded-2xl border px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-500">
+                <span className="tbo-navigation-more__icon flex h-9 w-9 items-center justify-center rounded-xl">
                   <Icon size={24} aria-hidden="true" />
                 </span>
                 <span className="tbo-navigation-more__item-label flex-1">
@@ -154,7 +166,7 @@ export const BottomNavigation = memo(function BottomNavigation({
                 </span>
                 <ChevronRight
                   size={22}
-                  className="text-neutral-400"
+                  className="text-current"
                   aria-hidden="true"
                 />
               </button>

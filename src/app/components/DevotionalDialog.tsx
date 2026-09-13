@@ -129,7 +129,7 @@ export function DevotionalDialog({
         <DialogDescription className="sr-only">
           Scripture, reflection, and prayer for your shared walk.
         </DialogDescription>
-        <DialogHeader className="relative flex-shrink-0 border-b border-rose-100/80 bg-gradient-to-br from-rose-50 via-white to-amber-50 px-4 py-4 text-left sm:px-8 sm:py-5">
+        <DialogHeader className="tbo-section-hero relative flex-shrink-0 border-b border-rose-100/80 px-4 py-4 text-left sm:px-8 sm:py-5">
           <div className="pointer-events-none absolute -right-10 -top-16 h-36 w-36 rounded-full bg-rose-200/25 blur-3xl" aria-hidden="true" />
           <div className="relative mx-auto flex w-full max-w-3xl items-start gap-3 sm:gap-5">
             <button
@@ -162,21 +162,20 @@ export function DevotionalDialog({
           </div>
         </DialogHeader>
 
-        <div className="min-h-0 flex-1 overflow-y-auto bg-slate-50/55 px-4 py-5 sm:px-8 sm:py-8">
+        <div className="min-h-0 flex-1 overflow-y-auto bg-background px-4 py-5 sm:px-8 sm:py-8">
           <div className="mx-auto max-w-3xl space-y-8">
             {/* Scripture */}
-            <section className="relative overflow-hidden rounded-[1.75rem] bg-slate-950 p-6 text-white shadow-[0_22px_55px_-34px_rgba(15,23,42,0.85)] sm:p-8">
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(244,114,182,0.24),transparent_42%),radial-gradient(circle_at_bottom_left,rgba(251,191,36,0.12),transparent_36%)]" aria-hidden="true" />
+            <section className="relative overflow-hidden rounded-[1.75rem] border border-border bg-card p-6 text-foreground sm:p-8">
               <div className="relative">
-                <div className="flex items-center gap-2 text-rose-200">
+                <div className="flex items-center gap-2 text-primary">
                   <BookOpen className="h-4 w-4" aria-hidden="true" />
                   <h3 className="tbo-h3">{t.devotionals.scriptureReading}</h3>
                 </div>
                 <blockquote className="mt-6">
-                  <p className="tbo-body-l text-slate-100">
+                  <p className="tbo-body-l text-foreground">
                     “{devotional.verse}”
                   </p>
-                  <cite className="mt-5 block tbo-caption not-italic text-rose-200">
+                  <cite className="mt-5 block tbo-caption not-italic text-muted-foreground">
                     {devotional.reference}
                   </cite>
                 </blockquote>
@@ -184,7 +183,7 @@ export function DevotionalDialog({
             </section>
 
             {/* Reflection */}
-            <section className="rounded-[1.5rem] bg-white p-6 shadow-[0_14px_45px_-34px_rgba(15,23,42,0.55)] ring-1 ring-slate-200/70 sm:p-7">
+            <section className="rounded-[1.5rem] bg-card p-6 shadow-sm ring-1 ring-border sm:p-7">
               <div className="mb-5 flex items-center gap-3">
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-50 text-rose-600">
                   <Heart className="h-4.5 w-4.5" aria-hidden="true" />
@@ -201,7 +200,7 @@ export function DevotionalDialog({
 
             {/* Prayer */}
             {devotional.prayer && (
-              <section className="relative overflow-hidden rounded-[1.5rem] bg-gradient-to-br from-rose-50 to-amber-50 p-6 ring-1 ring-rose-100 sm:p-7">
+              <section className="tbo-section-hero relative overflow-hidden rounded-[1.5rem] p-6 ring-1 ring-rose-100 sm:p-7">
                 <div className="mb-4 flex items-center gap-2 text-rose-700">
                   <Heart className="h-4.5 w-4.5 fill-rose-500 text-rose-500" aria-hidden="true" />
                   <h3 className="tbo-h3">{t.devotionals.prayerPrompt}</h3>
@@ -239,7 +238,7 @@ export function DevotionalDialog({
 
             {/* Audio Player Section */}
             {devotional.audioUrl && (
-              <section className="rounded-[1.5rem] bg-white p-6 shadow-[0_14px_45px_-34px_rgba(15,23,42,0.55)] ring-1 ring-slate-200/70 sm:p-7">
+              <section className="rounded-[1.5rem] bg-card p-6 shadow-sm ring-1 ring-border sm:p-7">
                 <div className="mb-5 flex items-center gap-3">
                   <span className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-50 text-rose-600">
                     <Music className="h-4.5 w-4.5" aria-hidden="true" />

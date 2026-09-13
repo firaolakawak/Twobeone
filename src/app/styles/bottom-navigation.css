@@ -4,6 +4,62 @@
   font-weight: var(--tbo-weight-medium, 500);
 }
 
+.tbo-bottom-navigation__action {
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.tbo-bottom-navigation__action:hover {
+  color: var(--primary-700);
+  background: var(--primary-50);
+}
+
+.tbo-bottom-navigation__action[aria-current="page"] {
+  color: var(--primary);
+  background: var(--primary-50);
+}
+
+.tbo-bottom-navigation__action[aria-current="page"] {
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.tbo-bottom-navigation__icon {
+  color: inherit;
+}
+
+.tbo-bottom-navigation__badge {
+  background: var(--primary);
+}
+
+.tbo-navigation-more__action {
+  color: var(--muted-foreground);
+  border-color: var(--border);
+  background: var(--card);
+}
+
+.tbo-navigation-more__action:hover {
+  color: var(--primary-700);
+  border-color: var(--primary-300);
+  background: var(--primary-50);
+}
+
+.tbo-navigation-more__action[aria-current="page"] {
+  color: var(--primary);
+  border-color: var(--primary-300);
+  background: var(--primary-50);
+}
+
+.tbo-navigation-more__action[aria-current="page"] {
+  box-shadow: inset 0 0 0 1px var(--primary-300);
+}
+
+.tbo-navigation-more__icon {
+  flex-shrink: 0;
+  background: var(--card);
+  color: inherit;
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
 .tbo-bottom-navigation {
   padding-bottom: calc(
     env(safe-area-inset-bottom, 0px) + var(--tbo-space-2, 0.5rem)

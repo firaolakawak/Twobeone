@@ -1,6 +1,6 @@
 /* Location layout from the approved Our Journey proposal. */
 .distance-journey {
-  color: #111827;
+  color: var(--foreground);
   line-height: normal;
 }
 
@@ -34,17 +34,17 @@
   position: relative;
   box-shadow:
     0 0 0 4px #fff,
-    0 0 0 5px #fbd8e1;
+    0 0 0 5px var(--border);
 }
 
 .distance-journey__avatar--user {
-  background: #ffe0e8;
-  color: #9f1239;
+  background: var(--card);
+  color: var(--primary);
 }
 
 .distance-journey__avatar--partner {
-  background: #ede8e7;
-  color: #655553;
+  background: var(--card);
+  color: var(--primary);
 }
 
 .distance-journey__avatar-image {
@@ -84,7 +84,7 @@
 
 .distance-journey__person strong small {
   font-size: 8px;
-  color: #6b7280;
+  color: var(--muted-foreground);
   font-weight: 400;
   margin-left: 2px;
 }
@@ -104,14 +104,14 @@
 .distance-journey__city svg {
   width: 11px;
   height: 11px;
-  color: #e11d48;
+  color: var(--primary);
   flex-shrink: 0;
   stroke-width: 1.7;
 }
 
 .distance-journey .distance-journey__country {
   font-size: 8px;
-  color: #6b7280;
+  color: var(--muted-foreground);
   margin-top: 3px;
   text-align: center;
   line-height: 1.4;
@@ -124,13 +124,13 @@
   justify-content: center;
   gap: 5px;
   margin-top: 13px;
-  color: #e11d48;
+  color: var(--primary);
 }
 
 .distance-journey__connection-line {
   height: 1px;
   flex: 1;
-  border-bottom: 1px dashed #e8a8b8;
+  border-bottom: 1px dashed var(--primary-300);
 }
 
 .distance-journey__connection-heart {
@@ -139,13 +139,13 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: #fff1f5;
+  background: var(--primary);
 }
 
 .distance-journey__connection-heart svg {
   width: 12px;
   height: 12px;
-  fill: #f43f5e;
+  fill: #fff;
   stroke: none;
 }
 
@@ -156,14 +156,14 @@
   gap: 10px;
   margin-top: 18px;
   padding: 13px 7px;
-  background: #fff6f8;
-  border: 1px solid #ffe0e8;
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 12px;
   text-align: left;
 }
 
 .distance-journey__distance > svg {
-  color: #e11d48;
+  color: var(--primary);
   width: 21px;
   height: 21px;
   flex-shrink: 0;
@@ -172,7 +172,7 @@
 
 .distance-journey__distance-primary {
   font-size: 11px;
-  color: #9f1239;
+  color: var(--primary);
 }
 
 .distance-journey__distance-primary strong {
@@ -186,7 +186,7 @@
   display: block;
   font-size: 9px;
   margin-top: 3px;
-  color: #6b7280;
+  color: var(--muted-foreground);
 }
 
 .distance-journey__sharing-footer {
@@ -196,13 +196,13 @@
   align-items: center;
   padding: 12px 0;
   font-size: 8px;
-  color: #6b7280;
+  color: var(--muted-foreground);
 }
 
 .distance-journey__sharing-footer button {
   border: 0;
   background: none;
-  color: #be123c;
+  color: var(--primary);
   font-size: 9px;
   padding: 7px 0;
   cursor: pointer;
@@ -210,7 +210,7 @@
 }
 
 .distance-journey__sharing-footer button:focus-visible {
-  outline: 3px solid #e11d48;
+  outline: 3px solid var(--primary);
   outline-offset: 4px;
 }
 
@@ -252,7 +252,7 @@
 }
 
 .love-journey-places:focus-visible {
-  outline: 2px solid #e11d48;
+  outline: 2px solid var(--primary);
   outline-offset: 4px;
 }
 
@@ -263,32 +263,79 @@
 .love-journey-places__route {
   min-width: 0;
   text-align: center;
-  color: #8a6572;
+  color: var(--muted-foreground);
 }
 
 .love-journey-places__route-line {
   display: flex;
   align-items: center;
   gap: 5px;
-  color: #d993a9;
+  color: var(--primary);
 }
 
 .love-journey-places__route-line::before,
 .love-journey-places__route-line::after {
   content: "";
   flex: 1;
-  height: 1px;
-  background: repeating-linear-gradient(
-    to right,
-    #e6c4d0 0 3px,
-    transparent 3px 6px
-  );
+  min-width: 0;
+  height: 6px;
+  background: radial-gradient(circle, currentColor 2px, transparent 2.4px) left
+    center / 9px 6px repeat-x;
 }
 
-.love-journey-places__route-line svg {
-  width: 12px;
-  height: 12px;
+.love-journey-places__heart {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 0 0 3px var(--primary-50);
+}
+
+.love-journey-places__heart svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+@keyframes love-journey-connection-heart {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.07);
+  }
+}
+
+@keyframes love-journey-connection-dots {
+  0% {
+    background-position: 0 center;
+    opacity: 0.65;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    background-position: 9px center;
+    opacity: 0.65;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .love-journey-places__heart {
+    animation: love-journey-connection-heart 3.6s ease-in-out infinite;
+  }
+
+  .love-journey-places__route-line::before,
+  .love-journey-places__route-line::after {
+    animation: love-journey-connection-dots 4.8s linear infinite;
+  }
 }
 
 .love-journey-places__distance {
@@ -296,7 +343,7 @@
   font-size: var(--tbo-caption-size);
   line-height: var(--tbo-caption-line);
   margin-top: var(--tbo-space-1);
-  color: #71616a;
+  color: var(--muted-foreground);
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
   font-weight: var(--tbo-weight-medium);
@@ -326,6 +373,6 @@
   font-size: var(--tbo-caption-size);
   line-height: var(--tbo-caption-line);
   font-weight: var(--tbo-weight-medium);
-  color: #575e6b;
+  color: var(--muted-foreground);
   overflow-wrap: anywhere;
 }

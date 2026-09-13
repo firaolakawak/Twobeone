@@ -19,9 +19,9 @@ The CSS uses `rem`; these sizes are the reference at a 16px browser default. Lar
 
 Shared buttons use Body S (14px/20px) at weight 500 and grow vertically when labels wrap. Their default minimum height is 44px, with 36px small and 48px large variants. Custom primary actions can use Body L (16px/24px). The dashboard spotlight action uses compact Body S, fits its label, and keeps a minimum 44px height. Navigation icons are 24px. Inter 300 is limited to larger supportive text with 24px or 28px leading; small captions and controls retain 500. Playfair’s supplied font supports 400–900, so Light 300 is never applied to that family. Existing brand wordmarks and semantic emphasis can retain heavier weights.
 
-The dashboard's requested emphasis uses 24px/700 couple names, an 18px/700 rose day count, and a 16px/700 black Daily Verse. Tayitu supplies one static Regular 400 face. Browser-synthesized bold is preserved for heavier Amharic emphasis, including the Daily Verse; no native Tayitu bold face was supplied. The previously tried Sur Graphics files remain inactive source assets and are no longer registered or selected by the font stacks.
+The dashboard's requested emphasis uses 24px/700 couple names, an 18px/700 rose day count, a 12px/700 anniversary countdown, and a 16px/700 charcoal Daily Verse. Tayitu supplies one static Regular 400 face. Browser-synthesized bold is preserved for heavier Amharic emphasis, including the Daily Verse; no native Tayitu bold face was supplied. The previously tried Sur Graphics files remain inactive source assets and are no longer registered or selected by the font stacks.
 
-The Couples Dashboard follows the existing TwoBeOne rose, blush, and white visual language from the sign-in screen, Love Journey header, and navigation. Actions and progress values use the shared primary color tokens; white cards, blush activity surfaces, soft rose borders, and consistent spacing separate sections. Activity labels retain dark neutral text, and the Daily Verse stays bold black on a white-to-blush surface.
+The app uses one [shared color palette](twobeone-colors.md): white pages, warm ivory cards, rose actions, blush selections, charcoal text, warm gray secondary text, and pale gray borders. Dashboard sections and their destination screens keep the same palette. Typography remains independent of color; the Daily Verse keeps its bold emphasis on an ivory surface.
 
 ## Implementation
 
@@ -34,7 +34,7 @@ The source of truth is [typography.css](../../src/styles/typography.css). Named 
 <span className="tbo-caption">Next anniversary</span>
 ```
 
-Visual roles do not change HTML heading semantics: keep the heading level appropriate to the page structure. Keep body paragraphs left-aligned, allow translated titles to wrap, and use tabular numerals for the ticking timer. Avoid reducing text to fit a narrow screen.
+Visual roles do not change HTML heading semantics: keep the heading level appropriate to the page structure. Keep body paragraphs left-aligned, allow translated titles to wrap, and use tabular numerals for the ticking timer. The Journey clock displays compact `HH:MM:SS`, with localized hour/minute/second wording available to screen readers. Avoid reducing text to fit a narrow screen.
 
 Spacing tokens use 4, 8, 16, 24, and 32px at the default root: small gaps within groups, 16px card padding, 24px section spacing, and 32px between major groups. Icon geometry and borders remain independent of text size. Controls use minimum heights rather than fixed heights wherever translated or enlarged labels need to wrap.
 

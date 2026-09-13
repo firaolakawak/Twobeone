@@ -135,7 +135,7 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
   ];
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,rgba(251,247,249,0.9)_0%,#fff_28%,#fff_100%)] pb-20">
+    <div className="min-h-screen bg-background pb-20">
       <div className="mx-auto max-w-5xl space-y-7 px-4 py-5 sm:px-6 sm:py-8">
         {onBack && (
           <button type="button" onClick={onBack} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border/70 bg-white px-4 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
@@ -144,7 +144,7 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
         )}
 
         {/* Header */}
-        <div className="mx-auto max-w-2xl text-center">
+        <div className="tbo-section-hero mx-auto max-w-2xl rounded-3xl border p-5 text-center sm:p-6">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-100 text-primary-700">
             <MessageCircleHeart className="h-6 w-6" />
           </div>
@@ -198,7 +198,7 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
                         {category.description}
                       </p>
 
-                      <div className="mt-4 rounded-2xl border border-black/[0.045] bg-white/65 p-3" aria-label={`${category.label} progress`}>
+                      <div className="mt-4 rounded-2xl border border-black/[0.045] bg-card p-3" aria-label={`${category.label} progress`}>
                         {isLoadingProgress ? (
                           <div className="space-y-2" aria-label="Loading progress">
                             <div className="h-3 w-2/3 animate-pulse rounded-full bg-white/80" />

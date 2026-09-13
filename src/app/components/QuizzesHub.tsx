@@ -190,7 +190,7 @@ export function QuizzesHub({ profile, partner, accessToken, onBack }: QuizzesHub
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary-50/30 via-primary-50/20 to-sky-50/30">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm border-b">
         <div className="flex items-center justify-between px-4 py-4">
@@ -205,7 +205,7 @@ export function QuizzesHub({ profile, partner, accessToken, onBack }: QuizzesHub
       <div className="max-w-4xl mx-auto px-4 py-6 pb-24">
         {/* Hero Section */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary mb-4">
             <Brain className="w-8 h-8 text-white" />
           </div>
           <h2 className="text-2xl font-bold mb-2">Discover Your Relationship</h2>
@@ -216,7 +216,7 @@ export function QuizzesHub({ profile, partner, accessToken, onBack }: QuizzesHub
 
         {/* Stats Card */}
         {!loading && (
-          <Card className="mb-6 bg-gradient-to-r from-primary-500 to-primary-600 text-white border-0">
+          <Card className="mb-6 bg-card text-foreground border-border">
             <CardContent className="p-6">
               <div className="grid grid-cols-3 gap-4">
                 <div className="text-center">
@@ -295,7 +295,7 @@ export function QuizzesHub({ profile, partner, accessToken, onBack }: QuizzesHub
                       <div className="flex gap-2">
                         <Button
                           onClick={() => setActiveView(quiz.id as any)}
-                          className={`flex-1 bg-gradient-to-r ${quiz.color}`}
+                          className="flex-1 bg-primary hover:bg-primary-700"
                         >
                           {isCompleted ? 'Retake Quiz' : 'Start Quiz'}
                           <ArrowRight className="w-4 h-4 ml-2" />
@@ -321,7 +321,7 @@ export function QuizzesHub({ profile, partner, accessToken, onBack }: QuizzesHub
         </div>
 
         {/* Info Card */}
-        <Card className="bg-gradient-to-br from-primary-50 to-primary-100 border-primary-200">
+        <Card className="bg-card border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-primary-900">
               <Trophy className="w-5 h-5" />

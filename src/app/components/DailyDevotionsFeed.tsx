@@ -380,9 +380,7 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
   return (
     <div className="mx-auto min-w-0 w-full max-w-3xl space-y-7 [overflow-wrap:anywhere] pb-6">
       {/* Warm, quiet introduction */}
-      <header className="relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-rose-50 via-white to-amber-50 px-6 py-8 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)] ring-1 ring-rose-100/80 sm:px-9 sm:py-10">
-        <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-rose-200/30 blur-3xl" aria-hidden="true" />
-        <div className="pointer-events-none absolute -bottom-24 -left-16 h-52 w-52 rounded-full bg-amber-200/30 blur-3xl" aria-hidden="true" />
+      <header className="tbo-section-hero relative isolate overflow-hidden rounded-[2rem] px-6 py-8 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)] ring-1 ring-rose-100/80 sm:px-9 sm:py-10">
         <div className="relative max-w-xl">
           <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white/75 px-3 py-1.5 tbo-caption text-rose-700 shadow-sm ring-1 ring-rose-100 backdrop-blur">
             <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" aria-hidden="true" />
@@ -405,8 +403,8 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
             >
               <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/90 ring-1 ring-rose-100">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-rose-500 to-pink-500 transition-[width] duration-700 ease-out motion-reduce:transition-none"
-                  style={{ width: `${completionProgress}%` }}
+                  className="h-full rounded-full transition-[width] duration-700 ease-out motion-reduce:transition-none"
+                  style={{ width: `${completionProgress}%`, background: "var(--primary)" }}
                 />
               </div>
               <span className="shrink-0 tbo-caption text-slate-500">
@@ -420,20 +418,20 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full gap-7">
         <TabsList className="grid h-auto min-h-14 w-full grid-cols-3 gap-1 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-[inset_0_1px_2px_rgba(15,23,42,0.04),0_10px_30px_-24px_rgba(15,23,42,0.45)]" aria-label="Devotional sections">
-          <TabsTrigger value="devotionals" className="group h-auto min-h-11 min-w-0 flex-wrap whitespace-normal py-2 [overflow-wrap:anywhere] rounded-[0.9rem] border-0 bg-transparent px-2 tbo-caption text-slate-500 shadow-none transition-all duration-200 hover:bg-white/65 hover:text-slate-800 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-[0_4px_14px_-8px_rgba(190,24,93,0.45)] data-[state=active]:ring-1 data-[state=active]:ring-rose-100">
+          <TabsTrigger value="devotionals" className="group h-auto min-h-11 min-w-0 flex-wrap whitespace-normal py-2 [overflow-wrap:anywhere] rounded-[0.9rem] border-0 bg-transparent px-2 tbo-caption text-slate-500 shadow-none transition-all duration-200 hover:bg-white/65 hover:text-slate-800 data-[state=active]:bg-primary-50 data-[state=active]:text-rose-700 data-[state=active]:shadow-[0_4px_14px_-8px_rgba(190,24,93,0.45)] data-[state=active]:ring-1 data-[state=active]:ring-rose-100">
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-transparent transition-colors group-data-[state=active]:bg-rose-50">
               <BookOpen className="h-4 w-4" aria-hidden="true" />
             </span>
             <span className="hidden sm:inline">{t.devotionals.title}</span>
             <span className="sm:hidden">Readings</span>
           </TabsTrigger>
-          <TabsTrigger value="audio" className="group h-auto min-h-11 min-w-0 flex-wrap whitespace-normal py-2 [overflow-wrap:anywhere] rounded-[0.9rem] border-0 bg-transparent px-2 tbo-caption text-slate-500 shadow-none transition-all duration-200 hover:bg-white/65 hover:text-slate-800 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-[0_4px_14px_-8px_rgba(190,24,93,0.45)] data-[state=active]:ring-1 data-[state=active]:ring-rose-100">
+          <TabsTrigger value="audio" className="group h-auto min-h-11 min-w-0 flex-wrap whitespace-normal py-2 [overflow-wrap:anywhere] rounded-[0.9rem] border-0 bg-transparent px-2 tbo-caption text-slate-500 shadow-none transition-all duration-200 hover:bg-white/65 hover:text-slate-800 data-[state=active]:bg-primary-50 data-[state=active]:text-rose-700 data-[state=active]:shadow-[0_4px_14px_-8px_rgba(190,24,93,0.45)] data-[state=active]:ring-1 data-[state=active]:ring-rose-100">
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-transparent transition-colors group-data-[state=active]:bg-rose-50">
               <Headphones className="h-4 w-4" aria-hidden="true" />
             </span>
             <span>{t.devotionals.audioTab}</span>
           </TabsTrigger>
-          <TabsTrigger value="verses" className="group h-auto min-h-11 min-w-0 flex-wrap whitespace-normal py-2 [overflow-wrap:anywhere] rounded-[0.9rem] border-0 bg-transparent px-2 tbo-caption text-slate-500 shadow-none transition-all duration-200 hover:bg-white/65 hover:text-slate-800 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-[0_4px_14px_-8px_rgba(190,24,93,0.45)] data-[state=active]:ring-1 data-[state=active]:ring-rose-100">
+          <TabsTrigger value="verses" className="group h-auto min-h-11 min-w-0 flex-wrap whitespace-normal py-2 [overflow-wrap:anywhere] rounded-[0.9rem] border-0 bg-transparent px-2 tbo-caption text-slate-500 shadow-none transition-all duration-200 hover:bg-white/65 hover:text-slate-800 data-[state=active]:bg-primary-50 data-[state=active]:text-rose-700 data-[state=active]:shadow-[0_4px_14px_-8px_rgba(190,24,93,0.45)] data-[state=active]:ring-1 data-[state=active]:ring-rose-100">
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-transparent transition-colors group-data-[state=active]:bg-rose-50">
               <Bookmark className="h-4 w-4" aria-hidden="true" />
             </span>
@@ -480,7 +478,7 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
           {isLoadingDevotionals ? (
             <div className="py-2 text-center" role="status" aria-label={t.devotionals.loading}>
               <div className="animate-pulse space-y-4">
-                <div className="h-72 rounded-[2rem] bg-gradient-to-br from-rose-50 to-slate-100" />
+                <div className="h-72 rounded-[2rem] bg-muted" />
                 <div className="h-32 rounded-2xl bg-slate-100" />
                 <div className="h-32 rounded-2xl bg-slate-100" />
               </div>
@@ -490,9 +488,8 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
             <div className="space-y-7">
               <Card
                 lang={featuredDevotional.language === 'am' || featuredDevotional.language === 'om' ? featuredDevotional.language : undefined}
-                className="group relative overflow-hidden rounded-[2rem] border-0 bg-slate-950 p-0 text-white shadow-[0_24px_60px_-35px_rgba(15,23,42,0.8)] ring-1 ring-white/10 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_30px_70px_-35px_rgba(190,24,93,0.5)] focus-within:ring-4 focus-within:ring-rose-200 motion-reduce:transform-none"
+                className="group relative overflow-hidden rounded-[2rem] border-0 bg-card p-0 text-foreground shadow-[0_24px_60px_-35px_rgba(15,23,42,0.8)] ring-1 ring-border transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_30px_70px_-35px_rgba(190,24,93,0.5)] focus-within:ring-4 focus-within:ring-rose-200 motion-reduce:transform-none"
               >
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(244,114,182,0.26),transparent_42%),radial-gradient(circle_at_bottom_left,rgba(251,191,36,0.14),transparent_38%)]" aria-hidden="true" />
                 <button
                   type="button"
                   className="relative w-full p-6 text-left outline-none active:scale-[0.995] motion-reduce:transform-none sm:p-8"
@@ -500,30 +497,30 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
                   aria-label={`Read ${featuredDevotional.title}`}
                 >
                   <div className="flex flex-wrap items-center justify-between gap-4">
-                    <span className="inline-flex items-center gap-2 tbo-caption uppercase text-rose-200">
+                    <span className="inline-flex items-center gap-2 tbo-caption uppercase text-primary">
                       <span className="h-1.5 w-1.5 rounded-full bg-rose-400 shadow-[0_0_0_4px_rgba(251,113,133,0.12)]" />
                       Featured devotion
                     </span>
                     {completedDevotionals.has(featuredDevotional.id) ? (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/15 px-3 py-1.5 tbo-caption text-emerald-200 ring-1 ring-emerald-300/20">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 tbo-caption text-emerald-700 ring-1 ring-emerald-200">
                         <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
                         {t.devotionals.completed}
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-300">
+                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
                         <Clock3 className="h-3.5 w-3.5" aria-hidden="true" />
                         {featuredDevotional.duration || '5 min'}
                       </span>
                     )}
                   </div>
 
-                  <h3 className="mt-10 max-w-xl tbo-h1 tbo-emotional text-white">{featuredDevotional.title}</h3>
+                  <h3 className="mt-10 max-w-xl tbo-h1 tbo-emotional text-foreground">{featuredDevotional.title}</h3>
                   <blockquote className="mt-5 max-w-xl">
-                    <p className="tbo-body-l italic text-slate-300">“{featuredDevotional.verse}”</p>
-                    <cite className="mt-3 block tbo-caption not-italic text-rose-200">{featuredDevotional.reference}</cite>
+                    <p className="tbo-body-l italic text-muted-foreground">“{featuredDevotional.verse}”</p>
+                    <cite className="mt-3 block tbo-caption not-italic text-primary">{featuredDevotional.reference}</cite>
                   </blockquote>
 
-                  <span className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-medium text-slate-950 shadow-lg shadow-black/10 transition-all duration-200 group-hover:gap-3 group-hover:bg-rose-50">
+                  <span className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-lg shadow-black/10 transition-all duration-200 group-hover:gap-3 group-hover:bg-primary-700">
                     Begin together
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </span>
@@ -542,7 +539,7 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
                       <Card
                         key={devotional.id}
                         lang={devotional.language === 'am' || devotional.language === 'om' ? devotional.language : undefined}
-                        className="group animate-in overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-[0_8px_30px_-24px_rgba(15,23,42,0.5)] fade-in slide-in-from-bottom-2 transition-all duration-300 ease-out hover:border-rose-200 hover:bg-rose-50/20 hover:shadow-[0_16px_38px_-26px_rgba(190,24,93,0.45)] focus-within:ring-4 focus-within:ring-rose-100 motion-reduce:animate-none"
+                        className="group animate-in overflow-hidden rounded-2xl border border-slate-200/80 bg-card p-0 shadow-[0_8px_30px_-24px_rgba(15,23,42,0.5)] fade-in slide-in-from-bottom-2 transition-all duration-300 ease-out hover:border-rose-200 hover:bg-rose-50/20 hover:shadow-[0_16px_38px_-26px_rgba(190,24,93,0.45)] focus-within:ring-4 focus-within:ring-rose-100 motion-reduce:animate-none"
                         style={{ animationDelay: `${Math.min(index * 45, 225)}ms` }}
                       >
                         <button
@@ -575,7 +572,7 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
               )}
             </div>
           ) : normalizedSearchQuery ? (
-            <Card className="rounded-[2rem] border-rose-100 bg-gradient-to-br from-white to-rose-50/50 p-10 text-center shadow-sm">
+            <Card className="rounded-[2rem] border-rose-100 bg-card p-10 text-center shadow-sm">
               <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-rose-100/70 text-rose-500">
                 <Search className="h-6 w-6" aria-hidden="true" />
               </span>
@@ -593,7 +590,7 @@ export function DailyDevotionsFeed({ onDevotionalClick, accessToken, projectId, 
               </Button>
             </Card>
           ) : (
-            <Card className="rounded-[2rem] border-rose-100 bg-gradient-to-br from-white to-rose-50/50 p-10 text-center shadow-sm">
+            <Card className="rounded-[2rem] border-rose-100 bg-card p-10 text-center shadow-sm">
               <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-rose-100/70 text-rose-500">
                 <BookOpen className="h-7 w-7" aria-hidden="true" />
               </span>
