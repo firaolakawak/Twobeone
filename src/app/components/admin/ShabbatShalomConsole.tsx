@@ -1,5 +1,8 @@
+import { useUiCopy } from "../../utils/uiTranslation";
+import { adminMessagingMessages } from "../../locales/adminMessaging";
+import { BrandLoader, LoadingMark } from "../BrandLoader";
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
-import { CalendarClock, CheckCircle2, Loader2, Mail, RefreshCw, Send, UserCheck, UserMinus, Users } from 'lucide-react';
+import { CalendarClock, CheckCircle2, Mail, RefreshCw, Send, UserCheck, UserMinus, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { projectId } from '../../utils/supabase/info';
 
@@ -45,6 +48,7 @@ interface RegisteredRecipient {
 const apiBase = `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/newsletter`;
 
 export function ShabbatShalomConsole({ accessToken }: ShabbatShalomConsoleProps) {
+  const tr = useUiCopy(adminMessagingMessages);
   const [overview, setOverview] = useState<AdminOverview | null>(null);
   const [preview, setPreview] = useState<NewsletterPreview | null>(null);
   const [recipients, setRecipients] = useState<RegisteredRecipient[]>([]);
@@ -97,7 +101,7 @@ export function ShabbatShalomConsole({ accessToken }: ShabbatShalomConsoleProps)
   const sendSelected = async (event: FormEvent) => {
     event.preventDefault();
     if (!accessToken || !selectedIds.size) return;
-    const confirmed = window.confirm(`Send the actual Shabbat Shalom edition to ${selectedIds.size} selected registered user(s) now?`);
+    const confirmed = window.confirm(tr('Send the actual Shabbat Shalom edition to {count} selected registered users now?', { count: selectedIds.size }));
     if (!confirmed) return;
     setSending(true);
     try {
@@ -108,10 +112,10 @@ export function ShabbatShalomConsole({ accessToken }: ShabbatShalomConsoleProps)
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || 'Unable to send Shabbat Shalom.');
-      toast.success(`Shabbat Shalom sent to ${data.sent || 0} user(s)${data.skipped ? `; ${data.skipped} skipped` : ''}.`);
+      toast.success(data.skipped ? tr('Shabbat Shalom sent to {sent} users; {skipped} skipped.', { sent: data.sent || 0, skipped: data.skipped }) : tr('Shabbat Shalom sent to {count} user(s).', { count: data.sent || 0 }));
       await loadConsole();
     } catch (sendError) {
-      toast.error(sendError instanceof Error ? sendError.message : 'Unable to send Shabbat Shalom.');
+      toast.error(tr('Unable to send Shabbat Shalom.'));
     } finally {
       setSending(false);
     }
@@ -154,77 +158,77 @@ export function ShabbatShalomConsole({ accessToken }: ShabbatShalomConsoleProps)
         <div className="admin-shabbat__title">
           <span className="admin-shabbat__icon"><Mail aria-hidden="true" /></span>
           <div>
-            <p className="admin-eyebrow">Weekly email operations</p>
-            <h2 id="shabbat-console-title">Shabbat Shalom</h2>
-            <p>Encouragement, Scripture, relationship guidance, appreciation, and TwoBeOne updates.</p>
+            <p className="admin-eyebrow">{tr("Weekly email operations")}</p>
+            <h2 id="shabbat-console-title">{tr("Shabbat Shalom")}</h2>
+            <p>{tr("Encouragement, Scripture, relationship guidance, appreciation, and TwoBeOne updates.")}</p>
           </div>
         </div>
         <div className="admin-shabbat__actions">
-          <span className="admin-shabbat__status"><CheckCircle2 aria-hidden="true" /> Scheduled</span>
+          <span className="admin-shabbat__status"><CheckCircle2 aria-hidden="true" /> {' '}{tr("Scheduled")}</span>
           <button type="button" className="admin-secondary-button" onClick={() => void loadConsole()} disabled={loading}>
-            <RefreshCw aria-hidden="true" /> {loading ? 'Refreshing…' : 'Refresh'}
+            {loading ? <LoadingMark /> : <RefreshCw aria-hidden="true" />} {loading ? tr("Refreshing…") : tr("Refresh")}
           </button>
         </div>
       </div>
 
-      {error && <div className="admin-shabbat__error" role="alert">{error}</div>}
+      {error && <div className="admin-shabbat__error" role="alert">{tr(error)}</div>}
 
       {loading && !overview ? (
-        <div className="admin-shabbat__loading"><Loader2 aria-hidden="true" /> Loading Shabbat Shalom…</div>
+        <BrandLoader className="admin-shabbat__loading" label={tr("Loading Shabbat Shalom…")} />
       ) : overview && preview ? (
         <>
           <div className="admin-shabbat__schedule">
             <CalendarClock aria-hidden="true" />
-            <div><strong>Automatic delivery</strong><span>{overview.schedule.label}</span></div>
+            <div><strong>{tr("Automatic delivery")}</strong><span>{tr(overview.schedule.label)}</span></div>
             {overview.lastCampaign?.weekKey && (
-              <small>Last: {overview.lastCampaign.weekKey} · {overview.lastCampaign.sent || 0} sent · {overview.lastCampaign.status}</small>
+              <small>{tr('Last: {week} · {sent} sent · {status}', { week: overview.lastCampaign.weekKey, sent: overview.lastCampaign.sent || 0, status: tr(overview.lastCampaign.status || '') })}</small>
             )}
           </div>
 
-          <div className="admin-shabbat__metrics" aria-label="Shabbat Shalom audience">
+          <div className="admin-shabbat__metrics" aria-label={tr("Shabbat Shalom audience")}>
             {metrics.map(({ label, value, icon: Icon }) => (
-              <article key={label}><Icon aria-hidden="true" /><span>{label}</span><strong>{value.toLocaleString()}</strong></article>
+              <article key={label}><Icon aria-hidden="true" /><span>{tr(label)}</span><strong>{value.toLocaleString()}</strong></article>
             ))}
           </div>
 
           <div className="admin-shabbat__workspace">
             <article className="admin-shabbat__preview">
-              <p className="admin-eyebrow">Edition preview · {preview.edition.weekKey}</p>
+              <p className="admin-eyebrow">{tr('Edition preview · {week}', { week: preview.edition.weekKey })}</p>
               <h3>{preview.edition.subject}</h3>
               <p>{preview.edition.encouragement}</p>
               <blockquote>“{preview.edition.scripture}” <cite>— {preview.edition.scriptureReference}</cite></blockquote>
               <dl>
-                <div><dt>Guidance</dt><dd>{preview.edition.guidance}</dd></div>
-                <div><dt>Weekly practice</dt><dd>{preview.edition.weeklyPractice}</dd></div>
-                <div><dt>Featured app tool</dt><dd>{preview.edition.appFeature}</dd></div>
+                <div><dt>{tr("Guidance")}</dt><dd>{preview.edition.guidance}</dd></div>
+                <div><dt>{tr("Weekly practice")}</dt><dd>{preview.edition.weeklyPractice}</dd></div>
+                <div><dt>{tr("Featured app tool")}</dt><dd>{preview.edition.appFeature}</dd></div>
               </dl>
             </article>
 
             <form className="admin-shabbat__delivery" onSubmit={sendSelected}>
-              <p className="admin-eyebrow">Actual delivery</p>
-              <h3>Select registered users</h3>
-              <p>Send the current edition now. Opted-out users and users already sent this week cannot be selected.</p>
-              <label htmlFor="shabbat-recipient-search">Search registered users</label>
-              <input id="shabbat-recipient-search" type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder="Name or email" />
+              <p className="admin-eyebrow">{tr("Actual delivery")}</p>
+              <h3>{tr("Select registered users")}</h3>
+              <p>{tr("Send the current edition now. Opted-out users and users already sent this week cannot be selected.")}</p>
+              <label htmlFor="shabbat-recipient-search">{tr("Search registered users")}</label>
+              <input id="shabbat-recipient-search" type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder={tr("Name or email")} />
               <div className="admin-shabbat__selection-actions">
-                <button type="button" onClick={selectVisible}>Select eligible shown</button>
-                <button type="button" onClick={() => setSelectedIds(new Set())}>Clear</button>
-                <strong>{selectedIds.size} selected</strong>
+                <button type="button" onClick={selectVisible}>{tr("Select eligible shown")}</button>
+                <button type="button" onClick={() => setSelectedIds(new Set())}>{tr("Clear")}</button>
+                <strong>{tr('{count} selected', { count: selectedIds.size })}</strong>
               </div>
-              <div className="admin-shabbat__recipient-list" role="group" aria-label="Registered email recipients">
+              <div className="admin-shabbat__recipient-list" role="group" aria-label={tr("Registered email recipients")}>
                 {visibleRecipients.length ? visibleRecipients.map(recipient => (
                   <label key={recipient.id} data-disabled={!recipient.eligible || undefined}>
                     <input type="checkbox" checked={selectedIds.has(recipient.id)} disabled={!recipient.eligible} onChange={() => toggleRecipient(recipient)} />
-                    <span><strong>{recipient.name || 'TwoBeOne user'}</strong><small>{recipient.email}</small></span>
-                    <em>{recipient.status === 'ready' ? 'Ready' : recipient.status === 'opted_out' ? 'Opted out' : 'Sent this week'}</em>
+                    <span><strong>{recipient.name || tr("TwoBeOne user")}</strong><small>{recipient.email}</small></span>
+                    <em>{recipient.status === 'ready' ? 'Ready' : recipient.status === 'opted_out' ? tr("Opted out") : tr("Sent this week")}</em>
                   </label>
-                )) : <p className="admin-empty">No registered users match this search.</p>}
+                )) : <p className="admin-empty">{tr("No registered users match this search.")}</p>}
               </div>
               <button className="admin-shabbat__send" type="submit" disabled={sending || !selectedIds.size}>
-                {sending ? <Loader2 className="admin-spin" aria-hidden="true" /> : <Send aria-hidden="true" />}
-                {sending ? 'Sending actual email…' : `Send now to ${selectedIds.size} selected`}
+                {sending ? <LoadingMark /> : <Send aria-hidden="true" />}
+                {sending ? tr("Sending actual email…") : `Send now to ${tr('{count} selected', { count: selectedIds.size })}`}
               </button>
-              <small>Manual recipients are recorded and will not receive this edition again from Saturday automation.</small>
+              <small>{tr("Manual recipients are recorded and will not receive this edition again from Saturday automation.")}</small>
             </form>
           </div>
         </>

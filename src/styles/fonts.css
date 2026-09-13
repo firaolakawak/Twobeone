@@ -1,1 +1,44 @@
-/* Noto Sans Ethiopic is loaded on demand by LanguageContext when the UI uses Amharic or Afaan Oromo. */
+/*
+ * Supplied Shiromeda Serif faces are self-hosted for Amharic. Restrict them to
+ * Ethiopic so Latin/Oromo keep their existing fonts, including mixed content.
+ * Noto remains a fallback for Ethiopic glyphs absent from the supplied faces.
+ * Asset provenance and original notices: ../assets/fonts/README.md.
+ */
+@font-face {
+  font-family: 'Shiromeda Serif';
+  font-style: normal;
+  font-weight: 400;
+  font-stretch: normal;
+  font-display: swap;
+  src: url('../assets/fonts/ShiromedaSerif-Regular.ttf') format('truetype');
+  unicode-range: U+1200-137F;
+}
+
+@font-face {
+  font-family: 'Shiromeda Serif';
+  font-style: normal;
+  font-weight: 700;
+  font-stretch: normal;
+  font-display: swap;
+  src: url('../assets/fonts/ShiromedaSerif-Bold.ttf') format('truetype');
+  unicode-range: U+1200-137F;
+}
+
+@font-face {
+  font-family: 'Noto Sans Ethiopic';
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: normal;
+  font-display: swap;
+  src: url('../assets/fonts/NotoSansEthiopic-ethiopic-wght.woff2') format('woff2');
+  unicode-range: U+030E, U+1200-1399, U+2D80-2DDE, U+AB01-AB2E,
+    U+1E7E0-1E7E6, U+1E7E8-1E7EB, U+1E7ED-1E7EE, U+1E7F0-1E7FE;
+}
+
+:root {
+  --font-ethiopic-faces: 'Shiromeda Serif', 'Noto Sans Ethiopic';
+  --font-ui: var(--font-ethiopic-faces), ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-ethiopic: var(--font-ui);
+}

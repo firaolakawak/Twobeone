@@ -1,3 +1,4 @@
+import { LoadingMark } from './BrandLoader';
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { Button } from './ui/button';
@@ -215,7 +216,7 @@ export function PushNotificationSetup({ userId, accessToken, onComplete, reminde
 
       // Request permission
       const permission = await requestNotificationPermission();
-      
+
       if (permission !== 'granted') {
         toast.error(t.notifications.permissionRequired + ' — ' + t.notifications.enableInSettings);
         setNotificationStatus('denied');
@@ -311,7 +312,7 @@ export function PushNotificationSetup({ userId, accessToken, onComplete, reminde
         variant="ghost"
         size="icon"
         onClick={() => setShowDialog(true)}
-        className={`h-8 w-8 ${isSubscribed ? 'text-success-700 hover:bg-success-50' : 'text-muted-foreground hover:bg-muted'}`}
+        className={`tbo-action h-8 w-8 ${isSubscribed ? 'text-success-700 hover:bg-success-50' : 'text-muted-foreground hover:bg-muted'}`}
         title={isSubscribed ? t.notifications.notificationsOn : t.notifications.enableNotifications}
         aria-label={isSubscribed ? t.notifications.notificationsOn : t.notifications.enableNotifications}
       >
@@ -326,11 +327,11 @@ export function PushNotificationSetup({ userId, accessToken, onComplete, reminde
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="tbo-dialog-title flex items-center gap-2">
               <Bell className="w-5 h-5" style={{ color: 'var(--primary)' }} />
               {t.notifications.pushNotifications}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="tbo-supporting">
               {t.notifications.stayConnected}
             </DialogDescription>
           </DialogHeader>
@@ -342,28 +343,28 @@ export function PushNotificationSetup({ userId, accessToken, onComplete, reminde
                   <Bell className="h-5 w-5 text-primary-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground">{t.notifications.enableNotifications}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                  <h3 className="tbo-card-title text-foreground">{t.notifications.enableNotifications}</h3>
+                  <p className="tbo-supporting mt-1 text-muted-foreground">
                     {notificationStatus === 'denied' ? t.notifications.enableInSettings : t.notifications.stayConnected}
                   </p>
                 </div>
               </div>
               {notificationStatus === 'denied' ? (
-                <Button variant="outline" className="w-full" onClick={() => setShowDialog(false)}>
+                <Button variant="outline" className="tbo-action w-full" onClick={() => setShowDialog(false)}>
                   {t.common.close}
                 </Button>
               ) : (
                 <div className="flex gap-3">
-                  <Button variant="outline" className="flex-1" onClick={() => setShowDialog(false)}>
+                  <Button variant="outline" className="tbo-action flex-1" onClick={() => setShowDialog(false)}>
                     {t.common.cancel}
                   </Button>
                   <Button
-                    className="flex-1"
+                    className="tbo-action flex-1"
                     style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
                     onClick={handleEnableNotifications}
                     disabled={isLoading}
                   >
-                    {isLoading ? t.common.loading : t.notifications.enableNotifications}
+                    {isLoading ? <><LoadingMark />{t.common.loading}</> : t.notifications.enableNotifications}
                   </Button>
                 </div>
               )}
@@ -384,12 +385,12 @@ export function PushNotificationSetup({ userId, accessToken, onComplete, reminde
                     )}
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-sm mb-1">
+                    <h3 className="tbo-card-title mb-1">
                       {isSubscribed ? t.notifications.notificationsOn :
                        notificationStatus === 'denied' ? t.notifications.permissionRequired :
                        t.notifications.enableNotifications}
                     </h3>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="tbo-supporting text-muted-foreground">
                       {isSubscribed ? t.notifications.youllBeNotified :
                        notificationStatus === 'denied' ? t.notifications.enableInSettings :
                        t.notifications.stayConnected}
@@ -401,7 +402,7 @@ export function PushNotificationSetup({ userId, accessToken, onComplete, reminde
 
             {/* Benefits */}
             <div className="space-y-3">
-              <h4 className="font-semibold text-sm">{t.notifications.youllBeNotified}</h4>
+              <h4 className="tbo-card-title">{t.notifications.youllBeNotified}</h4>
               <div className="space-y-2 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <Smartphone className="w-4 h-4" style={{ color: 'var(--primary)' }} />
@@ -429,30 +430,30 @@ export function PushNotificationSetup({ userId, accessToken, onComplete, reminde
             {/* Action Buttons */}
             <div className="flex gap-3 pt-4">
               {isSubscribed ? (
-                <Button variant="outline" className="w-full" onClick={() => setShowDialog(false)}>
+                <Button variant="outline" className="tbo-action w-full" onClick={() => setShowDialog(false)}>
                   {t.common.close}
                 </Button>
               ) : notificationStatus === 'denied' ? (
                 <div className="w-full">
-                  <p className="text-sm text-muted-foreground mb-3">
+                  <p className="tbo-supporting text-muted-foreground mb-3">
                     {t.notifications.enableInSettings}
                   </p>
-                  <Button variant="outline" className="w-full" onClick={() => setShowDialog(false)}>
+                  <Button variant="outline" className="tbo-action w-full" onClick={() => setShowDialog(false)}>
                     {t.common.close}
                   </Button>
                 </div>
               ) : (
                 <>
-                  <Button variant="outline" className="flex-1" onClick={() => setShowDialog(false)}>
+                  <Button variant="outline" className="tbo-action flex-1" onClick={() => setShowDialog(false)}>
                     {t.common.cancel}
                   </Button>
                   <Button
-                    className="flex-1"
+                    className="tbo-action flex-1"
                     style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
                     onClick={handleEnableNotifications}
                     disabled={isLoading}
                   >
-                    {isLoading ? t.common.loading : t.notifications.enableNotifications}
+                    {isLoading ? <><LoadingMark />{t.common.loading}</> : t.notifications.enableNotifications}
                   </Button>
                 </>
               )}

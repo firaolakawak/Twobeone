@@ -1,3 +1,5 @@
+import { useUiCopy } from "../../utils/uiTranslation";
+import { adminContentMessages } from "../../locales/adminContent";
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { Plus, Edit, Trash2, Search, Calendar, BookOpen, RefreshCw, Upload, Music, X, Play, Pause, Copy, FileJson, CheckCircle2, SlidersHorizontal, Headphones, Languages, Sparkles, ArrowUpDown, Eye, Library } from 'lucide-react';
 import { DevotionalsImportExport } from './DevotionalsImportExport';
@@ -36,6 +38,7 @@ interface DevotionalsManagerProps {
 }
 
 export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
+  const tr = useUiCopy(adminContentMessages);
   const [searchQuery, setSearchQuery] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingDevotional, setEditingDevotional] = useState<Devotional | null>(null);
@@ -104,7 +107,7 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
       }
     } catch (error) {
       console.error('Failed to load devotionals:', error);
-      toast.error('Failed to load devotionals');
+      toast.error(tr("Failed to load devotionals"));
       setDevotionals([]);
     } finally {
       setIsLoading(false);
@@ -144,11 +147,11 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
       // audioUrl intentionally excluded — audio stays on original
     });
     setIsDialogOpen(true);
-    toast.info('Devotional duplicated — review and save as a new draft.');
+    toast.info(tr("Devotional duplicated — review and save as a new draft."));
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this devotional?')) {
+    if (!confirm(tr("Are you sure you want to delete this devotional?"))) {
       return;
     }
 
@@ -165,13 +168,13 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
 
       if (response.ok) {
         setDevotionals(devotionals.filter(d => d.id !== id));
-        toast.success('Devotional deleted successfully');
+        toast.success(tr("Devotional deleted successfully"));
       } else {
         throw new Error('Failed to delete devotional');
       }
     } catch (error) {
       console.error('Failed to delete devotional:', error);
-      toast.error('Failed to delete devotional');
+      toast.error(tr("Failed to delete devotional"));
     }
   };
 
@@ -203,7 +206,7 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
           setDevotionals(devotionals.map(d => 
             d.id === editingDevotional.id ? { ...d, ...submissionData } as Devotional : d
           ));
-          toast.success('Devotional updated successfully');
+          toast.success(tr("Devotional updated successfully"));
         } else {
           throw new Error('Failed to update devotional');
         }
@@ -228,7 +231,7 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
             id: devotionalId,
           } as Devotional;
           setDevotionals([newDevotional, ...devotionals]);
-          toast.success('Devotional created successfully');
+          toast.success(tr("Devotional created successfully"));
         } else {
           throw new Error('Failed to create devotional');
         }
@@ -251,7 +254,7 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
       loadDevotionals();
     } catch (error) {
       console.error('Failed to save devotional:', error);
-      toast.error('Failed to save devotional');
+      toast.error(tr("Failed to save devotional"));
     }
   };
 
@@ -260,13 +263,13 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
 
     // Validate file type
     if (!file.type.startsWith('audio/')) {
-      toast.error('Please select an audio file');
+      toast.error(tr("Please select an audio file"));
       return;
     }
 
     // Validate file size (50MB)
     if (file.size > 50 * 1024 * 1024) {
-      toast.error('File size must be less than 50MB');
+      toast.error(tr("File size must be less than 50MB"));
       return;
     }
 
@@ -310,18 +313,18 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
           : d
       ));
 
-      toast.success('Audio uploaded successfully! 🎵');
+      toast.success(tr("Audio uploaded successfully! 🎵"));
       await loadDevotionals(); // Refresh to get updated data
     } catch (error: any) {
       console.error('Audio upload error:', error);
-      toast.error(error.message || 'Failed to upload audio');
+      toast.error(tr('Failed to upload audio'));
     } finally {
       setUploadingAudioFor(null);
     }
   };
 
   const handleDeleteAudio = async (devotionalId: string) => {
-    if (!confirm('Are you sure you want to delete this audio file?')) {
+    if (!confirm(tr("Are you sure you want to delete this audio file?"))) {
       return;
     }
 
@@ -347,11 +350,11 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
           : d
       ));
 
-      toast.success('Audio deleted successfully');
+      toast.success(tr("Audio deleted successfully"));
       await loadDevotionals(); // Refresh
     } catch (error) {
       console.error('Failed to delete audio:', error);
-      toast.error('Failed to delete audio');
+      toast.error(tr("Failed to delete audio"));
     }
   };
 
@@ -418,10 +421,10 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
       }
       const { summary } = await res.json();
       setUploadSummary(summary);
-      toast.success(`Saved: ${summary.created} created, ${summary.updated} updated, ${summary.skipped} skipped`);
+      toast.success(tr('Saved: {created} created, {updated} updated, {skipped} skipped', { created: summary.created, updated: summary.updated, skipped: summary.skipped }));
       loadDevotionals();
     } catch (err: any) {
-      toast.error(err.message || 'Upload failed');
+      toast.error(tr('Upload failed'));
     } finally {
       setIsUploading(false);
     }
@@ -530,7 +533,7 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold mb-2 text-[24px]">Daily Devotionals</h2>
+          <h2 className="text-xl sm:text-2xl font-bold mb-2 text-[24px]">{tr("Daily Devotionals")}</h2>
           <p className="text-sm text-muted-foreground text-[15px]">Manage daily devotional content for couples</p>
         </div>
 
@@ -560,7 +563,7 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
               <div className="space-y-4 pt-2">
                 {/* Language selector */}
                 <div>
-                  <Label className="text-sm font-semibold mb-2 block">Content Language</Label>
+                  <Label className="text-sm font-semibold mb-2 block">{tr("Content Language")}</Label>
                   <div className="flex flex-wrap gap-2">
                     {([
                       { code: 'en' as const, label: 'English', flag: '🇺🇸' },
@@ -670,7 +673,7 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
 
                 {/* Action buttons */}
                 <div className="flex gap-2 justify-end pt-2">
-                  <Button variant="outline" size="sm" onClick={() => setIsUploadDialogOpen(false)}>Cancel</Button>
+                  <Button variant="outline" size="sm" onClick={() => setIsUploadDialogOpen(false)}>{tr("Cancel")}</Button>
                   <Button
                     size="sm"
                     className="bg-primary-600 hover:bg-primary-700"
@@ -678,9 +681,9 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
                     disabled={!uploadData || isUploading}
                   >
                     {isUploading ? (
-                      <><RefreshCw className="w-4 h-4 mr-2 animate-spin" />Saving…</>
+                      <><RefreshCw className="w-4 h-4 mr-2 animate-spin" />{tr("Saving…")}</>
                     ) : (
-                      <><Upload className="w-4 h-4 mr-2" />Save {uploadData?.length ?? 0} Devotionals</>
+                      <><Upload className="w-4 h-4 mr-2" />{tr("Save")}{' '}{uploadData?.length ?? 0} {' '}{tr("Devotionals")}</>
                     )}
                   </Button>
                 </div>
@@ -743,21 +746,21 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="status" className="text-xs sm:text-sm">Status</Label>
+                    <Label htmlFor="status" className="text-xs sm:text-sm">{tr("Status")}</Label>
                     <select
                       id="status"
                       value={formData.status}
                       onChange={(e) => setFormData({ ...formData, status: e.target.value as 'published' | 'draft' })}
                       className="w-full h-10 px-3 rounded-md border border-border text-xs sm:text-sm"
                     >
-                      <option value="draft">Draft</option>
-                      <option value="published">Published</option>
+                      <option value="draft">{tr("Draft")}</option>
+                      <option value="published">{tr("Published")}</option>
                     </select>
                   </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="title" className="text-xs sm:text-sm">Title</Label>
+                  <Label htmlFor="title" className="text-xs sm:text-sm">{tr("Title")}</Label>
                   <Input
                     id="title"
                     value={formData.title}
@@ -782,7 +785,7 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
                 </div>
 
                 <div>
-                  <Label htmlFor="reference" className="text-xs sm:text-sm">Reference</Label>
+                  <Label htmlFor="reference" className="text-xs sm:text-sm">{tr("Reference")}</Label>
                   <Input
                     id="reference"
                     value={formData.reference}
@@ -794,7 +797,7 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
                 </div>
 
                 <div>
-                  <Label htmlFor="reflection" className="text-xs sm:text-sm">Reflection</Label>
+                  <Label htmlFor="reflection" className="text-xs sm:text-sm">{tr("Reflection")}</Label>
                   <Textarea
                     id="reflection"
                     value={formData.reflection}
@@ -821,11 +824,9 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
 
                 <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
                   <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} className="w-full sm:w-auto" size="sm">
-                    Cancel
-                  </Button>
+                    {tr("Cancel")}</Button>
                   <Button type="submit" className="bg-primary-600 hover:bg-primary-700 w-full sm:w-auto" size="sm">
-                    {editingDevotional ? 'Update' : 'Create'} Devotional
-                  </Button>
+                    {editingDevotional ? 'Update' : tr("Create")} {tr("Devotional")}</Button>
                 </div>
               </form>
             </ScrollArea>
@@ -853,7 +854,7 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
               <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-success-700" />
             </div>
             <div>
-              <p className="text-xs sm:text-sm text-muted-foreground font-bold text-[14px]">Published</p>
+              <p className="text-xs sm:text-sm text-muted-foreground font-bold text-[14px]">{tr("Published")}</p>
               <p className="text-xl sm:text-2xl font-semibold">{devotionals.filter(d => d.status === 'published').length}</p>
             </div>
           </div>
@@ -891,8 +892,7 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
         </div>
         <Button variant="outline" onClick={loadDevotionals} size="sm" className="w-full sm:w-auto">
           <RefreshCw className="w-4 h-4 mr-2" />
-          Refresh
-        </Button>
+          {tr("Refresh")}</Button>
       </div>
 
       {/* Devotionals List */}
@@ -986,7 +986,7 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
                     variant="outline"
                     onClick={() => handleEdit(devotional)}
                     className="text-xs"
-                    title="Edit"
+                    title={tr("Edit")}
                   >
                     <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
                   </Button>
@@ -995,7 +995,7 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
                     variant="outline"
                     onClick={() => handleDuplicate(devotional)}
                     className="text-xs bg-sky-50 hover:bg-sky-100 text-sky-700 border-sky-200"
-                    title="Duplicate"
+                    title={tr("Duplicate")}
                   >
                     <Copy className="w-3 h-3 sm:w-4 sm:h-4" />
                   </Button>
@@ -1004,7 +1004,7 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
                     variant="outline"
                     onClick={() => handleDelete(devotional.id)}
                     className="text-error-500 hover:bg-error-50 text-xs"
-                    title="Delete"
+                    title={tr("Delete")}
                   >
                     <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                   </Button>
@@ -1016,7 +1016,7 @@ export function DevotionalsManager({ accessToken }: DevotionalsManagerProps) {
           {filteredDevotionals.length === 0 && (
             <div className="text-center py-12">
               <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">No devotionals found</p>
+              <p className="text-muted-foreground">{tr("No devotionals found")}</p>
               <p className="text-sm text-muted-foreground mt-2">
                 {searchQuery ? 'Try a different search term' : 'Create your first devotional to get started'}
               </p>

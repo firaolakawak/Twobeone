@@ -1,0 +1,207 @@
+{
+  "date": "2026-09-13",
+  "environment": "Windows Edge;390px viewport;actual application CSS;mock dashboard data",
+  "defaultHeadingReproduction": {
+    "a": {
+      "text": "Equivalent heading",
+      "family": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "20px",
+      "weight": "500",
+      "lineHeight": "30px",
+      "tracking": "normal"
+    },
+    "b": {
+      "text": "Equivalent heading",
+      "family": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "16px",
+      "weight": "400",
+      "lineHeight": "24px",
+      "tracking": "normal"
+    }
+  },
+  "landing": {
+    ".launch-landing": {
+      "text": "Skip to content A new chapter for your relationship.Meet TwoBeOne TwoBeOne.The appHow it w",
+      "family": "\"Avenir Next\", Avenir, \"Segoe UI\", sans-serif",
+      "size": "16px",
+      "weight": "400",
+      "lineHeight": "25.6px",
+      "tracking": "normal"
+    },
+    ".ll-hero h1": {
+      "text": "Love is a journey.Grow together.",
+      "family": "Georgia, \"Times New Roman\", serif",
+      "size": "37.05px",
+      "weight": "400",
+      "lineHeight": "40.755px",
+      "tracking": "-1.8525px"
+    },
+    ".ll-hero-copy .ll-eyebrow": {
+      "text": "A LITTLE FAITH. A LITTLE TIME. A DEEPER LOVE.",
+      "family": "\"Avenir Next\", Avenir, \"Segoe UI\", sans-serif",
+      "size": "6.8px",
+      "weight": "650",
+      "lineHeight": "10.88px",
+      "tracking": "0.816px"
+    },
+    ".ll-nav .ll-button": {
+      "text": "Get started",
+      "family": "\"Avenir Next\", Avenir, \"Segoe UI\", sans-serif",
+      "size": "10px",
+      "weight": "600",
+      "lineHeight": "14px",
+      "tracking": "normal"
+    },
+    ".ll-hero-actions .ll-text-link": {
+      "text": "Open the web app",
+      "family": "\"Avenir Next\", Avenir, \"Segoe UI\", sans-serif",
+      "size": "10px",
+      "weight": "600",
+      "lineHeight": "16px",
+      "tracking": "normal"
+    },
+    ".ll-hero-notes": {
+      "text": "Free to get started Made for the two of you",
+      "family": "\"Avenir Next\", Avenir, \"Segoe UI\", sans-serif",
+      "size": "8px",
+      "weight": "400",
+      "lineHeight": "12.8px",
+      "tracking": "normal"
+    },
+    ".ll-hero p": {
+      "text": "Make room for what matters. A shared space for you and your partner to connect, pray, and ",
+      "family": "\"Avenir Next\", Avenir, \"Segoe UI\", sans-serif",
+      "size": "13px",
+      "weight": "400",
+      "lineHeight": "24.05px",
+      "tracking": "normal"
+    }
+  },
+  "languageFonts": {
+    "en": {
+      "computedFamily": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "latinRendered": [
+        {
+          "familyName": "Segoe UI",
+          "postScriptName": "SegoeUI",
+          "isCustomFont": false,
+          "glyphCount": 25
+        }
+      ],
+      "ethiopicRendered": [
+        {
+          "familyName": "Nyala",
+          "postScriptName": "Nyala-Regular",
+          "isCustomFont": false,
+          "glyphCount": 15
+        },
+        {
+          "familyName": "Segoe UI",
+          "postScriptName": "SegoeUI",
+          "isCustomFont": false,
+          "glyphCount": 2
+        }
+      ],
+      "oromoRendered": [
+        {
+          "familyName": "Segoe UI",
+          "postScriptName": "SegoeUI",
+          "isCustomFont": false,
+          "glyphCount": 29
+        }
+      ],
+      "notoFaces": [
+        {
+          "family": "Noto Sans Ethiopic",
+          "status": "unloaded"
+        }
+      ]
+    },
+    "am": {
+      "computedFamily": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "latinRendered": [
+        {
+          "familyName": "Segoe UI",
+          "postScriptName": "SegoeUI",
+          "isCustomFont": false,
+          "glyphCount": 25
+        }
+      ],
+      "ethiopicRendered": [
+        {
+          "familyName": "Nyala",
+          "postScriptName": "Nyala-Regular",
+          "isCustomFont": false,
+          "glyphCount": 15
+        },
+        {
+          "familyName": "Segoe UI",
+          "postScriptName": "SegoeUI",
+          "isCustomFont": false,
+          "glyphCount": 2
+        }
+      ],
+      "oromoRendered": [
+        {
+          "familyName": "Segoe UI",
+          "postScriptName": "SegoeUI",
+          "isCustomFont": false,
+          "glyphCount": 29
+        }
+      ],
+      "notoFaces": [
+        {
+          "family": "Noto Sans Ethiopic",
+          "status": "unloaded"
+        }
+      ]
+    },
+    "om": {
+      "computedFamily": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "latinRendered": [
+        {
+          "familyName": "Segoe UI",
+          "postScriptName": "SegoeUI",
+          "isCustomFont": false,
+          "glyphCount": 25
+        }
+      ],
+      "ethiopicRendered": [
+        {
+          "familyName": "Nyala",
+          "postScriptName": "Nyala-Regular",
+          "isCustomFont": false,
+          "glyphCount": 15
+        },
+        {
+          "familyName": "Segoe UI",
+          "postScriptName": "SegoeUI",
+          "isCustomFont": false,
+          "glyphCount": 2
+        }
+      ],
+      "oromoRendered": [
+        {
+          "familyName": "Segoe UI",
+          "postScriptName": "SegoeUI",
+          "isCustomFont": false,
+          "glyphCount": 29
+        }
+      ],
+      "notoFaces": [
+        {
+          "family": "Noto Sans Ethiopic",
+          "status": "unloaded"
+        }
+      ]
+    }
+  },
+  "runtimeErrors": [],
+  "networkLimitations": [
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wdth,wght@75..125,100..900&display=swap",
+      "error": "net::ERR_BLOCKED_BY_ORB",
+      "type": "Stylesheet"
+    }
+  ]
+}

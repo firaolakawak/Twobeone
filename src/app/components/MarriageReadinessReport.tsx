@@ -1,7 +1,13 @@
+import { formatUiDate } from '../utils/uiDateTime';
+import { UI_LOCALES, useUiCopy } from '../utils/uiTranslation';
+import { useCurrentLanguage } from '../utils/languageStore';
+import { BrandLoader, LoadingMark } from './BrandLoader';
+import { guidanceMessages } from '../locales/guidance';
+import { BackButton } from './BackButton';
 import { useState, useEffect } from 'react';
 import {
-  ArrowLeft, RefreshCw, Printer, Heart, BookOpen, MessageCircle,
-  Star, Activity, CheckCircle2, Lock, Award, Loader2, AlertCircle,
+  RefreshCw, Printer, Heart, BookOpen, MessageCircle,
+  Star, Activity, CheckCircle2, Lock, Award, AlertCircle,
 } from 'lucide-react';
 import { marriageReadiness } from '../utils/api';
 import { toast } from 'sonner';
@@ -74,8 +80,8 @@ function CategoryBar({ label, score, icon: Icon, insight, color }: {
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--foreground)' }}>{label}</span>
-            <span style={{ fontSize: 13, fontWeight: 700, color }}>{score}%</span>
+            <span className="tbo-label" style={{   color: 'var(--foreground)' }}>{label}</span>
+            <span className="tbo-label" style={{   color }}>{score}%</span>
           </div>
           <div style={{ height: 5, borderRadius: 3, background: 'var(--border)', overflow: 'hidden' }}>
             <div style={{ height: '100%', width: `${score}%`, background: color, borderRadius: 3, transition: 'width 1.2s ease' }} />
@@ -83,7 +89,7 @@ function CategoryBar({ label, score, icon: Icon, insight, color }: {
         </div>
       </div>
       {insight && (
-        <p style={{ fontSize: 12, color: 'var(--muted-foreground)', margin: '4px 0 0 42px', lineHeight: 1.5 }}>{insight}</p>
+        <p className="tbo-caption" style={{  color: 'var(--muted-foreground)', margin: '4px 0 0 42px',  }}>{insight}</p>
       )}
     </div>
   );
@@ -102,6 +108,8 @@ const scoreAccent = (score: number) =>
   'var(--warning-500, #f59e0b)';
 
 export function MarriageReadinessReport({ onBack }: Props) {
+  const tr = useUiCopy(guidanceMessages);
+  const language = useCurrentLanguage();
   const [result, setResult] = useState<ReadinessResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [regenerating, setRegenerating] = useState(false);
@@ -113,11 +121,11 @@ export function MarriageReadinessReport({ onBack }: Props) {
     try {
       const data = await marriageReadiness.get(force);
       setResult(data.result);
-      if (force) toast.success('Report refreshed!');
+      if (force) toast.success(tr("Report refreshed!"));
     } catch (err: any) {
-      const msg = err.message || 'Failed to load report';
+      const msg = 'Failed to load report';
       setError(msg);
-      toast.error(msg);
+      toast.error(tr(msg));
     } finally {
       setLoading(false);
       setRegenerating(false);
@@ -127,21 +135,20 @@ export function MarriageReadinessReport({ onBack }: Props) {
   useEffect(() => { fetchReport(); }, []);
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, background: 'var(--background)' }}>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-      <Loader2 style={{ width: 40, height: 40, color: 'var(--primary)', animation: 'spin 1s linear infinite' }} />
-      <p style={{ color: 'var(--muted-foreground)', fontSize: 14 }}>Analysing your journey together…</p>
-      <p style={{ color: 'var(--muted-foreground)', fontSize: 12 }}>This may take up to 30 seconds</p>
+    <div className="relative" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, background: 'var(--background)' }}>
+      <BackButton label={tr("Back")} onClick={onBack} className="absolute left-4 top-4" />
+      <BrandLoader label={tr("Analysing your journey together…")} />
+      <p className="tbo-caption" style={{ color: 'var(--muted-foreground)',  }}>{tr("This may take up to 30 seconds")}</p>
     </div>
   );
 
   if (error) return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24, background: 'var(--background)' }}>
       <AlertCircle style={{ width: 40, height: 40, color: 'var(--destructive, #ef4444)' }} />
-      <p style={{ color: 'var(--foreground)', fontWeight: 600, margin: 0 }}>Could not load report</p>
-      <p style={{ color: 'var(--muted-foreground)', fontSize: 13, textAlign: 'center', maxWidth: 300 }}>{error}</p>
-      <button onClick={() => fetchReport()} style={{ padding: '10px 24px', borderRadius: 8, background: 'var(--primary)', color: 'var(--primary-foreground)', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Try Again</button>
-      <button onClick={onBack} style={{ padding: '10px 24px', borderRadius: 8, background: 'transparent', color: 'var(--muted-foreground)', border: '1px solid var(--border)', cursor: 'pointer' }}>Go Back</button>
+      <p className="tbo-card-title" style={{ color: 'var(--foreground)',  margin: 0 }}>{tr("Could not load report")}</p>
+      <p className="tbo-supporting" style={{ color: 'var(--muted-foreground)',  textAlign: 'center', maxWidth: 300 }}>{tr(error)}</p>
+      <button className="tbo-action" onClick={() => fetchReport()} style={{ padding: '10px 24px', borderRadius: 8, background: 'var(--primary)', color: 'var(--primary-foreground)', border: 'none', cursor: 'pointer',  }}>{tr("Try Again")}</button>
+      <BackButton label={tr("Back")} onClick={onBack} showLabel />
     </div>
   );
 
@@ -149,8 +156,8 @@ export function MarriageReadinessReport({ onBack }: Props) {
 
   const { score, eligible, categories, couple, report } = result;
   const accent = scoreAccent(score);
-  const label = readinessLabel(score);
-  const certDate = new Date(result.generatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const label = tr(readinessLabel(score));
+  const certDate = formatUiDate(new Date(result.generatedAt), UI_LOCALES[language], { year: 'numeric', month: 'long', day: 'numeric' });
 
   return (
     <div className="marriage-report-print-root" style={{ minHeight: '100vh', background: 'var(--background)' }}>
@@ -234,20 +241,15 @@ export function MarriageReadinessReport({ onBack }: Props) {
         background: 'var(--background)', borderBottom: '1px solid var(--border)',
         padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10,
       }}>
-        <button onClick={onBack} style={{
+        <BackButton label={tr("Back")} onClick={onBack} />
+        <h1 className="tbo-page-title" style={{ flex: 1, margin: 0,   color: 'var(--foreground)' }}>{tr("Marriage Readiness Report")}</h1>
+        <button onClick={() => fetchReport(true)} disabled={regenerating} title={tr("Regenerate")} style={{
           width: 36, height: 36, borderRadius: '50%', border: 'none',
           background: 'var(--muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <ArrowLeft style={{ width: 18, height: 18, color: 'var(--foreground)' }} />
+          {regenerating ? <LoadingMark /> : <RefreshCw style={{ width: 15, height: 15, color: 'var(--muted-foreground)' }} />}
         </button>
-        <h1 style={{ flex: 1, margin: 0, fontSize: 16, fontWeight: 700, color: 'var(--foreground)' }}>Marriage Readiness Report</h1>
-        <button onClick={() => fetchReport(true)} disabled={regenerating} title="Regenerate" style={{
-          width: 36, height: 36, borderRadius: '50%', border: 'none',
-          background: 'var(--muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <RefreshCw style={{ width: 15, height: 15, color: 'var(--muted-foreground)', animation: regenerating ? 'spin 1s linear infinite' : 'none' }} />
-        </button>
-        <button onClick={() => window.print()} title="Print" style={{
+        <button onClick={() => window.print()} title={tr("Print")} style={{
           width: 36, height: 36, borderRadius: '50%', border: 'none',
           background: 'var(--muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
@@ -263,15 +265,15 @@ export function MarriageReadinessReport({ onBack }: Props) {
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 14 }}>
               <ScoreRing score={score} size={140} accent={accent} />
             </div>
-            <h2 style={{ margin: '0 0 6px', fontSize: 20, fontWeight: 700, color: 'var(--foreground)' }}>
+            <h2 className="tbo-section-title" style={{ margin: '0 0 6px',   color: 'var(--foreground)' }}>
               {couple.userName} & {couple.partnerName}
             </h2>
-            <span style={{
+            <span className="tbo-label" style={{
               display: 'inline-block', padding: '3px 14px', borderRadius: 20,
-              background: 'var(--muted)', fontSize: 13, fontWeight: 600, color: accent,
+              background: 'var(--muted)',   color: accent,
             }}>{label}</span>
             {report?.headline && (
-              <p style={{ margin: '12px 0 0', fontSize: 14, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.6 }}>
+              <p className="tbo-supporting" style={{ margin: '12px 0 0',  color: 'var(--muted-foreground)', fontStyle: 'italic',  }}>
                 "{report.headline}"
               </p>
             )}
@@ -286,10 +288,10 @@ export function MarriageReadinessReport({ onBack }: Props) {
             {eligible
               ? <CheckCircle2 style={{ width: 18, height: 18, color: 'var(--success-500, #22c55e)', flexShrink: 0 }} />
               : <Lock style={{ width: 18, height: 18, color: 'var(--muted-foreground)', flexShrink: 0 }} />}
-            <p style={{ margin: 0, fontSize: 12, color: 'var(--foreground)', lineHeight: 1.5 }}>
+            <p className="tbo-caption" style={{ margin: 0,  color: 'var(--foreground)',  }}>
               {eligible
-                ? 'Certificate eligible — you have demonstrated readiness for marriage.'
-                : `Certificate unlocks at 75% overall + 80% modules. Currently: ${score}% overall, ${categories.modules.score}% modules.`}
+                ? tr('Certificate eligible — you have demonstrated readiness for marriage.')
+                : tr('Certificate unlocks at 75% overall + 80% modules. Currently: {score}% overall, {modules}% modules.', { score, modules: categories.modules.score })}
             </p>
           </div>
         </div>
@@ -297,38 +299,38 @@ export function MarriageReadinessReport({ onBack }: Props) {
         {/* Narrative */}
         {report?.overallNarrative && (
           <div className="report-section" style={{ margin: '12px 16px 0', padding: '18px', borderRadius: 14, border: '1px solid var(--border)', background: 'var(--background)' }}>
-            <p style={{ margin: 0, fontSize: 14, color: 'var(--foreground)', lineHeight: 1.75 }}>{report.overallNarrative}</p>
+            <p className="tbo-supporting" style={{ margin: 0,  color: 'var(--foreground)',  }}>{report.overallNarrative}</p>
           </div>
         )}
 
         {/* Category breakdown */}
         <div style={{ margin: '12px 16px 0', borderRadius: 14, border: '1px solid var(--border)', overflow: 'hidden', background: 'var(--background)' }}>
           <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', background: 'var(--muted)' }}>
-            <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: 'var(--foreground)' }}>Activity Breakdown</p>
+            <p className="tbo-card-title" style={{ margin: 0,   color: 'var(--foreground)' }}>{tr("Activity Breakdown")}</p>
           </div>
-          <CategoryBar label="Daily Devotions" score={categories.devotional.score} icon={BookOpen} color="var(--primary)" insight={report?.devotionalInsight} />
-          <CategoryBar label="Prayer Life Together" score={categories.prayer.score} icon={Heart} color="var(--chart-2, #8b5cf6)" insight={report?.prayerInsight} />
-          <CategoryBar label="Knowing Each Other (Q&A)" score={categories.qa.score} icon={MessageCircle} color="var(--chart-3, #059669)" insight={report?.qaInsight} />
-          <CategoryBar label="Pre-Marriage Modules" score={categories.modules.score} icon={Star} color="var(--chart-4, #d97706)" insight={report?.moduleInsight} />
+          <CategoryBar label={tr("Daily Devotions")} score={categories.devotional.score} icon={BookOpen} color="var(--primary)" insight={report?.devotionalInsight} />
+          <CategoryBar label={tr("Prayer Life Together")} score={categories.prayer.score} icon={Heart} color="var(--chart-2, #8b5cf6)" insight={report?.prayerInsight} />
+          <CategoryBar label={tr("Knowing Each Other (Q&A)")} score={categories.qa.score} icon={MessageCircle} color="var(--chart-3, #059669)" insight={report?.qaInsight} />
+          <CategoryBar label={tr("Pre-Marriage Modules")} score={categories.modules.score} icon={Star} color="var(--chart-4, #d97706)" insight={report?.moduleInsight} />
           <div style={{ borderBottom: 'none' }}>
-            <CategoryBar label="Daily Spiritual Activity" score={categories.activity.score} icon={Activity} color="var(--chart-5, #0891b2)" insight={report?.activityInsight} />
+            <CategoryBar label={tr("Daily Spiritual Activity")} score={categories.activity.score} icon={Activity} color="var(--chart-5, #0891b2)" insight={report?.activityInsight} />
           </div>
         </div>
 
         {/* Stats grid */}
         <div className="report-section" style={{ margin: '12px 16px 0', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
           {[
-            { label: 'Avg Streak', value: `${categories.devotional.streak}d`, sub: 'devotional' },
-            { label: 'Prayers', value: `${categories.prayer.total}`, sub: `${categories.prayer.answered} answered` },
-            { label: 'Q&A Answered', value: `${categories.qa.totalUser + categories.qa.totalPartner}`, sub: `${categories.qa.shared} shared` },
-            { label: 'Lessons Done', value: `${categories.modules.completed}/${categories.modules.total}`, sub: 'pre-marriage' },
-            { label: 'Devotions', value: `${categories.devotional.completions}`, sub: 'completed' },
-            { label: 'Daily Entries', value: `${categories.activity.entries}`, sub: 'mood + journal' },
+            { label: tr('Avg Streak'), value: tr('{count} days', { count: categories.devotional.streak }), sub: tr('devotional') },
+            { label: tr('Prayers'), value: `${categories.prayer.total}`, sub: tr('{count} answered', { count: categories.prayer.answered }) },
+            { label: tr('Q&A Answered'), value: `${categories.qa.totalUser + categories.qa.totalPartner}`, sub: tr('{count} shared', { count: categories.qa.shared }) },
+            { label: tr('Lessons Done'), value: `${categories.modules.completed}/${categories.modules.total}`, sub: tr('pre-marriage') },
+            { label: tr("Devotions"), value: `${categories.devotional.completions}`, sub: tr('completed') },
+            { label: tr('Daily Entries'), value: `${categories.activity.entries}`, sub: tr('mood + journal') },
           ].map(({ label, value, sub }) => (
             <div key={label} style={{ padding: '12px 10px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--background)', textAlign: 'center' }}>
-              <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--foreground)', lineHeight: 1 }}>{value}</div>
-              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--foreground)', marginTop: 3 }}>{label}</div>
-              <div style={{ fontSize: 10, color: 'var(--muted-foreground)', marginTop: 1 }}>{sub}</div>
+              <div className="tbo-card-title" style={{   color: 'var(--foreground)',  }}>{value}</div>
+              <div className="tbo-caption" style={{   color: 'var(--foreground)', marginTop: 3 }}>{label}</div>
+              <div className="tbo-caption" style={{  color: 'var(--muted-foreground)', marginTop: 1 }}>{sub}</div>
             </div>
           ))}
         </div>
@@ -338,9 +340,9 @@ export function MarriageReadinessReport({ onBack }: Props) {
           <div className="report-section" style={{ margin: '12px 16px 0', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             {report?.strengths?.length ? (
               <div style={{ padding: '14px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--muted)' }}>
-                <p style={{ margin: '0 0 8px', fontSize: 12, fontWeight: 700, color: 'var(--foreground)' }}>Strengths</p>
+                <p className="tbo-label" style={{ margin: '0 0 8px',   color: 'var(--foreground)' }}>{tr("Strengths")}</p>
                 {report.strengths.map((s, i) => (
-                  <div key={i} style={{ fontSize: 12, color: 'var(--foreground)', marginBottom: 5, lineHeight: 1.4, display: 'flex', gap: 6 }}>
+                  <div className="tbo-caption" key={i} style={{  color: 'var(--foreground)', marginBottom: 5,  display: 'flex', gap: 6 }}>
                     <span style={{ color: 'var(--primary)', flexShrink: 0 }}>•</span>{s}
                   </div>
                 ))}
@@ -348,9 +350,9 @@ export function MarriageReadinessReport({ onBack }: Props) {
             ) : null}
             {report?.growthAreas?.length ? (
               <div style={{ padding: '14px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--muted)' }}>
-                <p style={{ margin: '0 0 8px', fontSize: 12, fontWeight: 700, color: 'var(--foreground)' }}>Growth Areas</p>
+                <p className="tbo-label" style={{ margin: '0 0 8px',   color: 'var(--foreground)' }}>{tr("Growth Areas")}</p>
                 {report.growthAreas.map((g, i) => (
-                  <div key={i} style={{ fontSize: 12, color: 'var(--foreground)', marginBottom: 5, lineHeight: 1.4, display: 'flex', gap: 6 }}>
+                  <div className="tbo-caption" key={i} style={{  color: 'var(--foreground)', marginBottom: 5,  display: 'flex', gap: 6 }}>
                     <span style={{ color: 'var(--muted-foreground)', flexShrink: 0 }}>•</span>{g}
                   </div>
                 ))}
@@ -362,14 +364,14 @@ export function MarriageReadinessReport({ onBack }: Props) {
         {/* Bible verse */}
         {report?.bibleVerse && (
           <div className="report-section" style={{ margin: '12px 16px 0', padding: '18px 20px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--muted)', textAlign: 'center' }}>
-            <p style={{ margin: 0, fontSize: 14, fontStyle: 'italic', color: 'var(--foreground)', lineHeight: 1.7 }}>"{report.bibleVerse}"</p>
+            <p  style={{ margin: 0, fontSize: 14, fontStyle: 'italic', color: 'var(--foreground)', lineHeight: 1.7 }}>"{report.bibleVerse}"</p>
           </div>
         )}
 
         {/* Closing encouragement */}
         {report?.closingEncouragement && (
           <div className="report-section" style={{ margin: '12px 16px 0', padding: '16px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--background)' }}>
-            <p style={{ margin: 0, fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.7 }}>{report.closingEncouragement}</p>
+            <p className="tbo-supporting" style={{ margin: 0,  color: 'var(--muted-foreground)',  }}>{report.closingEncouragement}</p>
           </div>
         )}
 
@@ -385,55 +387,51 @@ export function MarriageReadinessReport({ onBack }: Props) {
             borderBottom: '1px solid var(--border)', background: 'var(--muted)',
           }}>
             <Award style={{ width: 38, height: 38, color: eligible ? accent : 'var(--muted-foreground)', margin: '0 auto 10px' }} />
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted-foreground)', marginBottom: 6 }}>
-              {eligible ? 'Certificate of Marriage Readiness' : 'Progress Certificate'}
+            <div className="tbo-label" style={{     color: 'var(--muted-foreground)', marginBottom: 6 }}>
+              {eligible ? tr('Certificate of Marriage Readiness') : tr('Progress Certificate')}
             </div>
-            <h2 style={{ margin: '0 0 4px', fontSize: 18, fontWeight: 700, color: 'var(--foreground)' }}>
+            <h2 className="tbo-section-title" style={{ margin: '0 0 4px',   color: 'var(--foreground)' }}>
               {couple.userName} & {couple.partnerName}
             </h2>
-            <p style={{ margin: '0 0 10px', fontSize: 12, color: 'var(--muted-foreground)' }}>{certDate}</p>
-            <div style={{
+            <p className="tbo-caption" style={{ margin: '0 0 10px',  color: 'var(--muted-foreground)' }}>{certDate}</p>
+            <div className="tbo-label" style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '5px 16px', borderRadius: 20,
               background: eligible ? accent : 'var(--muted-foreground)',
-              color: 'var(--background)', fontWeight: 700, fontSize: 13,
+              color: 'var(--background)',
             }}>
               <CheckCircle2 style={{ width: 14, height: 14 }} />
-              {score}% Readiness Score
-            </div>
+              {score}{tr("% Readiness Score")} </div>
           </div>
 
           <div style={{ padding: '18px 24px' }}>
-            <p style={{ margin: '0 0 14px', fontSize: 13, color: 'var(--foreground)', textAlign: 'center', lineHeight: 1.7 }}>
+            <p className="tbo-supporting" style={{ margin: '0 0 14px',  color: 'var(--foreground)', textAlign: 'center',  }}>
               {report?.certificateMessage || (eligible
-                ? `This certifies that ${couple.userName} and ${couple.partnerName} have demonstrated sincere commitment and intentional preparation for the covenant of marriage.`
-                : `${couple.userName} and ${couple.partnerName} are actively building a strong spiritual foundation for marriage. Keep growing together.`)}
+                ? tr('This certifies that {user} and {partner} have demonstrated sincere commitment and intentional preparation for the covenant of marriage.', { user: couple.userName, partner: couple.partnerName })
+                : tr('{user} and {partner} are actively building a strong spiritual foundation for marriage. Keep growing together.', { user: couple.userName, partner: couple.partnerName }))}
             </p>
 
             <div style={{ display: 'flex', justifyContent: 'center', gap: 14, flexWrap: 'wrap', padding: '10px 0', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', marginBottom: 12 }}>
               {[
-                ['Devotions', categories.devotional.score],
-                ['Prayer', categories.prayer.score],
-                ['Q&A', categories.qa.score],
-                ['Modules', categories.modules.score],
-                ['Activity', categories.activity.score],
+                [tr("Devotions"), categories.devotional.score],
+                [tr("Prayer"), categories.prayer.score],
+                [tr("Q&A"), categories.qa.score],
+                [tr("Modules"), categories.modules.score],
+                [tr("Activity"), categories.activity.score],
               ].map(([name, val]) => (
                 <div key={name} style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--foreground)' }}>{val}%</div>
-                  <div style={{ fontSize: 10, color: 'var(--muted-foreground)' }}>{name}</div>
+                  <div className="tbo-label" style={{   color: 'var(--foreground)' }}>{val}%</div>
+                  <div className="tbo-caption" style={{  color: 'var(--muted-foreground)' }}>{name}</div>
                 </div>
               ))}
             </div>
 
-            <p style={{ margin: 0, fontSize: 10, color: 'var(--muted-foreground)', textAlign: 'center' }}>
-              Generated by TwoBeOne · {certDate}
+            <p className="tbo-caption" style={{ margin: 0,  color: 'var(--muted-foreground)', textAlign: 'center' }}>{tr("Generated by TwoBeOne ·")} {certDate}
             </p>
           </div>
         </div>
 
-        <p className="no-print" style={{ margin: '12px 16px 0', fontSize: 11, color: 'var(--muted-foreground)', textAlign: 'center' }}>
-          Report cached for 24 hours. Use ↺ to regenerate after new activity.
-        </p>
+        <p className="tbo-caption no-print" style={{ margin: '12px 16px 0',  color: 'var(--muted-foreground)', textAlign: 'center' }}>{tr("Report cached for 24 hours. Use ↺ to regenerate after new activity.")} </p>
       </div>
     </div>
   );

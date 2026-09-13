@@ -1,0 +1,28 @@
+import type { UiMessages } from '../utils/uiTranslation';
+
+export const moodUiMessages = {
+  'Mood saved!': ['ስሜትዎ ተቀምጧል!', 'Miirri kee qusatameera!'],
+  'Failed to save mood': ['ስሜትዎን ማስቀመጥ አልተቻለም', 'Miira kee qusachuun hin dandaʼamne'],
+  'Failed to generate AI analysis': ['የAI ትንታኔ ማዘጋጀት አልተቻለም', 'Xiinxala AI qopheessuun hin dandaʼamne'],
+  'Post Mood': ['ስሜትዎን ያጋሩ', 'Miira kee qoodi'],
+  'Your Average (30 days)': ['የእርስዎ አማካይ (30 ቀናት)', 'Giddugaleessa kee (guyyaa 30)'],
+  'entries': ['መዝገቦች', 'galmeewwan'],
+  "{name}'s Average": ['የ{name} አማካይ', 'Giddugaleessa {name}'],
+  'Mood Trends (Last 30 Days)': ['የስሜት ለውጦች (ያለፉት 30 ቀናት)', 'Adeemsa miiraa (guyyoota 30 darban)'],
+  'Track your emotional patterns over time': ['የስሜትዎን ለውጦች በጊዜ ይከታተሉ', 'Adeemsa miira kee yeroon hordofi'],
+  'Great': ['በጣም ጥሩ', 'Baayʼee gaarii'],
+  'Good': ['ጥሩ', 'Gaarii'],
+  'Okay': ['መካከለኛ', 'Madaalawaa'],
+  'Sad': ['ሐዘን', 'Gadda'],
+  'No entry': ['መዝገብ የለም', 'Galmeen hin jiru'],
+  'Mood Distribution (Last 30 Days)': ['የስሜት ስርጭት (ያለፉት 30 ቀናት)', 'Raabsa miiraa (guyyoota 30 darban)'],
+  'How often you felt each emotion': ['እያንዳንዱ ስሜት ምን ያህል ጊዜ እንደተሰማዎ', 'Miirri tokkoon tokkoon yeroo meeqa akka sitti dhagaʼame'],
+  '· Stats-based': ['· በስታቲስቲክስ የተመሠረተ', '· Istaatistiksii irratti hundaaʼe'],
+  'Recent Mood History': ['የቅርብ ጊዜ የስሜት ታሪክ', 'Seenaa miiraa dhihoo'],
+  'Your last 10 mood entries': ['ያለፉት 10 የስሜት መዝገቦችዎ', 'Galmeewwan miiraa kee 10 darban'],
+  'No mood entries yet': ['እስካሁን የስሜት መዝገቦች የሉም', 'Galmeewwan miiraa ammaaf hin jiran'],
+  'Start tracking your moods to see patterns and insights': ['ለውጦችን እና ትንታኔዎችን ለማየት ስሜትዎን መመዝገብ ይጀምሩ', 'Adeemsa fi xiinxala arguuf miira kee galmeessuu jalqabi'],
+  'min': ['ደቂቃ', 'daqiiqaa'],
+  'You': ['እርስዎ', 'Ati'],
+  'Partner': ['አጋር', 'Hiriyyaa'],
+} satisfies UiMessages;

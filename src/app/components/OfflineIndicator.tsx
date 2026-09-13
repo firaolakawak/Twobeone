@@ -28,7 +28,7 @@ export function OfflineIndicator() {
       <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[300] animate-in slide-in-from-top duration-300">
         <div className="px-4 py-2 rounded-full shadow-lg flex items-center gap-2" style={{ background: 'var(--success-500)', color: '#fff' }}>
           <Wifi className="w-4 h-4" />
-          <span className="text-sm font-medium">{t.offline.backOnline}</span>
+          <span className="tbo-label">{t.offline.backOnline}</span>
         </div>
       </div>
     );
@@ -39,7 +39,7 @@ export function OfflineIndicator() {
       <div className="fixed top-0 left-0 right-0 z-[300] animate-in slide-in-from-top duration-300">
         <div className="px-4 py-3 flex items-center justify-center gap-2" style={{ background: 'var(--warning-500)', color: '#fff' }}>
           <WifiOff className="w-5 h-5" />
-          <span className="text-sm font-medium">{t.offline.youreOffline}</span>
+          <span className="tbo-label">{t.offline.youreOffline}</span>
         </div>
       </div>
     );

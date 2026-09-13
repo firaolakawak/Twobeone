@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { useUiCopy } from '../../utils/uiTranslation';
+import { adminUsersMessages } from '../../locales/adminUsers';
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
 import { UsersWorkspace } from './users/UsersWorkspace';
 import '../../styles/users-console.css';
@@ -13,6 +15,7 @@ export interface Couple { id: string; user1: User; user2: User; }
 interface UsersManagerProps { accessToken?: string; }
 
 export function UsersManager({ accessToken }: UsersManagerProps) {
+  const tr = useUiCopy(adminUsersMessages);
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -49,9 +52,9 @@ export function UsersManager({ accessToken }: UsersManagerProps) {
       });
       setUsers(nextUsers);
       setSelectedId((current) => current && nextUsers.some((user) => user.id === current) ? current : nextUsers[0]?.id || null);
-    } catch (error) { console.error('Failed to load users:', error); toast.error('Could not load users'); setUsers([]); }
+    } catch (error) { console.error('Failed to load users:', error); toast.error(tr('Could not load users')); setUsers([]); }
     finally { setIsLoading(false); }
-  }, [authHeaders, endpoint]);
+  }, [authHeaders, endpoint, tr]);
 
   useEffect(() => { void loadUsers(); }, [loadUsers]);
 
@@ -85,8 +88,8 @@ export function UsersManager({ accessToken }: UsersManagerProps) {
       const response = await fetch(`${endpoint}/${userId}`, { method: 'DELETE', headers: authHeaders });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Failed to delete user');
-      toast.success(result.message || 'User deleted successfully'); setUserToDelete(null); await loadUsers();
-    } catch (error) { const message = error instanceof Error ? error.message : 'Failed to delete user'; console.error('Failed to delete user:', error); toast.error(message); }
+      toast.success(tr('User deleted successfully')); setUserToDelete(null); await loadUsers();
+    } catch (error) { console.error('Failed to delete user:', error); toast.error(tr('Failed to delete user')); }
     finally { setIsDeleting(false); }
   };
 

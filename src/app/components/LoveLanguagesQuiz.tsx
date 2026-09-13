@@ -1,3 +1,6 @@
+import { useUiCopy } from '../utils/uiTranslation';
+import { guidanceMessages, localizeGuidanceData } from '../locales/guidance';
+import { BackButton } from './BackButton';
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -5,7 +8,6 @@ import { Progress } from './ui/progress';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
 import { 
-  ChevronLeft, 
   Heart, 
   Gift, 
   Clock, 
@@ -21,7 +23,7 @@ interface LoveLanguagesQuizProps {
   onBack: () => void;
 }
 
-const questions = [
+const BASE_questions = [
   { q: "I feel most loved when my partner...", a1: "Tells me they love me", a2: "Gives me a thoughtful gift", type: "WA-GT" },
   { q: "What makes me feel appreciated is...", a1: "Quality time together", a2: "Physical touch and affection", type: "QT-PT" },
   { q: "I prefer to receive...", a1: "Encouraging words", a2: "Help with tasks", type: "WA-AS" },
@@ -54,7 +56,7 @@ const questions = [
   { q: "I value most when my partner...", a1: "Spends undivided time with me", a2: "Compliments me", type: "QT-WA" }
 ];
 
-const loveLanguages = {
+const BASE_loveLanguages = {
   WA: { name: "Words of Affirmation", icon: MessageCircle, description: "You value verbal expressions of love and appreciation" },
   QT: { name: "Quality Time", icon: Clock, description: "You feel loved through focused, uninterrupted time together" },
   GT: { name: "Receiving Gifts", icon: Gift, description: "You appreciate thoughtful gifts as symbols of love" },
@@ -62,7 +64,7 @@ const loveLanguages = {
   PT: { name: "Physical Touch", icon: Heart, description: "You value physical expressions of affection and closeness" }
 };
 
-const scriptureInsights = {
+const BASE_scriptureInsights = {
   WA: {
     verse: "Pleasant words are a honeycomb, sweet to the soul and healing to the bones.",
     reference: "Proverbs 16:24",
@@ -91,6 +93,10 @@ const scriptureInsights = {
 };
 
 export function LoveLanguagesQuiz({ existingResult, onComplete, onBack }: LoveLanguagesQuizProps) {
+  const tr = useUiCopy(guidanceMessages);
+  const scriptureInsights = localizeGuidanceData(tr, BASE_scriptureInsights);
+  const loveLanguages = localizeGuidanceData(tr, BASE_loveLanguages);
+  const questions = localizeGuidanceData(tr, BASE_questions);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
   const [showResults, setShowResults] = useState(!!existingResult);
@@ -154,10 +160,8 @@ export function LoveLanguagesQuiz({ existingResult, onComplete, onBack }: LoveLa
       <div className="min-h-screen bg-gradient-to-b from-primary-50/50 to-primary-50/50">
         <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm border-b">
           <div className="flex items-center justify-between px-4 py-4">
-            <Button variant="ghost" size="icon" onClick={onBack}>
-              <ChevronLeft className="w-5 h-5" />
-            </Button>
-            <h1 className="text-xl font-semibold">Your Love Language</h1>
+            <BackButton label={tr("Back to Quizzes")} onClick={onBack} />
+            <h1 className="tbo-page-title min-w-0 break-words">{tr("Your Love Language")}</h1>
             <div className="w-10" />
           </div>
         </div>
@@ -170,13 +174,13 @@ export function LoveLanguagesQuiz({ existingResult, onComplete, onBack }: LoveLa
               <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-primary-500 to-primary-500 mb-4 mx-auto">
                 <PrimaryIcon className="w-10 h-10 text-white" />
               </div>
-              <CardTitle className="text-2xl mb-2">Your Primary Love Language</CardTitle>
-              <h3 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-primary-600 bg-clip-text text-transparent">
+              <CardTitle className="tbo-card-title mb-2">{tr("Your Primary Love Language")}</CardTitle>
+              <h3 className="tbo-card-title bg-gradient-to-r from-primary-600 to-primary-600 bg-clip-text text-transparent">
                 {loveLanguages[results.primary as keyof typeof loveLanguages].name}
               </h3>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-center text-muted-foreground">
+              <p className="tbo-body text-center text-muted-foreground">
                 {loveLanguages[results.primary as keyof typeof loveLanguages].description}
               </p>
 
@@ -186,18 +190,18 @@ export function LoveLanguagesQuiz({ existingResult, onComplete, onBack }: LoveLa
                   <BookOpen className="w-5 h-5 text-sky-600 flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="font-medium text-sky-700 italic mb-1">"{primaryInsight.verse}"</p>
-                    <p className="text-xs text-sky-700">— {primaryInsight.reference}</p>
+                    <p className="tbo-caption text-sky-700">— {primaryInsight.reference}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Sparkles className="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-foreground">{primaryInsight.guidance}</p>
+                  <p className="tbo-supporting text-foreground">{primaryInsight.guidance}</p>
                 </div>
               </div>
 
               {/* Score Breakdown */}
               <div className="space-y-3">
-                <h4 className="font-semibold text-center">All Love Languages</h4>
+                <h4 className="tbo-card-title text-center">{tr("All Love Languages")}</h4>
                 {Object.entries(results.scores)
                   .sort(([, a]: any, [, b]: any) => b - a)
                   .map(([lang, score]: [string, any]) => {
@@ -223,16 +227,14 @@ export function LoveLanguagesQuiz({ existingResult, onComplete, onBack }: LoveLa
           {/* Secondary Love Language */}
           <Card className="mb-6 bg-gradient-to-br from-primary-50 to-primary-100 border-primary-200">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <SecondaryIcon className="w-5 h-5 text-primary-600" />
-                Your Secondary Love Language
-              </CardTitle>
+              <CardTitle className="tbo-card-title flex items-center gap-2">
+                <SecondaryIcon className="w-5 h-5 text-primary-600" />{tr("Your Secondary Love Language")} </CardTitle>
             </CardHeader>
             <CardContent>
-              <h4 className="font-semibold text-lg text-primary-900 mb-2">
+              <h4 className="tbo-card-title text-primary-900 mb-2">
                 {loveLanguages[results.secondary as keyof typeof loveLanguages].name}
               </h4>
-              <p className="text-sm text-muted-foreground">
+              <p className="tbo-supporting text-muted-foreground">
                 {loveLanguages[results.secondary as keyof typeof loveLanguages].description}
               </p>
             </CardContent>
@@ -241,35 +243,28 @@ export function LoveLanguagesQuiz({ existingResult, onComplete, onBack }: LoveLa
           {/* Action Items */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Heart className="w-5 h-5 text-primary-600" />
-                Growing Together
-              </CardTitle>
+              <CardTitle className="tbo-card-title flex items-center gap-2">
+                <Heart className="w-5 h-5 text-primary-600" />{tr("Growing Together")} </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="p-3 bg-primary-50 rounded-lg">
-                <p className="text-sm font-medium text-primary-900 mb-1">Share with your partner</p>
-                <p className="text-sm text-muted-foreground">Help your partner understand how you feel most loved</p>
+                <p className="tbo-supporting text-primary-900 mb-1">{tr("Share with your partner")}</p>
+                <p className="tbo-supporting text-muted-foreground">{tr("Help your partner understand how you feel most loved")}</p>
               </div>
               <div className="p-3 bg-sky-50 rounded-lg">
-                <p className="text-sm font-medium text-sky-700 mb-1">Learn their language</p>
-                <p className="text-sm text-muted-foreground">Ask your partner to take this quiz and compare results</p>
+                <p className="tbo-supporting text-sky-700 mb-1">{tr("Learn their language")}</p>
+                <p className="tbo-supporting text-muted-foreground">{tr("Ask your partner to take this quiz and compare results")}</p>
               </div>
               <div className="p-3 bg-primary-50 rounded-lg">
-                <p className="text-sm font-medium text-primary-900 mb-1">Practice intentionally</p>
-                <p className="text-sm text-muted-foreground">Regularly express love in your partner's primary language</p>
+                <p className="tbo-supporting text-primary-900 mb-1">{tr("Practice intentionally")}</p>
+                <p className="tbo-supporting text-muted-foreground">{tr("Regularly express love in your partner's primary language")}</p>
               </div>
             </CardContent>
           </Card>
 
-          <div className="flex gap-3 mt-6">
-            <Button onClick={handleRetake} variant="outline" className="flex-1">
-              Retake Quiz
-            </Button>
-            <Button onClick={onBack} className="flex-1 bg-gradient-to-r from-primary-600 to-primary-600">
-              <ChevronLeft className="w-4 h-4 mr-2" />
-              Done
-            </Button>
+          <div className="flex flex-wrap gap-3 mt-6">
+            <Button onClick={handleRetake} variant="outline" className="tbo-action flex-1 min-h-11 h-auto whitespace-normal">{tr("Retake Quiz")} </Button>
+            <BackButton label={tr("Done")} onClick={onBack} showLabel className="flex-1" />
           </div>
         </div>
       </div>
@@ -283,15 +278,13 @@ export function LoveLanguagesQuiz({ existingResult, onComplete, onBack }: LoveLa
     <div className="min-h-screen bg-gradient-to-b from-primary-50/50 to-primary-50/50">
       <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm border-b">
         <div className="flex items-center justify-between px-4 py-4">
-          <Button variant="ghost" size="icon" onClick={onBack}>
-            <ChevronLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="text-xl font-semibold">Love Languages Quiz</h1>
+          <BackButton label={tr("Back to Quizzes")} onClick={onBack} />
+          <h1 className="tbo-page-title min-w-0 break-words">{tr("Love Languages Quiz")}</h1>
           <div className="w-10" />
         </div>
         <div className="px-4 pb-3">
           <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
-            <span>Question {currentQuestion + 1} of {questions.length}</span>
+            <span>{tr("Question {current} of {total}", { current: currentQuestion + 1, total: questions.length })}</span>
             <span>{Math.round(progress)}%</span>
           </div>
           <Progress value={progress} className="h-2" />
@@ -304,12 +297,12 @@ export function LoveLanguagesQuiz({ existingResult, onComplete, onBack }: LoveLa
             <div className="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-primary-500 to-primary-500 mb-4 mx-auto">
               <Heart className="w-8 h-8 text-white" />
             </div>
-            <CardTitle className="text-center text-xl">{question.q}</CardTitle>
+            <CardTitle className="tbo-card-title text-center">{question.q}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <Button
               onClick={() => handleAnswer('a1')}
-              className="w-full h-auto py-6 text-left justify-start bg-card hover:bg-primary-50 text-foreground border-2 border-border hover:border-primary-300"
+              className="tbo-action w-full h-auto whitespace-normal break-words py-6 text-left justify-start bg-card hover:bg-primary-50 text-foreground border-2 border-border hover:border-primary-300"
               variant="outline"
             >
               <div className="flex items-start gap-3 w-full">
@@ -322,7 +315,7 @@ export function LoveLanguagesQuiz({ existingResult, onComplete, onBack }: LoveLa
 
             <Button
               onClick={() => handleAnswer('a2')}
-              className="w-full h-auto py-6 text-left justify-start bg-card hover:bg-primary-50 text-foreground border-2 border-border hover:border-primary-300"
+              className="tbo-action w-full h-auto whitespace-normal break-words py-6 text-left justify-start bg-card hover:bg-primary-50 text-foreground border-2 border-border hover:border-primary-300"
               variant="outline"
             >
               <div className="flex items-start gap-3 w-full">

@@ -1,3 +1,7 @@
+import { formatUiDate } from '../../../utils/uiDateTime';
+import { useCurrentLanguage } from '../../../utils/languageStore';
+import { useUiCopy, UI_LOCALES } from "../../../utils/uiTranslation";
+import { adminCommonMessages } from "../../../locales/adminCommon";
 import { memo, useEffect, useMemo, useState } from "react";
 import {
   DndContext,
@@ -77,19 +81,22 @@ export function moveKanbanCard(columns: KanbanColumn[], activeId: string, overId
 }
 
 function CardBody({ card }: { card: KanbanCard }) {
+  const language = useCurrentLanguage();
+  const tr = useUiCopy(adminCommonMessages);
   return (
     <>
       <div className="admin-kanban__card-top">
         <strong>{card.title}</strong>
-        <span className={`admin-priority admin-priority--${card.priority.toLowerCase()}`}>{card.priority}</span>
+        <span className={`admin-priority admin-priority--${card.priority.toLowerCase()}`}>{tr(card.priority)}</span>
       </div>
-      <p>{card.category}</p>
-      <time dateTime={card.dueDate}>Due {new Date(`${card.dueDate}T00:00:00`).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</time>
+      <p>{tr(card.category)}</p>
+      <time dateTime={card.dueDate}>{tr("Due")} {formatUiDate(new Date(`${card.dueDate}T00:00:00`), UI_LOCALES[language], { month: "short", day: "numeric" })}</time>
     </>
   );
 }
 
 function SortableCard({ card }: { card: KanbanCard }) {
+  const tr = useUiCopy(adminCommonMessages);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: card.id });
   return (
     <article
@@ -99,7 +106,7 @@ function SortableCard({ card }: { card: KanbanCard }) {
       data-dragging={isDragging || undefined}
       {...attributes}
       {...listeners}
-      aria-label={`${card.title}, ${card.priority} priority. Drag to reorder or move between columns.`}
+      aria-label={tr('{title}, {priority} priority. Drag to reorder or move between columns.', { title: card.title, priority: tr(card.priority) })}
     >
       <CardBody card={card} />
     </article>
@@ -107,17 +114,18 @@ function SortableCard({ card }: { card: KanbanCard }) {
 }
 
 function Column({ column }: { column: KanbanColumn }) {
+  const tr = useUiCopy(adminCommonMessages);
   const { setNodeRef, isOver } = useDroppable({ id: column.id });
   return (
     <section className="admin-kanban__column" aria-labelledby={`column-${column.id}`}>
       <header>
-        <h3 id={`column-${column.id}`}>{column.title}</h3>
-        <span aria-label={`${column.cards.length} cards`}>{column.cards.length}</span>
+        <h3 id={`column-${column.id}`}>{tr(column.title)}</h3>
+        <span aria-label={tr('{count} cards', { count: column.cards.length })}>{column.cards.length}</span>
       </header>
       <SortableContext items={column.cards.map((card) => card.id)} strategy={verticalListSortingStrategy}>
         <div ref={setNodeRef} className="admin-kanban__cards" data-over={isOver || undefined}>
           {column.cards.map((card) => <SortableCard key={card.id} card={card} />)}
-          {!column.cards.length && <p className="admin-kanban__empty">Drop content here</p>}
+          {!column.cards.length && <p className="admin-kanban__empty">{tr("Drop content here")}</p>}
         </div>
       </SortableContext>
     </section>
@@ -125,6 +133,7 @@ function Column({ column }: { column: KanbanColumn }) {
 }
 
 export const MiniKanban = memo(function MiniKanban({ columns, onPersist }: MiniKanbanProps) {
+  const tr = useUiCopy(adminCommonMessages);
   const [state, setState] = useState(columns);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
@@ -155,9 +164,9 @@ export const MiniKanban = memo(function MiniKanban({ columns, onPersist }: MiniK
   return (
     <div>
       <div className="admin-kanban__status" role="status" aria-live="polite">
-        {saveState === "saving" && "Saving order…"}
-        {saveState === "saved" && "Order saved"}
-        {saveState === "error" && "Could not save. Previous order restored."}
+        {saveState === "saving" && tr("Saving order…")}
+        {saveState === "saved" && tr("Order saved")}
+        {saveState === "error" && tr("Could not save. Previous order restored.")}
       </div>
       <DndContext
         sensors={sensors}
@@ -166,7 +175,7 @@ export const MiniKanban = memo(function MiniKanban({ columns, onPersist }: MiniK
         onDragCancel={() => setActiveId(null)}
         onDragEnd={handleDragEnd}
       >
-        <div className="admin-kanban" aria-label="Content workflow board">
+        <div className="admin-kanban" aria-label={tr("Content workflow board")}>
           {state.map((column) => <Column key={column.id} column={column} />)}
         </div>
         <DragOverlay>{activeCard ? <article className="admin-kanban__card admin-kanban__card--overlay"><CardBody card={activeCard} /></article> : null}</DragOverlay>

@@ -1,7 +1,10 @@
+import { useUiCopy } from '../utils/uiTranslation';
+import { systemMessages } from '../locales/system';
 import { useState, useEffect } from 'react';
 import { AlertTriangle, X, ExternalLink } from 'lucide-react';
 
 export function IconsMissingNotice() {
+  const tr = useUiCopy(systemMessages);
   const [showNotice, setShowNotice] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
@@ -58,7 +61,7 @@ export function IconsMissingNotice() {
           <button
             onClick={handleDismiss}
             className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/20 transition-colors"
-            aria-label="Dismiss"
+            aria-label={tr("Dismiss")}
           >
             <X className="w-5 h-5" />
           </button>
@@ -71,31 +74,27 @@ export function IconsMissingNotice() {
             </div>
 
             {/* Title */}
-            <h3 className="text-xl font-semibold mb-2">
-              iOS App Icons Missing
-            </h3>
+            <h3 className="tbo-card-title mb-2">
+               {tr("iOS App Icons Missing")} </h3>
 
             {/* Description */}
-            <p className="text-sm text-white/90 mb-6 leading-relaxed">
-              The app icon won't display on iOS devices. Generate and upload the required PNG icons to fix this issue.
-            </p>
+            <p className="tbo-supporting text-white/90 mb-6">
+               {tr("The app icon won't display on iOS devices. Generate and upload the required PNG icons to fix this issue.")} </p>
 
             {/* Action button */}
             <button
               onClick={handleOpenGenerator}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-card text-warning-700 rounded-lg hover:bg-card/90 transition-colors text-sm font-medium shadow-lg"
+              className="tbo-action inline-flex items-center gap-2 px-6 py-3 bg-card text-warning-700 rounded-lg hover:bg-card/90 transition-colors shadow-lg"
             >
               <ExternalLink className="w-4 h-4" />
-              Generate Icons Now
-            </button>
+               {tr("Generate Icons Now")} </button>
 
             {/* Dismiss text */}
             <button
               onClick={handleDismiss}
-              className="mt-4 text-xs text-white/70 hover:text-white transition-colors underline"
+              className="tbo-action mt-4 text-white/70 hover:text-white transition-colors underline"
             >
-              Dismiss and don't show again
-            </button>
+               {tr("Dismiss and don't show again")} </button>
           </div>
         </div>
       </div>

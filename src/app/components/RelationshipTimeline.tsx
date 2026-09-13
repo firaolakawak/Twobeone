@@ -1,3 +1,7 @@
+import { formatUiDate } from '../utils/uiDateTime';
+import { useUiCopy, UI_LOCALES } from '../utils/uiTranslation';
+import { coupleTimelineUiMessages } from '../locales/coupleTimelineUi';
+import { LoadingMark } from './BrandLoader';
 import { useState, useMemo } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -86,7 +90,8 @@ export function RelationshipTimeline({
   userName = 'You',
   partnerName = 'Partner'
 }: RelationshipTimelineProps) {
-  const { t } = useLanguage();
+  const tr = useUiCopy(coupleTimelineUiMessages);
+  const { t, language } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [editingMilestone, setEditingMilestone] = useState<Milestone | null>(null);
@@ -127,17 +132,17 @@ export function RelationshipTimeline({
 
       if (editingMilestone) {
         await onUpdateMilestone(editingMilestone.id, milestoneData);
-        toast.success('Milestone updated!');
+        toast.success(tr("Milestone updated!"));
       } else {
         await onAddMilestone(milestoneData);
-        toast.success('Milestone added to your journey!');
+        toast.success(tr("Milestone added to your journey!"));
       }
 
       resetForm();
       setIsOpen(false);
     } catch (error) {
       console.error('Failed to save milestone:', error);
-      toast.error('Failed to save milestone');
+      toast.error(tr("Failed to save milestone"));
     } finally {
       setIsLoading(false);
     }
@@ -155,12 +160,12 @@ export function RelationshipTimeline({
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Delete this milestone?')) {
+    if (confirm(tr("Delete this milestone?"))) {
       try {
         await onDeleteMilestone(id);
-        toast.success('Milestone deleted');
+        toast.success(tr("Milestone deleted"));
       } catch (error) {
-        toast.error('Failed to delete milestone');
+        toast.error(tr("Failed to delete milestone"));
       }
     }
   };
@@ -168,14 +173,14 @@ export function RelationshipTimeline({
   // Calculate achievements
   const achievements = useMemo(() => {
     const earned: typeof ACHIEVEMENT_BADGES = [];
-    
+
     if (milestones.length === 0) return earned;
 
     // Find first meeting date
     const firstMeeting = milestones.find(m => m.category === 'First Meeting');
     if (firstMeeting) {
       const daysTogether = Math.floor((Date.now() - new Date(firstMeeting.date).getTime()) / (1000 * 60 * 60 * 24));
-      
+
       if (daysTogether >= 365) earned.push(ACHIEVEMENT_BADGES[0]);
       if (daysTogether >= 1095) earned.push(ACHIEVEMENT_BADGES[1]);
       if (daysTogether >= 1825) earned.push(ACHIEVEMENT_BADGES[2]);
@@ -221,16 +226,16 @@ export function RelationshipTimeline({
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    return formatUiDate(date, UI_LOCALES[language], { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
   const getTimeAgo = (dateString: string) => {
     const days = Math.floor((Date.now() - new Date(dateString).getTime()) / (1000 * 60 * 60 * 24));
-    if (days === 0) return 'Today';
-    if (days === 1) return '1 day ago';
-    if (days < 30) return `${days} days ago`;
-    if (days < 365) return `${Math.floor(days / 30)} months ago`;
-    return `${Math.floor(days / 365)} years ago`;
+    if (days === 0) return tr("Today");
+    if (days === 1) return tr("1 day ago");
+    if (days < 30) return tr('{count} days ago', { count: days });
+    if (days < 365) return tr('{count} months ago', { count: Math.floor(days / 30) });
+    return tr('{count} years ago', { count: Math.floor(days / 365) });
   };
 
   const getEmotionColor = (level: number) => {
@@ -257,19 +262,20 @@ export function RelationshipTimeline({
                 <Heart className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-semibold">Our Journey</h1>
+                <h1 className="tbo-page-title">{tr("Our Journey")}</h1>
                 {stats && (
-                  <p className="text-sm text-muted-foreground">{stats.daysTogether} days together</p>
+                  <p className="tbo-supporting text-muted-foreground">{stats.daysTogether}  {tr("days together")}</p>
                 )}
               </div>
             </div>
             <Button 
               onClick={() => setIsOpen(true)}
               size="sm"
-              className="bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
+              className="tbo-action bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Add
+
+              {tr("Add")}
             </Button>
           </div>
 
@@ -278,19 +284,19 @@ export function RelationshipTimeline({
             <div className="grid grid-cols-4 gap-2 mb-4">
               <div className="bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg p-3 text-center">
                 <div className="text-2xl font-bold text-primary-700">{stats.totalMilestones}</div>
-                <div className="text-xs text-primary-600">{t.milestones.title}</div>
+                <div className="tbo-caption text-primary-600">{t.milestones.title}</div>
               </div>
               <div className="bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg p-3 text-center">
                 <div className="text-2xl font-bold text-primary-700">{stats.daysTogether}</div>
-                <div className="text-xs text-primary-600">Days</div>
+                <div className="tbo-caption text-primary-600">{tr("Days")}</div>
               </div>
               <div className="bg-gradient-to-br from-sky-50 to-sky-100 rounded-lg p-3 text-center">
                 <div className="text-2xl font-bold text-sky-700">{stats.avgEmotion}</div>
-                <div className="text-xs text-sky-600">Avg Joy</div>
+                <div className="tbo-caption text-sky-600">{tr("Avg Joy")}</div>
               </div>
               <div className="bg-gradient-to-br from-warning-50 to-warning-50 rounded-lg p-3 text-center">
                 <div className="text-2xl font-bold text-warning-700">{stats.achievements}</div>
-                <div className="text-xs text-warning-500">Badges</div>
+                <div className="tbo-caption text-warning-500">{tr("Badges")}</div>
               </div>
             </div>
           )}
@@ -301,28 +307,31 @@ export function RelationshipTimeline({
               variant={activeView === 'timeline' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setActiveView('timeline')}
-              className={activeView === 'timeline' ? 'bg-gradient-to-r from-primary-600 to-primary-700' : ''}
+              className={activeView === 'timeline' ? "tbo-action bg-gradient-to-r from-primary-600 to-primary-700" : "tbo-action "}
             >
               <Clock className="w-4 h-4 mr-2" />
-              Timeline
+
+              {tr("Timeline")}
             </Button>
             <Button
               variant={activeView === 'graph' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setActiveView('graph')}
-              className={activeView === 'graph' ? 'bg-gradient-to-r from-primary-600 to-primary-700' : ''}
+              className={activeView === 'graph' ? "tbo-action bg-gradient-to-r from-primary-600 to-primary-700" : "tbo-action "}
             >
               <TrendingUp className="w-4 h-4 mr-2" />
-              Emotions
+
+              {tr("Emotions")}
             </Button>
             <Button
               variant={activeView === 'badges' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setActiveView('badges')}
-              className={activeView === 'badges' ? 'bg-gradient-to-r from-primary-600 to-primary-700' : ''}
+              className={activeView === 'badges' ? "tbo-action bg-gradient-to-r from-primary-600 to-primary-700" : "tbo-action "}
             >
               <Award className="w-4 h-4 mr-2" />
-              Badges
+
+              {tr("Badges")}
             </Button>
           </div>
         </div>
@@ -338,13 +347,13 @@ export function RelationshipTimeline({
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
                   <Heart className="w-12 h-12 text-primary-500" />
                 </div>
-                <h3 className="text-xl font-semibold text-foreground mb-2">{t.milestones.noMilestones}</h3>
-                <p className="text-muted-foreground mb-8 max-w-sm mx-auto">
+                <h3 className="tbo-card-title text-foreground mb-2">{t.milestones.noMilestones}</h3>
+                <p className="tbo-body text-muted-foreground mb-8 max-w-sm mx-auto">
                   {t.dashboard.celebrateJourney}
                 </p>
                 <Button
                   onClick={() => setIsOpen(true)}
-                  className="bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
+                  className="tbo-action bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
                 >
                   <Plus className="w-5 h-5 mr-2" />
                   {t.milestones.addFirstMilestone}
@@ -373,29 +382,29 @@ export function RelationshipTimeline({
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
-                                <Badge variant="secondary" className="text-xs">
-                                  {milestone.category}
+                                <Badge variant="secondary" className="tbo-caption">
+                                  {tr(milestone.category)}
                                 </Badge>
                                 {milestone.isPartner && (
-                                  <Badge className="bg-gradient-to-r from-primary-100 to-error-50 text-primary-800 text-xs">
+                                  <Badge className="tbo-caption bg-gradient-to-r from-primary-100 to-error-50 text-primary-800">
                                     💕 {partnerName}
                                   </Badge>
                                 )}
                               </div>
-                              <h3 className="text-lg font-semibold text-foreground mb-1">
+                              <h3 className="tbo-card-title text-foreground mb-1">
                                 {milestone.title}
                               </h3>
                             </div>
-                            
+
                             {/* Emotion Level */}
-                            <div className={`flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-to-r ${getEmotionColor(milestone.emotionLevel)} text-white text-sm font-medium`}>
+                            <div className={`tbo-label flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-to-r ${getEmotionColor(milestone.emotionLevel)} text-white `}>
                               {getEmotionIcon(milestone.emotionLevel)}
                               <span>{milestone.emotionLevel}/10</span>
                             </div>
                           </div>
 
                           {milestone.description && (
-                            <p className="text-foreground text-sm leading-relaxed mb-4 whitespace-pre-wrap">
+                            <p className="tbo-supporting text-foreground mb-4 whitespace-pre-wrap">
                               {milestone.description}
                             </p>
                           )}
@@ -406,7 +415,7 @@ export function RelationshipTimeline({
                                 <Calendar className="w-4 h-4" />
                                 {formatDate(milestone.date)}
                               </span>
-                              <span className="text-xs text-muted-foreground">{getTimeAgo(milestone.date)}</span>
+                              <span className="tbo-caption text-muted-foreground">{getTimeAgo(milestone.date)}</span>
                             </div>
 
                             {isOwn && (
@@ -415,7 +424,7 @@ export function RelationshipTimeline({
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => handleEdit(milestone)}
-                                  className="h-8 text-sky-600 hover:text-sky-700 hover:bg-sky-50"
+                                  className="tbo-action h-8 text-sky-600 hover:text-sky-700 hover:bg-sky-50"
                                 >
                                   <Edit2 className="w-4 h-4" />
                                 </Button>
@@ -423,7 +432,7 @@ export function RelationshipTimeline({
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => handleDelete(milestone.id)}
-                                  className="h-8 text-error-500 hover:text-error-700 hover:bg-error-50"
+                                  className="tbo-action h-8 text-error-500 hover:text-error-700 hover:bg-error-50"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </Button>
@@ -445,13 +454,13 @@ export function RelationshipTimeline({
           <div className="mt-6 space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Emotional Journey</CardTitle>
+                <CardTitle className="tbo-card-title">{tr("Emotional Journey")}</CardTitle>
               </CardHeader>
               <CardContent>
                 {milestones.length === 0 ? (
                   <div className="text-center py-12">
                     <TrendingUp className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-muted-foreground">Add milestones to see your emotional journey</p>
+                    <p className="tbo-body text-muted-foreground">{tr("Add milestones to see your emotional journey")}</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -460,7 +469,7 @@ export function RelationshipTimeline({
                       {milestones.slice(-10).map((milestone, index) => {
                         const height = (milestone.emotionLevel / 10) * 100;
                         const catData = getCategoryData(milestone.category);
-                        
+
                         return (
                           <div key={milestone.id} className="flex-1 flex flex-col items-center gap-2">
                             <div 
@@ -469,8 +478,8 @@ export function RelationshipTimeline({
                               title={`${milestone.title}: ${milestone.emotionLevel}/10`}
                             ></div>
                             <span className="text-2xl">{milestone.icon}</span>
-                            <span className="text-xs text-muted-foreground text-center line-clamp-1">
-                              {milestone.category}
+                            <span className="tbo-caption text-muted-foreground text-center line-clamp-1">
+                              {tr(milestone.category)}
                             </span>
                           </div>
                         );
@@ -481,19 +490,19 @@ export function RelationshipTimeline({
                     <div className="flex items-center justify-center gap-4 pt-4 border-t">
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 rounded bg-gradient-to-r from-success-500 to-success-700"></div>
-                        <span className="text-xs text-muted-foreground">High (8-10)</span>
+                        <span className="tbo-caption text-muted-foreground">{tr("High (8-10)")}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 rounded bg-gradient-to-r from-sky-500 to-sky-600"></div>
-                        <span className="text-xs text-muted-foreground">Good (6-7)</span>
+                        <span className="tbo-caption text-muted-foreground">{tr("Good (6-7)")}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 rounded bg-gradient-to-r from-warning-500 to-warning-500"></div>
-                        <span className="text-xs text-muted-foreground">Medium (4-5)</span>
+                        <span className="tbo-caption text-muted-foreground">{tr("Medium (4-5)")}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 rounded bg-gradient-to-r from-error-500 to-primary-500"></div>
-                        <span className="text-xs text-muted-foreground">Low (1-3)</span>
+                        <span className="tbo-caption text-muted-foreground">{tr("Low (1-3)")}</span>
                       </div>
                     </div>
                   </div>
@@ -508,16 +517,17 @@ export function RelationshipTimeline({
           <div className="mt-6 space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="tbo-card-title flex items-center gap-2">
                   <Trophy className="w-5 h-5 text-warning-500" />
-                  Achievement Badges
+
+                  {tr("Achievement Badges")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-4">
                   {ACHIEVEMENT_BADGES.map((badge) => {
                     const isEarned = achievements.some(a => a.id === badge.id);
-                    
+
                     return (
                       <div 
                         key={badge.id}
@@ -534,10 +544,10 @@ export function RelationshipTimeline({
                             </div>
                           </div>
                         )}
-                        
+
                         <div className="text-4xl mb-3">{badge.icon}</div>
-                        <h4 className="font-semibold text-foreground mb-1">{badge.title}</h4>
-                        <p className="text-sm text-muted-foreground">{badge.description}</p>
+                        <h4 className="tbo-card-title text-foreground mb-1">{tr(badge.title)}</h4>
+                        <p className="tbo-supporting text-muted-foreground">{tr(badge.description)}</p>
                       </div>
                     );
                   })}
@@ -555,16 +565,17 @@ export function RelationshipTimeline({
       }}>
         <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editingMilestone ? t.milestones.editMilestone : t.milestones.addMilestone}</DialogTitle>
-            <DialogDescription>
-              Add a special moment to your relationship timeline
+            <DialogTitle className="tbo-dialog-title">{editingMilestone ? t.milestones.editMilestone : t.milestones.addMilestone}</DialogTitle>
+            <DialogDescription className="tbo-supporting">
+
+              {tr("Add a special moment to your relationship timeline")}
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Category Selection */}
             <div className="space-y-2">
-              <Label>Category</Label>
+              <Label className="tbo-label">{tr("Category")}</Label>
               <div className="grid grid-cols-4 gap-2">
                 {CATEGORIES.map((cat) => (
                   <button
@@ -581,7 +592,7 @@ export function RelationshipTimeline({
                     }`}
                   >
                     <span className="text-2xl mb-1">{cat.emoji}</span>
-                    <span className="text-xs text-center leading-tight">{cat.value}</span>
+                    <span className="tbo-caption text-center">{tr(cat.value)}</span>
                   </button>
                 ))}
               </div>
@@ -589,10 +600,10 @@ export function RelationshipTimeline({
 
             {/* Title */}
             <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
-              <Input
+              <Label className="tbo-label" htmlFor="title">{tr("Title")}</Label>
+              <Input className="tbo-field"
                 id="title"
-                placeholder="e.g., First Met at Coffee Shop"
+                placeholder={tr("e.g., First Met at Coffee Shop")}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
@@ -601,8 +612,8 @@ export function RelationshipTimeline({
 
             {/* Date */}
             <div className="space-y-2">
-              <Label htmlFor="date">Date</Label>
-              <Input
+              <Label className="tbo-label" htmlFor="date">{tr("Date")}</Label>
+              <Input className="tbo-field"
                 id="date"
                 type="date"
                 value={date}
@@ -613,10 +624,10 @@ export function RelationshipTimeline({
 
             {/* Description */}
             <div className="space-y-2">
-              <Label htmlFor="description">Description (Optional)</Label>
-              <Textarea
+              <Label className="tbo-label" htmlFor="description">{tr("Description (Optional)")}</Label>
+              <Textarea className="tbo-field"
                 id="description"
-                placeholder="Share the story behind this moment..."
+                placeholder={tr("Share the story behind this moment...")}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
@@ -625,8 +636,9 @@ export function RelationshipTimeline({
 
             {/* Emotion Level */}
             <div className="space-y-2">
-              <Label htmlFor="emotion">
-                How did you feel? (1-10)
+              <Label className="tbo-label" htmlFor="emotion">
+
+                {tr("How did you feel? (1-10)")}
               </Label>
               <div className="flex items-center gap-4">
                 <input
@@ -636,7 +648,7 @@ export function RelationshipTimeline({
                   max="10"
                   value={emotionLevel}
                   onChange={(e) => setEmotionLevel(Number(e.target.value))}
-                  className="flex-1"
+                  className="tbo-field flex-1"
                 />
                 <div className={`flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r ${getEmotionColor(emotionLevel)} text-white font-medium min-w-[80px] justify-center`}>
                   {getEmotionIcon(emotionLevel)}
@@ -646,14 +658,16 @@ export function RelationshipTimeline({
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
-                Cancel
+              <Button className="tbo-action" type="button" variant="outline" onClick={() => setIsOpen(false)}>
+
+                {tr("Cancel")}
               </Button>
               <Button 
                 type="submit" 
                 disabled={isLoading}
-                className="bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
+                className="tbo-action bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
               >
+                {isLoading && <LoadingMark />}
                 {isLoading ? t.common.loading : editingMilestone ? t.common.save : t.milestones.addMilestone}
               </Button>
             </DialogFooter>

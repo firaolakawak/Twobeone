@@ -1,0 +1,400 @@
+{
+  "landing": {
+    ".launch-landing": {
+      "text": "Skip to content A new chapter for your relationship.Meet TwoBeOne TwoBeOne.The appHow it w",
+      "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "16px",
+      "weight": "400",
+      "lineHeight": "24px",
+      "tracking": "normal"
+    },
+    ".ll-hero h1": {
+      "text": "Love is a journey.Grow together.",
+      "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "28px",
+      "weight": "700",
+      "lineHeight": "33.6px",
+      "tracking": "-0.56px"
+    },
+    ".ll-hero-copy .ll-eyebrow": {
+      "text": "A LITTLE FAITH. A LITTLE TIME. A DEEPER LOVE.",
+      "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "12px",
+      "weight": "600",
+      "lineHeight": "16.8px",
+      "tracking": "0.72px"
+    },
+    ".ll-nav .ll-button": {
+      "text": "Get started",
+      "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "14px",
+      "weight": "600",
+      "lineHeight": "19.6px",
+      "tracking": "normal"
+    },
+    ".ll-hero-actions .ll-button": null,
+    ".ll-hero-actions .ll-text-link": {
+      "text": "Open the web app",
+      "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "14px",
+      "weight": "600",
+      "lineHeight": "19.6px",
+      "tracking": "normal"
+    },
+    ".ll-hero-notes": {
+      "text": "Free to get started Made for the two of you",
+      "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "12px",
+      "weight": "500",
+      "lineHeight": "16.8px",
+      "tracking": "normal"
+    },
+    ".ll-hero p": {
+      "text": "Make room for what matters. A shared space for you and your partner to connect, pray, and ",
+      "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "16px",
+      "weight": "400",
+      "lineHeight": "24px",
+      "tracking": "normal"
+    }
+  },
+  "dashboard": {
+    "body": {
+      "text": "TwoBeOne\n        @keyframes arcDash { to { stroke-dashoffset: -180; } }\n        @keyframes",
+      "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "16px",
+      "weight": "400",
+      "lineHeight": "24px",
+      "tracking": "normal"
+    },
+    "[data-couple-name]": {
+      "text": "Firaol & Keti😊",
+      "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "28px",
+      "weight": "700",
+      "lineHeight": "35px",
+      "tracking": "-0.7px"
+    },
+    "[data-relationship-counter] > span": {
+      "text": "102",
+      "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "40px",
+      "weight": "700",
+      "lineHeight": "40px",
+      "tracking": "-1px"
+    },
+    "[data-relationship-clock]": {
+      "text": "14:07:22",
+      "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "14px",
+      "weight": "700",
+      "lineHeight": "16px",
+      "tracking": "normal"
+    },
+    "#home-spotlight-title": {
+      "text": "A devotion for the two of you",
+      "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "20px",
+      "weight": "700",
+      "lineHeight": "26px",
+      "tracking": "normal"
+    },
+    ".couple-dashboard > section p": {
+      "text": "For you today",
+      "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "12px",
+      "weight": "600",
+      "lineHeight": "16.8px",
+      "tracking": "0.72px"
+    },
+    "[role=dialog] h2": null
+  },
+  "defaults": {
+    "a": {
+      "text": "Equivalent heading",
+      "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "20px",
+      "weight": "700",
+      "lineHeight": "26px",
+      "tracking": "normal"
+    },
+    "b": {
+      "text": "Equivalent heading",
+      "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "20px",
+      "weight": "700",
+      "lineHeight": "26px",
+      "tracking": "normal"
+    }
+  },
+  "languages": {
+    "en": {
+      "meta": {
+        "lang": "en",
+        "dataset": "en",
+        "fontFaces": [
+          {
+            "family": "Noto Sans Ethiopic",
+            "status": "loaded"
+          }
+        ],
+        "fontResources": []
+      },
+      "latin": {
+        "text": "Growing together in faith",
+        "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "size": "16px",
+        "weight": "400",
+        "lineHeight": "24px",
+        "tracking": "normal"
+      },
+      "latinPlatform": [
+        {
+          "familyName": "Segoe UI",
+          "postScriptName": "SegoeUI",
+          "isCustomFont": false,
+          "glyphCount": 25
+        }
+      ],
+      "ethiopic": {
+        "text": "በእምነት አብረን እናድጋለን",
+        "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "size": "16px",
+        "weight": "400",
+        "lineHeight": "24px",
+        "tracking": "normal"
+      },
+      "ethiopicPlatform": [
+        {
+          "familyName": "Noto Sans Ethiopic",
+          "postScriptName": "Noto-Sans-Ethiopic",
+          "isCustomFont": true,
+          "glyphCount": 15
+        },
+        {
+          "familyName": "Segoe UI",
+          "postScriptName": "SegoeUI",
+          "isCustomFont": false,
+          "glyphCount": 2
+        }
+      ],
+      "oromo": {
+        "text": "Amantiidhaan waliin guddachuu",
+        "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "size": "16px",
+        "weight": "400",
+        "lineHeight": "24px",
+        "tracking": "normal"
+      },
+      "oromoPlatform": [
+        {
+          "familyName": "Segoe UI",
+          "postScriptName": "SegoeUI",
+          "isCustomFont": false,
+          "glyphCount": 29
+        }
+      ]
+    },
+    "am": {
+      "meta": {
+        "lang": "am",
+        "dataset": "am",
+        "fontFaces": [
+          {
+            "family": "Noto Sans Ethiopic",
+            "status": "loaded"
+          }
+        ],
+        "fontResources": []
+      },
+      "latin": {
+        "text": "Growing together in faith",
+        "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "size": "16px",
+        "weight": "400",
+        "lineHeight": "24px",
+        "tracking": "normal"
+      },
+      "latinPlatform": [
+        {
+          "familyName": "Segoe UI",
+          "postScriptName": "SegoeUI",
+          "isCustomFont": false,
+          "glyphCount": 25
+        }
+      ],
+      "ethiopic": {
+        "text": "በእምነት አብረን እናድጋለን",
+        "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "size": "16px",
+        "weight": "400",
+        "lineHeight": "24px",
+        "tracking": "normal"
+      },
+      "ethiopicPlatform": [
+        {
+          "familyName": "Noto Sans Ethiopic",
+          "postScriptName": "Noto-Sans-Ethiopic",
+          "isCustomFont": true,
+          "glyphCount": 15
+        },
+        {
+          "familyName": "Segoe UI",
+          "postScriptName": "SegoeUI",
+          "isCustomFont": false,
+          "glyphCount": 2
+        }
+      ],
+      "oromo": {
+        "text": "Amantiidhaan waliin guddachuu",
+        "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "size": "16px",
+        "weight": "400",
+        "lineHeight": "24px",
+        "tracking": "normal"
+      },
+      "oromoPlatform": [
+        {
+          "familyName": "Segoe UI",
+          "postScriptName": "SegoeUI",
+          "isCustomFont": false,
+          "glyphCount": 29
+        }
+      ]
+    },
+    "om": {
+      "meta": {
+        "lang": "om",
+        "dataset": "om",
+        "fontFaces": [
+          {
+            "family": "Noto Sans Ethiopic",
+            "status": "loaded"
+          }
+        ],
+        "fontResources": []
+      },
+      "latin": {
+        "text": "Growing together in faith",
+        "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "size": "16px",
+        "weight": "400",
+        "lineHeight": "24px",
+        "tracking": "normal"
+      },
+      "latinPlatform": [
+        {
+          "familyName": "Segoe UI",
+          "postScriptName": "SegoeUI",
+          "isCustomFont": false,
+          "glyphCount": 25
+        }
+      ],
+      "ethiopic": {
+        "text": "በእምነት አብረን እናድጋለን",
+        "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "size": "16px",
+        "weight": "400",
+        "lineHeight": "24px",
+        "tracking": "normal"
+      },
+      "ethiopicPlatform": [
+        {
+          "familyName": "Noto Sans Ethiopic",
+          "postScriptName": "Noto-Sans-Ethiopic",
+          "isCustomFont": true,
+          "glyphCount": 15
+        },
+        {
+          "familyName": "Segoe UI",
+          "postScriptName": "SegoeUI",
+          "isCustomFont": false,
+          "glyphCount": 2
+        }
+      ],
+      "oromo": {
+        "text": "Amantiidhaan waliin guddachuu",
+        "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "size": "16px",
+        "weight": "400",
+        "lineHeight": "24px",
+        "tracking": "normal"
+      },
+      "oromoPlatform": [
+        {
+          "familyName": "Segoe UI",
+          "postScriptName": "SegoeUI",
+          "isCustomFont": false,
+          "glyphCount": 29
+        }
+      ]
+    }
+  },
+  "errors": [],
+  "primitives": {
+    "#primitive-card": {
+      "text": "Card title",
+      "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "18px",
+      "weight": "600",
+      "lineHeight": "24.3px",
+      "tracking": "normal"
+    },
+    "#primitive-dialog": {
+      "text": "Dialog title",
+      "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "20px",
+      "weight": "600",
+      "lineHeight": "26px",
+      "tracking": "normal"
+    },
+    "#primitive-explicit": {
+      "text": "Explicit page role",
+      "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "28px",
+      "weight": "700",
+      "lineHeight": "33.6px",
+      "tracking": "-0.56px"
+    },
+    "#primitive-input": {
+      "text": "",
+      "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "16px",
+      "weight": "400",
+      "lineHeight": "24px",
+      "tracking": "normal"
+    },
+    "#primitive-action": {
+      "text": "Action",
+      "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "14px",
+      "weight": "600",
+      "lineHeight": "19.6px",
+      "tracking": "normal"
+    },
+    "#primitive-caption": {
+      "text": "Caption",
+      "family": "\"Noto Sans Ethiopic\", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "size": "12px",
+      "weight": "500",
+      "lineHeight": "16.8px",
+      "tracking": "normal"
+    },
+    "#primitive-code": {
+      "text": "const value=123",
+      "family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace",
+      "size": "16px",
+      "weight": "400",
+      "lineHeight": "24px",
+      "tracking": "normal"
+    }
+  },
+  "failedRequests": [],
+  "context": {
+    "date": "2026-09-13",
+    "browser": "Windows Microsoft Edge, headless",
+    "app": "Vite development app; mocked dashboard data",
+    "purpose": "Implemented typography verification; baseline retained separately",
+    "untested": "Real iOS/Android font rendering; exhaustive screen/state coverage"
+  }
+}

@@ -1,5 +1,9 @@
+import { formatUiTime, formatUiDate } from '../utils/uiDateTime';
+import { BrandLoader, LoadingMark } from './BrandLoader';
+import { useUiCopy, UI_LOCALES } from '../utils/uiTranslation';
+import { prayerUiMessages } from '../locales/prayerUi';
 import { useState, useEffect } from 'react';
-import { Send, Heart, Loader2 } from 'lucide-react';
+import { Send, Heart } from 'lucide-react';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -30,7 +34,8 @@ export function PrayerTogetherChat({
   currentUserName,
   partnerName = 'Your Partner'
 }: PrayerTogetherChatProps) {
-  const { t } = useLanguage();
+  const tr = useUiCopy(prayerUiMessages);
+  const { t, language } = useLanguage();
   const [messages, setMessages] = useState<PrayerMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -51,24 +56,24 @@ export function PrayerTogetherChat({
       );
 
       if (!response.ok) {
-        throw new Error('Failed to load prayer chat');
+        throw new Error(tr("Failed to load prayer chat"));
       }
 
       const data = await response.json();
       const newMessages = data.messages || [];
-      
+
       // Check if there are new messages from partner (not from current user)
       if (lastMessageCount > 0 && newMessages.length > lastMessageCount) {
         const latestMessage = newMessages[newMessages.length - 1];
         if (latestMessage.userId !== currentUserId) {
           // Show toast notification for new partner message
-          toast.success(`💜 New prayer from ${latestMessage.userName}`, {
+          toast.success(tr('💜 New prayer from {name}', { name: latestMessage.userName }), {
             description: latestMessage.message.substring(0, 60) + (latestMessage.message.length > 60 ? '...' : ''),
             duration: 5000,
           });
         }
       }
-      
+
       setMessages(newMessages);
       setLastMessageCount(newMessages.length);
     } catch (error) {
@@ -81,12 +86,12 @@ export function PrayerTogetherChat({
 
   useEffect(() => {
     fetchMessages();
-    
+
     // Poll for new messages every 10 seconds
     const interval = setInterval(fetchMessages, 10000);
-    
+
     return () => clearInterval(interval);
-  }, [devotionId, accessToken]);
+  }, [devotionId, accessToken, tr]);
 
   const sendMessage = async () => {
     if (!newMessage.trim()) return;
@@ -108,11 +113,11 @@ export function PrayerTogetherChat({
       );
 
       if (!response.ok) {
-        throw new Error('Failed to send message');
+        throw new Error(tr("Failed to send message"));
       }
 
       const data = await response.json();
-      
+
       // Add the new message to the list
       setMessages(prev => [...prev, data.message]);
       setNewMessage('');
@@ -134,7 +139,7 @@ export function PrayerTogetherChat({
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', { 
+    return formatUiTime(date, UI_LOCALES[language], {
       hour: 'numeric', 
       minute: '2-digit',
       hour12: true 
@@ -148,11 +153,11 @@ export function PrayerTogetherChat({
     yesterday.setDate(yesterday.getDate() - 1);
 
     if (date.toDateString() === today.toDateString()) {
-      return 'Today';
+      return tr("Today");
     } else if (date.toDateString() === yesterday.toDateString()) {
-      return 'Yesterday';
+      return tr("Yesterday");
     } else {
-      return date.toLocaleDateString('en-US', { 
+      return formatUiDate(date, UI_LOCALES[language], {
         month: 'short', 
         day: 'numeric',
         year: date.getFullYear() !== today.getFullYear() ? 'numeric' : undefined
@@ -177,8 +182,8 @@ export function PrayerTogetherChat({
         <div className="flex items-center gap-2">
           <Heart className="h-5 w-5 fill-white" aria-hidden="true" />
           <div>
-            <h4 className="font-semibold">Your shared reflection</h4>
-            <p className="text-xs text-rose-50">Share what this reading stirred in you</p>
+            <h4 className="tbo-card-title">{tr("Your shared reflection")}</h4>
+            <p className="tbo-caption text-rose-50">{tr("Share what this reading stirred in you")}</p>
           </div>
         </div>
       </div>
@@ -188,16 +193,17 @@ export function PrayerTogetherChat({
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {isLoading ? (
             <div className="flex items-center justify-center h-full">
-              <Loader2 className="h-6 w-6 animate-spin text-rose-600" />
+              <BrandLoader />
             </div>
           ) : messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-4">
               <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100">
                 <Heart className="h-8 w-8 fill-rose-500 text-rose-500" aria-hidden="true" />
               </div>
-              <p className="mb-1 text-sm font-semibold text-slate-700">Begin the conversation</p>
-              <p className="text-xs text-slate-500">
-                Share your thoughts, prayers, and reflections about this devotional
+              <p className="tbo-supporting mb-1 text-slate-700">{tr("Begin the conversation")}</p>
+              <p className="tbo-caption text-slate-500">
+
+                {tr("Share your thoughts, prayers, and reflections about this devotional")}
               </p>
             </div>
           ) : (
@@ -207,7 +213,7 @@ export function PrayerTogetherChat({
                   {/* Date Divider - 8dp spacing */}
                   <div className="flex items-center gap-3 mb-4">
                     <div className="h-px flex-1 bg-rose-100" />
-                    <span className="px-2 text-xs font-medium text-rose-600">{date}</span>
+                    <span className="tbo-caption px-2 text-rose-600">{date}</span>
                     <div className="h-px flex-1 bg-rose-100" />
                   </div>
 
@@ -215,7 +221,7 @@ export function PrayerTogetherChat({
                   <div className="space-y-3">
                     {dateMessages.map((message) => {
                       const isCurrentUser = message.userId === currentUserId;
-                      
+
                       return (
                         <div 
                           key={message.id}
@@ -231,17 +237,17 @@ export function PrayerTogetherChat({
                               }`}
                             >
                               {!isCurrentUser && (
-                                <p className="mb-1 text-xs font-semibold text-rose-600">
+                                <p className="tbo-caption mb-1 text-rose-600">
                                   {message.userName}
                                 </p>
                               )}
-                              <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                              <p className="tbo-supporting whitespace-pre-wrap break-words">
                                 {message.message}
                               </p>
                             </div>
-                            
+
                             {/* Timestamp - 4dp margin */}
-                            <p className={`mt-1 px-2 text-xs text-slate-400 ${
+                            <p className={`tbo-caption mt-1 px-2 text-slate-400 ${
                               isCurrentUser ? 'text-right' : 'text-left'
                             }`}>
                               {formatTime(message.createdAt)}
@@ -265,9 +271,9 @@ export function PrayerTogetherChat({
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Share your prayer or reflection..."
-            aria-label="Shared devotional reflection"
-            className="min-h-[44px] max-h-[120px] flex-1 resize-none rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3 text-sm text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-rose-300 focus:bg-white focus:ring-4 focus:ring-rose-100"
+            placeholder={tr("Share your prayer or reflection...")}
+            aria-label={tr("Shared devotional reflection")}
+            className="tbo-field min-h-[44px] max-h-[120px] flex-1 resize-none rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3 text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-rose-300 focus:bg-white focus:ring-4 focus:ring-rose-100"
             rows={1}
             disabled={isSending}
           />
@@ -275,18 +281,19 @@ export function PrayerTogetherChat({
             onClick={sendMessage}
             disabled={!newMessage.trim() || isSending}
             size="icon"
-            className="h-11 w-11 flex-shrink-0 rounded-xl bg-rose-600 text-white shadow-sm hover:bg-rose-700"
-            aria-label="Send shared reflection"
+            className="tbo-action h-11 w-11 flex-shrink-0 rounded-xl bg-rose-600 text-white shadow-sm hover:bg-rose-700"
+            aria-label={tr("Send shared reflection")}
           >
             {isSending ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
+              <LoadingMark />
             ) : (
               <Send className="w-5 h-5" />
             )}
           </Button>
         </div>
-        <p className="mt-2 text-center text-xs text-slate-400">
-          Shared privately with {partnerName}
+        <p className="tbo-caption mt-2 text-center text-slate-400">
+
+          {tr("Shared privately with")} {partnerName}
         </p>
       </div>
     </div>

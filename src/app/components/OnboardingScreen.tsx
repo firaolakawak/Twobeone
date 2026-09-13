@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  ArrowLeft,
   ArrowRight,
   BookHeart,
   BookOpen,
@@ -16,6 +15,9 @@ import { motion, AnimatePresence } from "motion/react";
 import { useLanguage } from "../contexts/LanguageContext";
 import type { Language } from "../utils/i18n";
 import styles from "./OnboardingScreen.module.css";
+import { BackButton } from "./BackButton";
+import { useUiCopy } from '../utils/uiTranslation';
+import { publicAuthMessages } from '../locales/publicAuth';
 
 type AuthDestination = "signin" | "signup";
 
@@ -97,6 +99,7 @@ const LANGUAGE_OPTIONS: Array<{ code: Language; label: string; shortLabel: strin
 ];
 
 export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
+  const tr = useUiCopy(publicAuthMessages);
   const { language, setLanguage } = useLanguage();
   const [step, setStep] = useState(0);
   const contentRef = useRef<HTMLElement>(null);
@@ -140,9 +143,9 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
         <div className="absolute -bottom-28 -left-24 h-80 w-80 rounded-full bg-sky-200/45 blur-3xl" />
       </div>
 
-      <header className="relative z-10 mx-auto flex min-h-12 w-full max-w-md shrink-0 items-center justify-between gap-3">
+      <header className="relative z-10 mx-auto flex flex-wrap min-h-12 w-full max-w-md shrink-0 items-center justify-between gap-3">
         <div className="flex items-center gap-2" aria-label="TwoBeOne">
-          <span className="grid h-9 w-9 place-items-center rounded-2xl bg-gradient-to-br from-rose-500 to-rose-600 shadow-lg shadow-rose-200">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-rose-500 to-rose-600 shadow-lg shadow-rose-200">
             <Heart className="h-5 w-5 fill-white text-white" aria-hidden="true" />
           </span>
           <span className="text-base font-extrabold tracking-tight">TwoBeOne</span>
@@ -151,7 +154,7 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
           <button
             type="button"
             onClick={handleSkip}
-            className="min-h-11 rounded-full px-4 text-sm font-bold text-slate-500 transition-colors active:bg-slate-100"
+            className="min-h-11 rounded-full px-4 tbo-label text-slate-500 transition-colors active:bg-slate-100"
           >
             {copy.skip}
           </button>
@@ -190,7 +193,7 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
                       <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-rose-50 text-rose-600">
                         <Icon className="h-4.5 w-4.5" aria-hidden="true" />
                       </span>
-                      <span className="min-w-0 text-sm font-bold text-slate-700">{copy.features[index]}</span>
+                      <span className="min-w-0 tbo-label text-slate-700">{copy.features[index]}</span>
                       <Check className="ml-auto h-4 w-4 shrink-0 text-emerald-500" aria-hidden="true" />
                     </div>
                   ))}
@@ -221,7 +224,7 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
                 body={copy.privateBody}
               >
                 <div className={styles.details}>
-                  <p className="mb-2.5 flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.12em] text-slate-500">
+                  <p className="mb-2.5 flex items-center gap-2 tbo-eyebrow uppercase text-slate-500">
                     <Languages className="h-4 w-4" aria-hidden="true" />
                     {copy.language}
                   </p>
@@ -241,8 +244,8 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
                               : "border-slate-200 bg-white text-slate-600 active:bg-slate-50"
                           }`}
                         >
-                          <span className="block text-sm font-extrabold">{option.shortLabel}</span>
-                          <span className="mt-0.5 block text-[10px] font-semibold opacity-75">{option.label}</span>
+                          <span className="block tbo-action">{option.shortLabel}</span>
+                          <span className="mt-0.5 block tbo-caption opacity-75">{option.label}</span>
                         </button>
                       );
                     })}
@@ -255,7 +258,7 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
       </section>
 
       <footer className="relative z-10 mx-auto w-full max-w-md shrink-0 pt-3">
-        <div className="mb-3 flex justify-center gap-2" aria-label={`${step + 1} of ${totalSteps}`}>
+        <div className="mb-3 flex justify-center gap-2" aria-label={tr('{current} of {total}', { current: step + 1, total: totalSteps })}>
           {Array.from({ length: totalSteps }).map((_, index) => (
             <span
               key={index}
@@ -265,21 +268,14 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
         </div>
 
         {step < totalSteps - 1 ? (
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             {step > 0 && (
-              <button
-                type="button"
-                onClick={() => goToStep(step - 1)}
-                className="grid min-h-14 w-14 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm active:scale-[0.98]"
-                aria-label={copy.back}
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </button>
+              <BackButton onClick={() => goToStep(step - 1)} label={copy.back} showLabel className="self-center" />
             )}
             <button
               type="button"
               onClick={() => goToStep(step + 1)}
-              className="flex min-h-14 min-w-0 flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-rose-500 to-rose-600 px-5 py-3 text-base font-extrabold text-white shadow-lg shadow-rose-200 transition-transform active:scale-[0.98]"
+              className="flex min-h-14 min-w-0 flex-[1_1_9rem] items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-rose-500 to-rose-600 px-5 py-3 tbo-action text-white shadow-lg shadow-rose-200 transition-transform active:scale-[0.98]"
             >
               {copy.next}
               <ArrowRight className="h-5 w-5 shrink-0" />
@@ -290,14 +286,14 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
             <button
               type="button"
               onClick={() => finish("signup")}
-              className="min-h-14 min-w-0 rounded-2xl bg-gradient-to-r from-rose-500 to-rose-600 px-5 py-3 text-base font-extrabold text-white shadow-lg shadow-rose-200 active:scale-[0.98]"
+              className="min-h-14 min-w-0 rounded-2xl bg-gradient-to-r from-rose-500 to-rose-600 px-5 py-3 tbo-action text-white shadow-lg shadow-rose-200 active:scale-[0.98]"
             >
               {copy.create}
             </button>
             <button
               type="button"
               onClick={() => finish("signin")}
-              className="min-h-12 min-w-0 rounded-2xl px-5 py-3 text-sm font-extrabold text-rose-600 active:bg-rose-50"
+              className="min-h-12 min-w-0 rounded-2xl px-5 py-3 tbo-action text-rose-600 active:bg-rose-50"
             >
               {copy.signIn}
             </button>
@@ -327,11 +323,11 @@ function OnboardingPage({
     <div className={`${styles.page} flex min-w-0 flex-1 flex-col`}>
       <div className={`${styles.artwork} ${compact ? styles.compactArtwork : ""}`}>{artwork}</div>
       <div className="min-w-0">
-        <p className="mb-2 text-xs font-extrabold uppercase tracking-[0.18em] text-rose-500">{eyebrow}</p>
-        <h1 className="m-0 text-[clamp(1.75rem,7vw,2.25rem)] font-black leading-[1.12] tracking-[-0.035em] text-slate-950">
+        <p className="mb-2 tbo-eyebrow uppercase text-rose-500">{eyebrow}</p>
+        <h1 className="m-0 tbo-page-title text-slate-950">
           {title}
         </h1>
-        <p className="mt-3 text-[15px] font-medium leading-6 text-slate-500">{body}</p>
+        <p className="mt-3 tbo-body text-slate-500">{body}</p>
         {children}
       </div>
     </div>
@@ -374,6 +370,7 @@ function HabitsArtwork() {
 }
 
 function ConnectArtwork() {
+  const tr = useUiCopy(publicAuthMessages);
   return (
     <div className="relative flex h-52 w-72 max-w-full items-center justify-center" aria-hidden="true">
       <motion.div initial={{ x: -30 }} animate={{ x: 5 }} transition={{ duration: 0.55 }} className="z-10 grid h-28 w-28 place-items-center rounded-full border-[6px] border-white bg-sky-100 shadow-xl">
@@ -382,7 +379,7 @@ function ConnectArtwork() {
       <motion.div initial={{ x: 30 }} animate={{ x: -5 }} transition={{ duration: 0.55 }} className="z-20 grid h-28 w-28 place-items-center rounded-full border-[6px] border-white bg-rose-100 shadow-xl">
         <Heart className="h-12 w-12 fill-rose-500 text-rose-500" />
       </motion.div>
-      <span className="absolute bottom-3 z-30 rounded-full border border-rose-100 bg-white px-4 py-2 text-xs font-black tracking-[0.18em] text-rose-500 shadow-lg">CONNECTED</span>
+      <span className="absolute bottom-3 z-30 rounded-full border border-rose-100 bg-white px-4 py-2 text-xs font-black tracking-[0.18em] text-rose-500 shadow-lg">{tr('CONNECTED')}</span>
     </div>
   );
 }
@@ -405,7 +402,7 @@ function InfoPill({ icon: Icon, label }: { icon: typeof LockKeyhole; label: stri
   return (
     <div className="rounded-2xl border border-slate-100 bg-white/80 p-3.5 shadow-sm">
       <Icon className="mb-2 h-5 w-5 text-rose-500" aria-hidden="true" />
-      <p className="text-xs font-extrabold leading-4 text-slate-700">{label}</p>
+      <p className="tbo-label text-slate-700">{label}</p>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import { useUiCopy } from "../../utils/uiTranslation";
+import { adminContentMessages } from "../../locales/adminContent";
 import { useState, useEffect, useMemo } from 'react';
 import { Plus, Edit, Trash2, Search, GraduationCap, ChevronRight, X, Bold, Italic, Heading2, Quote, List, ListOrdered, Link, Minus } from 'lucide-react';
 import { ModulesImportExport } from './ModulesImportExport';
@@ -65,6 +67,7 @@ interface ModulesManagerProps {
 }
 
 export function ModulesManager({ accessToken }: ModulesManagerProps) {
+  const tr = useUiCopy(adminContentMessages);
   const [searchQuery, setSearchQuery] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingModule, setEditingModule] = useState<Module | null>(null);
@@ -144,7 +147,7 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
       }
     } catch (error) {
       console.error('Failed to load modules:', error);
-      toast.error('Failed to load modules');
+      toast.error(tr("Failed to load modules"));
       
       // Use default data as fallback
       setModules([
@@ -209,7 +212,7 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this module?')) {
+    if (!confirm(tr("Are you sure you want to delete this module?"))) {
       return;
     }
 
@@ -226,13 +229,13 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
 
       if (response.ok) {
         setModules(modules.filter(m => m.id !== id));
-        toast.success('Module deleted successfully');
+        toast.success(tr("Module deleted successfully"));
       } else {
         throw new Error('Failed to delete module');
       }
     } catch (error) {
       console.error('Failed to delete module:', error);
-      toast.error('Failed to delete module');
+      toast.error(tr("Failed to delete module"));
     }
   };
 
@@ -258,7 +261,7 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
           setModules(modules.map(m => 
             m.id === editingModule.id ? { ...m, ...formData } as Module : m
           ));
-          toast.success('Module updated successfully');
+          toast.success(tr("Module updated successfully"));
         } else {
           throw new Error('Failed to update module');
         }
@@ -283,7 +286,7 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
             id: moduleId,
           } as Module;
           setModules([newModule, ...modules]);
-          toast.success('Module created successfully');
+          toast.success(tr("Module created successfully"));
         } else {
           throw new Error('Failed to create module');
         }
@@ -306,7 +309,7 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
       loadModules();
     } catch (error) {
       console.error('Failed to save module:', error);
-      toast.error('Failed to save module');
+      toast.error(tr("Failed to save module"));
     }
   };
 
@@ -394,7 +397,7 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold mb-2 text-[24px]">Learning Modules</h2>
+          <h2 className="text-xl sm:text-2xl font-bold mb-2 text-[24px]">{tr("Learning Modules")}</h2>
           <p className="text-sm text-muted-foreground text-[16px]">Manage pre-marriage guidance and educational content</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -446,7 +449,7 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
                   </div>
 
                   <div>
-                    <Label htmlFor="subtitle" className="text-xs sm:text-sm">Subtitle</Label>
+                    <Label htmlFor="subtitle" className="text-xs sm:text-sm">{tr("Subtitle")}</Label>
                     <Input
                       id="subtitle"
                       value={formData.subtitle}
@@ -458,7 +461,7 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
                   </div>
 
                   <div>
-                    <Label htmlFor="description" className="text-xs sm:text-sm">Description</Label>
+                    <Label htmlFor="description" className="text-xs sm:text-sm">{tr("Description")}</Label>
                     <Textarea
                       id="description"
                       value={formData.description}
@@ -471,7 +474,7 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
                   </div>
 
                   <div>
-                    <Label htmlFor="language" className="text-xs sm:text-sm">Language</Label>
+                    <Label htmlFor="language" className="text-xs sm:text-sm">{tr("Language")}</Label>
                     <select
                       id="language"
                       value={formData.language || 'en'}
@@ -509,21 +512,21 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
                         <option value="bg-sky-500">Blue</option>
                         <option value="bg-success-500">Green</option>
                         <option value="bg-primary-500">Purple</option>
-                        <option value="bg-primary-500">Rose</option>
-                        <option value="bg-warning-500">Amber</option>
+                        <option value="bg-primary-500">{tr("Rose")}</option>
+                        <option value="bg-warning-500">{tr("Amber")}</option>
                         <option value="bg-sky-500">Indigo</option>
                       </select>
                     </div>
                     <div>
-                      <Label htmlFor="status" className="text-xs sm:text-sm">Status</Label>
+                      <Label htmlFor="status" className="text-xs sm:text-sm">{tr("Status")}</Label>
                       <select
                         id="status"
                         value={formData.status}
                         onChange={(e) => setFormData({ ...formData, status: e.target.value as 'published' | 'draft' })}
                         className="w-full h-9 sm:h-10 px-3 rounded-md border border-border text-xs sm:text-sm"
                       >
-                        <option value="draft">Draft</option>
-                        <option value="published">Published</option>
+                        <option value="draft">{tr("Draft")}</option>
+                        <option value="published">{tr("Published")}</option>
                       </select>
                     </div>
                   </div>
@@ -567,7 +570,7 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
                               <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xs font-medium">
                                 {index + 1}
                               </span>
-                              <Label className="text-xs sm:text-sm font-medium">Lesson {index + 1}</Label>
+                              <Label className="text-xs sm:text-sm font-medium">{tr("Lesson")}{' '}{index + 1}</Label>
                             </div>
 
                             <div>
@@ -586,8 +589,7 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
 
                             <div>
                               <Label htmlFor={`lesson-duration-${lesson.id}`} className="text-xs sm:text-sm">
-                                Duration
-                              </Label>
+                                {tr("Duration")}</Label>
                               <Input
                                 id={`lesson-duration-${lesson.id}`}
                                 value={lesson.duration}
@@ -664,7 +666,7 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
                                 {lesson.content.trim() && (
                                   <div className="border-t border-border">
                                     <div className="px-3 py-1.5 flex items-center gap-1.5 border-b border-border" style={{ background: 'var(--muted)' }}>
-                                      <span className="text-xs font-medium" style={{ color: 'var(--muted-foreground)' }}>Preview</span>
+                                      <span className="text-xs font-medium" style={{ color: 'var(--muted-foreground)' }}>{tr("Preview")}</span>
                                     </div>
                                     <div
                                       className="px-3 py-2.5 text-xs sm:text-sm"
@@ -692,16 +694,14 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
 
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4 border-t">
                   <Button type="submit" className="flex-1 text-xs sm:text-sm">
-                    {editingModule ? 'Update' : 'Create'} Module
-                  </Button>
+                    {editingModule ? 'Update' : tr("Create")} {tr("Module")}</Button>
                   <Button 
                     type="button" 
                     variant="outline" 
                     onClick={() => setIsDialogOpen(false)}
                     className="text-xs sm:text-sm"
                   >
-                    Cancel
-                  </Button>
+                    {tr("Cancel")}</Button>
                 </div>
               </form>
             </ScrollArea>
@@ -742,7 +742,7 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
           </p>
         </Card>
         <Card className="p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-muted-foreground mb-1 text-[14px] font-bold">Published</p>
+          <p className="text-xs sm:text-sm text-muted-foreground mb-1 text-[14px] font-bold">{tr("Published")}</p>
           <p className="text-lg sm:text-xl lg:text-2xl font-semibold text-success-700 text-[20px] font-bold">
             {modules.filter(m => m.status === 'published').length}
           </p>
@@ -774,7 +774,7 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
                     <p className="text-xs sm:text-sm text-foreground mb-2 sm:mb-3">{module.description}</p>
                     <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                       <GraduationCap className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span className="font-bold">{module.lessons.length} lessons</span>
+                      <span className="font-bold">{module.lessons.length} {' '}{tr("lessons")}</span>
                     </div>
                   </div>
                 </div>
@@ -786,7 +786,7 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
                     className="flex-1 sm:flex-none text-xs text-[14px] font-bold"
                   >
                     <Edit className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-0" />
-                    <span className="sm:hidden ml-1">Edit</span>
+                    <span className="sm:hidden ml-1">{tr("Edit")}</span>
                   </Button>
                   <Button
                     variant="outline"
@@ -795,7 +795,7 @@ export function ModulesManager({ accessToken }: ModulesManagerProps) {
                     className="flex-1 sm:flex-none text-xs text-[13px] font-bold"
                   >
                     <Trash2 className="w-3 h-3 sm:w-4 sm:h-4 text-error-500 sm:mr-0" />
-                    <span className="sm:hidden ml-1">Delete</span>
+                    <span className="sm:hidden ml-1">{tr("Delete")}</span>
                   </Button>
                 </div>
               </div>

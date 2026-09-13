@@ -1,7 +1,11 @@
+import { useUiCopy } from '../utils/uiTranslation';
+import { BrandLoader } from './BrandLoader';
+import { questionsUiMessages, getQuestionCategorySource } from '../locales/questionsUi';
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
+import { BackButton } from './BackButton';
 import { Textarea } from './ui/textarea';
 import { ScrollArea } from './ui/scroll-area';
 import { Badge } from './ui/badge';
@@ -19,10 +23,8 @@ import {
   MessageCircle,
   Sparkles,
   Quote,
-  ArrowLeft,
   CheckCircle2,
   Circle,
-  ChevronLeft,
   ChevronRight,
   Grid3x3,
   Calendar,
@@ -67,8 +69,10 @@ export function DailyQuestion({
   onPrayTogether,
   onBack
 }: DailyQuestionProps) {
-  const { t } = useLanguage();
+  const tr = useUiCopy(questionsUiMessages);
+  const { t, language } = useLanguage();
   const [question, setQuestion] = useState<Question | null>(null);
+  const [isLoadingQuestion, setIsLoadingQuestion] = useState(true);
   const [activePromptIndex, setActivePromptIndex] = useState(0);
   const [answers, setAnswers] = useState<{ [promptIndex: number]: string }>({});
   const [isPrivate, setIsPrivate] = useState<{ [promptIndex: number]: boolean }>({});
@@ -88,16 +92,25 @@ export function DailyQuestion({
   const [selectedPromptForChat, setSelectedPromptForChat] = useState(0);
 
   useEffect(() => {
-    // Load question from backend instead of hardcoded data
-    loadQuestion();
-    loadAnswers();
-  }, []);
+    const controller = new AbortController();
+    setQuestion(null);
+    setAllQuestions([]);
+    setAvailableQuestions([]);
+    setAnswers({});
+    setSelectedCategory(null);
+    setSelectedQuestionIndex(0);
+    setActivePromptIndex(0);
+    setIsLoadingQuestion(true);
+    void loadQuestion(controller.signal);
+    return () => controller.abort();
+  }, [accessToken, language]);
 
-  const loadQuestion = async () => {
+  const loadQuestion = async (signal: AbortSignal) => {
     try {
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/questions`,
+        `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/questions?language=${language}`,
         {
+          signal,
           headers: {
             'Authorization': `Bearer ${accessToken}`
           }
@@ -106,7 +119,7 @@ export function DailyQuestion({
 
       if (response.ok) {
         const { questions: fetchedQuestions } = await response.json();
-        if (fetchedQuestions && fetchedQuestions.length > 0) {
+        if (!signal.aborted && fetchedQuestions && fetchedQuestions.length > 0) {
           // Keep the complete list in allQuestions — never overwrite this
           setAllQuestions(fetchedQuestions);
           // Get today's question based on day of year
@@ -117,7 +130,9 @@ export function DailyQuestion({
         }
       }
     } catch (error) {
-      console.error('Error loading question:', error);
+      if (!signal.aborted) console.error('Error loading question:', error);
+    } finally {
+      if (!signal.aborted) setIsLoadingQuestion(false);
     }
   };
 
@@ -209,7 +224,7 @@ export function DailyQuestion({
 
   const handleSubmitAnswer = async (promptIndex: number) => {
     if (!question || !answers[promptIndex]?.trim()) {
-      toast.error('Please write an answer first');
+      toast.error(tr("Please write an answer first"));
       return;
     }
 
@@ -231,15 +246,15 @@ export function DailyQuestion({
         }
       );
 
-      if (!response.ok) throw new Error('Failed to submit answer');
+      if (!response.ok) throw new Error(tr("Failed to submit answer"));
 
       // Send notification to partner if answer is shared
       if (partner && !isPrivate[promptIndex]) {
         try {
           await sendNotification({
             recipientId: partner.id,
-            title: '💬 New Answer from Your Partner!',
-            message: `${userProfile.name} answered a question in ${question.category}`,
+            title: tr("💬 New Answer from Your Partner!"),
+            message: tr('{name} answered a question in {category}', { name: userProfile.name, category: tr(getQuestionCategorySource(question.category)) }),
             type: 'question_answered',
             projectId,
             accessToken
@@ -252,10 +267,10 @@ export function DailyQuestion({
 
       toast.success(
         isPrivate[promptIndex] 
-          ? '✨ Answer saved privately' 
-          : '💕 Answer shared with your partner!'
+          ? tr("✨ Answer saved privately")
+          : tr("💕 Answer shared with your partner!")
       );
-      
+
       // Clear the answer
       setAnswers(prev => ({ ...prev, [promptIndex]: '' }));
       await loadAnswers(question);
@@ -266,7 +281,7 @@ export function DailyQuestion({
       }
     } catch (error) {
       console.error('Error submitting answer:', error);
-      toast.error('Failed to submit answer');
+      toast.error(tr("Failed to submit answer"));
     } finally {
       setIsSubmitting(false);
     }
@@ -275,7 +290,7 @@ export function DailyQuestion({
   // New function for QAResultsView to submit answers with custom response and privacy
   const handleSubmitAnswerFromResults = async (promptIndex: number, responseText: string, isPrivateAnswer: boolean) => {
     if (!question || !responseText?.trim()) {
-      toast.error('Please write an answer first');
+      toast.error(tr("Please write an answer first"));
       return;
     }
 
@@ -297,15 +312,15 @@ export function DailyQuestion({
         }
       );
 
-      if (!response.ok) throw new Error('Failed to submit answer');
+      if (!response.ok) throw new Error(tr("Failed to submit answer"));
 
       // Send notification to partner if answer is shared
       if (partner && !isPrivateAnswer) {
         try {
           await sendNotification({
             recipientId: partner.id,
-            title: '💬 New Reply from Your Partner!',
-            message: `${userProfile.name} replied to a question in ${question.category}`,
+            title: tr("💬 New Reply from Your Partner!"),
+            message: tr('{name} replied to a question in {category}', { name: userProfile.name, category: tr(getQuestionCategorySource(question.category)) }),
             type: 'question_answered',
             projectId,
             accessToken
@@ -317,15 +332,15 @@ export function DailyQuestion({
 
       toast.success(
         isPrivateAnswer 
-          ? '✨ Answer saved privately' 
-          : '💕 Reply sent to your partner!'
+          ? tr("✨ Answer saved privately")
+          : tr("💕 Reply sent to your partner!")
       );
-      
+
       // Reload answers to show the new reply
       await loadAnswers(question);
     } catch (error) {
       console.error('Error submitting answer:', error);
-      toast.error('Failed to submit answer');
+      toast.error(tr("Failed to submit answer"));
     } finally {
       setIsSubmitting(false);
     }
@@ -363,10 +378,7 @@ export function DailyQuestion({
   if (!question) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <Sparkles className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-          <p className="text-muted-foreground">{t.common.loading}</p>
-        </div>
+        {isLoadingQuestion ? <BrandLoader /> : <p className="tbo-body text-muted-foreground">{tr('No questions available')}</p>}
       </div>
     );
   }
@@ -409,14 +421,9 @@ export function DailyQuestion({
           <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
             {/* Header */}
             <div className="flex items-center justify-between">
-              <button
-                onClick={() => setShowCategorySelection(false)}
-                className="flex items-center justify-center w-9 h-9 rounded-full bg-muted hover:bg-neutral-200 transition-all group"
-              >
-                <ArrowLeft className="w-4 h-4 text-foreground group-hover:-translate-x-0.5 transition-transform" />
-              </button>
-              <h2 className="text-xl font-semibold text-foreground">{t.questions.selectCategory}</h2>
-              <div className="w-9" /> {/* Spacer */}
+              <BackButton label={t.common.back} onClick={() => setShowCategorySelection(false)} />
+              <h2 className="tbo-section-title text-foreground">{t.questions.selectCategory}</h2>
+              <div className="w-11 shrink-0" /> {/* Match the back button to center the title. */}
             </div>
 
             {/* Category Grid */}
@@ -426,7 +433,7 @@ export function DailyQuestion({
                 const totalQuestions = categoryQuestions.reduce((sum, q) => sum + q.prompts.length, 0);
                 const isAnswered = isCategoryAnswered(category);
                 const isComplete = isCategoryComplete(category);
-                
+
                 return (
                   <Card
                     key={category}
@@ -440,13 +447,13 @@ export function DailyQuestion({
                     {isComplete && (
                       <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-success-500 text-white px-3 py-1.5 rounded-full shadow-md">
                         <CheckCircle2 className="w-4 h-4" />
-                        <span className="text-xs font-semibold">Complete</span>
+                        <span className="tbo-caption">{tr("Complete")}</span>
                       </div>
                     )}
                     {!isComplete && isAnswered && (
                       <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-sky-500 text-white px-3 py-1.5 rounded-full shadow-md">
                         <Circle className="w-4 h-4 fill-current" />
-                        <span className="text-xs font-semibold">In Progress</span>
+                        <span className="tbo-caption">{tr("In Progress")}</span>
                       </div>
                     )}
                     <div className="space-y-3">
@@ -454,9 +461,9 @@ export function DailyQuestion({
                         <BookOpen className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-foreground">{category}</h3>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {categoryQuestions.length} question sets • {totalQuestions} prompts
+                        <h3 className="tbo-card-title text-foreground">{tr(getQuestionCategorySource(category))}</h3>
+                        <p className="tbo-supporting text-muted-foreground mt-1">
+                          {tr('{sets} question sets • {prompts} prompts', { sets: categoryQuestions.length, prompts: totalQuestions })}
                         </p>
                       </div>
                     </div>
@@ -476,14 +483,9 @@ export function DailyQuestion({
         <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
           {/* Header with Title and Back */}
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-foreground">{question.category}</h1>
+            <h1 className="tbo-page-title text-foreground">{tr(getQuestionCategorySource(question.category))}</h1>
             {onBack && (
-              <button
-                onClick={onBack}
-                className="flex items-center justify-center w-10 h-10 rounded-full bg-card hover:bg-muted transition-all shadow-sm group"
-              >
-                <ChevronLeft className="w-5 h-5 text-foreground" />
-              </button>
+              <BackButton label={t.common.back} onClick={onBack} />
             )}
           </div>
 
@@ -491,7 +493,7 @@ export function DailyQuestion({
           <div className="flex items-center gap-3">
             <button
               onClick={() => setViewMode('results')}
-              className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all ${
+              className={`tbo-action px-6 py-2.5 rounded-full transition-all ${
                 viewMode === 'results'
                   ? `bg-gradient-to-r ${getCategoryColor(question.category)} text-white shadow-md`
                   : 'bg-card text-muted-foreground hover:bg-muted border border-border'
@@ -501,7 +503,7 @@ export function DailyQuestion({
             </button>
             <button
               onClick={() => setViewMode('discuss')}
-              className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all ${
+              className={`tbo-action px-6 py-2.5 rounded-full transition-all ${
                 viewMode === 'discuss'
                   ? `bg-gradient-to-r ${getCategoryColor(question.category)} text-white shadow-md`
                   : 'bg-card text-muted-foreground hover:bg-muted border border-border'
@@ -560,13 +562,13 @@ export function DailyQuestion({
                         <Heart className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-foreground">{t.prayer.prayTogether}</h4>
-                        <p className="text-sm text-muted-foreground">Take a moment to pray about your answers</p>
+                        <h4 className="tbo-card-title text-foreground">{t.prayer.prayTogether}</h4>
+                        <p className="tbo-supporting text-muted-foreground">{tr("Take a moment to pray about your answers")}</p>
                       </div>
                     </div>
                     <Button
                       onClick={onPrayTogether}
-                      className="bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:opacity-90 shadow-md"
+                      className="tbo-action bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:opacity-90 shadow-md"
                     >
                       <Heart className="w-4 h-4 mr-2" />
                       {t.prayer.prayTogether}

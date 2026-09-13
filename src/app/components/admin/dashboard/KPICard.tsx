@@ -1,4 +1,6 @@
 import { lazy, memo, Suspense, type ReactNode } from "react";
+import { useUiCopy } from '../../../utils/uiTranslation';
+import { adminCommonMessages } from '../../../locales/adminCommon';
 
 const Sparkline = lazy(() => import("./Sparkline"));
 
@@ -22,6 +24,7 @@ export const KPICard = memo(function KPICard({
   sparklineData,
   icon,
 }: KPICardProps) {
+  const tr = useUiCopy(adminCommonMessages);
   const safeTrend = trend ?? { direction: "neutral" as const, value: "No change" };
   const safeSparklineData = Array.isArray(sparklineData) ? sparklineData : [];
   const trendGlyph = safeTrend.direction === "up" ? "↑" : safeTrend.direction === "down" ? "↓" : "–";
@@ -30,19 +33,19 @@ export const KPICard = memo(function KPICard({
     <article
       className="admin-kpi"
       tabIndex={0}
-      aria-label={`${label}: ${value}. Trend ${safeTrend.direction}, ${safeTrend.value}`}
+      aria-label={tr('{label}: {value}. Trend {direction}, {trend}', { label: tr(label), value, direction: tr(safeTrend.direction), trend: tr(safeTrend.value) })}
     >
       <span className="admin-kpi__watermark" aria-hidden="true">{icon}</span>
       <div className="admin-kpi__heading">
         <span className="admin-kpi__icon" aria-hidden="true">{icon}</span>
         <span className={`admin-trend admin-trend--${safeTrend.direction}`}>
-          <span aria-hidden="true">{trendGlyph}</span> {safeTrend.value}
+          <span aria-hidden="true">{trendGlyph}</span> {tr(safeTrend.value)}
         </span>
       </div>
       <p className="admin-kpi__value">{value}</p>
-      <p className="admin-kpi__label">{label}</p>
+      <p className="admin-kpi__label">{tr(label)}</p>
       <Suspense fallback={<div className="admin-sparkline admin-sparkline--loading" aria-hidden="true" />}>
-        <Sparkline data={safeSparklineData} label={`${label} trend`} direction={safeTrend.direction} />
+        <Sparkline data={safeSparklineData} label={tr('{label} trend', { label: tr(label) })} direction={safeTrend.direction} />
       </Suspense>
     </article>
   );

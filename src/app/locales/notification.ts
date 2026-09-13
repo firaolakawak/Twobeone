@@ -1,0 +1,36 @@
+﻿import type { UiMessages } from '../utils/uiTranslation';
+import { questionsUiMessages } from './questionsUi';
+
+/** Application-owned notification templates; authored snippets are never catalog copy. */
+export const notificationMessages: UiMessages = {
+  ...questionsUiMessages,
+  '💕 Relationship Date Set!': ['💕 የግንኙነት ቀን ተቀምጧል!', '💕 Guyyaan hariiroo kaaʼameera!'],
+  '{name} set your relationship start date. Check your profile!': ['{name} የግንኙነታችሁን መጀመሪያ ቀን አስቀምጠዋል። መገለጫዎን ይመልከቱ!', '{name} guyyaa jalqaba hariiroo keessanii kaaʼeera. Seenaa dhuunfaa keessan ilaalaa!'],
+  'New message from {name}': ['ከ{name} አዲስ መልዕክት', 'Ergaa haaraa {name} irraa'],
+  '{name} added a new journal entry': ['{name} አዲስ ማስታወሻ ጨምረዋል', '{name} yaadannoo haaraa galcheera'],
+  '"{title}" - Check it out in the Journal tab!': ['"{title}" — በማስታወሻ ትር ይመልከቱት!', '"{title}" — Caancala Yaadannoo keessatti ilaalaa!'],
+  'New Prayer Message': ['አዲስ የጸሎት መልዕክት', 'Ergaa kadhannaa haaraa'],
+  '{name} shared a prayer thought': ['{name} የጸሎት ሐሳብ አጋርተዋል', '{name} yaada kadhannaa qoodeera'],
+  '{name} shared a verse with you': ['{name} የመጽሐፍ ቅዱስ ጥቅስ አጋርተውዎታል', '{name} caqasa Kitaaba Qulqulluu siif qoodeera'],
+  '💔 Partner Disconnect Request': ['💔 የአጋር ግንኙነት ማቋረጥ ጥያቄ', '💔 Gaaffii walitti hidhamiinsa hiriyaa addaan kutuu'],
+  '{name} has requested to disconnect. Both partners must agree to proceed.': ['{name} ግንኙነቱን ለማቋረጥ ጠይቀዋል። ለመቀጠል ሁለቱም አጋሮች መስማማት አለባቸው።', '{name} walitti hidhamiinsa addaan kutuu gaafateera. Itti fufuuf hiriyoonni lamaan walii galuu qabu.'],
+  '💔 Partner Agreed to Disconnect': ['💔 አጋርዎ ግንኙነቱን ለማቋረጥ ተስማምተዋል', '💔 Hiriyaan walitti hidhamiinsa addaan kutuuf walii galeera'],
+  '{name} has agreed to disconnect. You have 30 days to cancel if you change your mind.': ['{name} ግንኙነቱን ለማቋረጥ ተስማምተዋል። ሐሳብዎን ከቀየሩ ለመሰረዝ 30 ቀናት አሉዎት።', '{name} walitti hidhamiinsa addaan kutuuf walii galeera. Yaada keessan yoo jijjiirtan, haquuf guyyaa 30 qabdu.'],
+  '💚 Disconnect Request Cancelled': ['💚 የግንኙነት ማቋረጥ ጥያቄ ተሰርዟል', '💚 Gaaffiin walitti hidhamiinsa addaan kutuu haqameera'],
+  '{name} has cancelled the disconnect request. You remain connected!': ['{name} የግንኙነት ማቋረጥ ጥያቄውን ሰርዘዋል። አሁንም ተገናኝታችኋል!', '{name} gaaffii walitti hidhamiinsa addaan kutuu haqeera. Walitti hidhamtanii itti fuftu!'],
+  'You cancelled the disconnect request. You remain connected with {name}!': ['የግንኙነት ማቋረጥ ጥያቄውን ሰርዘዋል። አሁንም ከ{name} ጋር ተገናኝተዋል!', 'Gaaffii walitti hidhamiinsa addaan kutuu haqtaniittu. {name} waliin walitti hidhamtanii itti fuftu!'],
+  '💔 Partnership Ended': ['💔 የአጋር ግንኙነት ተጠናቋል', '💔 Walitti hidhamiinsi hiriyaa xumurameera'],
+  'Your partnership has been disconnected. Your data remains private.': ['የአጋር ግንኙነታችሁ ተቋርጧል። መረጃዎ የግል ሆኖ ይቆያል።', 'Walitti hidhamiinsi hiriyaa keessanii addaan citeera. Daataan keessan dhuunfaa taʼee itti fufa.'],
+  '💝 Weekly Mood Reflection': ['💝 ሳምንታዊ የስሜት ነጸብራቅ', '💝 Calaqqee Miiraa Torbanii'],
+  "This week's mood reflection: {first} ({firstAvg}/4) and {second} ({secondAvg}/4)": ['የዚህ ሳምንት የስሜት ነጸብራቅ፦ {first} ({firstAvg}/4) እና {second} ({secondAvg}/4)', 'Calaqqee miiraa torban kanaa: {first} ({firstAvg}/4) fi {second} ({secondAvg}/4)'],
+  '🔴 Live Session Started': ['🔴 የቀጥታ ዝግጅት ተጀምሯል', '🔴 Sagantaan kallattii jalqabameera'],
+  '{name} is live in {group}': ['{name} በ{group} ውስጥ በቀጥታ ላይ ናቸው', '{name} garee {group} keessatti kallattiin jiru'],
+  '🧠 AI analysis ready': ['🧠 የAI ትንተና ዝግጁ ነው', '🧠 Xiinxalli AI qophaaʼeera'],
+  'Your AI mood analysis is ready to review.': ['የAI የስሜት ትንተናዎ ለማየት ዝግጁ ነው።', 'Xiinxalli miira keessanii AI dhaan qophaaʼe ilaaluuf qophaaʼeera.'],
+  '{count} minute ago': ['ከ{count} ደቂቃ በፊት', 'Daqiiqaa {count} dura'],
+  '{count} minutes ago': ['ከ{count} ደቂቃዎች በፊት', 'Daqiiqaa {count} dura'],
+  '{count} hour ago': ['ከ{count} ሰዓት በፊት', 'Saʼaatii {count} dura'],
+  '{count} hours ago': ['ከ{count} ሰዓታት በፊት', 'Saʼaatii {count} dura'],
+  '{count} day ago': ['ከ{count} ቀን በፊት', 'Guyyaa {count} dura'],
+  '{count} days ago': ['ከ{count} ቀናት በፊት', 'Guyyaa {count} dura'],
+};

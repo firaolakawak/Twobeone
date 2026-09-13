@@ -1,3 +1,8 @@
+import { formatUiDate } from '../../utils/uiDateTime';
+import { BrandLoader, LoadingMark } from '../BrandLoader';
+import { useCurrentLanguage } from '../../utils/languageStore';
+import { UI_LOCALES, useUiCopy } from "../../utils/uiTranslation";
+import { adminToolsMessages } from "../../locales/adminTools";
 import { useState, useEffect, useRef } from 'react';
 import { Upload, X, Trash2, Image as ImageIcon, Download, Eye, RefreshCw } from 'lucide-react';
 import { Card } from '../ui/card';
@@ -28,6 +33,8 @@ interface ScreenshotUploaderProps {
 }
 
 export function ScreenshotUploader({ accessToken }: ScreenshotUploaderProps) {
+  const tr = useUiCopy(adminToolsMessages);
+  const language = useCurrentLanguage();
   const [screenshots, setScreenshots] = useState<Screenshot[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
@@ -57,7 +64,7 @@ export function ScreenshotUploader({ accessToken }: ScreenshotUploaderProps) {
       }
     } catch (error) {
       console.error('Failed to load screenshots:', error);
-      toast.error('Failed to load screenshots');
+      toast.error(tr("Failed to load screenshots"));
     } finally {
       setIsLoading(false);
     }
@@ -69,13 +76,13 @@ export function ScreenshotUploader({ accessToken }: ScreenshotUploaderProps) {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file');
+      toast.error(tr("Please select an image file"));
       return;
     }
 
     // Validate file size (5MB)
     if (file.size > 5242880) {
-      toast.error('Image size must be less than 5MB');
+      toast.error(tr("Image size must be less than 5MB"));
       return;
     }
 
@@ -102,7 +109,7 @@ export function ScreenshotUploader({ accessToken }: ScreenshotUploaderProps) {
 
       if (response.ok) {
         const { screenshot } = await response.json();
-        toast.success('Screenshot uploaded successfully!');
+        toast.success(tr("Screenshot uploaded successfully!"));
         setScreenshots([...screenshots, screenshot]);
         
         // Reset file input
@@ -115,14 +122,14 @@ export function ScreenshotUploader({ accessToken }: ScreenshotUploaderProps) {
       }
     } catch (error: any) {
       console.error('Failed to upload screenshot:', error);
-      toast.error(error.message || 'Failed to upload screenshot');
+      toast.error(tr('Failed to upload screenshot'));
     } finally {
       setIsUploading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this screenshot?')) {
+    if (!confirm(tr("Are you sure you want to delete this screenshot?"))) {
       return;
     }
 
@@ -138,14 +145,14 @@ export function ScreenshotUploader({ accessToken }: ScreenshotUploaderProps) {
       );
 
       if (response.ok) {
-        toast.success('Screenshot deleted successfully');
+        toast.success(tr("Screenshot deleted successfully"));
         setScreenshots(screenshots.filter(s => s.id !== id));
       } else {
         throw new Error('Delete failed');
       }
     } catch (error) {
       console.error('Failed to delete screenshot:', error);
-      toast.error('Failed to delete screenshot');
+      toast.error(tr("Failed to delete screenshot"));
     }
   };
 
@@ -171,10 +178,10 @@ export function ScreenshotUploader({ accessToken }: ScreenshotUploaderProps) {
     <div className="space-y-6">
       {/* Upload Section */}
       <Card className="p-6">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-2">
             <ImageIcon className="w-5 h-5 text-primary-600" />
-            <h3 className="text-xl font-semibold">Upload Screenshot</h3>
+            <h3 className="tbo-section-title ">{tr("Upload Screenshot")}</h3>
           </div>
           <Button
             variant="outline"
@@ -182,40 +189,37 @@ export function ScreenshotUploader({ accessToken }: ScreenshotUploaderProps) {
             onClick={loadScreenshots}
             disabled={isLoading}
           >
-            <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
+            {isLoading ? <LoadingMark className="mr-2" /> : <RefreshCw className="w-4 h-4 mr-2" />}
+            {tr("Refresh")}</Button>
         </div>
 
         <div className="bg-sky-50 border border-sky-200 rounded-lg p-4 mb-4">
-          <p className="text-sm text-sky-700">
-            📸 <strong>Upload App Screenshots</strong> - Add high-quality screenshots of your app to display on the landing page. 
-            Recommended: Mobile screenshots in portrait orientation (PNG or JPG, max 5MB)
-          </p>
+          <p className="tbo-supporting text-sky-700">
+            📸 <strong>{tr("Upload App Screenshots")}</strong> {tr("- Add high-quality screenshots of your app to display on the landing page. Recommended: Mobile screenshots in portrait orientation (PNG or JPG, max 5MB)")}</p>
         </div>
 
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Screenshot Type</label>
+              <label className="tbo-label mb-2 block">{tr("Screenshot Type")}</label>
               <Select value={selectedType} onValueChange={setSelectedType}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="hero">Hero Section</SelectItem>
-                  <SelectItem value="devotional">Mobile Mockup · Daily Devotional</SelectItem>
-                  <SelectItem value="prayer">Mobile Mockup · Shared Prayer</SelectItem>
-                  <SelectItem value="sync">Mobile Mockup · Couple Sync</SelectItem>
-                  <SelectItem value="feature">Feature Showcase</SelectItem>
-                  <SelectItem value="testimonial">Testimonial Section</SelectItem>
-                  <SelectItem value="general">General</SelectItem>
+                  <SelectItem value="hero">{tr("Hero Section")}</SelectItem>
+                  <SelectItem value="devotional">{tr("Mobile Mockup · Daily Devotional")}</SelectItem>
+                  <SelectItem value="prayer">{tr("Mobile Mockup · Shared Prayer")}</SelectItem>
+                  <SelectItem value="sync">{tr("Mobile Mockup · Couple Sync")}</SelectItem>
+                  <SelectItem value="feature">{tr("Feature Showcase")}</SelectItem>
+                  <SelectItem value="testimonial">{tr("Testimonial Section")}</SelectItem>
+                  <SelectItem value="general">{tr("General")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Upload Image</label>
+              <label className="tbo-label mb-2 block">{tr("Upload Image")}</label>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -231,14 +235,12 @@ export function ScreenshotUploader({ accessToken }: ScreenshotUploaderProps) {
               >
                 {isUploading ? (
                   <>
-                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                    Uploading...
-                  </>
+                    <LoadingMark className="mr-2" />
+                    {tr("Uploading...")}</>
                 ) : (
                   <>
                     <Upload className="w-4 h-4 mr-2" />
-                    Choose File
-                  </>
+                    {tr("Choose File")}</>
                 )}
               </Button>
             </div>
@@ -246,34 +248,30 @@ export function ScreenshotUploader({ accessToken }: ScreenshotUploaderProps) {
 
           <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
             <ImageIcon className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground mb-1">
-              Click "Choose File" to upload or drag and drop
-            </p>
-            <p className="text-xs text-muted-foreground">
-              PNG, JPG up to 5MB
-            </p>
+            <p className="tbo-supporting text-muted-foreground mb-1">
+              {tr("Click \"Choose File\" to upload or drag and drop")}</p>
+            <p className="tbo-caption text-muted-foreground">
+              {tr("PNG, JPG up to 5MB")}</p>
           </div>
         </div>
       </Card>
 
       {/* Screenshots Gallery */}
       <Card className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-semibold">Uploaded Screenshots ({screenshots.length})</h3>
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <h3 className="tbo-section-title ">{tr('Uploaded screenshots ({count})', { count: screenshots.length })}</h3>
           {screenshots.length > 0 && (
-            <Badge className="text-lg px-3 py-1">{screenshots.length} images</Badge>
+            <Badge className="tbo-caption px-3 py-1">{tr('{count} images', { count: screenshots.length })}</Badge>
           )}
         </div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <RefreshCw className="w-8 h-8 animate-spin text-primary-600" />
-          </div>
+          <BrandLoader className="py-12" label={tr("Loading screenshots…")} />
         ) : screenshots.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             <ImageIcon className="w-16 h-16 mx-auto mb-3 opacity-30" />
-            <p className="text-lg mb-1">No screenshots uploaded yet</p>
-            <p className="text-sm">Upload your first screenshot to get started</p>
+            <p className="tbo-body mb-1">{tr("No screenshots uploaded yet")}</p>
+            <p className="tbo-supporting ">{tr("Upload your first screenshot to get started")}</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -295,6 +293,7 @@ export function ScreenshotUploader({ accessToken }: ScreenshotUploaderProps) {
                       variant="secondary"
                       className="h-8 w-8 p-0"
                       onClick={() => setPreviewImage(screenshot.url)}
+                      aria-label={tr("Preview {name}", { name: screenshot.filename })}
                     >
                       <Eye className="w-4 h-4" />
                     </Button>
@@ -303,6 +302,7 @@ export function ScreenshotUploader({ accessToken }: ScreenshotUploaderProps) {
                       variant="destructive"
                       className="h-8 w-8 p-0"
                       onClick={() => handleDelete(screenshot.id)}
+                      aria-label={tr("Delete {name}", { name: screenshot.filename })}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -310,22 +310,22 @@ export function ScreenshotUploader({ accessToken }: ScreenshotUploaderProps) {
                 </div>
                 <div className="p-3 space-y-2">
                   <Badge className={getTypeColor(screenshot.type)}>
-                    {screenshot.type}
+                    {tr(({ hero: 'Hero Section', devotional: 'Mobile Mockup · Daily Devotional', prayer: 'Mobile Mockup · Shared Prayer', sync: 'Mobile Mockup · Couple Sync', feature: 'Feature Showcase', testimonial: 'Testimonial Section', general: 'General' } as Record<string,string>)[screenshot.type] || screenshot.type)}
                   </Badge>
-                  <p className="text-xs font-medium truncate" title={screenshot.filename}>
+                  <p className="tbo-caption truncate" title={screenshot.filename}>
                     {screenshot.filename}
                   </p>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <div className="tbo-caption flex items-center justify-between text-muted-foreground">
                     <span>{formatFileSize(screenshot.size)}</span>
-                    <span>{new Date(screenshot.uploadedAt).toLocaleDateString()}</span>
+                    <span>{formatUiDate(new Date(screenshot.uploadedAt), UI_LOCALES[language])}</span>
                   </div>
                   <a
                     href={screenshot.url}
                     download={screenshot.filename}
-                    className="text-xs text-primary-600 hover:text-primary-700 flex items-center gap-1"
+                    className="tbo-action text-primary-600 hover:text-primary-700 flex items-center gap-1"
                   >
                     <Download className="w-3 h-3" />
-                    Download
+                    {tr("Download")}
                   </a>
                 </div>
               </div>
@@ -348,11 +348,10 @@ export function ScreenshotUploader({ accessToken }: ScreenshotUploaderProps) {
               onClick={() => setPreviewImage(null)}
             >
               <X className="w-4 h-4 mr-2" />
-              Close
-            </Button>
+              {tr("Close")}</Button>
             <img
               src={previewImage}
-              alt="Preview"
+              alt={tr("Preview")}
               className="max-w-full max-h-[90vh] object-contain rounded-lg"
               onClick={(e) => e.stopPropagation()}
             />

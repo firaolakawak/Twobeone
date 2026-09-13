@@ -1,3 +1,6 @@
+import { useUiCopy } from "../../utils/uiTranslation";
+import { adminToolsMessages } from "../../locales/adminTools";
+import { LoadingMark } from "../BrandLoader";
 import { useState, useRef, useCallback } from 'react';
 import {
   Download,
@@ -12,7 +15,6 @@ import {
   ChevronUp,
   BookOpen,
   Sparkles,
-  Loader2,
 } from 'lucide-react';
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
 import { STATIC_MODULES } from '../../data/modules';
@@ -104,7 +106,7 @@ function Pill({ label, color, bg }: { label: string; color: string; bg: string }
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center',
-      fontSize: 'var(--text-label)', fontWeight: 'var(--font-weight-semibold)',
+      fontSize: 'var(--type-caption-size)', fontWeight: 'var(--font-weight-semibold)',
       color, backgroundColor: bg,
       borderRadius: 'var(--radius-full)',
       padding: '2px 10px',
@@ -116,6 +118,7 @@ function Pill({ label, color, bg }: { label: string; color: string; bg: string }
 
 /* ─── Import result row ─── */
 function ResultRow({ r }: { r: ImportResult }) {
+  const tr = useUiCopy(adminToolsMessages);
   const map = {
     created: { icon: <CheckCircle2 style={{ width: 15, height: 15, color: 'var(--success-500)' }} />, label: 'Created', color: 'var(--success-700)', bg: 'var(--success-50)' },
     updated: { icon: <CheckCircle2 style={{ width: 15, height: 15, color: 'var(--secondary-600)' }} />, label: 'Updated', color: 'var(--secondary-600)', bg: 'var(--secondary-50)' },
@@ -130,12 +133,12 @@ function ResultRow({ r }: { r: ImportResult }) {
       backgroundColor: 'var(--neutral-50)',
     }}>
       {map.icon}
-      <span style={{ flex: 1, fontSize: 'var(--text-callout)', color: 'var(--neutral-800)', fontWeight: 'var(--font-weight-medium)' }}>
+      <span style={{ flex: 1, fontSize: 'var(--type-label-size)', color: 'var(--neutral-800)', fontWeight: 'var(--font-weight-medium)' }}>
         {r.title}
       </span>
-      <Pill label={map.label} color={map.color} bg={map.bg} />
+      <Pill label={tr(map.label)} color={map.color} bg={map.bg} />
       {r.error && (
-        <span style={{ fontSize: 'var(--text-label)', color: 'var(--error-500)' }}>{r.error}</span>
+        <span style={{ fontSize: 'var(--type-caption-size)', color: 'var(--error-500)' }}>{tr(r.error)}</span>
       )}
     </div>
   );
@@ -145,6 +148,7 @@ function ResultRow({ r }: { r: ImportResult }) {
    MAIN COMPONENT
 ═══════════════════════════════════════════ */
 export function ModulesImportExport({ modules, accessToken, onImportComplete }: ModulesImportExportProps) {
+  const tr = useUiCopy(adminToolsMessages);
   const [activePanel, setActivePanel] = useState<'none' | 'export' | 'import'>('none');
 
   /* ── Export state ── */
@@ -154,7 +158,7 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
   const [dragOver, setDragOver] = useState(false);
   const [importFile, setImportFile] = useState<File | null>(null);
   const [parsedModules, setParsedModules] = useState<Module[]>([]);
-  const [parseErrors, setParseErrors] = useState<string[]>([]);
+  const [parseErrors, setParseErrors] = useState<Array<string | { number: number; title: string; errors: string[] }>>([]);
   const [overwriteMode, setOverwriteMode] = useState<'skip' | 'overwrite'>('skip');
   const [isImporting, setIsImporting] = useState(false);
   const [importResults, setImportResults] = useState<ImportResult[] | null>(null);
@@ -188,10 +192,10 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
       );
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Seed failed');
-      toast.success(`Seeded ${data.summary.created} module(s). ${data.summary.skipped} already existed.`);
+      toast.success(tr('Seeded {created} modules. {skipped} already existed.', data.summary));
       onImportComplete();
     } catch (err: any) {
-      toast.error(err.message || 'Seed failed');
+      toast.error(tr('Seed failed'));
     } finally {
       setIsSeeding(false);
     }
@@ -221,7 +225,7 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
     a.download = `twobeone-modules-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success(`Exported ${filtered.length} module${filtered.length !== 1 ? 's' : ''}`);
+    toast.success(tr('Exported {count} modules', { count: filtered.length }));
   };
 
   /* ── File parse ── */
@@ -241,11 +245,11 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
         if (!list) { setParseErrors(['File must contain a JSON array or an object with a "modules" array.']); return; }
 
         const valid: Module[] = [];
-        const errs: string[] = [];
+        const errs: Array<{ number: number; title: string; errors: string[] }> = [];
         list.forEach((item, i) => {
           const { ok, errors } = validateModule(item);
           if (ok) valid.push(item as Module);
-          else errs.push(`Module ${i + 1} (${item?.title ?? 'untitled'}): ${errors.join(', ')}`);
+          else errs.push({ number: i + 1, title: item?.title || '', errors });
         });
 
         // Auto-detect language from first module that has one set
@@ -261,7 +265,7 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
       }
     };
     reader.readAsText(file);
-  }, []);
+  }, [importLanguage]);
 
   const onFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -273,8 +277,8 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
     setDragOver(false);
     const file = e.dataTransfer.files[0];
     if (file?.name.endsWith('.json')) parseFile(file);
-    else toast.error('Please drop a .json file');
-  }, [parseFile]);
+    else toast.error(tr("Please drop a .json file"));
+  }, [parseFile, tr]);
 
   /* ── Import ── */
   const handleImport = async () => {
@@ -307,10 +311,10 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
       if (!res.ok) throw new Error(data.error || 'Import failed');
       setImportResults(data.results);
       setImportSummary(data.summary);
-      toast.success(`Import complete: ${data.summary.created} created, ${data.summary.updated} updated, ${data.summary.skipped} skipped`);
+      toast.success(tr('Import complete: {created} created, {updated} updated, {skipped} skipped', data.summary));
       onImportComplete();
     } catch (err: any) {
-      toast.error(err.message || 'Import failed');
+      toast.error(tr('Import failed'));
     } finally {
       setIsImporting(false);
     }
@@ -342,7 +346,7 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
             border: '1px solid var(--primary-300)',
             backgroundColor: 'var(--primary-50)',
             color: 'var(--primary-700)',
-            fontSize: 'var(--text-callout)',
+            fontSize: 'var(--type-label-size)',
             fontWeight: 'var(--font-weight-semibold)',
             cursor: isSeeding ? 'not-allowed' : 'pointer',
             opacity: isSeeding ? 0.7 : 1,
@@ -350,8 +354,8 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
           }}
         >
           {isSeeding
-            ? <><Loader2 style={{ width: 16, height: 16, animation: 'spin 1s linear infinite' }} /> Seeding…</>
-            : <><Sparkles style={{ width: 16, height: 16 }} /> Seed 5 Built-In Modules</>}
+            ? <><LoadingMark size={16} /> {' '}{tr("Seeding…")}</>
+            : <><Sparkles style={{ width: 16, height: 16 }} /> {' '}{tr("Seed 5 Built-In Modules")}</>}
         </button>
         {/* Export trigger */}
         <button
@@ -363,15 +367,14 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
             border: `1px solid ${activePanel === 'export' ? 'var(--primary-400, #ff6391)' : 'var(--neutral-200)'}`,
             backgroundColor: activePanel === 'export' ? 'var(--primary-50)' : 'var(--card)',
             color: activePanel === 'export' ? 'var(--primary-600)' : 'var(--neutral-700)',
-            fontSize: 'var(--text-callout)',
+            fontSize: 'var(--type-label-size)',
             fontWeight: 'var(--font-weight-semibold)',
             cursor: 'pointer',
             transition: 'all 0.15s ease',
           }}
         >
           <Download style={{ width: 16, height: 16 }} />
-          Export
-          {activePanel === 'export'
+          {tr("Export")}{activePanel === 'export'
             ? <ChevronUp style={{ width: 14, height: 14 }} />
             : <ChevronDown style={{ width: 14, height: 14 }} />}
         </button>
@@ -386,15 +389,14 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
             border: `1px solid ${activePanel === 'import' ? 'var(--secondary-400, #38bdf8)' : 'var(--neutral-200)'}`,
             backgroundColor: activePanel === 'import' ? 'var(--secondary-50)' : 'var(--card)',
             color: activePanel === 'import' ? 'var(--secondary-700, #0369a1)' : 'var(--neutral-700)',
-            fontSize: 'var(--text-callout)',
+            fontSize: 'var(--type-label-size)',
             fontWeight: 'var(--font-weight-semibold)',
             cursor: 'pointer',
             transition: 'all 0.15s ease',
           }}
         >
           <Upload style={{ width: 16, height: 16 }} />
-          Import
-          {activePanel === 'import'
+          {tr("Import")}{activePanel === 'import'
             ? <ChevronUp style={{ width: 14, height: 14 }} />
             : <ChevronDown style={{ width: 14, height: 14 }} />}
         </button>
@@ -411,19 +413,17 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <p style={{ fontSize: 'var(--text-body)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--neutral-900)', margin: 0 }}>
-                Export Modules
-              </p>
-              <p style={{ fontSize: 'var(--text-callout)', color: 'var(--neutral-500)', margin: '2px 0 0 0' }}>
-                Download your modules as a portable JSON file
-              </p>
+              <p style={{ fontSize: 'var(--type-body-size)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--neutral-900)', margin: 0 }}>
+                {tr("Export Modules")}</p>
+              <p style={{ fontSize: 'var(--type-label-size)', color: 'var(--neutral-500)', margin: '2px 0 0 0' }}>
+                {tr("Download your modules as a portable JSON file")}</p>
             </div>
             <FileJson style={{ width: 28, height: 28, color: 'var(--primary-400, #ff6391)', flexShrink: 0 }} />
           </div>
 
           {/* Scope selector */}
           <div>
-            <SectionTitle>What to export</SectionTitle>
+            <SectionTitle>{tr("What to export")}</SectionTitle>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-2)' }}>
               {([
                 { value: 'all',       label: 'All modules',       count: modules.length },
@@ -449,11 +449,11 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
                     onChange={() => setExportScope(opt.value)}
                     style={{ accentColor: 'var(--primary-500)', width: 16, height: 16 }}
                   />
-                  <span style={{ flex: 1, fontSize: 'var(--text-callout)', color: 'var(--neutral-800)', fontWeight: 'var(--font-weight-medium)' }}>
-                    {opt.label}
+                  <span style={{ flex: 1, fontSize: 'var(--type-label-size)', color: 'var(--neutral-800)', fontWeight: 'var(--font-weight-medium)' }}>
+                    {tr(opt.label)}
                   </span>
                   <Pill
-                    label={`${opt.count} module${opt.count !== 1 ? 's' : ''}`}
+                    label={tr('{count} modules', { count: opt.count })}
                     color="var(--neutral-600)"
                     bg="var(--neutral-100)"
                   />
@@ -469,11 +469,9 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
             borderRadius: 'var(--radius-md)',
             border: '1px solid var(--neutral-200)',
           }}>
-            <SectionTitle>Export format</SectionTitle>
-            <p style={{ fontSize: 'var(--text-callout)', color: 'var(--neutral-600)', margin: 0, lineHeight: 1.6 }}>
-              Exports a <strong>JSON</strong> file containing module metadata, lesson content, and IDs.
-              Use this file to back up content or migrate modules to another environment.
-              Module IDs are preserved so re-importing with "overwrite" enabled updates existing modules in-place.
+            <SectionTitle>{tr("Export format")}</SectionTitle>
+            <p style={{ fontSize: 'var(--type-label-size)', color: 'var(--neutral-600)', margin: 0, lineHeight: 1.6 }}>
+              {tr('The JSON file includes module metadata, lesson content, and IDs. Use it to back up or migrate content. Importing with overwrite enabled updates existing modules with the same IDs.')}
             </p>
           </div>
 
@@ -487,15 +485,14 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
               border: 'none',
               backgroundColor: modules.length === 0 ? 'var(--neutral-200)' : 'var(--primary-600)',
               color: modules.length === 0 ? 'var(--neutral-400)' : '#ffffff',
-              fontSize: 'var(--text-callout)',
+              fontSize: 'var(--type-label-size)',
               fontWeight: 'var(--font-weight-semibold)',
               cursor: modules.length === 0 ? 'not-allowed' : 'pointer',
               transition: 'background 0.15s ease',
             }}
           >
             <Download style={{ width: 16, height: 16 }} />
-            Download JSON
-          </button>
+            {tr("Download JSON")}</button>
         </div>
       )}
 
@@ -510,12 +507,10 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <p style={{ fontSize: 'var(--text-body)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--neutral-900)', margin: 0 }}>
-                Import Modules
-              </p>
-              <p style={{ fontSize: 'var(--text-callout)', color: 'var(--neutral-500)', margin: '2px 0 0 0' }}>
-                Upload a JSON file to add or update modules in bulk
-              </p>
+              <p style={{ fontSize: 'var(--type-body-size)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--neutral-900)', margin: 0 }}>
+                {tr("Import Modules")}</p>
+              <p style={{ fontSize: 'var(--type-label-size)', color: 'var(--neutral-500)', margin: '2px 0 0 0' }}>
+                {tr("Upload a JSON file to add or update modules in bulk")}</p>
             </div>
             <Upload style={{ width: 28, height: 28, color: 'var(--secondary-500, #0ea5e9)', flexShrink: 0 }} />
           </div>
@@ -534,11 +529,10 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
               }}>
                 <CheckCircle2 style={{ width: 20, height: 20, color: 'var(--success-500)', flexShrink: 0 }} />
                 <div style={{ flex: 1 }}>
-                  <p style={{ fontSize: 'var(--text-callout)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--success-700)', margin: 0 }}>
-                    Import complete
-                  </p>
-                  <p style={{ fontSize: 'var(--text-label)', color: 'var(--success-700)', margin: 0 }}>
-                    {importSummary.created} created · {importSummary.updated} updated · {importSummary.skipped} skipped of {importSummary.total} total
+                  <p style={{ fontSize: 'var(--type-label-size)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--success-700)', margin: 0 }}>
+                    {tr("Import complete")}</p>
+                  <p style={{ fontSize: 'var(--type-caption-size)', color: 'var(--success-700)', margin: 0 }}>
+                    {tr('{created} created · {updated} updated · {skipped} skipped of {total} total', { ...importSummary })}
                   </p>
                 </div>
               </div>
@@ -557,21 +551,20 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
                   border: '1px solid var(--neutral-200)',
                   backgroundColor: 'var(--card)',
                   color: 'var(--neutral-600)',
-                  fontSize: 'var(--text-callout)',
+                  fontSize: 'var(--type-label-size)',
                   fontWeight: 'var(--font-weight-medium)',
                   cursor: 'pointer',
                   alignSelf: 'flex-start',
                 }}
               >
                 <X style={{ width: 14, height: 14 }} />
-                Import another file
-              </button>
+                {tr("Import another file")}</button>
             </div>
           ) : (
             <>
               {/* ── Language selector ── */}
               <div>
-                <SectionTitle>Content Language</SectionTitle>
+                <SectionTitle>{tr("Content Language")}</SectionTitle>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-2)', marginBottom: 'var(--spacing-1)' }}>
                   {([
                     { code: 'auto', label: 'Auto-detect', flag: '🔍' },
@@ -601,23 +594,23 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
                         border: `2px solid ${importLanguage === lang.code ? 'var(--primary-500)' : 'var(--border)'}`,
                         backgroundColor: importLanguage === lang.code ? 'var(--primary-50)' : 'transparent',
                         color: importLanguage === lang.code ? 'var(--primary-700)' : 'var(--neutral-600)',
-                        fontSize: 'var(--text-label)',
+                        fontSize: 'var(--type-caption-size)',
                         fontWeight: importLanguage === lang.code ? 'var(--font-weight-semibold)' : 'var(--font-weight-normal)',
                         cursor: 'pointer',
                       }}
                     >
-                      <span>{lang.flag}</span><span>{lang.label}</span>
+                      <span>{lang.flag}</span><span>{tr(lang.label)}</span>
                     </button>
                   ))}
                 </div>
-                <p style={{ fontSize: 'var(--text-label)', color: 'var(--neutral-400)', margin: 0 }}>
-                  Auto-detect reads the <code>language</code> field from each module. Override to force all modules to one language.
+                <p style={{ fontSize: 'var(--type-caption-size)', color: 'var(--neutral-400)', margin: 0 }}>
+                  {tr('Auto-detect reads each module’s language field. Choose a language to apply it to every imported module.')}
                 </p>
               </div>
 
               {/* ── Drop zone ── */}
               <div>
-                <SectionTitle>Select file</SectionTitle>
+                <SectionTitle>{tr("Select file")}</SectionTitle>
                 <div
                   onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                   onDragLeave={() => setDragOver(false)}
@@ -637,22 +630,19 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
                   {importFile ? (
                     <>
                       <FileJson style={{ width: 32, height: 32, color: 'var(--success-500)' }} />
-                      <p style={{ fontSize: 'var(--text-callout)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--success-700)', margin: 0 }}>
+                      <p style={{ fontSize: 'var(--type-label-size)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--success-700)', margin: 0 }}>
                         {importFile.name}
                       </p>
-                      <p style={{ fontSize: 'var(--text-label)', color: 'var(--neutral-500)', margin: 0 }}>
-                        {sizeOf(importFile.size)} · Click to choose a different file
-                      </p>
+                      <p style={{ fontSize: 'var(--type-caption-size)', color: 'var(--neutral-500)', margin: 0 }}>
+                        {sizeOf(importFile.size)} {tr("· Click to choose a different file")}</p>
                     </>
                   ) : (
                     <>
                       <Upload style={{ width: 32, height: 32, color: 'var(--neutral-400)' }} />
-                      <p style={{ fontSize: 'var(--text-callout)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--neutral-700)', margin: 0 }}>
-                        Drop a JSON file here
-                      </p>
-                      <p style={{ fontSize: 'var(--text-label)', color: 'var(--neutral-500)', margin: 0 }}>
-                        or click to browse
-                      </p>
+                      <p style={{ fontSize: 'var(--type-label-size)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--neutral-700)', margin: 0 }}>
+                        {tr("Drop a JSON file here")}</p>
+                      <p style={{ fontSize: 'var(--type-caption-size)', color: 'var(--neutral-500)', margin: 0 }}>
+                        {tr("or click to browse")}</p>
                     </>
                   )}
                 </div>
@@ -676,13 +666,13 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
                     <XCircle style={{ width: 16, height: 16, color: 'var(--error-500)', flexShrink: 0 }} />
-                    <p style={{ fontSize: 'var(--text-callout)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--error-700)', margin: 0 }}>
-                      {parseErrors.length} validation issue{parseErrors.length !== 1 ? 's' : ''} found
+                    <p style={{ fontSize: 'var(--type-label-size)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--error-700)', margin: 0 }}>
+                      {tr('{count} validation issues found', { count: parseErrors.length })}
                     </p>
                   </div>
                   {parseErrors.map((e, i) => (
-                    <p key={i} style={{ fontSize: 'var(--text-label)', color: 'var(--error-700)', margin: '0 0 0 24px' }}>
-                      • {e}
+                    <p key={i} style={{ fontSize: 'var(--type-caption-size)', color: 'var(--error-700)', margin: '0 0 0 24px' }}>
+                      • {typeof e === 'string' ? tr(e) : tr('Module {number} ({title}): {errors}', { number: e.number, title: e.title || tr('untitled'), errors: e.errors.map(message => tr(message)).join(', ') })}
                     </p>
                   ))}
                 </div>
@@ -692,16 +682,16 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
               {parsedModules.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-3)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <SectionTitle>{parsedModules.length} valid module{parsedModules.length !== 1 ? 's' : ''} ready to import</SectionTitle>
+                    <SectionTitle>{tr('{count} valid modules ready to import', { count: parsedModules.length })}</SectionTitle>
                     <button
                       onClick={() => setExpandedPreview(!expandedPreview)}
                       style={{
                         display: 'flex', alignItems: 'center', gap: 4,
-                        fontSize: 'var(--text-label)', color: 'var(--neutral-500)',
+                        fontSize: 'var(--type-caption-size)', color: 'var(--neutral-500)',
                         background: 'none', border: 'none', cursor: 'pointer', padding: 0,
                       }}
                     >
-                      {expandedPreview ? 'Collapse' : 'Expand preview'}
+                      {expandedPreview ? tr("Collapse") : tr("Expand preview")}
                       {expandedPreview ? <ChevronUp style={{ width: 13, height: 13 }} /> : <ChevronDown style={{ width: 13, height: 13 }} />}
                     </button>
                   </div>
@@ -726,11 +716,11 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
                             {m.icon || <BookOpen style={{ width: 16, height: 16, color: 'var(--secondary-500)' }} />}
                           </div>
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <p style={{ fontSize: 'var(--text-callout)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--neutral-900)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            <p style={{ fontSize: 'var(--type-label-size)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--neutral-900)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                               {m.title}
                             </p>
-                            <p style={{ fontSize: 'var(--text-label)', color: 'var(--neutral-500)', margin: 0 }}>
-                              {m.lessons?.length ?? 0} lesson{(m.lessons?.length ?? 0) !== 1 ? 's' : ''} · {m.status ?? 'draft'} · ID: {m.id}
+                            <p style={{ fontSize: 'var(--type-caption-size)', color: 'var(--neutral-500)', margin: 0 }}>
+                              {tr('{count} lessons', { count: m.lessons?.length ?? 0 })} · {tr(m.status ?? 'draft')} · ID: {m.id}
                             </p>
                           </div>
                           <Pill
@@ -745,7 +735,7 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
 
                   {/* Conflict resolution */}
                   <div>
-                    <SectionTitle>If a module ID already exists</SectionTitle>
+                    <SectionTitle>{tr("If a module ID already exists")}</SectionTitle>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-2)' }}>
                       {([
                         { value: 'skip',      label: 'Skip (keep existing)',   desc: 'Existing modules will not be changed — only new modules are created.', icon: <SkipForward style={{ width: 15, height: 15 }} /> },
@@ -771,11 +761,11 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
                             style={{ accentColor: opt.value === 'overwrite' ? 'var(--warning-500)' : 'var(--success-500)', width: 16, height: 16, marginTop: 2, flexShrink: 0 }}
                           />
                           <div>
-                            <p style={{ fontSize: 'var(--text-callout)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--neutral-800)', margin: 0 }}>
-                              {opt.label}
+                            <p style={{ fontSize: 'var(--type-label-size)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--neutral-800)', margin: 0 }}>
+                              {tr(opt.label)}
                             </p>
-                            <p style={{ fontSize: 'var(--text-label)', color: 'var(--neutral-500)', margin: '2px 0 0 0' }}>
-                              {opt.desc}
+                            <p style={{ fontSize: 'var(--type-caption-size)', color: 'var(--neutral-500)', margin: '2px 0 0 0' }}>
+                              {tr(opt.desc)}
                             </p>
                           </div>
                         </label>
@@ -793,9 +783,8 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
                       borderRadius: 'var(--radius-md)',
                     }}>
                       <AlertTriangle style={{ width: 16, height: 16, color: 'var(--warning-700)', flexShrink: 0, marginTop: 1 }} />
-                      <p style={{ fontSize: 'var(--text-callout)', color: 'var(--warning-700)', margin: 0, lineHeight: 1.5 }}>
-                        Overwrite mode will permanently replace existing module content. This cannot be undone — consider exporting a backup first.
-                      </p>
+                      <p style={{ fontSize: 'var(--type-label-size)', color: 'var(--warning-700)', margin: 0, lineHeight: 1.5 }}>
+                        {tr("Overwrite mode will permanently replace existing module content. This cannot be undone — consider exporting a backup first.")}</p>
                     </div>
                   )}
 
@@ -810,7 +799,7 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
                       border: 'none',
                       backgroundColor: isImporting ? 'var(--neutral-300)' : 'var(--secondary-600, #0284c7)',
                       color: '#ffffff',
-                      fontSize: 'var(--text-callout)',
+                      fontSize: 'var(--type-label-size)',
                       fontWeight: 'var(--font-weight-semibold)',
                       cursor: isImporting ? 'not-allowed' : 'pointer',
                       transition: 'background 0.15s ease',
@@ -818,8 +807,8 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
                   >
                     <Upload style={{ width: 16, height: 16 }} />
                     {isImporting
-                      ? 'Importing…'
-                      : `Import ${parsedModules.length} Module${parsedModules.length !== 1 ? 's' : ''}`}
+                      ? tr("Importing…")
+                      : tr('Import {count} modules', { count: parsedModules.length })}
                   </button>
                 </div>
               )}
@@ -832,9 +821,9 @@ export function ModulesImportExport({ modules, accessToken, onImportComplete }: 
                   borderRadius: 'var(--radius-md)',
                   border: '1px solid var(--neutral-200)',
                 }}>
-                  <SectionTitle>Expected JSON format</SectionTitle>
+                  <SectionTitle>{tr("Expected JSON format")}</SectionTitle>
                   <pre style={{
-                    fontSize: 'var(--text-label)',
+                    fontSize: 'var(--type-caption-size)',
                     color: 'var(--neutral-600)',
                     backgroundColor: 'var(--neutral-100)',
                     borderRadius: 'var(--radius-md)',

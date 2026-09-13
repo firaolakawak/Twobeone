@@ -1,6 +1,11 @@
+import { formatUiDate } from '../utils/uiDateTime';
+import { useCurrentLanguage } from '../utils/languageStore';
+import { BrandLoader, LoadingMark } from './BrandLoader';
+import { UI_LOCALES, useUiCopy } from '../utils/uiTranslation';
+import { guidanceMessages, guidanceLabel } from '../locales/guidance';
+import { BackButton } from './BackButton';
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  ArrowLeft,
   Bath,
   BedDouble,
   Building2,
@@ -140,7 +145,7 @@ const DEFAULT_CONFIG: HouseConfig = {
 };
 
 const DAILY_CHALLENGES = [
-  { title: 'Excavate and Lay the Foundation', scripture: 'Psalm 127:1', action: 'Read the verse together, pray over the home you are building, and agree that Godâ€™s Word will be the foundation of your relationship.' },
+  { title: 'Excavate and Lay the Foundation', scripture: 'Psalm 127:1', action: 'Read the verse together, pray over the home you are building, and agree that God’s Word will be the foundation of your relationship.' },
   { title: 'Build on God’s Word', scripture: 'Matthew 7:24–25', action: 'Choose one biblical value that you want this home and relationship to demonstrate.' },
   { title: 'Speak with Grace', scripture: 'Colossians 4:6', action: 'Give your partner one sincere, specific word of encouragement.' },
   { title: 'Listen Before Speaking', scripture: 'James 1:19', action: 'Give each partner three uninterrupted minutes to share about their day.' },
@@ -242,12 +247,13 @@ function MiniHome({ home, selected }: { home: HomeDefinition; selected: boolean 
 }
 
 function Counter({ label, icon: Icon, value, range, onChange }: { label: string; icon: typeof Layers3; value: number; range: [number, number]; onChange: (value: number) => void }) {
+  const tr = useUiCopy(guidanceMessages);
   return (
     <div className="flex items-center gap-3 rounded-2xl border border-stone-200 bg-white/85 p-3">
       <span className="grid h-10 w-10 place-items-center rounded-xl bg-amber-50 text-amber-800"><Icon className="h-5 w-5" /></span>
-      <div className="min-w-0 flex-1"><p className="text-xs font-semibold text-stone-500">{label}</p><p className="font-black text-stone-900">{value}</p></div>
-      <Button type="button" variant="outline" size="icon" className="h-9 w-9 rounded-full" disabled={value <= range[0]} onClick={() => onChange(value - 1)} aria-label={`Remove one ${label}`}><Minus className="h-4 w-4" /></Button>
-      <Button type="button" variant="outline" size="icon" className="h-9 w-9 rounded-full" disabled={value >= range[1]} onClick={() => onChange(value + 1)} aria-label={`Add one ${label}`}><Plus className="h-4 w-4" /></Button>
+      <div className="min-w-0 flex-1"><p className="tbo-caption text-stone-500">{label}</p><p className="tbo-body text-stone-900">{value}</p></div>
+      <Button type="button" variant="outline" size="icon" className="tbo-action h-9 w-9 rounded-full" disabled={value <= range[0]} onClick={() => onChange(value - 1)} aria-label={tr("Decrease {label}", { label })}><Minus className="h-4 w-4" /></Button>
+      <Button type="button" variant="outline" size="icon" className="tbo-action h-9 w-9 rounded-full" disabled={value >= range[1]} onClick={() => onChange(value + 1)} aria-label={tr("Increase {label}", { label })}><Plus className="h-4 w-4" /></Button>
     </div>
   );
 }
@@ -260,6 +266,8 @@ interface CharacterHouseBuilderProps {
 }
 
 export function CharacterHouseBuilder({ onBack, currentUserId, partnerId, partnerName }: CharacterHouseBuilderProps) {
+  const language = useCurrentLanguage();
+  const tr = useUiCopy(guidanceMessages);
   const [config, setConfig] = useState<HouseConfig>(loadConfig);
   const [floor, setFloor] = useState(() => Math.max(0, loadConfig().floors - 1));
   const [showRoof, setShowRoof] = useState(false);
@@ -290,12 +298,12 @@ export function CharacterHouseBuilder({ onBack, currentUserId, partnerId, partne
         setConfig(shared);
         setFloor(Math.max(0, shared.floors - 1));
         if (shared.blueprintStatus === 'active') setMode('current');
-        if (announce) toast.success(shared.blueprintStatus === 'active' ? 'Your partner approved the blueprint. Day 1 has started!' : 'Blueprint status updated.');
+        if (announce) toast.success(shared.blueprintStatus === 'active' ? tr("Your partner approved the blueprint. Day 1 has started!") : tr("Blueprint status updated."));
       } else if (announce) {
-        toast.info('No shared blueprint has been submitted yet.');
+        toast.info(tr("No shared blueprint has been submitted yet."));
       }
     } catch (error: any) {
-      if (announce) toast.error(error.message || 'Could not refresh the blueprint.');
+      if (announce) toast.error(error.message || tr("Could not refresh the blueprint."));
     } finally {
       setSyncing(false);
     }
@@ -328,13 +336,13 @@ export function CharacterHouseBuilder({ onBack, currentUserId, partnerId, partne
     if (!challengeActive || alreadyPlacedToday) return;
     setConfig(current => ({ ...current, completedDays: Math.min(365, current.completedDays + 1), lastBlockDate: todayKey() }));
     setMode('current');
-    toast.success('Today’s block has been placed. Keep building together!');
+    toast.success(tr("Today’s block has been placed. Keep building together!"));
   };
 
   const submitBlueprint = async () => {
     if (!isBlueprintNameReady(config.homeName)) return;
     if (!partnerId) {
-      toast.error('Connect with your partner before submitting a blueprint.');
+      toast.error(tr("Connect with your partner before submitting a blueprint."));
       return;
     }
     setSyncing(true);
@@ -344,9 +352,9 @@ export function CharacterHouseBuilder({ onBack, currentUserId, partnerId, partne
       setMode('blueprint');
       setSceneView('house');
       setSubmitOpen(false);
-      toast.success(`Blueprint sent to ${partnerName || 'your partner'} for approval.`);
+      toast.success(tr('Blueprint sent to {name} for approval.', { name: partnerName || tr('your partner') }));
     } catch (error: any) {
-      toast.error(error.message || 'Could not submit the blueprint.');
+      toast.error(error.message || tr("Could not submit the blueprint."));
     } finally {
       setSyncing(false);
     }
@@ -361,9 +369,9 @@ export function CharacterHouseBuilder({ onBack, currentUserId, partnerId, partne
       setMode('current');
       setSceneView('house');
       setApprovalOpen(false);
-      toast.success('Blueprint approved. Day 1: excavate and lay the foundation!');
+      toast.success(tr("Blueprint approved. Day 1: excavate and lay the foundation!"));
     } catch (error: any) {
-      toast.error(error.message || 'Could not approve the blueprint.');
+      toast.error(error.message || tr("Could not approve the blueprint."));
     } finally {
       setSyncing(false);
     }
@@ -372,61 +380,61 @@ export function CharacterHouseBuilder({ onBack, currentUserId, partnerId, partne
   return (
     <div className="space-y-5 pb-8">
       <div className="flex items-center gap-3">
-        <Button type="button" variant="outline" size="icon" className="h-11 w-11 shrink-0 rounded-full bg-white" onClick={onBack} aria-label="Back to dashboard"><ArrowLeft className="h-5 w-5" /></Button>
-        <div><p className="text-xs font-bold uppercase tracking-[.2em] text-amber-700">Character development</p><h1 className="text-2xl font-black tracking-tight text-stone-950">Build the House That Honors God</h1></div>
+        <BackButton label={tr("Back to dashboard")} onClick={onBack} />
+        <div><p className="tbo-eyebrow text-amber-700">{tr("Character development")}</p><h1 className="tbo-page-title text-stone-950">{tr("Build the House That Honors God")}</h1></div>
       </div>
 
       {config.blueprintStatus === 'draft' && <>
       <Card className="overflow-hidden rounded-[2rem] border-amber-200 bg-gradient-to-br from-[#fffdf8] to-[#f3e8d8] shadow-xl shadow-amber-900/5">
-        <CardHeader className="pb-3"><CardTitle className="flex items-center gap-2 text-lg"><Home className="h-5 w-5 text-rose-700" /> Choose your home</CardTitle></CardHeader>
+        <CardHeader className="pb-3"><CardTitle className="tbo-card-title flex items-center gap-2"><Home className="h-5 w-5 text-rose-700" />{tr("Choose your home")}</CardTitle></CardHeader>
         <CardContent className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {HOME_DEFINITIONS.map(home => {
             const selected = config.homeType === home.id;
             return <button key={home.id} type="button" onClick={() => updateHome(home)} aria-pressed={selected} className={`relative rounded-2xl border p-2 text-left transition-all ${selected ? 'border-amber-500 bg-white shadow-lg ring-2 ring-amber-300' : 'border-stone-200 bg-white/65 hover:-translate-y-0.5 hover:bg-white'}`}>
               {selected && <span className="absolute right-2 top-2 z-10 grid h-6 w-6 place-items-center rounded-full bg-amber-500 text-white"><Check className="h-4 w-4" /></span>}
-              <MiniHome home={home} selected={selected} /><p className="font-black text-stone-900">{home.name}</p><p className="text-[11px] text-stone-500">{home.description}</p>
+              <MiniHome home={home} selected={selected} /><p className="tbo-card-title text-stone-900">{tr(home.name)}</p><p className="tbo-caption text-stone-500">{tr(home.description)}</p>
             </button>;
           })}
         </CardContent>
       </Card>
 
       <Card className="rounded-[2rem] border-stone-200 bg-white shadow-sm">
-        <CardHeader className="pb-3"><CardTitle className="flex items-center gap-2 text-lg"><Building2 className="h-5 w-5 text-amber-700" /> Design your {selectedHome.name.toLowerCase()}</CardTitle></CardHeader>
+        <CardHeader className="pb-3"><CardTitle className="tbo-card-title flex items-center gap-2"><Building2 className="h-5 w-5 text-amber-700" />{tr("Design your {home}", { home: tr(selectedHome.name) })}</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-3 sm:grid-cols-3">
-            <Counter label="Floors" icon={Layers3} value={config.floors} range={selectedHome.floorRange} onChange={value => { setConfig(current => ({ ...current, floors: value })); setFloor(value - 1); }} />
-            <Counter label="Bedrooms" icon={BedDouble} value={config.bedrooms} range={selectedHome.bedroomRange} onChange={value => setConfig(current => ({ ...current, bedrooms: value }))} />
-            <Counter label="Bathrooms" icon={Bath} value={config.bathrooms} range={selectedHome.bathroomRange} onChange={value => setConfig(current => ({ ...current, bathrooms: value }))} />
+            <Counter label={tr("Floors")} icon={Layers3} value={config.floors} range={selectedHome.floorRange} onChange={value => { setConfig(current => ({ ...current, floors: value })); setFloor(value - 1); }} />
+            <Counter label={tr("Bedrooms")} icon={BedDouble} value={config.bedrooms} range={selectedHome.bedroomRange} onChange={value => setConfig(current => ({ ...current, bedrooms: value }))} />
+            <Counter label={tr("Bathrooms")} icon={Bath} value={config.bathrooms} range={selectedHome.bathroomRange} onChange={value => setConfig(current => ({ ...current, bathrooms: value }))} />
           </div>
-          <div><p className="mb-2 text-sm font-black text-stone-800">Interior design</p><div className="grid gap-2 sm:grid-cols-3">{INTERIOR_STYLES.map(style => <button key={style.id} type="button" onClick={() => setConfig(current => ({ ...current, interiorStyle: style.id, finishes: FINISH_PRESETS[style.id] }))} className={`rounded-2xl border p-3 text-left ${config.interiorStyle === style.id ? 'border-amber-500 bg-amber-50 ring-2 ring-amber-200' : 'border-stone-200'}`}><div className="mb-2 flex gap-1">{style.colors.map(color => <span key={color} className="h-6 flex-1 rounded-md" style={{ backgroundColor: color }} />)}</div><span className="text-xs font-bold text-stone-800">{style.name}</span></button>)}</div></div>
+          <div><p className="tbo-supporting mb-2 text-stone-800">{tr("Interior design")}</p><div className="grid gap-2 sm:grid-cols-3">{INTERIOR_STYLES.map(style => <button key={style.id} type="button" onClick={() => setConfig(current => ({ ...current, interiorStyle: style.id, finishes: FINISH_PRESETS[style.id] }))} className={`rounded-2xl border p-3 text-left ${config.interiorStyle === style.id ? 'border-amber-500 bg-amber-50 ring-2 ring-amber-200' : 'border-stone-200'}`}><div className="mb-2 flex gap-1">{style.colors.map(color => <span key={color} className="h-6 flex-1 rounded-md" style={{ backgroundColor: color }} />)}</div><span className="tbo-caption text-stone-800">{tr(style.name)}</span></button>)}</div></div>
           <div className="rounded-2xl border border-stone-200 bg-stone-50/75 p-4">
-            <p className="mb-3 flex items-center gap-2 text-sm font-black text-stone-800"><Paintbrush className="h-4 w-4 text-rose-700" /> Customize colors</p>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{FINISH_FIELDS.map(field => <label key={field.key} className="flex cursor-pointer items-center gap-2 rounded-xl border border-stone-200 bg-white p-2.5 shadow-sm"><input type="color" value={config.finishes[field.key]} onChange={event => setConfig(current => ({ ...current, finishes: { ...current.finishes, [field.key]: event.target.value } }))} className="h-9 w-9 cursor-pointer rounded-lg border-0 bg-transparent p-0" aria-label={`${field.label} color`} /><span className="text-[11px] font-bold leading-tight text-stone-700">{field.label}</span></label>)}</div>
+            <p className="tbo-supporting mb-3 flex items-center gap-2 text-stone-800"><Paintbrush className="h-4 w-4 text-rose-700" />{tr("Customize colors")}</p>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{FINISH_FIELDS.map(field => <label key={field.key} className="tbo-label flex cursor-pointer items-center gap-2 rounded-xl border border-stone-200 bg-white p-2.5 shadow-sm"><input type="color" value={config.finishes[field.key]} onChange={event => setConfig(current => ({ ...current, finishes: { ...current.finishes, [field.key]: event.target.value } }))} className="tbo-field h-9 w-9 cursor-pointer rounded-lg border-0 bg-transparent p-0" aria-label={tr("{field} color", { field: tr(field.label) })} /><span className="tbo-caption text-stone-700">{tr(field.label)}</span></label>)}</div>
           </div>
           <div className="rounded-2xl border border-amber-300 bg-gradient-to-br from-amber-50 to-rose-50 p-4">
-            <label className="block"><span className="mb-1.5 block text-xs font-black uppercase tracking-wider text-amber-800">Name your home</span><input value={config.homeName} onChange={event => setConfig(current => ({ ...current, homeName: event.target.value }))} maxLength={48} placeholder="House of Grace" className="h-12 w-full rounded-xl border border-amber-200 bg-white px-4 font-bold text-stone-950 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-200" /></label>
-            <div className="mt-4 flex items-start gap-3 rounded-xl border border-white bg-white/80 p-3"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" /><span><strong className="block text-sm text-stone-900">Your partner must approve this design</strong><small className="mt-0.5 block leading-5 text-stone-600">Submitting sends a locked review copy to {partnerName || 'your linked partner'}. The challenge will not start until they approve it.</small></span></div>
-            <Button type="button" onClick={() => setSubmitOpen(true)} disabled={syncing || !partnerId || !isBlueprintNameReady(config.homeName)} className="mt-4 h-14 w-full rounded-xl bg-gradient-to-r from-amber-700 to-rose-700 font-black text-white hover:from-amber-800 hover:to-rose-800"><HeartHandshake className="mr-2 h-5 w-5" /> {partnerId ? 'Submit Blueprint for Approval' : 'Connect a Partner to Submit'}</Button>
+            <label className="tbo-label block"><span className="tbo-eyebrow mb-1.5 block text-amber-800">{tr("Name your home")}</span><input value={config.homeName} onChange={event => setConfig(current => ({ ...current, homeName: event.target.value }))} maxLength={48} placeholder={tr("House of Grace")} className="tbo-field h-12 w-full rounded-xl border border-amber-200 bg-white px-4 text-stone-950 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-200" /></label>
+            <div className="mt-4 flex items-start gap-3 rounded-xl border border-white bg-white/80 p-3"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" /><span><strong className="block text-sm text-stone-900">{tr("Your partner must approve this design")}</strong><small className="mt-0.5 block leading-5 text-stone-600">{tr("Submitting sends a locked review copy to {name}. The challenge will not start until they approve it.", { name: partnerName || tr("your linked partner") })}</small></span></div>
+            <Button type="button" onClick={() => setSubmitOpen(true)} disabled={syncing || !partnerId || !isBlueprintNameReady(config.homeName)} className="tbo-action mt-4 min-h-14 h-auto whitespace-normal w-full rounded-xl bg-gradient-to-r from-amber-700 to-rose-700 text-white hover:from-amber-800 hover:to-rose-800"><HeartHandshake className="mr-2 h-5 w-5" /> {partnerId ? tr("Submit Blueprint for Approval") : tr("Connect a Partner to Submit")}</Button>
           </div>
         </CardContent>
       </Card>
       </>}
 
-      {blueprintPending && <Card className="overflow-hidden rounded-[2rem] border-amber-300 bg-gradient-to-br from-amber-50 via-white to-rose-50 shadow-lg"><CardContent className="p-5 sm:p-6"><div className="flex flex-wrap items-start gap-4"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-amber-600 text-white shadow"><Clock3 className="h-6 w-6" /></span><div className="min-w-0 flex-1"><p className="text-xs font-black uppercase tracking-widest text-amber-700">Blueprint awaiting partner approval</p><h2 className="mt-1 text-lg font-black text-stone-950">{config.homeName}</h2><p className="mt-1 text-sm leading-6 text-stone-600">{submittedByCurrentUser ? `${partnerName || 'Your partner'} must review and approve this blueprint before construction can begin.` : `${config.submittedByName || partnerName || 'Your partner'} submitted this blueprint for your review.`}</p><p className="mt-2 text-xs font-bold text-stone-500">{selectedHome.name} · {config.floors} floors · {config.bedrooms} bedrooms · {config.bathrooms} bathrooms</p></div>{canApprove ? <Button type="button" onClick={() => setApprovalOpen(true)} disabled={syncing} className="h-12 rounded-xl bg-emerald-700 px-5 font-black text-white hover:bg-emerald-800"><ShieldCheck className="mr-2 h-5 w-5" /> Review & approve</Button> : <Button type="button" variant="outline" onClick={() => void refreshBlueprint(true)} disabled={syncing} className="h-11 rounded-xl bg-white font-bold"><RefreshCw className={`mr-2 h-4 w-4 ${syncing ? 'animate-spin' : ''}`} /> Check status</Button>}</div></CardContent></Card>}
+      {blueprintPending && <Card className="overflow-hidden rounded-[2rem] border-amber-300 bg-gradient-to-br from-amber-50 via-white to-rose-50 shadow-lg"><CardContent className="p-5 sm:p-6"><div className="flex flex-wrap items-start gap-4"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-amber-600 text-white shadow"><Clock3 className="h-6 w-6" /></span><div className="min-w-0 flex-1"><p className="tbo-eyebrow text-amber-700">{tr("Blueprint awaiting partner approval")}</p><h2 className="tbo-section-title mt-1 text-stone-950">{config.homeName}</h2><p className="tbo-supporting mt-1 text-stone-600">{submittedByCurrentUser ? tr("{name} must review and approve this blueprint before construction can begin.", { name: partnerName || tr("Your partner") }) : tr("{name} submitted this blueprint for your review.", { name: config.submittedByName || partnerName || tr("Your partner") })}</p><p className="tbo-caption mt-2 text-stone-500">{tr(selectedHome.name)} · {tr("{floors} floors · {bedrooms} bedrooms · {bathrooms} bathrooms", { floors: config.floors, bedrooms: config.bedrooms, bathrooms: config.bathrooms })}</p></div>{canApprove ? <Button type="button" onClick={() => setApprovalOpen(true)} disabled={syncing} className="tbo-action h-12 rounded-xl bg-emerald-700 px-5 text-white hover:bg-emerald-800"><ShieldCheck className="mr-2 h-5 w-5" />{tr("Review & approve")}</Button> : <Button type="button" variant="outline" onClick={() => void refreshBlueprint(true)} disabled={syncing} className="tbo-action h-11 rounded-xl bg-white">{syncing ? <LoadingMark className="mr-2" /> : <RefreshCw className="mr-2 h-4 w-4" />}{tr("Check status")}</Button>}</div></CardContent></Card>}
 
-      {challengeActive && <Card className="overflow-hidden rounded-[2rem] border-emerald-200 bg-gradient-to-br from-emerald-50 to-amber-50 shadow-sm"><CardContent className="flex flex-wrap items-center gap-4 p-5"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-600 text-white shadow"><LockKeyhole className="h-6 w-6" /></span><div className="min-w-0 flex-1"><p className="text-xs font-black uppercase tracking-widest text-emerald-700">Both partners approved · Challenge active</p><h2 className="mt-1 text-lg font-black text-stone-950">{config.homeName}</h2><p className="mt-1 text-xs text-stone-600">Submitted by {config.submittedByName || 'one partner'} · Approved by {config.approvedByName || 'the other partner'}</p></div><div className="rounded-xl bg-white/80 px-3 py-2 text-right"><p className="text-xs font-bold text-stone-500">Started</p><p className="text-sm font-black text-stone-900">{config.challengeStartedAt ? new Date(config.challengeStartedAt).toLocaleDateString() : 'Today'}</p></div></CardContent></Card>}
+      {challengeActive && <Card className="overflow-hidden rounded-[2rem] border-emerald-200 bg-gradient-to-br from-emerald-50 to-amber-50 shadow-sm"><CardContent className="flex flex-wrap items-center gap-4 p-5"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-600 text-white shadow"><LockKeyhole className="h-6 w-6" /></span><div className="min-w-0 flex-1"><p className="tbo-eyebrow text-emerald-700">{tr("Both partners approved · Challenge active")}</p><h2 className="tbo-section-title mt-1 text-stone-950">{config.homeName}</h2><p className="tbo-caption mt-1 text-stone-600">{tr("Submitted by {submitter} · Approved by {approver}", { submitter: config.submittedByName || tr("one partner"), approver: config.approvedByName || tr("the other partner") })}</p></div><div className="rounded-xl bg-white/80 px-3 py-2 text-right"><p className="tbo-caption text-stone-500">{tr("Started")}</p><p className="tbo-supporting text-stone-900">{config.challengeStartedAt ? formatUiDate(new Date(config.challengeStartedAt), UI_LOCALES[language]) : tr("Today")}</p></div></CardContent></Card>}
 
       <Card className="overflow-hidden rounded-[2rem] border-amber-200 bg-white shadow-xl shadow-stone-900/5">
         <CardHeader className="space-y-3 border-b border-stone-100 bg-amber-50/45">
-          <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-widest text-amber-700">{stage.name} · {stage.verse}</p><CardTitle className="mt-1 text-xl">{config.homeName}</CardTitle></div><div className="flex rounded-xl bg-stone-100 p-1"><button type="button" onClick={() => setMode('current')} className={`rounded-lg px-3 py-2 text-xs font-bold ${mode === 'current' ? 'bg-white text-stone-950 shadow-sm' : 'text-stone-500'}`}>Current build</button><button type="button" onClick={() => setMode('blueprint')} className={`rounded-lg px-3 py-2 text-xs font-bold ${mode === 'blueprint' ? 'bg-white text-stone-950 shadow-sm' : 'text-stone-500'}`}>Blueprint</button></div></div>
-          <div><div className="mb-1 flex justify-between text-xs font-bold text-stone-600"><span>{config.completedDays} of 365 blocks</span><span>{Math.round(config.completedDays / 365 * 100)}%</span></div><Progress value={config.completedDays / 365 * 100} className="h-2.5" /></div>
+          <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-widest text-amber-700">{tr(stage.name)} · {stage.verse}</p><CardTitle className="tbo-card-title mt-1">{config.homeName}</CardTitle></div><div className="flex rounded-xl bg-stone-100 p-1"><button type="button" onClick={() => setMode('current')} className={`tbo-action rounded-lg px-3 py-2 ${mode === 'current' ? 'bg-white text-stone-950 shadow-sm' : 'text-stone-500'}`}>{tr("Current build")}</button><button type="button" onClick={() => setMode('blueprint')} className={`tbo-action rounded-lg px-3 py-2 ${mode === 'blueprint' ? 'bg-white text-stone-950 shadow-sm' : 'text-stone-500'}`}>{tr("Blueprint")}</button></div></div>
+          <div><div className="tbo-caption mb-1 flex justify-between text-stone-600"><span>{tr("{count} of 365 blocks", { count: config.completedDays })}</span><span>{Math.round(config.completedDays / 365 * 100)}%</span></div><Progress value={config.completedDays / 365 * 100} className="h-2.5" /></div>
         </CardHeader>
         <CardContent className="space-y-4 p-4 sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-1 rounded-xl border border-stone-200 bg-stone-50 p-1">{floors.map((_, index) => <button key={index} type="button" onClick={() => { setFloor(index); setSelectedRoom(null); setSceneView('house'); }} className={`rounded-lg px-3 py-2 text-xs font-bold ${floor === index ? 'bg-stone-800 text-white shadow' : 'text-stone-600'}`}>{index === floors.length - 1 && floors.length > 1 ? `All ${floors.length} floors` : `Through floor ${index + 1}`}</button>)}</div>
-            <div className="flex gap-1"><Button type="button" variant="outline" className="h-10 rounded-xl bg-white text-xs font-bold" onClick={() => { setSceneView('house'); setSelectedRoom(null); }}><Home className="mr-1.5 h-4 w-4" /> Full house</Button><Button type="button" variant="outline" disabled={!selectedRoom} className="h-10 rounded-xl bg-white text-xs font-bold" onClick={() => setSceneView('room')}><Scan className="mr-1.5 h-4 w-4" /> Room detail</Button><Button type="button" variant="outline" className="h-10 rounded-xl bg-white text-xs font-bold" onClick={() => setShowRoof(value => !value)}>{showRoof ? 'Remove roof' : 'Show roof'}</Button></div>
+            <div className="flex items-center gap-1 rounded-xl border border-stone-200 bg-stone-50 p-1">{floors.map((_, index) => <button key={index} type="button" onClick={() => { setFloor(index); setSelectedRoom(null); setSceneView('house'); }} className={`tbo-action rounded-lg px-3 py-2 ${floor === index ? 'bg-stone-800 text-white shadow' : 'text-stone-600'}`}>{index === floors.length - 1 && floors.length > 1 ? tr("All {count} floors", { count: floors.length }) : tr("Through floor {count}", { count: index + 1 })}</button>)}</div>
+            <div className="flex flex-wrap gap-1"><Button type="button" variant="outline" className="tbo-action h-10 rounded-xl bg-white" onClick={() => { setSceneView('house'); setSelectedRoom(null); }}><Home className="mr-1.5 h-4 w-4" />{tr("Full house")}</Button><Button type="button" variant="outline" disabled={!selectedRoom} className="tbo-action h-10 rounded-xl bg-white" onClick={() => setSceneView('room')}><Scan className="mr-1.5 h-4 w-4" />{tr("Room detail")}</Button><Button type="button" variant="outline" className="tbo-action h-10 rounded-xl bg-white" onClick={() => setShowRoof(value => !value)}>{showRoof ? tr("Remove roof") : tr("Show roof")}</Button></div>
           </div>
-          <Suspense fallback={<div className="grid h-[34rem] place-items-center rounded-[2rem] bg-stone-100 text-sm font-semibold text-stone-500">Preparing the 3D house…</div>}>
+          <Suspense fallback={<BrandLoader label={tr("Preparing the 3D house…")} className="h-[34rem] rounded-[2rem] bg-stone-100" />}>
             <CharacterHouse3D
               homeType={config.homeType}
               floors={floors}
@@ -440,12 +448,12 @@ export function CharacterHouseBuilder({ onBack, currentUserId, partnerId, partne
               onRoomSelect={(room) => { setSelectedRoom(room); if (sceneView === 'room') setSceneView('room'); }}
             />
           </Suspense>
-          {selectedRoom && <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-amber-700 shadow-sm"><Sparkles className="h-5 w-5" /></span><div className="min-w-0 flex-1"><p className="font-black text-stone-900">{selectedRoom.name}</p><p className="text-sm text-stone-600">{selectedRoom.meaning}</p></div><Button type="button" size="sm" onClick={() => setSceneView('room')} className="rounded-xl bg-amber-700 hover:bg-amber-800"><Scan className="mr-1.5 h-4 w-4" /> View room details</Button></div>}
-          {challengeActive && config.completedDays < 365 && <div className="rounded-2xl border border-violet-200 bg-gradient-to-br from-violet-50 to-rose-50 p-4"><div className="flex items-start gap-3"><span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-violet-700 font-black text-white">{config.completedDays + 1}</span><div><p className="text-xs font-black uppercase tracking-wider text-violet-700">Today’s character challenge · {todaysChallenge.scripture}</p><h3 className="mt-1 font-black text-stone-950">{todaysChallenge.title}</h3><p className="mt-2 text-sm leading-6 text-stone-600">{todaysChallenge.action}</p></div></div></div>}
-          {challengeActive && <Button type="button" onClick={placeBlock} disabled={alreadyPlacedToday || config.completedDays >= 365} className="h-14 w-full rounded-2xl bg-gradient-to-r from-rose-700 to-amber-700 text-base font-black text-white shadow-lg shadow-rose-900/15 hover:from-rose-800 hover:to-amber-800">
-            {config.completedDays >= 365 ? <><Check className="mr-2 h-5 w-5" /> House completed</> : alreadyPlacedToday ? <><Check className="mr-2 h-5 w-5" /> Today’s block is placed</> : config.completedDays === 0 ? <><Hammer className="mr-2 h-5 w-5" /> Complete Excavation & Place Foundation Block</> : <><Hammer className="mr-2 h-5 w-5" /> Place Today’s Block</>}
+          {selectedRoom && <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-amber-700 shadow-sm"><Sparkles className="h-5 w-5" /></span><div className="min-w-0 flex-1"><p className="tbo-card-title text-stone-900">{guidanceLabel(tr, selectedRoom.name)}</p><p className="tbo-supporting text-stone-600">{tr(selectedRoom.meaning)}</p></div><Button type="button" size="sm" onClick={() => setSceneView('room')} className="tbo-action rounded-xl bg-amber-700 hover:bg-amber-800"><Scan className="mr-1.5 h-4 w-4" />{tr("View room details")}</Button></div>}
+          {challengeActive && config.completedDays < 365 && <div className="rounded-2xl border border-violet-200 bg-gradient-to-br from-violet-50 to-rose-50 p-4"><div className="flex items-start gap-3"><span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-violet-700 font-bold text-white">{config.completedDays + 1}</span><div><p className="tbo-eyebrow text-violet-700">{tr("Today’s character challenge ·")} {todaysChallenge.scripture}</p><h3 className="tbo-card-title mt-1 text-stone-950">{tr(todaysChallenge.title)}</h3><p className="tbo-body mt-2 text-stone-600">{tr(todaysChallenge.action)}</p></div></div></div>}
+          {challengeActive && <Button type="button" onClick={placeBlock} disabled={alreadyPlacedToday || config.completedDays >= 365} className="tbo-action min-h-14 h-auto whitespace-normal w-full rounded-2xl bg-gradient-to-r from-rose-700 to-amber-700 text-white shadow-lg shadow-rose-900/15 hover:from-rose-800 hover:to-amber-800">
+            {config.completedDays >= 365 ? <><Check className="mr-2 h-5 w-5" />{tr("House completed")}</> : alreadyPlacedToday ? <><Check className="mr-2 h-5 w-5" />{tr("Today’s block is placed")}</> : config.completedDays === 0 ? <><Hammer className="mr-2 h-5 w-5" />{tr("Complete Excavation & Place Foundation Block")}</> : <><Hammer className="mr-2 h-5 w-5" />{tr("Place Today’s Block")}</>}
           </Button>}
-          <p className="text-center text-xs text-stone-500">{challengeActive ? 'Complete one activity to earn one block. Missing a day never removes progress.' : blueprintPending ? 'Construction remains locked until the other partner approves the blueprint.' : 'Customize the design and submit it to your partner for approval.'}</p>
+          <p className="tbo-caption text-center text-stone-500">{challengeActive ? tr("Complete one activity to earn one block. Missing a day never removes progress.") : blueprintPending ? tr("Construction remains locked until the other partner approves the blueprint.") : tr("Customize the design and submit it to your partner for approval.")}</p>
         </CardContent>
       </Card>
 
@@ -453,10 +461,10 @@ export function CharacterHouseBuilder({ onBack, currentUserId, partnerId, partne
         <AlertDialogContent className="rounded-[1.75rem] border-amber-200">
           <AlertDialogHeader>
             <div className="mx-auto mb-2 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-amber-500 to-rose-600 text-white sm:mx-0"><HeartHandshake className="h-7 w-7" /></div>
-            <AlertDialogTitle>Submit “{config.homeName.trim()}” for approval?</AlertDialogTitle>
-            <AlertDialogDescription asChild><div className="space-y-3"><p>This sends your completed blueprint to {partnerName || 'your partner'} for an independent review.</p><ul className="space-y-2 rounded-xl bg-amber-50 p-3 text-left text-stone-700"><li className="flex gap-2"><LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" /> The selected home, rooms, finishes, and colors become a locked review copy.</li><li className="flex gap-2"><Clock3 className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" /> Construction remains locked while approval is pending.</li><li className="flex gap-2"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" /> Only the other linked partner can approve and start the challenge.</li></ul></div></AlertDialogDescription>
+            <AlertDialogTitle className="tbo-dialog-title">{tr("Submit “{name}” for approval?", { name: config.homeName.trim() })}</AlertDialogTitle>
+            <AlertDialogDescription className="tbo-supporting" asChild><div className="space-y-3"><p className="tbo-body">{tr("This sends your completed blueprint to {name} for an independent review.", { name: partnerName || tr("your partner") })}</p><ul className="space-y-2 rounded-xl bg-amber-50 p-3 text-left text-stone-700"><li className="flex gap-2"><LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />{tr("The selected home, rooms, finishes, and colors become a locked review copy.")}</li><li className="flex gap-2"><Clock3 className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />{tr("Construction remains locked while approval is pending.")}</li><li className="flex gap-2"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />{tr("Only the other linked partner can approve and start the challenge.")}</li></ul></div></AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter><AlertDialogCancel>Keep editing</AlertDialogCancel><AlertDialogAction onClick={() => void submitBlueprint()} disabled={syncing} className="bg-gradient-to-r from-amber-700 to-rose-700 font-black text-white hover:from-amber-800 hover:to-rose-800">Submit for partner approval</AlertDialogAction></AlertDialogFooter>
+          <AlertDialogFooter><AlertDialogCancel>{tr("Keep editing")}</AlertDialogCancel><AlertDialogAction onClick={() => void submitBlueprint()} disabled={syncing} className="bg-gradient-to-r from-amber-700 to-rose-700 font-bold text-white hover:from-amber-800 hover:to-rose-800">{tr("Submit for partner approval")}</AlertDialogAction></AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
@@ -464,10 +472,10 @@ export function CharacterHouseBuilder({ onBack, currentUserId, partnerId, partne
         <AlertDialogContent className="rounded-[1.75rem] border-emerald-200">
           <AlertDialogHeader>
             <div className="mx-auto mb-2 grid h-14 w-14 place-items-center rounded-2xl bg-emerald-700 text-white sm:mx-0"><ShieldCheck className="h-7 w-7" /></div>
-            <AlertDialogTitle>Approve “{config.homeName.trim()}” and begin?</AlertDialogTitle>
-            <AlertDialogDescription asChild><div className="space-y-3"><p>By approving, you confirm the blueprint submitted by {config.submittedByName || partnerName || 'your partner'} as your shared Character House design.</p><ul className="space-y-2 rounded-xl bg-emerald-50 p-3 text-left text-stone-700"><li className="flex gap-2"><CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" /> The 365-day challenge starts immediately for both partners.</li><li className="flex gap-2"><Hammer className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" /> Day 1 opens at the excavated site: lay the foundation on God’s Word.</li><li className="flex gap-2"><LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" /> The approved blueprint remains locked during construction.</li></ul></div></AlertDialogDescription>
+            <AlertDialogTitle className="tbo-dialog-title">{tr("Approve “{name}” and begin?", { name: config.homeName.trim() })}</AlertDialogTitle>
+            <AlertDialogDescription className="tbo-supporting" asChild><div className="space-y-3"><p className="tbo-body">{tr("By approving, you confirm the blueprint submitted by {name} as your shared Character House design.", { name: config.submittedByName || partnerName || tr("your partner") })}</p><ul className="space-y-2 rounded-xl bg-emerald-50 p-3 text-left text-stone-700"><li className="flex gap-2"><CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" />{tr("The 365-day challenge starts immediately for both partners.")}</li><li className="flex gap-2"><Hammer className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" />{tr("Day 1 opens at the excavated site: lay the foundation on God’s Word.")}</li><li className="flex gap-2"><LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" />{tr("The approved blueprint remains locked during construction.")}</li></ul></div></AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter><AlertDialogCancel>Review again</AlertDialogCancel><AlertDialogAction onClick={() => void approveBlueprint()} disabled={syncing} className="bg-emerald-700 font-black text-white hover:bg-emerald-800">Approve & start excavation</AlertDialogAction></AlertDialogFooter>
+          <AlertDialogFooter><AlertDialogCancel>{tr("Review again")}</AlertDialogCancel><AlertDialogAction onClick={() => void approveBlueprint()} disabled={syncing} className="bg-emerald-700 font-bold text-white hover:bg-emerald-800">{tr("Approve & start excavation")}</AlertDialogAction></AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>

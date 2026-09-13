@@ -19,7 +19,7 @@
   background: #211e23;
   color: #fff;
   text-align: left;
-  font-family: "Segoe UI", Arial, sans-serif;
+  font-family: var(--font-ui);
   line-height: 1.1;
   box-shadow: 0 3px 0 #2b1b320a;
   transition:
@@ -49,20 +49,21 @@
   white-space: nowrap;
 }
 .sdb-badge small {
-  font-size: 8px;
-  letter-spacing: 0.05em;
-  font-weight: 400;
+  font-size: var(--type-caption-size);
+  letter-spacing: normal;
+  font-weight: var(--type-caption-weight);
 }
 .sdb-badge strong {
   font-size: 19px;
-  font-weight: 550;
+  font-weight: 600;
   letter-spacing: -0.65px;
 }
 .launch-landing .sdb-install-note {
-  font-size: 9px;
+  font-size: var(--type-caption-size);
   color: #766679;
-  line-height: 1.6;
+  line-height: var(--type-caption-leading);
   margin: 10px 0 0;
+  font-weight: var(--type-caption-weight);
 }
 .ll-hero-actions.ll-hero-actions--web {
   margin-top: 18px;
@@ -82,7 +83,9 @@
 }
 .ll-download .sdb-install-note {
   color: #fff0fa;
-  font-size: 10px;
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-caption-weight);
+  line-height: var(--type-caption-leading);
 }
 @media (max-width: 1100px) and (min-width: 901px) {
   .launch-landing .sdb-badge {
@@ -134,7 +137,7 @@
     gap: 8px;
   }
   .launch-landing .sdb-badge {
-    width: 136px;
+    width: min(100%, 181px);
     min-height: 50px;
     padding: 8px;
     gap: 7px;
@@ -144,7 +147,7 @@
     letter-spacing: -0.4px;
   }
   .sdb-badge small {
-    font-size: 6px;
+    font-size: var(--type-caption-size);
   }
   .sdb-icon,
   .sdb-icon--apple {
@@ -166,3 +169,7 @@
     transition: none;
   }
 }
+
+/* Let install text grow with text scaling instead of escaping fixed badges. */
+.launch-landing .sdb-badge { width: max-content; min-width: min(100%, 164px); max-width: 100%; }
+.sdb-badge > span { min-width: 0; white-space: normal; overflow-wrap: anywhere; }

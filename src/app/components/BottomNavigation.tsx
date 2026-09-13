@@ -1,3 +1,4 @@
+import { useUiCopy } from '../utils/uiTranslation';
 import { memo } from 'react';
 import { BookOpen, Globe2, HandHeart, Home, MessageCircleHeart, User } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
@@ -11,6 +12,7 @@ interface BottomNavigationProps {
 
 export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTabChange, chatUnreadCount = 0 }: BottomNavigationProps) {
   const { t } = useLanguage();
+  const tr = useUiCopy();
   const prefersReducedMotion = useReducedMotion();
 
   const tabs = [
@@ -31,12 +33,12 @@ export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTa
         aria-label={t.nav.primaryNavigation}
         className="pointer-events-auto mx-auto max-w-lg rounded-[1.75rem] border border-white/90 bg-white/90 px-2 shadow-[0_-2px_10px_rgba(83,45,67,0.03),0_16px_45px_rgba(83,45,67,0.18)] ring-1 ring-neutral-950/[0.04] backdrop-blur-2xl"
       >
-        <div className="flex h-16 items-center justify-between gap-0.5 py-1.5">
+        <div className="flex min-h-16 items-stretch justify-between gap-0.5 py-1.5">
           {tabs.map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             const unreadCount = tab.id === 'chat' ? chatUnreadCount : 0;
-            const actionLabel = unreadCount > 0 ? `${tab.label}, ${unreadCount} unread ${unreadCount === 1 ? 'message' : 'messages'}` : tab.label;
+            const actionLabel = unreadCount > 0 ? tr(unreadCount === 1 ? '{label}, {count} unread message' : '{label}, {count} unread messages', { label: tab.label, count: unreadCount }) : tab.label;
 
             return (
               <motion.button
@@ -48,7 +50,7 @@ export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTa
                 whileTap={prefersReducedMotion ? undefined : { scale: 0.92 }}
                 transition={{ duration: 0.16 }}
                 title={tab.label}
-                className={`group relative flex h-14 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${isActive ? 'text-primary' : 'text-neutral-600 hover:text-neutral-900'}`}
+                className={`group relative flex min-h-14 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${isActive ? 'text-primary' : 'text-neutral-600 hover:text-neutral-900'}`}
               >
                 <span className="relative flex h-7 w-9 shrink-0 items-center justify-center">
                   <Icon
@@ -57,13 +59,13 @@ export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTa
                     strokeWidth={isActive ? 2.4 : 1.9}
                   />
                   {unreadCount > 0 && (
-                    <span className="absolute -right-1 -top-1 grid min-h-4 min-w-4 place-items-center rounded-full bg-rose-600 px-1 text-[9px] font-black leading-none text-white shadow-sm ring-2 ring-white" aria-hidden="true">
+                    <span className="tbo-caption absolute -right-1 -top-1 grid min-h-4 min-w-4 place-items-center rounded-full bg-rose-600 px-1 text-white shadow-sm ring-2 ring-white" aria-hidden="true">
                       {unreadCount > 99 ? '99+' : unreadCount}
                     </span>
                   )}
                 </span>
                 {isActive && (
-                  <span className="relative w-full break-words text-center text-[9px] font-extrabold leading-[1.05] text-primary">
+                  <span className="tbo-caption relative w-full break-words text-center text-primary">
                     {tab.label}
                   </span>
                 )}

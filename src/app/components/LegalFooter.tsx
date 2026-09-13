@@ -5,12 +5,15 @@ import { useState } from 'react';
 import { PrivacyPolicy } from '../legal/privacy-policy';
 import { TermsOfService } from '../legal/terms-of-service';
 import { getTranslations, Language } from '../utils/i18n';
+import { useCurrentLanguage } from '../utils/languageStore';
 
 interface LegalFooterProps {
   language?: Language;
 }
 
-export function LegalFooter({ language = 'en' }: LegalFooterProps) {
+export function LegalFooter({ language: suppliedLanguage }: LegalFooterProps) {
+  const currentLanguage = useCurrentLanguage();
+  const language = suppliedLanguage ?? currentLanguage;
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const copy = getTranslations(language).legal;

@@ -1,9 +1,11 @@
+import { useUiCopy } from '../utils/uiTranslation';
+import { guidanceMessages } from '../locales/guidance';
+import { BackButton } from './BackButton';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Progress } from './ui/progress';
 import { Badge } from './ui/badge';
 import { 
-  ChevronLeft, 
   Heart, 
   Users,
   TrendingUp,
@@ -23,27 +25,26 @@ interface QuizComparisonProps {
 }
 
 export function QuizComparison({ quizType, userResult, partnerResult, partner, onBack }: QuizComparisonProps) {
+  const tr = useUiCopy(guidanceMessages);
   if (!userResult || !partnerResult) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-primary-50/30 to-primary-50/30">
         <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm border-b">
           <div className="flex items-center justify-between px-4 py-4">
-            <Button variant="ghost" size="icon" onClick={onBack}>
-              <ChevronLeft className="w-5 h-5" />
-            </Button>
-            <h1 className="text-xl font-semibold">Partner Comparison</h1>
+            <BackButton label={tr("Back to Quizzes")} onClick={onBack} />
+            <h1 className="tbo-page-title min-w-0 break-words">{tr("Partner Comparison")}</h1>
             <div className="w-10" />
           </div>
         </div>
         <div className="max-w-2xl mx-auto px-4 py-12 text-center">
           <AlertCircle className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-          <h2 className="text-xl font-semibold mb-2">Comparison Not Available</h2>
-          <p className="text-muted-foreground mb-6">
+          <h2 className="tbo-section-title mb-2">{tr("Comparison Not Available")}</h2>
+          <p className="tbo-body text-muted-foreground mb-6">
             {!partner 
-              ? "You need to connect with a partner first."
-              : "Your partner hasn't completed this quiz yet."}
+              ? tr("You need to connect with a partner first.")
+              : tr("Your partner hasn't completed this quiz yet.")}
           </p>
-          <Button onClick={onBack}>Back to Quizzes</Button>
+          <BackButton label={tr("Back to Quizzes")} onClick={onBack} showLabel />
         </div>
       </div>
     );
@@ -55,31 +56,31 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
     const match = userPrimary === partnerPrimary;
 
     const loveLanguageNames: any = {
-      WA: "Words of Affirmation",
-      QT: "Quality Time",
-      GT: "Receiving Gifts",
-      AS: "Acts of Service",
-      PT: "Physical Touch"
+      WA: tr("Words of Affirmation"),
+      QT: tr("Quality Time"),
+      GT: tr("Receiving Gifts"),
+      AS: tr("Acts of Service"),
+      PT: tr("Physical Touch")
     };
 
     const insights = {
       same: {
-        title: "Perfect Match!",
-        description: "You both share the same primary love language. This means you naturally understand how each other gives and receives love.",
+        title: tr("Perfect Match!"),
+        description: tr("You both share the same primary love language. This means you naturally understand how each other gives and receives love."),
         tips: [
-          "Continue expressing love in ways that resonate with both of you",
-          "Be mindful not to neglect other love languages entirely",
-          "Your natural understanding is a gift - use it to deepen your bond"
+          tr("Continue expressing love in ways that resonate with both of you"),
+          tr("Be mindful not to neglect other love languages entirely"),
+          tr("Your natural understanding is a gift - use it to deepen your bond")
         ]
       },
       different: {
-        title: "Complementary Match",
-        description: "You have different primary love languages. This is an opportunity to grow by learning to love your partner in their language.",
+        title: tr("Complementary Match"),
+        description: tr("You have different primary love languages. This is an opportunity to grow by learning to love your partner in their language."),
         tips: [
-          `You feel loved through ${loveLanguageNames[userPrimary]}, but your partner through ${loveLanguageNames[partnerPrimary]}`,
-          "Make intentional effort to express love in your partner's language",
-          "Communicate openly about what makes you each feel most loved",
-          "Use this difference as a chance to expand your capacity for love"
+          tr("You feel loved through {yourLanguage}, but your partner through {partnerLanguage}", { yourLanguage: loveLanguageNames[userPrimary], partnerLanguage: loveLanguageNames[partnerPrimary] }),
+          tr("Make intentional effort to express love in your partner's language"),
+          tr("Communicate openly about what makes you each feel most loved"),
+          tr("Use this difference as a chance to expand your capacity for love")
         ]
       }
     };
@@ -90,27 +91,25 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
       <>
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Heart className="w-5 h-5 text-primary-600" />
-              Love Language Comparison
-            </CardTitle>
+            <CardTitle className="tbo-card-title flex items-center gap-2">
+              <Heart className="w-5 h-5 text-primary-600" />{tr("Love Language Comparison")} </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="p-4 bg-primary-50 rounded-lg border-2 border-primary-200">
-                <p className="text-sm text-muted-foreground mb-2">You</p>
-                <p className="font-semibold text-primary-900">{loveLanguageNames[userPrimary]}</p>
+                <p className="tbo-supporting text-muted-foreground mb-2">{tr("You")}</p>
+                <p className="tbo-body text-primary-900">{loveLanguageNames[userPrimary]}</p>
               </div>
               <div className="p-4 bg-primary-50 rounded-lg border-2 border-primary-200">
-                <p className="text-sm text-muted-foreground mb-2">{partner?.name}</p>
-                <p className="font-semibold text-primary-900">{loveLanguageNames[partnerPrimary]}</p>
+                <p className="tbo-supporting text-muted-foreground mb-2">{partner?.name}</p>
+                <p className="tbo-body text-primary-900">{loveLanguageNames[partnerPrimary]}</p>
               </div>
             </div>
 
             {match && (
               <div className="p-4 bg-success-50 rounded-lg border border-success-500/30 flex items-center gap-3">
                 <CheckCircle className="w-5 h-5 text-success-700 flex-shrink-0" />
-                <p className="text-sm font-medium text-success-700">You share the same primary love language!</p>
+                <p className="tbo-supporting text-success-700">{tr("You share the same primary love language!")}</p>
               </div>
             )}
           </CardContent>
@@ -118,20 +117,20 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
 
         <Card className="mb-6 bg-gradient-to-br from-primary-50 to-primary-100">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="tbo-card-title flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-primary-600" />
               {currentInsight.title}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-foreground">{currentInsight.description}</p>
+            <p className="tbo-body text-foreground">{currentInsight.description}</p>
             <div className="space-y-2">
               {currentInsight.tips.map((tip, i) => (
                 <div key={i} className="flex items-start gap-2 p-3 bg-card rounded-lg">
                   <div className="w-6 h-6 rounded-full bg-primary-200 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs font-semibold text-primary-700">{i + 1}</span>
+                    <span className="tbo-caption text-primary-700">{i + 1}</span>
                   </div>
-                  <p className="text-sm text-foreground">{tip}</p>
+                  <p className="tbo-supporting text-foreground">{tip}</p>
                 </div>
               ))}
             </div>
@@ -141,7 +140,7 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
         {/* Score Comparison */}
         <Card>
           <CardHeader>
-            <CardTitle>Detailed Comparison</CardTitle>
+            <CardTitle className="tbo-card-title">{tr("Detailed Comparison")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -153,17 +152,17 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
 
                 return (
                   <div key={lang} className="space-y-2">
-                    <h4 className="text-sm font-medium">{loveLanguageNames[lang]}</h4>
+                    <h4 className="tbo-card-title">{loveLanguageNames[lang]}</h4>
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground w-24">You</span>
+                        <span className="tbo-caption text-muted-foreground w-24">{tr("You")}</span>
                         <Progress value={userPercentage} className="h-2 flex-1" />
-                        <span className="text-xs font-medium w-12 text-right">{userScore}/30</span>
+                        <span className="tbo-caption w-12 text-right">{userScore}/30</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground w-24">{partner?.name}</span>
+                        <span className="tbo-caption text-muted-foreground w-24">{partner?.name}</span>
                         <Progress value={partnerPercentage} className="h-2 flex-1" />
-                        <span className="text-xs font-medium w-12 text-right">{partnerScore}/30</span>
+                        <span className="tbo-caption w-12 text-right">{partnerScore}/30</span>
                       </div>
                     </div>
                   </div>
@@ -184,39 +183,37 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
     const difference = Math.abs(userPercentage - partnerPercentage);
 
     const stageNames: any = {
-      seeking: "Seeking Seeker",
-      growing: "Growing Believer",
-      maturing: "Maturing Disciple",
-      leading: "Spiritual Leader"
+      seeking: tr("Seeking Seeker"),
+      growing: tr("Growing Believer"),
+      maturing: tr("Maturing Disciple"),
+      leading: tr("Spiritual Leader")
     };
 
     return (
       <>
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-sky-600" />
-              Faith Journey Comparison
-            </CardTitle>
+            <CardTitle className="tbo-card-title flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-sky-600" />{tr("Faith Journey Comparison")} </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="p-4 bg-sky-50 rounded-lg border-2 border-sky-200 text-center">
-                <p className="text-sm text-muted-foreground mb-2">You</p>
+                <p className="tbo-supporting text-muted-foreground mb-2">{tr("You")}</p>
                 <p className="text-3xl font-bold text-sky-600 mb-1">{userPercentage}%</p>
-                <p className="text-sm font-medium text-sky-700">{stageNames[userStage]}</p>
+                <p className="tbo-supporting text-sky-700">{stageNames[userStage]}</p>
               </div>
               <div className="p-4 bg-sky-50 rounded-lg border-2 border-sky-200 text-center">
-                <p className="text-sm text-muted-foreground mb-2">{partner?.name}</p>
+                <p className="tbo-supporting text-muted-foreground mb-2">{partner?.name}</p>
                 <p className="text-3xl font-bold text-sky-600 mb-1">{partnerPercentage}%</p>
-                <p className="text-sm font-medium text-sky-900">{stageNames[partnerStage]}</p>
+                <p className="tbo-supporting text-sky-900">{stageNames[partnerStage]}</p>
               </div>
             </div>
 
             {difference <= 15 && (
               <div className="p-4 bg-success-50 rounded-lg border border-success-500/30 flex items-center gap-3">
                 <CheckCircle className="w-5 h-5 text-success-700 flex-shrink-0" />
-                <p className="text-sm font-medium text-success-700">You're at similar faith stages - great for growing together!</p>
+                <p className="tbo-supporting text-success-700">{tr("You're at similar faith stages - great for growing together!")}</p>
               </div>
             )}
           </CardContent>
@@ -224,29 +221,27 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
 
         <Card className="mb-6 bg-gradient-to-br from-sky-50 to-sky-100">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-sky-600" />
-              Growing Together
-            </CardTitle>
+            <CardTitle className="tbo-card-title flex items-center gap-2">
+              <Users className="w-5 h-5 text-sky-600" />{tr("Growing Together")} </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <p className="text-foreground mb-3">
+            <p className="tbo-body text-foreground mb-3">
               {difference <= 15 
-                ? "You're at similar points in your faith journey. Use this as an opportunity to grow together and encourage each other."
-                : "You're at different stages in your faith journey. This is an opportunity to learn from each other and grow together."}
+                ? tr("You're at similar points in your faith journey. Use this as an opportunity to grow together and encourage each other.")
+                : tr("You're at different stages in your faith journey. This is an opportunity to learn from each other and grow together.")}
             </p>
             <div className="space-y-2">
               <div className="p-3 bg-card rounded-lg">
-                <p className="text-sm font-medium text-sky-700 mb-1">Pray together daily</p>
-                <p className="text-sm text-muted-foreground">Strengthen your spiritual bond through shared prayer time</p>
+                <p className="tbo-supporting text-sky-700 mb-1">{tr("Pray together daily")}</p>
+                <p className="tbo-supporting text-muted-foreground">{tr("Strengthen your spiritual bond through shared prayer time")}</p>
               </div>
               <div className="p-3 bg-card rounded-lg">
-                <p className="text-sm font-medium text-sky-700 mb-1">Study Scripture together</p>
-                <p className="text-sm text-muted-foreground">Choose a book of the Bible or devotional to go through as a couple</p>
+                <p className="tbo-supporting text-sky-700 mb-1">{tr("Study Scripture together")}</p>
+                <p className="tbo-supporting text-muted-foreground">{tr("Choose a book of the Bible or devotional to go through as a couple")}</p>
               </div>
               <div className="p-3 bg-card rounded-lg">
-                <p className="text-sm font-medium text-sky-700 mb-1">Serve together</p>
-                <p className="text-sm text-muted-foreground">Find a ministry or cause where you can serve side by side</p>
+                <p className="tbo-supporting text-sky-700 mb-1">{tr("Serve together")}</p>
+                <p className="tbo-supporting text-muted-foreground">{tr("Find a ministry or cause where you can serve side by side")}</p>
               </div>
             </div>
           </CardContent>
@@ -255,26 +250,26 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
         {/* Category Comparison */}
         <Card>
           <CardHeader>
-            <CardTitle>Growth Area Comparison</CardTitle>
+            <CardTitle className="tbo-card-title">{tr("Growth Area Comparison")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {userResult.result.categoryAverages.map((userCat: any) => {
                 const partnerCat = partnerResult.result.categoryAverages.find((c: any) => c.category === userCat.category);
-                
+
                 return (
                   <div key={userCat.category} className="space-y-2">
-                    <h4 className="text-sm font-medium capitalize">{userCat.category}</h4>
+                    <h4 className="tbo-card-title capitalize">{tr(userCat.category)}</h4>
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground w-24">You</span>
+                        <span className="tbo-caption text-muted-foreground w-24">{tr("You")}</span>
                         <Progress value={userCat.percentage} className="h-2 flex-1" />
-                        <span className="text-xs font-medium w-12 text-right">{Math.round(userCat.percentage)}%</span>
+                        <span className="tbo-caption w-12 text-right">{Math.round(userCat.percentage)}%</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground w-24">{partner?.name}</span>
+                        <span className="tbo-caption text-muted-foreground w-24">{partner?.name}</span>
                         <Progress value={partnerCat?.percentage || 0} className="h-2 flex-1" />
-                        <span className="text-xs font-medium w-12 text-right">{Math.round(partnerCat?.percentage || 0)}%</span>
+                        <span className="tbo-caption w-12 text-right">{Math.round(partnerCat?.percentage || 0)}%</span>
                       </div>
                     </div>
                   </div>
@@ -293,88 +288,88 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
     const match = userStyle === partnerStyle;
 
     const styleNames: any = {
-      competing: "Competing",
-      collaborating: "Collaborating",
-      avoiding: "Avoiding",
-      compromising: "Compromising",
-      accommodating: "Accommodating"
+      competing: tr("Competing"),
+      collaborating: tr("Collaborating"),
+      avoiding: tr("Avoiding"),
+      compromising: tr("Compromising"),
+      accommodating: tr("Accommodating")
     };
 
     const compatibilityInsights: any = {
       'competing-competing': {
         compatibility: 'challenging',
-        insight: 'Both partners prefer to be direct and assertive. This can lead to power struggles.',
-        tips: ['Practice active listening', 'Take turns being the "decision maker"', 'Learn to yield sometimes', 'Remember you\'re on the same team']
+        insight: tr("Both partners prefer to be direct and assertive. This can lead to power struggles."),
+        tips: [tr("Practice active listening"), tr("Take turns being the \"decision maker\""), tr("Learn to yield sometimes"), tr("Remember you're on the same team")]
       },
       'competing-collaborating': {
         compatibility: 'good',
-        insight: 'One partner is direct while the other seeks understanding. Balance assertion with patience.',
-        tips: ['Competing partner: Slow down and listen', 'Collaborating partner: Don\'t over-analyze', 'Find a middle ground between speed and thoroughness']
+        insight: tr("One partner is direct while the other seeks understanding. Balance assertion with patience."),
+        tips: [tr("Competing partner: Slow down and listen"), tr("Collaborating partner: Don't over-analyze"), tr("Find a middle ground between speed and thoroughness")]
       },
       'competing-avoiding': {
         compatibility: 'challenging',
-        insight: 'One partner confronts while the other withdraws. This can create frustration.',
-        tips: ['Competing partner: Create safe space for discussion', 'Avoiding partner: Practice expressing concerns', 'Set gentle ground rules for conflicts']
+        insight: tr("One partner confronts while the other withdraws. This can create frustration."),
+        tips: [tr("Competing partner: Create safe space for discussion"), tr("Avoiding partner: Practice expressing concerns"), tr("Set gentle ground rules for conflicts")]
       },
       'competing-compromising': {
         compatibility: 'moderate',
-        insight: 'One seeks to win while the other seeks fairness. Learn from each other.',
-        tips: ['Recognize when winning matters vs. when compromise is better', 'Value both perspectives equally']
+        insight: tr("One seeks to win while the other seeks fairness. Learn from each other."),
+        tips: [tr("Recognize when winning matters vs. when compromise is better"), tr("Value both perspectives equally")]
       },
       'competing-accommodating': {
         compatibility: 'challenging',
-        insight: 'One partner is assertive while the other yields. Ensure both voices are heard.',
-        tips: ['Competing partner: Invite partner\'s input actively', 'Accommodating partner: Your needs matter too', 'Practice mutual submission']
+        insight: tr("One partner is assertive while the other yields. Ensure both voices are heard."),
+        tips: [tr("Competing partner: Invite partner's input actively"), tr("Accommodating partner: Your needs matter too"), tr("Practice mutual submission")]
       },
       'collaborating-collaborating': {
         compatibility: 'excellent',
-        insight: 'Both partners value understanding and win-win solutions. Great foundation!',
-        tips: ['Continue prioritizing mutual understanding', 'Don\'t over-analyze minor issues', 'Your natural compatibility is a blessing']
+        insight: tr("Both partners value understanding and win-win solutions. Great foundation!"),
+        tips: [tr("Continue prioritizing mutual understanding"), tr("Don't over-analyze minor issues"), tr("Your natural compatibility is a blessing")]
       },
       'collaborating-avoiding': {
         compatibility: 'moderate',
-        insight: 'One seeks deep resolution while the other prefers peace. Balance depth with simplicity.',
-        tips: ['Collaborating partner: Not every issue needs deep diving', 'Avoiding partner: Some issues need addressing', 'Agree on which conflicts need discussion']
+        insight: tr("One seeks deep resolution while the other prefers peace. Balance depth with simplicity."),
+        tips: [tr("Collaborating partner: Not every issue needs deep diving"), tr("Avoiding partner: Some issues need addressing"), tr("Agree on which conflicts need discussion")]
       },
       'collaborating-compromising': {
         compatibility: 'good',
-        insight: 'Both value resolution but through different means. Combine your strengths.',
-        tips: ['Use collaboration for important issues', 'Use compromise for minor ones', 'Appreciate each other\'s approach']
+        insight: tr("Both value resolution but through different means. Combine your strengths."),
+        tips: [tr("Use collaboration for important issues"), tr("Use compromise for minor ones"), tr("Appreciate each other's approach")]
       },
       'collaborating-accommodating': {
         compatibility: 'good',
-        insight: 'One seeks mutual understanding while the other defers. Ensure balance.',
-        tips: ['Collaborating partner: Draw out partner\'s true feelings', 'Accommodating partner: Share your perspective', 'True collaboration needs both voices']
+        insight: tr("One seeks mutual understanding while the other defers. Ensure balance."),
+        tips: [tr("Collaborating partner: Draw out partner's true feelings"), tr("Accommodating partner: Share your perspective"), tr("True collaboration needs both voices")]
       },
       'avoiding-avoiding': {
         compatibility: 'challenging',
-        insight: 'Both partners avoid conflict. Issues may go unresolved.',
-        tips: ['Practice gentle, loving confrontation', 'Remember: conflict can strengthen relationships', 'Set regular "check-in" times for discussions', 'Seek counseling if needed']
+        insight: tr("Both partners avoid conflict. Issues may go unresolved."),
+        tips: [tr("Practice gentle, loving confrontation"), tr("Remember: conflict can strengthen relationships"), tr("Set regular \"check-in\" times for discussions"), tr("Seek counseling if needed")]
       },
       'avoiding-compromising': {
         compatibility: 'moderate',
-        insight: 'One avoids while the other seeks middle ground. The compromiser may need to initiate.',
-        tips: ['Compromising partner: Create safe space for discussion', 'Avoiding partner: Try small steps in expressing needs']
+        insight: tr("One avoids while the other seeks middle ground. The compromiser may need to initiate."),
+        tips: [tr("Compromising partner: Create safe space for discussion"), tr("Avoiding partner: Try small steps in expressing needs")]
       },
       'avoiding-accommodating': {
         compatibility: 'challenging',
-        insight: 'Both prefer peace over resolution. Important issues may be neglected.',
-        tips: ['Both: Practice expressing needs lovingly', 'Your relationship needs honest communication', 'Consider couples counseling for guidance']
+        insight: tr("Both prefer peace over resolution. Important issues may be neglected."),
+        tips: [tr("Both: Practice expressing needs lovingly"), tr("Your relationship needs honest communication"), tr("Consider couples counseling for guidance")]
       },
       'compromising-compromising': {
         compatibility: 'good',
-        insight: 'Both value fairness and balance. You work well together!',
-        tips: ['Continue seeking win-win solutions', 'Remember: some issues need full resolution, not just middle ground', 'Your natural balance is a strength']
+        insight: tr("Both value fairness and balance. You work well together!"),
+        tips: [tr("Continue seeking win-win solutions"), tr("Remember: some issues need full resolution, not just middle ground"), tr("Your natural balance is a strength")]
       },
       'compromising-accommodating': {
         compatibility: 'good',
-        insight: 'One seeks fairness while the other yields. Ensure true fairness.',
-        tips: ['Compromising partner: Make sure partner truly agrees', 'Accommodating partner: Speak up about your needs', 'True compromise requires both voices']
+        insight: tr("One seeks fairness while the other yields. Ensure true fairness."),
+        tips: [tr("Compromising partner: Make sure partner truly agrees"), tr("Accommodating partner: Speak up about your needs"), tr("True compromise requires both voices")]
       },
       'accommodating-accommodating': {
         compatibility: 'challenging',
-        insight: 'Both partners yield to each other. Decisions may be difficult.',
-        tips: ['Both: Your needs are equally important', 'Practice expressing preferences', 'Take turns making decisions', 'Remember: healthy relationships need give AND take']
+        insight: tr("Both partners yield to each other. Decisions may be difficult."),
+        tips: [tr("Both: Your needs are equally important"), tr("Practice expressing preferences"), tr("Take turns making decisions"), tr("Remember: healthy relationships need give AND take")]
       }
     };
 
@@ -399,27 +394,25 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
       <>
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-primary-600" />
-              Conflict Style Comparison
-            </CardTitle>
+            <CardTitle className="tbo-card-title flex items-center gap-2">
+              <Users className="w-5 h-5 text-primary-600" />{tr("Conflict Style Comparison")} </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="p-4 bg-primary-50 rounded-lg border-2 border-primary-200">
-                <p className="text-sm text-muted-foreground mb-2">You</p>
-                <p className="font-semibold text-primary-900">{styleNames[userStyle]}</p>
+                <p className="tbo-supporting text-muted-foreground mb-2">{tr("You")}</p>
+                <p className="tbo-body text-primary-900">{styleNames[userStyle]}</p>
               </div>
               <div className="p-4 bg-primary-50 rounded-lg border-2 border-primary-200">
-                <p className="text-sm text-muted-foreground mb-2">{partner?.name}</p>
-                <p className="font-semibold text-primary-900">{styleNames[partnerStyle]}</p>
+                <p className="tbo-supporting text-muted-foreground mb-2">{partner?.name}</p>
+                <p className="tbo-body text-primary-900">{styleNames[partnerStyle]}</p>
               </div>
             </div>
 
             {match && (
               <div className="p-4 bg-success-50 rounded-lg border border-success-500/30 flex items-center gap-3">
                 <CheckCircle className="w-5 h-5 text-success-700 flex-shrink-0" />
-                <p className="text-sm font-medium text-success-700">You share the same conflict style!</p>
+                <p className="tbo-supporting text-success-700">{tr("You share the same conflict style!")}</p>
               </div>
             )}
           </CardContent>
@@ -428,25 +421,23 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
         <Card className={`mb-6 ${colors.bg} border-2 ${colors.border}`}>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className={`w-5 h-5 ${colors.text}`} />
-                Compatibility Insight
-              </CardTitle>
-              <Badge className={`${colors.badge} capitalize`}>
-                {compatibility.compatibility}
+              <CardTitle className="tbo-card-title flex items-center gap-2">
+                <TrendingUp className={`w-5 h-5 ${colors.text}`} />{tr("Compatibility Insight")} </CardTitle>
+              <Badge className={`tbo-caption ${colors.badge} capitalize`}>
+                {tr(compatibility.compatibility)}
               </Badge>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className={`${colors.text}`}>{compatibility.insight}</p>
+            <p className={`tbo-body ${colors.text}`}>{compatibility.insight}</p>
             <div className="space-y-2">
-              <h4 className="font-semibold text-sm">Tips for Your Combination</h4>
+              <h4 className="tbo-card-title">{tr("Tips for Your Combination")}</h4>
               {compatibility.tips.map((tip: string, i: number) => (
                 <div key={i} className="flex items-start gap-2 p-3 bg-card rounded-lg">
                   <div className="w-6 h-6 rounded-full bg-primary-200 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs font-semibold text-primary-700">{i + 1}</span>
+                    <span className="tbo-caption text-primary-700">{i + 1}</span>
                   </div>
-                  <p className="text-sm text-foreground">{tip}</p>
+                  <p className="tbo-supporting text-foreground">{tip}</p>
                 </div>
               ))}
             </div>
@@ -456,7 +447,7 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
         {/* Score Comparison */}
         <Card>
           <CardHeader>
-            <CardTitle>All Styles Comparison</CardTitle>
+            <CardTitle className="tbo-card-title">{tr("All Styles Comparison")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -468,17 +459,17 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
 
                 return (
                   <div key={style} className="space-y-2">
-                    <h4 className="text-sm font-medium">{styleNames[style]}</h4>
+                    <h4 className="tbo-card-title">{styleNames[style]}</h4>
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground w-24">You</span>
+                        <span className="tbo-caption text-muted-foreground w-24">{tr("You")}</span>
                         <Progress value={userPercentage} className="h-2 flex-1" />
-                        <span className="text-xs font-medium w-12 text-right">{userScore}/20</span>
+                        <span className="tbo-caption w-12 text-right">{userScore}/20</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground w-24">{partner?.name}</span>
+                        <span className="tbo-caption text-muted-foreground w-24">{partner?.name}</span>
                         <Progress value={partnerPercentage} className="h-2 flex-1" />
-                        <span className="text-xs font-medium w-12 text-right">{partnerScore}/20</span>
+                        <span className="tbo-caption w-12 text-right">{partnerScore}/20</span>
                       </div>
                     </div>
                   </div>
@@ -495,10 +486,8 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
     <div className="min-h-screen bg-gradient-to-b from-primary-50/30 via-primary-50/20 to-sky-50/30">
       <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm border-b">
         <div className="flex items-center justify-between px-4 py-4">
-          <Button variant="ghost" size="icon" onClick={onBack}>
-            <ChevronLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="text-xl font-semibold">Partner Comparison</h1>
+          <BackButton label={tr("Back to Quizzes")} onClick={onBack} />
+          <h1 className="tbo-page-title min-w-0 break-words">{tr("Partner Comparison")}</h1>
           <div className="w-10" />
         </div>
       </div>
@@ -511,30 +500,22 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
         {/* Biblical Encouragement */}
         <Card className="mt-6 bg-gradient-to-br from-sky-50 to-primary-50 border-sky-200">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Heart className="w-5 h-5 text-sky-600" />
-              Biblical Encouragement
-            </CardTitle>
+            <CardTitle className="tbo-card-title flex items-center gap-2">
+              <Heart className="w-5 h-5 text-sky-600" />{tr("Biblical Encouragement")} </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-start gap-3 p-3 bg-card rounded-lg">
               <BookOpen className="w-5 h-5 text-sky-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-medium italic text-sky-700 mb-1">
-                  "Two are better than one, because they have a good return for their labor: If either of them falls down, one can help the other up."
-                </p>
-                <p className="text-xs text-sky-700">— Ecclesiastes 4:9-10</p>
+                <p className="tbo-supporting italic text-sky-700 mb-1">"Two are better than one, because they have a good return for their labor: If either of them falls down, one can help the other up." </p>
+                <p className="tbo-caption text-sky-700">— Ecclesiastes 4:9-10</p>
               </div>
             </div>
-            <p className="text-sm text-foreground">
-              Your differences are not weaknesses—they're opportunities to strengthen each other. As you learn to love, serve, and resolve conflicts in ways that honor both of you, your relationship becomes a beautiful reflection of Christ's love.
-            </p>
+            <p className="tbo-supporting text-foreground">{tr("Your differences are not weaknesses—they're opportunities to strengthen each other. As you learn to love, serve, and resolve conflicts in ways that honor both of you, your relationship becomes a beautiful reflection of Christ's love.")} </p>
           </CardContent>
         </Card>
 
-        <Button onClick={onBack} className="w-full mt-6 bg-gradient-to-r from-primary-600 to-primary-700">
-          Back to Quizzes
-        </Button>
+        <BackButton label={tr("Back to Quizzes")} onClick={onBack} showLabel className="mt-6" />
       </div>
     </div>
   );

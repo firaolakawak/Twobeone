@@ -1,22 +1,27 @@
+import { LoadingMark } from "./BrandLoader";
+import { useUiCopy } from "../utils/uiTranslation";
+import { publicAuthMessages } from "../locales/publicAuth";
 import { useMemo, useState } from 'react';
-import { CheckCircle2, Heart, Loader2, MailCheck, MailX } from 'lucide-react';
+import { CheckCircle2, Heart, MailCheck, MailX } from 'lucide-react';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { useLanguage } from '../contexts/LanguageContext';
+import { BackButton } from './BackButton';
 
 type NewsletterAction = 'confirm' | 'unsubscribe';
 
 export function NewsletterPreferencePage({ action, onComplete }: { action: NewsletterAction; onComplete: () => void }) {
+  const tr = useUiCopy(publicAuthMessages);
   const { t } = useLanguage();
   const copy = t.newsletter;
   const [status, setStatus] = useState<'idle' | 'saving' | 'complete' | 'error'>('idle');
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState<keyof typeof copy | ''>('');
   const token = useMemo(() => new URLSearchParams(window.location.search).get('token') || '', []);
   const isConfirmation = action === 'confirm';
 
   const submit = async () => {
     if (!token) {
       setStatus('error');
-      setMessage(copy.invalidLink);
+      setMessage('invalidLink');
       return;
     }
     setStatus('saving');
@@ -37,10 +42,10 @@ export function NewsletterPreferencePage({ action, onComplete }: { action: Newsl
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(copy.updateFailed);
       setStatus('complete');
-      setMessage(isConfirmation ? copy.confirmedMessage : copy.unsubscribedMessage);
+      setMessage(isConfirmation ? 'confirmedMessage' : 'unsubscribedMessage');
     } catch (error) {
       setStatus('error');
-      setMessage(error instanceof Error ? error.message : copy.updateFailed);
+      setMessage('updateFailed');
     }
   };
 
@@ -50,28 +55,28 @@ export function NewsletterPreferencePage({ action, onComplete }: { action: Newsl
       <section className="mx-auto w-full max-w-md overflow-hidden rounded-[2rem] border border-rose-100 bg-white shadow-[0_24px_70px_-28px_rgba(136,19,55,.35)]">
         <header className="bg-gradient-to-br from-rose-500 to-pink-600 px-7 py-7 text-white">
           <div className="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-white shadow-lg"><Heart className="h-6 w-6 fill-rose-500 text-rose-500" /></div>
-          <h1 className="text-2xl font-bold text-white">Shabbat Shalom</h1>
-          <p className="mt-1 text-sm text-white/85">{copy.subtitle}</p>
+          <h1 className="tbo-page-title text-white">{tr("Shabbat Shalom")}</h1>
+          <p className="mt-1 tbo-supporting text-white/85">{copy.subtitle}</p>
         </header>
         <div className="space-y-5 p-7 text-center">
           <Icon className={`mx-auto h-12 w-12 ${status === 'error' ? 'text-red-500' : 'text-rose-600'}`} />
           <div>
-            <h2 className="text-lg font-semibold">
+            <h2 className="tbo-dialog-title">
               {status === 'complete' ? (isConfirmation ? copy.subscriptionConfirmed : copy.preferenceUpdated) : isConfirmation ? copy.confirmTitle : copy.unsubscribeTitle}
             </h2>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              {message || (isConfirmation
+            <p className="mt-2 tbo-supporting text-muted-foreground">
+              {(message ? copy[message] : '') || (isConfirmation
                 ? copy.confirmDescription
                 : copy.unsubscribeDescription)}
             </p>
           </div>
           {status !== 'complete' && (
-            <button type="button" onClick={submit} disabled={status === 'saving'} className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-rose-600 font-semibold text-white hover:bg-rose-700 disabled:opacity-60">
-              {status === 'saving' && <Loader2 className="h-4 w-4 animate-spin" />}
+            <button type="button" onClick={submit} disabled={status === 'saving'} className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-rose-600 tbo-action text-white hover:bg-rose-700 disabled:opacity-60">
+              {status === 'saving' && <LoadingMark className="h-4 w-4" />}
               {status === 'saving' ? copy.updating : isConfirmation ? copy.confirm : copy.unsubscribe}
             </button>
           )}
-          <button type="button" onClick={onComplete} className="w-full text-sm font-semibold text-rose-600">{copy.returnToApp}</button>
+          <BackButton onClick={onComplete} label={copy.returnToApp} showLabel className="mx-auto" />
         </div>
       </section>
     </main>

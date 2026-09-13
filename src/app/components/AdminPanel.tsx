@@ -1,3 +1,5 @@
+import { useUiCopy } from "../utils/uiTranslation";
+import { adminCommonMessages } from "../locales/adminCommon";
 import { lazy, Suspense, useState } from "react";
 import {
   BookOpen,
@@ -31,6 +33,8 @@ import { ShabbatShalomConsole } from "./admin/ShabbatShalomConsole";
 import { UsersManager } from "./admin/UsersManager";
 import { Sidebar, type SidebarItem } from "./admin/dashboard/Sidebar";
 import { ContentLanguageProvider } from "../contexts/ContentLanguageContext";
+import { LanguageSelector } from './LanguageSelector';
+import { BrandLoader } from './BrandLoader';
 import "../styles/dashboard.css";
 
 const CharacterHouseAdminPreview = lazy(() => import("./admin/CharacterHouseAdminPreview").then((module) => ({ default: module.CharacterHouseAdminPreview })));
@@ -58,23 +62,24 @@ const sections: SidebarItem[] = [
 ];
 
 export function AdminPanel({ onSignOut, accessToken, onBackToHome }: AdminPanelProps) {
+  const tr = useUiCopy(adminCommonMessages);
   const [activeSection, setActiveSection] = useState("dashboard");
   const [mobileOpen, setMobileOpen] = useState(false);
-  const activeLabel = sections.find((section) => section.id === activeSection)?.label ?? activeSection;
+  const activeLabel = tr(sections.find((section) => section.id === activeSection)?.label ?? activeSection);
 
   return (
     <ContentLanguageProvider>
       <div className="admin-shell">
-        <button className="admin-mobile-menu" type="button" onClick={() => setMobileOpen((open) => !open)} aria-label={mobileOpen ? "Close admin navigation" : "Open admin navigation"} aria-expanded={mobileOpen}>
+        <button className="admin-mobile-menu" type="button" onClick={() => setMobileOpen((open) => !open)} aria-label={mobileOpen ? tr("Close admin navigation") : tr("Open admin navigation")} aria-expanded={mobileOpen}>
           {mobileOpen ? <X /> : <Menu />}
         </button>
-        {mobileOpen && <button className="admin-sidebar-scrim" type="button" onClick={() => setMobileOpen(false)} aria-label="Close admin navigation" />}
+        {mobileOpen && <button className="admin-sidebar-scrim" type="button" onClick={() => setMobileOpen(false)} aria-label={tr("Close admin navigation")} />}
         <Sidebar items={sections} active={activeSection} onNavigate={setActiveSection} onHome={onBackToHome} mobileOpen={mobileOpen} onMobileClose={() => setMobileOpen(false)} />
 
         <div className="admin-shell__body">
           <header className="admin-topbar">
-            <div className="admin-topbar__title"><Shield aria-hidden="true" /><div><span>Admin console</span><strong>{activeLabel}</strong></div></div>
-            <button type="button" className="admin-secondary-button" onClick={onSignOut} aria-label="Sign out of admin console">Sign out</button>
+            <div className="admin-topbar__title"><Shield aria-hidden="true" /><div><span>{tr("Admin console")}</span><strong>{activeLabel}</strong></div></div>
+            <div className="flex flex-wrap items-center gap-2"><LanguageSelector /><button type="button" className="admin-secondary-button" onClick={onSignOut} aria-label={tr("Sign out of admin console")}>{tr("Sign out")}</button></div>
           </header>
           <div className="admin-shell__content">
             {activeSection === "dashboard" && <AdminDashboard accessToken={accessToken} onNavigate={setActiveSection} />}
@@ -86,7 +91,7 @@ export function AdminPanel({ onSignOut, accessToken, onBackToHome }: AdminPanelP
             {activeSection === "pushNotifications" && <PushNotificationsManager accessToken={accessToken} />}
             {activeSection === "shabbatShalom" && <ShabbatShalomConsole accessToken={accessToken} />}
             {activeSection === "landingPage" && <LandingPageManager accessToken={accessToken} />}
-            {activeSection === "characterHouse" && <Suspense fallback={<div className="admin-panel">Loading 3D game studio…</div>}><CharacterHouseAdminPreview /></Suspense>}
+            {activeSection === "characterHouse" && <Suspense fallback={<BrandLoader className="admin-panel" label={tr("Loading 3D game studio…")} />}><CharacterHouseAdminPreview /></Suspense>}
             {activeSection === "privileges" && <PrivilegeManager accessToken={accessToken} />}
             {activeSection === "auditLog" && <AuditLog accessToken={accessToken || ""} />}
             {activeSection === "accountRecovery" && <AccountRecovery accessToken={accessToken} />}

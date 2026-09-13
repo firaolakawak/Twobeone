@@ -1,3 +1,7 @@
+import { formatUiTime } from '../utils/uiDateTime';
+import { BrandLoader, LoadingMark } from './BrandLoader';
+import { useUiCopy, UI_LOCALES } from '../utils/uiTranslation';
+import { questionsUiMessages, getQuestionCategorySource } from '../locales/questionsUi';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
@@ -5,7 +9,7 @@ import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { ScrollArea } from './ui/scroll-area';
 import { Badge } from './ui/badge';
-import { Send, Loader2, Quote, BookOpen } from 'lucide-react';
+import { Send, Quote, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import { sendNotification } from '../utils/notifications';
 
@@ -52,7 +56,8 @@ export function QuestionChatDialog({
   currentUserName,
   partner
 }: QuestionChatDialogProps) {
-  const { t } = useLanguage();
+  const tr = useUiCopy(questionsUiMessages);
+  const { t, language } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
@@ -126,7 +131,7 @@ export function QuestionChatDialog({
         }
       );
 
-      if (!response.ok) throw new Error('Failed to send message');
+      if (!response.ok) throw new Error(tr("Failed to send message"));
 
       const { message: sentMessage } = await response.json();
 
@@ -139,7 +144,7 @@ export function QuestionChatDialog({
         try {
           await sendNotification({
             recipientId: partner.id,
-            title: '💬 New Message in Q&A Chat',
+            title: tr("💬 New Message in Q&A Chat"),
             message: `${currentUserName}: ${newMessage.substring(0, 50)}${newMessage.length > 50 ? '...' : ''}`,
             type: 'question_answered',
             projectId,
@@ -154,7 +159,7 @@ export function QuestionChatDialog({
       await loadMessages();
     } catch (error) {
       console.error('Error sending message:', error);
-      toast.error('Failed to send message');
+      toast.error(tr("Failed to send message"));
     } finally {
       setIsSending(false);
     }
@@ -190,18 +195,19 @@ export function QuestionChatDialog({
         <DialogHeader className="px-6 pt-6 pb-4 border-b">
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <Badge className={`bg-gradient-to-r ${getCategoryColor(question.category)} text-white border-0`}>
-                {question.category}
+              <Badge className={`tbo-caption bg-gradient-to-r ${getCategoryColor(question.category)} text-white border-0`}>
+                {tr(getQuestionCategorySource(question.category))}
               </Badge>
-              <span className="text-sm text-muted-foreground">Q{promptIndex + 1}</span>
+              <span className="tbo-supporting text-muted-foreground">Q{promptIndex + 1}</span>
             </div>
-            <DialogTitle className="text-xl leading-relaxed">
+            <DialogTitle className="tbo-dialog-title">
               {question.prompts[promptIndex]}
             </DialogTitle>
-            <DialogDescription className="sr-only">
-              Chat with your partner about this question
+            <DialogDescription className="tbo-supporting sr-only">
+
+              {tr("Chat with your partner about this question")}
             </DialogDescription>
-            
+
             {/* Bible Verse Card */}
             <div className="bg-gradient-to-br from-muted to-white border border-border rounded-lg p-4">
               <div className="flex items-start gap-3">
@@ -210,7 +216,7 @@ export function QuestionChatDialog({
                   <p className="text-sm text-foreground italic">
                     "{question.verse}"
                   </p>
-                  <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                  <p className="tbo-caption text-muted-foreground flex items-center gap-1.5">
                     <BookOpen className="w-3 h-3" />
                     {question.verseReference}
                   </p>
@@ -224,7 +230,7 @@ export function QuestionChatDialog({
         <ScrollArea className="flex-1 px-6 py-4">
           {isLoading ? (
             <div className="flex items-center justify-center h-full">
-              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+              <BrandLoader />
             </div>
           ) : messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center space-y-3">
@@ -232,9 +238,10 @@ export function QuestionChatDialog({
                 <Quote className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h4 className="font-semibold text-foreground mb-1">{t.questions.discuss}</h4>
-                <p className="text-sm text-muted-foreground">
-                  Share your thoughts and discuss this question together
+                <h4 className="tbo-card-title text-foreground mb-1">{t.questions.discuss}</h4>
+                <p className="tbo-supporting text-muted-foreground">
+
+                  {tr("Share your thoughts and discuss this question together")}
                 </p>
               </div>
             </div>
@@ -254,18 +261,18 @@ export function QuestionChatDialog({
                           : 'bg-muted text-foreground rounded-bl-sm'
                       }`}
                     >
-                      <p className={`text-xs mb-1 ${
+                      <p className={`tbo-caption mb-1 ${
                         isCurrentUser ? 'text-sky-100' : 'text-muted-foreground'
                       }`}>
                         {msg.userName}
                       </p>
-                      <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                      <p className="tbo-supporting whitespace-pre-wrap">
                         {msg.message}
                       </p>
-                      <p className={`text-xs mt-2 ${
+                      <p className={`tbo-caption mt-2 ${
                         isCurrentUser ? 'text-sky-200' : 'text-muted-foreground'
                       }`}>
-                        {new Date(msg.timestamp).toLocaleTimeString('en-US', {
+                        {formatUiTime(new Date(msg.timestamp), UI_LOCALES[language], {
                           hour: '2-digit',
                           minute: '2-digit'
                         })}
@@ -286,25 +293,27 @@ export function QuestionChatDialog({
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyDown={handleKeyPress}
-              placeholder={partner ? "Share your thoughts..." : "{t.dashboard.connectWithPartner}"}
-              className="min-h-[60px] max-h-[120px] resize-none"
+              placeholder={partner ? tr("Share your thoughts...") : t.dashboard.connectWithPartner}
+              className="tbo-field min-h-[60px] max-h-[120px] resize-none"
               disabled={!partner || isSending}
             />
             <Button
               onClick={handleSendMessage}
+              aria-label={tr(isSending ? 'Sending...' : 'Send')}
               disabled={!newMessage.trim() || isSending || !partner}
-              className={`px-6 h-[60px] bg-gradient-to-r ${getCategoryColor(question.category)} text-white hover:opacity-90`}
+              className={`tbo-action px-6 h-[60px] bg-gradient-to-r ${getCategoryColor(question.category)} text-white hover:opacity-90`}
             >
               {isSending ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <LoadingMark />
               ) : (
                 <Send className="w-5 h-5" />
               )}
             </Button>
           </div>
           {!partner && (
-            <p className="text-xs text-muted-foreground mt-2 text-center">
-              Add your partner to start chatting about questions together
+            <p className="tbo-caption text-muted-foreground mt-2 text-center">
+
+              {tr("Add your partner to start chatting about questions together")}
             </p>
           )}
         </div>

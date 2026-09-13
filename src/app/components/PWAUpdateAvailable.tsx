@@ -92,10 +92,10 @@ export function PWAUpdateAvailable() {
               <RefreshCw className="w-5 h-5 text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-foreground dark:text-white mb-1">
+              <h3 className="tbo-card-title text-foreground dark:text-white mb-1">
                 {t.pwaUpdate.title}
               </h3>
-              <p className="text-sm text-muted-foreground dark:text-muted-foreground mb-3">
+              <p className="tbo-supporting text-muted-foreground dark:text-muted-foreground mb-3">
                 {t.pwaUpdate.description}
               </p>
               <div className="flex gap-2">

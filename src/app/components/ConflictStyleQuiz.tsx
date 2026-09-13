@@ -1,9 +1,11 @@
+import { useUiCopy } from '../utils/uiTranslation';
+import { guidanceMessages, localizeGuidanceData } from '../locales/guidance';
+import { BackButton } from './BackButton';
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Progress } from './ui/progress';
 import { 
-  ChevronLeft, 
   MessageCircle, 
   Shield,
   Handshake,
@@ -19,7 +21,7 @@ interface ConflictStyleQuizProps {
   onBack: () => void;
 }
 
-const questions = [
+const BASE_questions = [
   { q: "When a disagreement starts, I usually...", options: ["Address it immediately", "Take time to think first", "Avoid confrontation", "Try to find middle ground", "Defer to my partner"], type: "approach" },
   { q: "During a conflict, my priority is...", options: ["Being heard", "Understanding my partner", "Maintaining peace", "Finding a solution", "Preserving the relationship"], type: "priority" },
   { q: "I feel most comfortable when conflicts are...", options: ["Resolved quickly", "Discussed thoroughly", "Minimized", "Compromised", "Let go"], type: "comfort" },
@@ -42,7 +44,7 @@ const questions = [
   { q: "When conflict arises, my emotions are...", options: ["Intense and expressed", "Controlled and thoughtful", "Suppressed or hidden", "Balanced", "Focused on partner's feelings"], type: "emotions" }
 ];
 
-const styles = {
+const BASE_styles = {
   competing: {
     name: "Competing",
     icon: Volume2,
@@ -156,6 +158,9 @@ const styles = {
 };
 
 export function ConflictStyleQuiz({ existingResult, onComplete, onBack }: ConflictStyleQuizProps) {
+  const tr = useUiCopy(guidanceMessages);
+  const styles = localizeGuidanceData(tr, BASE_styles);
+  const questions = localizeGuidanceData(tr, BASE_questions);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
   const [showResults, setShowResults] = useState(!!existingResult);
@@ -216,10 +221,8 @@ export function ConflictStyleQuiz({ existingResult, onComplete, onBack }: Confli
       <div className="min-h-screen bg-gradient-to-b from-primary-50/50 to-primary-50/50">
         <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm border-b">
           <div className="flex items-center justify-between px-4 py-4">
-            <Button variant="ghost" size="icon" onClick={onBack}>
-              <ChevronLeft className="w-5 h-5" />
-            </Button>
-            <h1 className="text-xl font-semibold">Your Conflict Style</h1>
+            <BackButton label={tr("Back to Quizzes")} onClick={onBack} />
+            <h1 className="tbo-page-title min-w-0 break-words">{tr("Your Conflict Style")}</h1>
             <div className="w-10" />
           </div>
         </div>
@@ -232,13 +235,13 @@ export function ConflictStyleQuiz({ existingResult, onComplete, onBack }: Confli
               <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br ${styleInfo.color} mb-4 mx-auto`}>
                 <StyleIcon className="w-10 h-10 text-white" />
               </div>
-              <CardTitle className="text-2xl mb-2">Your Primary Conflict Style</CardTitle>
-              <h3 className={`text-3xl font-bold bg-gradient-to-r ${styleInfo.color} bg-clip-text text-transparent`}>
+              <CardTitle className="tbo-card-title mb-2">{tr("Your Primary Conflict Style")}</CardTitle>
+              <h3 className={`tbo-card-title bg-gradient-to-r ${styleInfo.color} bg-clip-text text-transparent`}>
                 {styleInfo.name}
               </h3>
             </CardHeader>
             <CardContent className="space-y-6">
-              <p className="text-center text-muted-foreground">{styleInfo.description}</p>
+              <p className="tbo-body text-center text-muted-foreground">{styleInfo.description}</p>
 
               {/* Scripture */}
               <div className="p-4 bg-gradient-to-br from-sky-50 to-sky-100 rounded-lg border border-sky-200">
@@ -253,15 +256,13 @@ export function ConflictStyleQuiz({ existingResult, onComplete, onBack }: Confli
 
               {/* Strengths */}
               <div>
-                <h4 className="font-semibold mb-3 flex items-center gap-2 text-success-700">
-                  <Sparkles className="w-5 h-5" />
-                  Your Strengths
-                </h4>
+                <h4 className="tbo-card-title mb-3 flex items-center gap-2 text-success-700">
+                  <Sparkles className="w-5 h-5" />{tr("Your Strengths")} </h4>
                 <div className="space-y-2">
                   {styleInfo.strengths.map((strength, i) => (
                     <div key={i} className="flex items-start gap-2 p-3 bg-success-50 rounded-lg">
                       <div className="w-2 h-2 rounded-full bg-success-500 flex-shrink-0 mt-2"></div>
-                      <p className="text-sm text-foreground">{strength}</p>
+                      <p className="tbo-supporting text-foreground">{strength}</p>
                     </div>
                   ))}
                 </div>
@@ -269,17 +270,15 @@ export function ConflictStyleQuiz({ existingResult, onComplete, onBack }: Confli
 
               {/* Growth Areas */}
               <div>
-                <h4 className="font-semibold mb-3 flex items-center gap-2 text-primary-700">
-                  <Sparkles className="w-5 h-5" />
-                  Growth Opportunities
-                </h4>
+                <h4 className="tbo-card-title mb-3 flex items-center gap-2 text-primary-700">
+                  <Sparkles className="w-5 h-5" />{tr("Growth Opportunities")} </h4>
                 <div className="space-y-2">
                   {styleInfo.growthAreas.map((area, i) => (
                     <div key={i} className="flex items-start gap-2 p-3 bg-primary-50 rounded-lg">
                       <div className="w-6 h-6 rounded-full bg-primary-200 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <span className="text-xs font-semibold text-primary-700">{i + 1}</span>
+                        <span className="tbo-caption text-primary-700">{i + 1}</span>
                       </div>
-                      <p className="text-sm text-foreground">{area}</p>
+                      <p className="tbo-supporting text-foreground">{area}</p>
                     </div>
                   ))}
                 </div>
@@ -290,15 +289,15 @@ export function ConflictStyleQuiz({ existingResult, onComplete, onBack }: Confli
                 <div className="flex items-start gap-3">
                   <Heart className="w-5 h-5 text-warning-500 flex-shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="font-semibold text-warning-700 mb-2">Biblical Guidance</h4>
-                    <p className="text-sm text-foreground">{styleInfo.biblicalGuidance}</p>
+                    <h4 className="tbo-card-title text-warning-700 mb-2">{tr("Biblical Guidance")}</h4>
+                    <p className="tbo-supporting text-foreground">{styleInfo.biblicalGuidance}</p>
                   </div>
                 </div>
               </div>
 
               {/* Score Breakdown */}
               <div>
-                <h4 className="font-semibold mb-3">All Conflict Styles</h4>
+                <h4 className="tbo-card-title mb-3">{tr("All Conflict Styles")}</h4>
                 <div className="space-y-3">
                   {Object.entries(results.scores)
                     .sort(([, a]: any, [, b]: any) => b - a)
@@ -327,53 +326,45 @@ export function ConflictStyleQuiz({ existingResult, onComplete, onBack }: Confli
           {/* Secondary Style */}
           <Card className="mb-6 bg-gradient-to-br from-sky-50 to-sky-100 border-sky-200">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MessageCircle className="w-5 h-5 text-sky-600" />
-                Your Secondary Style: {secondaryStyle.name}
+              <CardTitle className="tbo-card-title flex items-center gap-2">
+                <MessageCircle className="w-5 h-5 text-sky-600" />{tr("Your Secondary Style:")} {secondaryStyle.name}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground mb-3">{secondaryStyle.description}</p>
-              <p className="text-sm text-foreground">You also use this style, especially in certain situations. Being aware of both styles helps you navigate conflicts more effectively.</p>
+              <p className="tbo-supporting text-muted-foreground mb-3">{secondaryStyle.description}</p>
+              <p className="tbo-supporting text-foreground">{tr("You also use this style, especially in certain situations. Being aware of both styles helps you navigate conflicts more effectively.")}</p>
             </CardContent>
           </Card>
 
           {/* Couple Tips */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Heart className="w-5 h-5 text-primary-600" />
-                Growing Together in Conflict
-              </CardTitle>
+              <CardTitle className="tbo-card-title flex items-center gap-2">
+                <Heart className="w-5 h-5 text-primary-600" />{tr("Growing Together in Conflict")} </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="p-3 bg-primary-50 rounded-lg">
-                <p className="text-sm font-medium text-primary-900 mb-1">Pray before difficult conversations</p>
-                <p className="text-sm text-muted-foreground">Ask God for wisdom, patience, and love</p>
+                <p className="tbo-supporting text-primary-900 mb-1">{tr("Pray before difficult conversations")}</p>
+                <p className="tbo-supporting text-muted-foreground">{tr("Ask God for wisdom, patience, and love")}</p>
               </div>
               <div className="p-3 bg-sky-50 rounded-lg">
-                <p className="text-sm font-medium text-sky-700 mb-1">Use "I feel" statements</p>
-                <p className="text-sm text-muted-foreground">Share your emotions without blaming your partner</p>
+                <p className="tbo-supporting text-sky-700 mb-1">{tr("Use \"I feel\" statements")}</p>
+                <p className="tbo-supporting text-muted-foreground">{tr("Share your emotions without blaming your partner")}</p>
               </div>
               <div className="p-3 bg-primary-50 rounded-lg">
-                <p className="text-sm font-medium text-primary-900 mb-1">Take breaks when needed</p>
-                <p className="text-sm text-muted-foreground">It's okay to pause and return when emotions settle</p>
+                <p className="tbo-supporting text-primary-900 mb-1">{tr("Take breaks when needed")}</p>
+                <p className="tbo-supporting text-muted-foreground">{tr("It's okay to pause and return when emotions settle")}</p>
               </div>
               <div className="p-3 bg-success-50 rounded-lg">
-                <p className="text-sm font-medium text-success-700 mb-1">Remember you're on the same team</p>
-                <p className="text-sm text-muted-foreground">The goal is understanding, not winning</p>
+                <p className="tbo-supporting text-success-700 mb-1">{tr("Remember you're on the same team")}</p>
+                <p className="tbo-supporting text-muted-foreground">{tr("The goal is understanding, not winning")}</p>
               </div>
             </CardContent>
           </Card>
 
-          <div className="flex gap-3 mt-6">
-            <Button onClick={handleRetake} variant="outline" className="flex-1">
-              Retake Quiz
-            </Button>
-            <Button onClick={onBack} className={`flex-1 bg-gradient-to-r ${styleInfo.color}`}>
-              <ChevronLeft className="w-4 h-4 mr-2" />
-              Done
-            </Button>
+          <div className="flex flex-wrap gap-3 mt-6">
+            <Button onClick={handleRetake} variant="outline" className="tbo-action flex-1 min-h-11 h-auto whitespace-normal">{tr("Retake Quiz")} </Button>
+            <BackButton label={tr("Done")} onClick={onBack} showLabel className="flex-1" />
           </div>
         </div>
       </div>
@@ -386,15 +377,13 @@ export function ConflictStyleQuiz({ existingResult, onComplete, onBack }: Confli
     <div className="min-h-screen bg-gradient-to-b from-primary-50/50 to-primary-50/50">
       <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm border-b">
         <div className="flex items-center justify-between px-4 py-4">
-          <Button variant="ghost" size="icon" onClick={onBack}>
-            <ChevronLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="text-xl font-semibold">Conflict Style Quiz</h1>
+          <BackButton label={tr("Back to Quizzes")} onClick={onBack} />
+          <h1 className="tbo-page-title min-w-0 break-words">{tr("Conflict Style Quiz")}</h1>
           <div className="w-10" />
         </div>
         <div className="px-4 pb-3">
           <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
-            <span>Question {currentQuestion + 1} of {questions.length}</span>
+            <span>{tr("Question {current} of {total}", { current: currentQuestion + 1, total: questions.length })}</span>
             <span>{Math.round(progress)}%</span>
           </div>
           <Progress value={progress} className="h-2" />
@@ -407,19 +396,19 @@ export function ConflictStyleQuiz({ existingResult, onComplete, onBack }: Confli
             <div className="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-primary-500 to-primary-500 mb-4 mx-auto">
               <MessageCircle className="w-8 h-8 text-white" />
             </div>
-            <CardTitle className="text-center text-xl">{question.q}</CardTitle>
+            <CardTitle className="tbo-card-title text-center">{question.q}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {question.options.map((option, index) => (
               <Button
                 key={index}
                 onClick={() => handleAnswer(index)}
-                className="w-full h-auto py-4 text-left justify-start bg-card hover:bg-primary-50 text-foreground border-2 border-border hover:border-primary-300"
+                className="tbo-action w-full h-auto whitespace-normal break-words py-4 text-left justify-start bg-card hover:bg-primary-50 text-foreground border-2 border-border hover:border-primary-300"
                 variant="outline"
               >
                 <div className="flex items-start gap-3 w-full">
                   <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="font-semibold text-primary-600 text-sm">{index + 1}</span>
+                    <span className="tbo-label text-primary-600">{index + 1}</span>
                   </div>
                   <span className="flex-1">{option}</span>
                 </div>

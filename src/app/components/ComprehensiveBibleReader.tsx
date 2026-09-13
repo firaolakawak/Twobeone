@@ -1,3 +1,7 @@
+import { useUiCopy } from '../utils/uiTranslation';
+import { readingUiMessages } from '../locales/readingUi';
+import { useCurrentLanguage } from '../utils/languageStore';
+import { BrandLoader, LoadingMark } from './BrandLoader';
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from './ui/dialog';
 import { Button } from './ui/button';
@@ -12,8 +16,7 @@ import {
   MessageCircle,
   X,
   Menu,
-  Search,
-  Loader2
+  Search
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { bibleChapters } from '../data/bible-chapters';
@@ -100,9 +103,15 @@ export function ComprehensiveBibleReader({
   verse,
   onSaveHighlight,
   onShareWithPartner,
-  partnerName = 'Partner'
+  partnerName
 }: ComprehensiveBibleReaderProps) {
-  const [readerLanguage, setReaderLanguage] = useState<'en' | 'am'>('am');
+  const tr = useUiCopy(readingUiMessages);
+  const language = useCurrentLanguage();
+  const [readingChoice, setReadingChoice] = useState<{ ui: typeof language; reading: 'en' | 'am' } | null>(null);
+  const readerLanguage = readingChoice?.ui === language ? readingChoice.reading : language === 'am' ? 'am' : 'en';
+  const setReaderLanguage = (reading: 'en' | 'am') => setReadingChoice({ ui: language, reading });
+  const partnerDisplayName = partnerName || tr('Partner');
+  const displayBook = (book: string) => readerLanguage === 'am' ? getAmharicBookName(book) : book;
   const [showBookSelector, setShowBookSelector] = useState(false);
   const [showChapterSelector, setShowChapterSelector] = useState(false);
   const [selectedBook, setSelectedBook] = useState('Romans');
@@ -116,6 +125,12 @@ export function ComprehensiveBibleReader({
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [bibleDownloading, setBibleDownloading] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const [pendingAction, setPendingAction] = useState<'highlight' | 'share' | null>(null);
+
+  // An explicit reading choice lasts until the interface language changes.
+  useEffect(() => setReadingChoice(null), [language]);
 
   useEffect(() => {
     if (isOpen) {
@@ -133,74 +148,50 @@ export function ComprehensiveBibleReader({
     }
   }, [isOpen, initialReference, reference]);
 
-  // Separate effect to load chapter when book, chapter, or language changes
+  // Ignore stale chapter requests when the book or reading language changes.
   useEffect(() => {
-    if (isOpen) {
-      loadChapter(selectedBook, selectedChapter, readerLanguage);
-    }
-  }, [isOpen, selectedBook, selectedChapter, readerLanguage]);
-
-  const loadChapter = async (book: string, chapter: number, lang: 'en' | 'am') => {
+    if (!isOpen) return;
+    let cancelled = false;
     setIsLoading(true);
-
-    if (lang === 'am') {
-      if (!isBibleLoaded()) setBibleDownloading(true);
+    setLoadFailed(false);
+    setBookChapter(null);
+    setSelectedVerse(null);
+    setBibleDownloading(readerLanguage === 'am' && !isBibleLoaded());
+    const loadChapter = async () => {
       try {
-        const amData = await fetchAmharicChapter(book, chapter);
-        // amData has bookName from XML; adapt to component's expected shape
-        setBookChapter({
-          book: amData.bookName,
-          chapter: amData.chapter,
-          verses: amData.verses,
-        });
-      } catch (error) {
-        console.error('[ComprehensiveBibleReader] Amharic fetch failed:', error);
-        setBookChapter({
-          book: getAmharicBookName(book),
-          chapter,
-          verses: [{ number: 1, text: 'ምዕራፉን ለመጫን አልተቻለም። የኢንተርኔት ግንኙነቱን ያረጋግጡ።' }],
-        });
-      } finally {
-        setBibleDownloading(false);
-        setIsLoading(false);
-      }
-      return;
-    }
-
-    // English path — try local data first, then API
-    const chapterData = bibleChapters.find(
-      c => c.book.toLowerCase() === book.toLowerCase() && c.chapter === chapter
-    );
-
-    if (chapterData) {
-      setBookChapter(chapterData);
-      setIsLoading(false);
-    } else {
-      try {
-        const apiChapterData = await fetchBibleChapter(book, chapter);
-        setBookChapter(apiChapterData);
-
-        const nextChapter = chapter + 1;
-        const prevChapter = chapter - 1;
-        const maxChapter = CHAPTER_COUNTS[book] || 1;
-        const chaptersToFetch: number[] = [];
-        if (prevChapter >= 1) chaptersToFetch.push(prevChapter);
-        if (nextChapter <= maxChapter) chaptersToFetch.push(nextChapter);
-        if (chaptersToFetch.length > 0) {
-          prefetchChapters(book, chaptersToFetch).catch(console.error);
+        if (readerLanguage === 'am') {
+          const chapter = await fetchAmharicChapter(selectedBook, selectedChapter);
+          if (!cancelled) setBookChapter({ book: chapter.bookName, chapter: chapter.chapter, verses: chapter.verses });
+        } else {
+          const localChapter = bibleChapters.find(c => c.book.toLowerCase() === selectedBook.toLowerCase() && c.chapter === selectedChapter);
+          const chapter = localChapter || await fetchBibleChapter(selectedBook, selectedChapter);
+          if (cancelled) return;
+          // The legacy API helper returns its error as verse text. Keep that
+          // operational message out of the reading and translate it below.
+          if (!chapter.verses.length || (chapter.verses.length === 1 && chapter.verses[0].text === 'Unable to load this chapter. Please check your internet connection and try again.')) {
+            throw new Error('Chapter unavailable');
+          }
+          setBookChapter(chapter);
+          if (!localChapter) {
+            const adjacent = [selectedChapter - 1, selectedChapter + 1].filter(number => number >= 1 && number <= (CHAPTER_COUNTS[selectedBook] || 1));
+            if (adjacent.length) prefetchChapters(selectedBook, adjacent).catch(console.error);
+          }
         }
       } catch (error) {
-        console.error('[ComprehensiveBibleReader] Failed to load chapter:', error);
-        setBookChapter({
-          book,
-          chapter,
-          verses: [{ number: 1, text: 'Unable to load this chapter. Please check your internet connection and try again.' }],
-        });
+        if (!cancelled) {
+          console.error('[ComprehensiveBibleReader] Failed to load chapter:', error);
+          setLoadFailed(true);
+        }
       } finally {
-        setIsLoading(false);
+        if (!cancelled) {
+          setBibleDownloading(false);
+          setIsLoading(false);
+        }
       }
-    }
-  };
+    };
+    void loadChapter();
+    return () => { cancelled = true; };
+  }, [isOpen, selectedBook, selectedChapter, readerLanguage, retryCount]);
 
   const handleSelectBook = (book: string) => {
     setSelectedBook(book);
@@ -246,7 +237,8 @@ export function ComprehensiveBibleReader({
   };
 
   const handleHighlightVerse = async (verseNumber: number, verseText: string) => {
-    if (!onSaveHighlight) return;
+    if (!onSaveHighlight || pendingAction) return;
+    setPendingAction('highlight');
 
     try {
       const newHighlights = new Map(highlights);
@@ -261,18 +253,21 @@ export function ComprehensiveBibleReader({
         note: note || undefined
       });
 
-      toast.success('Verse highlighted!');
+      toast.success(tr("Verse highlighted!"));
       setSelectedVerse(null);
       setNote('');
       setShowNoteInput(false);
     } catch (error) {
       console.error('Failed to save highlight:', error);
-      toast.error('Failed to save highlight');
+      toast.error(tr("Failed to save highlight"));
+    } finally {
+      setPendingAction(null);
     }
   };
 
   const handleShareWithPartner = async (verseNumber: number, verseText: string) => {
-    if (!onShareWithPartner) return;
+    if (!onShareWithPartner || pendingAction) return;
+    setPendingAction('share');
 
     try {
       await onShareWithPartner({
@@ -282,20 +277,22 @@ export function ComprehensiveBibleReader({
         note: note || undefined
       });
 
-      toast.success(`Shared with ${partnerName}!`);
+      toast.success(tr('Shared with {name}!', { name: partnerDisplayName }));
       setSelectedVerse(null);
       setNote('');
       setShowNoteInput(false);
     } catch (error) {
       console.error('Failed to share:', error);
-      toast.error('Failed to share with partner');
+      toast.error(tr("Failed to share with partner"));
+    } finally {
+      setPendingAction(null);
     }
   };
 
   const getHighlightClass = (verseNumber: number) => {
     const highlight = highlights.get(verseNumber);
     if (!highlight) return '';
-    
+
     const colorMap: Record<string, string> = {
       yellow: 'bg-warning-50',
       green: 'bg-success-50',
@@ -303,46 +300,47 @@ export function ComprehensiveBibleReader({
       pink: 'bg-primary-200',
       purple: 'bg-primary-200'
     };
-    
+
     return colorMap[highlight.color] || '';
   };
 
   const filteredBooks = searchQuery
     ? [...BIBLE_BOOKS['Old Testament'], ...BIBLE_BOOKS['New Testament']].filter(book =>
-        book.toLowerCase().includes(searchQuery.toLowerCase())
+        displayBook(book).toLocaleLowerCase().includes(searchQuery.toLocaleLowerCase()) || book.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : null;
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-4xl max-h-[95vh] p-0 overflow-hidden">
+      <DialogContent showCloseButton={false} className="flex h-[95dvh] max-w-4xl max-h-[95dvh] flex-col gap-0 p-0 overflow-y-auto">
         <VisuallyHidden>
-          <DialogTitle>Bible Reader - {selectedBook} Chapter {selectedChapter}</DialogTitle>
+          <DialogTitle className="tbo-dialog-title">{tr('Bible Reader — {book}, chapter {chapter}', { book: displayBook(selectedBook), chapter: selectedChapter })}</DialogTitle>
         </VisuallyHidden>
-        <DialogDescription className="sr-only">
-          Read and study the Bible, highlight verses, and share with your partner
+        <DialogDescription className="tbo-supporting sr-only">
+
+          {tr("Read and study the Bible, highlight verses, and share with your partner")}
         </DialogDescription>
-        
+
         {/* Header */}
-        <div style={{ background: 'linear-gradient(to right, var(--primary), var(--secondary))', color: 'var(--primary-foreground)', padding: 'var(--spacing-4) var(--spacing-6)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--spacing-2)' }}>
+        <div className="shrink-0" style={{ background: 'linear-gradient(to right, var(--primary), var(--secondary))', color: 'var(--primary-foreground)', padding: 'var(--spacing-4) var(--spacing-6)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 'var(--spacing-2)', marginBottom: 'var(--spacing-2)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
-              <BookOpen style={{ width: '1.5rem', height: '1.5rem' }} />
-              <h2 style={{ fontSize: 'var(--text-xl)', fontWeight: 'var(--font-weight-medium)', margin: 0 }}>
-                {readerLanguage === 'am' ? 'መጽሐፍ ቅዱስ' : 'Bible Reader'}
+              <BookOpen style={{ width: '1.5rem', height: '1.5rem', flexShrink: 0 }} />
+              <h2 className="tbo-section-title" style={{   margin: 0 }}>
+                {tr('Bible Reader')}
               </h2>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
               {/* Language toggle */}
-              <div style={{ display: 'flex', background: 'rgba(255,255,255,0.15)', borderRadius: 'var(--radius-full)', padding: '2px' }}>
-                <button
+              <div role="group" aria-label={tr('Reading language')} style={{ display: 'flex', background: 'rgba(255,255,255,0.15)', borderRadius: 'var(--radius-full)', padding: '2px' }}>
+                <button className="tbo-action"
                   onClick={() => setReaderLanguage('am')}
+                  lang="am" aria-pressed={readerLanguage === 'am'}
                   style={{
                     background: readerLanguage === 'am' ? 'rgba(255,255,255,0.9)' : 'transparent',
                     color: readerLanguage === 'am' ? 'var(--primary)' : 'rgba(255,255,255,0.85)',
                     borderRadius: 'var(--radius-full)',
-                    fontSize: 'var(--text-xs)',
-                    fontWeight: 'var(--font-weight-medium)',
+
                     padding: 'var(--spacing-1) var(--spacing-2)',
                     border: 'none',
                     cursor: 'pointer',
@@ -352,14 +350,14 @@ export function ComprehensiveBibleReader({
                 >
                   አማርኛ
                 </button>
-                <button
+                <button className="tbo-action"
                   onClick={() => setReaderLanguage('en')}
+                  lang="en" aria-pressed={readerLanguage === 'en'}
                   style={{
                     background: readerLanguage === 'en' ? 'rgba(255,255,255,0.9)' : 'transparent',
                     color: readerLanguage === 'en' ? 'var(--primary)' : 'rgba(255,255,255,0.85)',
                     borderRadius: 'var(--radius-full)',
-                    fontSize: 'var(--text-xs)',
-                    fontWeight: 'var(--font-weight-medium)',
+
                     padding: 'var(--spacing-1) var(--spacing-2)',
                     border: 'none',
                     cursor: 'pointer',
@@ -374,7 +372,8 @@ export function ComprehensiveBibleReader({
                 variant="ghost"
                 size="icon"
                 onClick={onClose}
-                className="text-white hover:bg-white/20"
+                aria-label={tr('Close')}
+                className="tbo-action text-white hover:bg-white/20"
               >
                 <X className="w-5 h-5" />
               </Button>
@@ -382,21 +381,21 @@ export function ComprehensiveBibleReader({
           </div>
 
           {/* Book and Chapter Selector */}
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <Button
               variant="ghost"
               onClick={() => setShowBookSelector(!showBookSelector)}
-              className="text-white hover:bg-white/20 border border-white/30"
+              className="tbo-action h-auto min-h-9 whitespace-normal text-white hover:bg-white/20 border border-white/30"
             >
               <Menu className="w-4 h-4 mr-2" />
-              {readerLanguage === 'am' ? (getAmharicBookName(selectedBook)) : selectedBook}
+              <span lang={readerLanguage}>{displayBook(selectedBook)}</span>
             </Button>
             <Button
               variant="ghost"
               onClick={() => setShowChapterSelector(!showChapterSelector)}
-              className="text-white hover:bg-white/20 border border-white/30"
+              className="tbo-action h-auto min-h-9 whitespace-normal text-white hover:bg-white/20 border border-white/30"
             >
-              {readerLanguage === 'am' ? `ምዕራፍ ${selectedChapter}` : `Chapter ${selectedChapter}`}
+              {tr('Chapter {chapter}', { chapter: selectedChapter })}
             </Button>
 
             {/* Navigation */}
@@ -405,7 +404,8 @@ export function ComprehensiveBibleReader({
                 variant="ghost"
                 size="icon"
                 onClick={handlePreviousChapter}
-                className="text-white hover:bg-white/20"
+                aria-label={tr('Previous chapter')}
+                className="tbo-action text-white hover:bg-white/20"
               >
                 <ChevronLeft className="w-5 h-5" />
               </Button>
@@ -413,7 +413,8 @@ export function ComprehensiveBibleReader({
                 variant="ghost"
                 size="icon"
                 onClick={handleNextChapter}
-                className="text-white hover:bg-white/20"
+                aria-label={tr('Next chapter')}
+                className="tbo-action text-white hover:bg-white/20"
               >
                 <ChevronRight className="w-5 h-5" />
               </Button>
@@ -428,33 +429,32 @@ export function ComprehensiveBibleReader({
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search books..."
+                  placeholder={tr("Search books...")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  className="tbo-field pl-10"
                 />
               </div>
             </div>
             <ScrollArea className="h-[50vh]">
               <div className="p-4 space-y-4">
+                {filteredBooks?.length === 0 && <p className="tbo-supporting">{tr('No books found')}</p>}
                 {(filteredBooks ? filteredBooks.map(book => (
-                  <button
+                  <button className="tbo-action"
                     key={book}
                     onClick={() => handleSelectBook(book)}
-                    style={{ width: '100%', textAlign: 'left', padding: 'var(--spacing-2) var(--spacing-3)', borderRadius: 'var(--radius-md)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'var(--text-sm)', color: 'var(--foreground)', fontFamily: 'inherit' }}
+                    style={{ width: '100%', textAlign: 'left', padding: 'var(--spacing-2) var(--spacing-3)', borderRadius: 'var(--radius-md)', background: 'none', border: 'none', cursor: 'pointer',  color: 'var(--foreground)', fontFamily: 'inherit' }}
                   >
-                    {readerLanguage === 'am' ? (getAmharicBookName(book)) : book}
+                    <span lang={readerLanguage}>{displayBook(book)}</span>
                   </button>
                 )) : Object.entries(BIBLE_BOOKS).map(([testament, books]) => (
                   <div key={testament}>
-                    <h3 style={{ fontWeight: 'var(--font-weight-medium)', color: 'var(--primary)', marginBottom: 'var(--spacing-2)', fontSize: 'var(--text-sm)' }}>
-                      {readerLanguage === 'am'
-                        ? (testament === 'Old Testament' ? 'ብሉይ ኪዳን' : 'አዲስ ኪዳን')
-                        : testament}
+                    <h3 className="tbo-card-title" style={{  color: 'var(--primary)', marginBottom: 'var(--spacing-2)',  }}>
+                      {tr(testament)}
                     </h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {books.map((book: string) => (
-                        <button
+                        <button className="tbo-action"
                           key={book}
                           onClick={() => handleSelectBook(book)}
                           style={{
@@ -463,15 +463,15 @@ export function ComprehensiveBibleReader({
                             borderRadius: 'var(--radius-md)',
                             border: 'none',
                             cursor: 'pointer',
-                            fontSize: 'var(--text-xs)',
+
                             fontFamily: 'inherit',
                             background: book === selectedBook ? 'var(--primary-50, #f5f3ff)' : 'transparent',
                             color: book === selectedBook ? 'var(--primary)' : 'var(--foreground)',
-                            fontWeight: book === selectedBook ? 'var(--font-weight-medium)' : 'normal',
+
                             transition: 'background 0.1s',
                           }}
                         >
-                          {readerLanguage === 'am' ? (getAmharicBookName(book)) : book}
+                          <span lang={readerLanguage}>{displayBook(book)}</span>
                         </button>
                       ))}
                     </div>
@@ -486,10 +486,8 @@ export function ComprehensiveBibleReader({
         {showChapterSelector && (
           <div className="absolute top-24 left-6 right-6 bg-card rounded-lg shadow-2xl border z-50 max-h-[60vh] overflow-hidden">
             <div className="p-4 border-b bg-primary-50">
-              <h3 style={{ fontWeight: 'var(--font-weight-medium)', color: 'var(--primary)', fontSize: 'var(--text-sm)' }}>
-                {readerLanguage === 'am'
-                  ? `ምዕራፍ ይምረጡ — ${getAmharicBookName(selectedBook)}`
-                  : `Select Chapter — ${selectedBook}`}
+              <h3 className="tbo-card-title" style={{  color: 'var(--primary)',  }}>
+                {tr('Select Chapter — {book}', { book: displayBook(selectedBook) })}
               </h3>
             </div>
             <ScrollArea className="h-[50vh]">
@@ -499,9 +497,9 @@ export function ComprehensiveBibleReader({
                     <button
                       key={chapter}
                       onClick={() => handleSelectChapter(chapter)}
-                      className={`px-4 py-2 rounded-lg transition-colors ${
+                      className={`tbo-action px-4 py-2 rounded-lg transition-colors ${
                         chapter === selectedChapter
-                          ? 'bg-primary-600 text-white font-semibold'
+                          ? "bg-primary-600 text-white "
                           : 'bg-muted hover:bg-primary-50'
                       }`}
                     >
@@ -514,28 +512,32 @@ export function ComprehensiveBibleReader({
           </div>
         )}
 
+        {language === 'om' && (
+          <p className="tbo-supporting shrink-0 border-b bg-primary-50 px-6 py-3">
+            {tr(readerLanguage === 'am'
+              ? 'Afaan Oromo Scripture is not available in this app yet. You have selected the Amharic reading.'
+              : 'Afaan Oromo Scripture is not available in this app yet. The reading is shown in English; you can also choose Amharic.')}
+          </p>
+        )}
+
         {/* Bible download progress banner */}
         {bibleDownloading && (
           <div style={{ background: 'var(--primary)', color: 'var(--primary-foreground)', padding: 'var(--spacing-2) var(--spacing-6)', display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', fontSize: 'var(--text-sm)' }}>
-            <Loader2 style={{ width: '1rem', height: '1rem', animation: 'spin 1s linear infinite' }} />
-            <span>አማርኛ መጽሐፍ ቅዱስ እየተጫነ ነው… (Bible loading for the first time)</span>
+            <LoadingMark size={20} />
+            <span>{tr('Downloading the Amharic Bible for the first time…')}</span>
           </div>
         )}
 
         {/* Chapter Content */}
-        <ScrollArea className="flex-1 px-6 py-4" style={{ maxHeight: 'calc(95vh - 180px)' }}>
+        <ScrollArea className="min-h-[16rem] flex-1 shrink-0 px-6 py-4">
           {bookChapter && (
             <div className="max-w-3xl mx-auto">
               <div className="mb-6 text-center">
-                <h1 style={{ fontSize: 'var(--text-display)', fontWeight: 'var(--font-weight-medium)', color: 'var(--foreground)', marginBottom: 'var(--spacing-1)' }}>
-                  {readerLanguage === 'am'
-                    ? `${getAmharicBookName(selectedBook)} ${selectedChapter}`
-                    : `${selectedBook} ${selectedChapter}`}
+                <h1 className="tbo-page-title" style={{   color: 'var(--foreground)', marginBottom: 'var(--spacing-1)' }}>
+                  <span lang={readerLanguage}>{displayBook(selectedBook)} {selectedChapter}</span>
                 </h1>
-                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
-                  {readerLanguage === 'am'
-                    ? `ያንብቡ፣ ያጉሉ፣ እና ከ${partnerName} ጋር ያካፍሉ`
-                    : `Read, highlight, and share with ${partnerName}`}
+                <p className="tbo-body" style={{  color: 'var(--muted-foreground)' }}>
+                  {tr('Read, highlight, and share with {name}', { name: partnerDisplayName })}
                 </p>
               </div>
 
@@ -558,10 +560,10 @@ export function ComprehensiveBibleReader({
                         onClick={() => setSelectedVerse(isSelected ? null : v.number)}
                       >
                         <div className="flex gap-3">
-                          <span className="flex-shrink-0 w-7 h-7 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center text-sm font-semibold">
+                          <span className="tbo-label flex-shrink-0 w-7 h-7 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center">
                             {v.number}
                           </span>
-                          <p className="flex-1 text-foreground leading-relaxed">
+                          <p lang={readerLanguage} className="min-w-0 flex-1 text-foreground leading-relaxed">
                             {v.text}
                           </p>
                         </div>
@@ -571,11 +573,11 @@ export function ComprehensiveBibleReader({
                           <div className="mt-4 pt-4 border-t border-border space-y-3">
                             {/* Highlight Colors */}
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className="text-sm text-muted-foreground">Highlight:</span>
+                              <span className="tbo-supporting text-muted-foreground">{tr("Highlight:")}</span>
                               {HIGHLIGHT_COLORS.map(color => (
                                 <button
                                   key={color.value}
-                                  className={`w-8 h-8 rounded-full ${color.class} border-2 ${
+                                  className={`tbo-action w-8 h-8 rounded-full ${color.class} border-2 ${
                                     highlightColor === color.value
                                       ? 'border-primary-600 scale-110'
                                       : 'border-border'
@@ -584,16 +586,16 @@ export function ComprehensiveBibleReader({
                                     e.stopPropagation();
                                     setHighlightColor(color.value);
                                   }}
-                                  title={color.name}
+                                  title={tr(color.name)} aria-label={tr(color.name)} aria-pressed={highlightColor === color.value}
                                 />
                               ))}
                             </div>
 
                             {/* Note Input */}
                             {showNoteInput ? (
-                              <textarea
-                                style={{ width: '100%', padding: 'var(--spacing-3)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', fontSize: 'var(--text-sm)', resize: 'none', outline: 'none', fontFamily: 'inherit', color: 'var(--foreground)', background: 'var(--card)' }}
-                                placeholder={readerLanguage === 'am' ? 'ማስታወሻ ይጨምሩ (አማራጭ)...' : 'Add a note (optional)...'}
+                              <textarea className="tbo-field"
+                                style={{ width: '100%', padding: 'var(--spacing-3)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)',  resize: 'none', outline: 'none', fontFamily: 'inherit', color: 'var(--foreground)', background: 'var(--card)' }}
+                                placeholder={tr('Add a note (optional)...')}
                                 rows={2}
                                 value={note}
                                 onChange={(e) => setNote(e.target.value)}
@@ -607,25 +609,26 @@ export function ComprehensiveBibleReader({
                                   e.stopPropagation();
                                   setShowNoteInput(true);
                                 }}
-                                className="text-muted-foreground"
+                                className="tbo-action text-muted-foreground"
                               >
                                 <MessageCircle className="w-4 h-4 mr-2" />
-                                {readerLanguage === 'am' ? 'ማስታወሻ ይጨምሩ' : 'Add Note'}
+                                {tr('Add Note')}
                               </Button>
                             )}
 
                             {/* Action Buttons */}
-                            <div className="flex gap-2">
+                            <div className="flex flex-wrap gap-2">
                               <Button
                                 size="sm"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleHighlightVerse(v.number, v.text);
                                 }}
-                                className="flex-1 bg-primary-600 hover:bg-primary-700"
+                                disabled={!!pendingAction || !onSaveHighlight}
+                                className="tbo-action h-auto min-h-9 flex-1 whitespace-normal bg-primary-600 hover:bg-primary-700"
                               >
-                                <Highlighter className="w-4 h-4 mr-2" />
-                                {readerLanguage === 'am' ? 'ምልክት ያድርጉ' : 'Save Highlight'}
+                                {pendingAction === 'highlight' ? <LoadingMark /> : <Highlighter className="w-4 h-4 mr-2 shrink-0" />}
+                                {tr('Save Highlight')}
                               </Button>
                               <Button
                                 size="sm"
@@ -634,10 +637,11 @@ export function ComprehensiveBibleReader({
                                   e.stopPropagation();
                                   handleShareWithPartner(v.number, v.text);
                                 }}
-                                className="flex-1 border-primary-300 text-primary-700 hover:bg-primary-50"
+                                disabled={!!pendingAction || !onShareWithPartner}
+                                className="tbo-action h-auto min-h-9 flex-1 whitespace-normal border-primary-300 text-primary-700 hover:bg-primary-50"
                               >
-                                <Share2 className="w-4 h-4 mr-2" />
-                                {readerLanguage === 'am' ? 'ያካፍሉ' : 'Share'}
+                                {pendingAction === 'share' ? <LoadingMark /> : <Share2 className="w-4 h-4 mr-2 shrink-0" />}
+                                {tr('Share')}
                               </Button>
                             </div>
                           </div>
@@ -646,7 +650,7 @@ export function ComprehensiveBibleReader({
                         {/* Show existing note */}
                         {isHighlighted && highlights.get(v.number)?.note && (
                           <div className="mt-3 p-3 bg-card bg-opacity-70 rounded-lg border border-border">
-                            <p className="text-sm text-foreground italic">
+                            <p className="tbo-supporting text-foreground italic">
                               📝 {highlights.get(v.number)?.note}
                             </p>
                           </div>
@@ -658,9 +662,15 @@ export function ComprehensiveBibleReader({
               </div>
             </div>
           )}
+          {loadFailed && (
+            <div role="alert" className="space-y-3 py-6 text-center">
+              <p className="tbo-body">{tr('Unable to load this chapter. Please check your internet connection and try again.')}</p>
+              <Button onClick={() => setRetryCount(count => count + 1)}>{tr('Retry')}</Button>
+            </div>
+          )}
           {isLoading && (
             <div className="flex justify-center items-center h-full">
-              <Loader2 className="w-10 h-10 animate-spin" />
+              <BrandLoader label={tr('Loading chapter…')} />
             </div>
           )}
         </ScrollArea>
@@ -670,11 +680,11 @@ export function ComprehensiveBibleReader({
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-4)', fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
               <Highlighter style={{ width: '1rem', height: '1rem' }} />
-              <span>{highlights.size} {readerLanguage === 'am' ? 'ምልክት የተደረገ' : 'highlighted'}</span>
+              <span>{tr('{count} highlighted', { count: highlights.size })}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
               <BookOpen style={{ width: '1rem', height: '1rem' }} />
-              <span>{bookChapter?.verses.length || 0} {readerLanguage === 'am' ? 'ቁጥሮች' : 'verses'}</span>
+              <span>{tr('{count} verses', { count: bookChapter?.verses.length || 0 })}</span>
             </div>
           </div>
         </div>

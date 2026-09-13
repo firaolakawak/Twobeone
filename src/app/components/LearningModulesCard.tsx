@@ -1,3 +1,6 @@
+import { useCurrentLanguage } from '../utils/languageStore';
+import { useUiCopy } from '../utils/uiTranslation';
+import { guidanceMessages } from '../locales/guidance';
 import { useState, useEffect } from "react";
 import {
   BookOpen,
@@ -132,8 +135,7 @@ export function LearningModulesCard({
   const [isLoading, setIsLoading] = useState(true);
 
   // Dynamic language check fallback
-  const currentLang =
-    localStorage.getItem("twobeone_language") || "en";
+  const currentLang = useCurrentLanguage();
   const vocab =
     LEARNING_MODULES_I18N[
       currentLang as keyof typeof LEARNING_MODULES_I18N
@@ -228,19 +230,18 @@ export function LearningModulesCard({
               />
             </div>
             <div>
-              <p
+              <h3 className="tbo-card-title"
                 style={{
-                  fontSize: "var(--text-callout)",
-                  fontWeight: "var(--font-weight-semibold)",
+
                   color: "#ffffff",
                   margin: 0,
                 }}
               >
                 {vocab.title}
-              </p>
-              <p
+              </h3>
+              <p className="tbo-caption"
                 style={{
-                  fontSize: "var(--text-label)",
+
                   color: "rgba(255,255,255,.78)",
                   margin: 0,
                 }}
@@ -249,10 +250,9 @@ export function LearningModulesCard({
               </p>
             </div>
           </div>
-          <span
+          <span className="tbo-caption"
             style={{
-              fontSize: "var(--text-label)",
-              fontWeight: "var(--font-weight-semibold)",
+
               color: "#ffffff",
               backgroundColor: "rgba(255,255,255,.16)",
               borderRadius: "var(--radius-full)",
@@ -283,9 +283,9 @@ export function LearningModulesCard({
             }}
           />
         </div>
-        <p
+        <p className="tbo-caption"
           style={{
-            fontSize: "var(--text-label)",
+
             color: "rgba(255,255,255,.78)",
             margin: "var(--spacing-1) 0 0 0",
           }}
@@ -371,10 +371,9 @@ export function LearningModulesCard({
 
               {/* Title parameters block rows */}
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p
+                <h4 className="tbo-card-title"
                   style={{
-                    fontSize: "var(--text-callout)",
-                    fontWeight: "var(--font-weight-medium)",
+
                     color: "var(--neutral-900)",
                     margin: 0,
                     overflow: "hidden",
@@ -383,7 +382,7 @@ export function LearningModulesCard({
                   }}
                 >
                   {displayTitle}
-                </p>
+                </h4>
                 {prog > 0 && !done && (
                   <div
                     style={{
@@ -411,12 +410,11 @@ export function LearningModulesCard({
                         }}
                       />
                     </div>
-                    <span
+                    <span className="tbo-caption"
                       style={{
-                        fontSize: "var(--text-label)",
+
                         color: m.accentColor,
-                        fontWeight:
-                          "var(--font-weight-semibold)",
+
                         flexShrink: 0,
                       }}
                     >
@@ -428,11 +426,11 @@ export function LearningModulesCard({
 
               {/* Right State Indicator anchors */}
               {done ? (
-                <span
+                <span className="tbo-caption"
                   style={{
-                    fontSize: "var(--text-label)",
+
                     color: "var(--success-500)",
-                    fontWeight: "var(--font-weight-semibold)",
+
                     flexShrink: 0,
                   }}
                 >
@@ -460,7 +458,7 @@ export function LearningModulesCard({
           borderTop: "1px solid #ffe4e6",
         }}
       >
-        <button
+        <button className="tbo-action"
           onClick={onViewAll}
           style={{
             display: "flex",
@@ -473,8 +471,7 @@ export function LearningModulesCard({
             border: `1px solid var(--primary-200, #ffc7d7)`,
             backgroundColor: "rgba(255,255,255,.82)",
             color: "var(--primary-600)",
-            fontSize: "var(--text-callout)",
-            fontWeight: "var(--font-weight-semibold)",
+
             cursor: "pointer",
             transition: "all 0.15s ease",
           }}

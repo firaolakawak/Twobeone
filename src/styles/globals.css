@@ -90,30 +90,23 @@
   --chart-4: var(--warning-500);
   --chart-5: var(--error-500);
   
-  /* ============================================
-     MOBILE TYPOGRAPHY SYSTEM
-     iOS & Android text scales
-     ============================================ */
-  
-  /* iOS Typography (pt) */
-  --text-display: 34px;      /* Large Title: 28-34pt */
-  --text-large-title: 28px;  /* Title 1 */
-  --text-title: 24px;        /* Title 2 */
-  --text-subtitle: 20px;     /* Title 3 / Subtitle: 18-20pt */
-  --text-heading: 18px;      /* Heading */
-  --text-body: 16px;         /* Body: 16-17pt */
-  --text-body-large: 17px;   /* Body Large */
-  --text-callout: 15px;      /* Callout */
-  --text-caption: 14px;      /* Caption: 12-14pt */
-  --text-caption-small: 12px;/* Caption 2 */
-  --text-label: 11px;        /* Label/Footnote */
-  
-  /* Android Typography (sp) */
-  --text-display-android: 32px;  /* Display: 32sp */
-  --text-title-android: 24px;    /* Title: 20-24sp */
-  --text-body-android: 16px;     /* Body: 14-16sp */
-  --text-caption-android: 12px;  /* Caption: 12sp */
-  
+  /* Compatibility aliases for older screens. New code uses TwoBeOne type roles. */
+  --text-display: var(--type-page-size);
+  --text-large-title: var(--type-page-size);
+  --text-title: var(--type-page-size);
+  --text-subtitle: var(--type-section-size);
+  --text-heading: var(--type-card-size);
+  --text-body: var(--type-body-size);
+  --text-body-large: 1.125rem;
+  --text-callout: var(--type-body-size);
+  --text-caption: var(--type-supporting-size);
+  --text-caption-small: var(--type-caption-size);
+  --text-label: var(--type-label-size);
+  --text-display-android: var(--type-page-size);
+  --text-title-android: var(--type-page-size);
+  --text-body-android: var(--type-body-size);
+  --text-caption-android: var(--type-caption-size);
+
   /* Font Weights */
   --font-weight-light: 300;
   --font-weight-normal: 400;
@@ -298,60 +291,6 @@
   }
 }
 
-/**
- * Base typography. This is not applied to elements which have an ancestor with a Tailwind text class.
- */
-@layer base {
-  :where(:not(:has([class*=' text-']), :not(:has([class^='text-'])))) {
-    h1 {
-      font-size: var(--text-2xl);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
-
-    h2 {
-      font-size: var(--text-xl);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
-
-    h3 {
-      font-size: var(--text-lg);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
-
-    h4 {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
-
-    p {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-normal);
-      line-height: 1.5;
-    }
-
-    label {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
-
-    button {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
-
-    input {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-normal);
-      line-height: 1.5;
-    }
-  }
-}
 
 html {
   font-size: var(--font-size);

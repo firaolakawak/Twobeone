@@ -1,7 +1,12 @@
+import { formatUiDate } from '../utils/uiDateTime';
+import { useUiCopy, UI_LOCALES } from '../utils/uiTranslation';
+import { LoadingMark } from './BrandLoader';
+import { profileUiMessages } from '../locales/profileUi';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from './ui/dialog';
 import { Button } from './ui/button';
+import { BackButton } from './BackButton';
 import { Card, CardContent } from './ui/card';
 import { AlertTriangle, Heart, HeartCrack, Clock, X, Check } from 'lucide-react';
 import { toast } from 'sonner';
@@ -28,7 +33,9 @@ export function PartnerDisconnectDialog({
   partner,
   onDisconnected 
 }: PartnerDisconnectDialogProps) {
-  const { t } = useLanguage();
+  const tr = useUiCopy(profileUiMessages);
+  const { t, language } = useLanguage();
+  const partnerDisplayName = partner?.name || tr('your partner');
   const [isLoading, setIsLoading] = useState(false);
   const [disconnectStatus, setDisconnectStatus] = useState<any>(null);
   const [view, setView] = useState<'initial' | 'confirm' | 'status'>('initial');
@@ -43,7 +50,7 @@ export function PartnerDisconnectDialog({
     try {
       const status = await api.partner.getDisconnectStatus();
       setDisconnectStatus(status);
-      
+
       if (status.hasRequest) {
         setView('status');
       } else {
@@ -52,7 +59,7 @@ export function PartnerDisconnectDialog({
 
       // If disconnected, notify parent
       if (status.disconnected) {
-        toast.info('Your partnership has been disconnected');
+        toast.info(tr("Your partnership has been disconnected"));
         onDisconnected?.();
         onOpenChange(false);
       }
@@ -65,15 +72,15 @@ export function PartnerDisconnectDialog({
     setIsLoading(true);
     try {
       const result = await api.partner.requestDisconnect();
-      toast.success(result.message);
+      toast.success(tr(result.status === 'agreed' ? 'Both partners have agreed' : 'Disconnect request sent'));
       await checkDisconnectStatus();
     } catch (error: any) {
       console.error('Error requesting disconnect:', error);
       if (error.message?.includes('already requested')) {
-        toast.error('You have already requested to disconnect');
+        toast.error(tr("You have already requested to disconnect"));
         await checkDisconnectStatus();
       } else {
-        toast.error(error.message || 'Failed to request disconnect');
+        toast.error(tr('Failed to request disconnect'));
       }
     } finally {
       setIsLoading(false);
@@ -83,37 +90,44 @@ export function PartnerDisconnectDialog({
   const handleCancelDisconnect = async () => {
     setIsLoading(true);
     try {
-      const result = await api.partner.cancelDisconnect();
-      toast.success(result.message);
+      await api.partner.cancelDisconnect();
+      toast.success(tr('Disconnect request cancelled'));
       await checkDisconnectStatus();
       setView('initial');
     } catch (error: any) {
       console.error('Error cancelling disconnect:', error);
-      toast.error(error.message || 'Failed to cancel disconnect');
+      toast.error(tr('Failed to cancel disconnect'));
     } finally {
       setIsLoading(false);
     }
   };
 
-  const getDaysRemainingText = (days: number) => {
-    if (days <= 0) return 'Grace period ended';
-    if (days === 1) return '1 day remaining';
-    return `${days} days remaining`;
+  const getDaysRemainingText = (days?: number) => {
+    if (typeof days !== 'number') return tr('Starts after both agree');
+    if (days <= 0) return tr("Grace period ended");
+    if (days === 1) return tr("1 day remaining");
+    return tr('{count} days remaining', { count: days });
   };
+
+  const formatDate = (value?: string) => value
+    ? formatUiDate(new Date(value), UI_LOCALES[language])
+    : tr('Starts after both agree');
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto">
         {/* Initial View - Warning */}
         {view === 'initial' && (
           <>
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-error-500">
+              <DialogTitle className="tbo-dialog-title flex items-center gap-2 text-error-500">
                 <AlertTriangle className="w-5 h-5" />
-                Disconnect from Partner
+
+                {tr("Disconnect from Partner")}
               </DialogTitle>
-              <DialogDescription>
-                This is a serious step that requires careful consideration
+              <DialogDescription className="tbo-supporting">
+
+                {tr("This is a serious step that requires careful consideration")}
               </DialogDescription>
             </DialogHeader>
 
@@ -121,34 +135,35 @@ export function PartnerDisconnectDialog({
               <Card className="border-warning-500/30 bg-warning-50">
                 <CardContent className="pt-6">
                   <div className="space-y-3">
-                    <h3 className="font-semibold text-sm text-warning-700">
-                      Important Information
+                    <h3 className="tbo-card-title text-warning-700">
+
+                      {tr("Important Information")}
                     </h3>
                     <ul className="text-sm text-warning-700 space-y-2">
                       <li className="flex items-start gap-2">
                         <span className="text-warning-500 mt-1">•</span>
-                        <span><strong>Both partners must agree</strong> - One person cannot disconnect alone</span>
+                        <span><strong>{tr("Both partners must agree")}</strong>  {tr("- One person cannot disconnect alone")}</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <span className="text-warning-500 mt-1">•</span>
-                        <span><strong>30-day grace period</strong> - After both agree, you have 30 days to cancel</span>
+                        <span><strong>{tr("30-day grace period")}</strong>  {tr("- After both agree, you have 30 days to cancel")}</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <span className="text-warning-500 mt-1">•</span>
-                        <span><strong>Email notifications</strong> - Both partners will receive email updates</span>
+                        <span><strong>{tr("Email notifications")}</strong>  {tr("- Both partners will receive email updates")}</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <span className="text-warning-500 mt-1">•</span>
-                        <span><strong>Your data remains private</strong> - Individual data is not shared after disconnect</span>
+                        <span><strong>{tr("Your data remains private")}</strong>  {tr("- Individual data is not shared after disconnect")}</span>
                       </li>
                     </ul>
                   </div>
                 </CardContent>
               </Card>
 
-              <p className="text-sm text-muted-foreground">
-                If you're experiencing difficulties, consider talking with your partner or seeking 
-                guidance from a trusted counselor before taking this step.
+              <p className="tbo-supporting text-muted-foreground">
+
+                {tr("If you're experiencing difficulties, consider talking with your partner or seeking guidance from a trusted counselor before taking this step.")}
               </p>
             </div>
 
@@ -156,16 +171,18 @@ export function PartnerDisconnectDialog({
               <Button
                 variant="outline"
                 onClick={() => onOpenChange(false)}
-                className="w-full sm:w-auto"
+                className="tbo-action w-full sm:w-auto"
               >
-                Cancel
+
+                {tr("Cancel")}
               </Button>
               <Button
                 variant="destructive"
                 onClick={() => setView('confirm')}
-                className="w-full sm:w-auto"
+                className="tbo-action w-full sm:w-auto"
               >
-                Continue
+
+                {tr("Continue")}
               </Button>
             </DialogFooter>
           </>
@@ -175,52 +192,51 @@ export function PartnerDisconnectDialog({
         {view === 'confirm' && (
           <>
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-error-500">
+              <DialogTitle className="tbo-dialog-title flex items-center gap-2 text-error-500">
                 <HeartCrack className="w-5 h-5" />
-                Confirm Disconnect Request
+
+                {tr("Confirm Disconnect Request")}
               </DialogTitle>
-              <DialogDescription>
-                This will notify {partner?.name} of your request
+              <DialogDescription className="tbo-supporting">
+                {tr('This will notify {name} of your request', { name: partnerDisplayName })}
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4 py-4">
-              <p className="text-sm text-foreground">
-                By clicking "Request Disconnect", you are requesting to end your partnership with{' '}
-                <strong>{partner?.name}</strong>.
+              <p className="tbo-supporting text-foreground">
+                {tr('By clicking "Request Disconnect", you are requesting to end your partnership with {name}.', { name: partnerDisplayName })}
               </p>
 
               <Card className="border-error-500/30 bg-error-50">
                 <CardContent className="pt-6">
-                  <p className="text-sm text-error-700">
-                    <strong>What happens next:</strong>
+                  <p className="tbo-supporting text-error-700">
+                    <strong>{tr("What happens next:")}</strong>
                   </p>
                   <ol className="text-sm text-error-700 mt-2 space-y-1 list-decimal list-inside">
-                    <li>{partner?.name} will receive a notification and email</li>
-                    <li>If {partner?.name} also agrees, a 30-day grace period begins</li>
-                    <li>Either of you can cancel during those 30 days</li>
-                    <li>After 30 days, the disconnection becomes permanent</li>
+                    <li>{tr('{name} will receive a notification and email', { name: partnerDisplayName })}</li>
+                    <li>{tr('If {name} also agrees, a 30-day grace period begins', { name: partnerDisplayName })}</li>
+                    <li>{tr("Either of you can cancel during those 30 days")}</li>
+                    <li>{tr("After 30 days, the disconnection becomes permanent")}</li>
                   </ol>
                 </CardContent>
               </Card>
             </div>
 
             <DialogFooter className="flex-col sm:flex-row gap-2">
-              <Button
-                variant="outline"
+              <BackButton
                 onClick={() => setView('initial')}
                 disabled={isLoading}
-                className="w-full sm:w-auto"
-              >
-                Go Back
-              </Button>
+                label={t.common.back}
+                showLabel
+              />
               <Button
                 variant="destructive"
                 onClick={handleRequestDisconnect}
                 disabled={isLoading}
-                className="w-full sm:w-auto"
+                className="tbo-action w-full sm:w-auto"
               >
-                {isLoading ? 'Sending Request...' : 'Request Disconnect'}
+                {isLoading && <LoadingMark />}
+                {isLoading ? tr("Sending Request...") : tr("Request Disconnect")}
               </Button>
             </DialogFooter>
           </>
@@ -230,14 +246,15 @@ export function PartnerDisconnectDialog({
         {view === 'status' && disconnectStatus?.hasRequest && (
           <>
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
+              <DialogTitle className="tbo-dialog-title flex items-center gap-2">
                 <Clock className="w-5 h-5 text-warning-700" />
-                Disconnect Request Active
+
+                {tr("Disconnect Request Active")}
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="tbo-supporting">
                 {disconnectStatus.status === 'pending' 
-                  ? 'Waiting for partner agreement'
-                  : 'Both partners have agreed'}
+                  ? tr("Waiting for partner agreement")
+                  : tr("Both partners have agreed")}
               </DialogDescription>
             </DialogHeader>
 
@@ -253,14 +270,14 @@ export function PartnerDisconnectDialog({
                       <>
                         <div className="flex items-center gap-2">
                           <X className="w-5 h-5 text-warning-700" />
-                          <span className="font-semibold text-sm text-warning-700">
-                            Waiting for {disconnectStatus.userRequested ? partner?.name : 'you'} to respond
+                          <span className="tbo-label text-warning-700">
+                            {tr('Waiting for {name} to respond', { name: disconnectStatus.userRequested ? partnerDisplayName : tr('you') })}
                           </span>
                         </div>
-                        <p className="text-sm text-warning-700">
+                        <p className="tbo-supporting text-warning-700">
                           {disconnectStatus.userRequested 
-                            ? `You requested to disconnect. ${partner?.name} must also agree before the grace period begins.`
-                            : `${partner?.name} has requested to disconnect. If you also agree, a 30-day grace period will begin.`
+                            ? tr('You requested to disconnect. {name} must also agree before the grace period begins.', { name: partnerDisplayName })
+                            : tr('{name} has requested to disconnect. If you also agree, a 30-day grace period will begin.', { name: partnerDisplayName })
                           }
                         </p>
                       </>
@@ -268,13 +285,14 @@ export function PartnerDisconnectDialog({
                       <>
                         <div className="flex items-center gap-2">
                           <Check className="w-5 h-5 text-error-500" />
-                          <span className="font-semibold text-sm text-error-700">
-                            Both Partners Agreed
+                          <span className="tbo-label text-error-700">
+
+                            {tr("Both Partners Agreed")}
                           </span>
                         </div>
-                        <p className="text-sm text-error-700">
-                          The 30-day grace period has begun. Either of you can cancel at any time 
-                          during this period.
+                        <p className="tbo-supporting text-error-700">
+
+                          {tr("The 30-day grace period has begun. Either of you can cancel at any time during this period.")}
                         </p>
                       </>
                     )}
@@ -284,30 +302,30 @@ export function PartnerDisconnectDialog({
 
               {/* Timeline */}
               <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-foreground">Timeline</h4>
-                <div className="space-y-2 text-sm text-muted-foreground">
+                <h4 className="tbo-card-title text-foreground">{tr("Timeline")}</h4>
+                <div className="tbo-supporting space-y-2 text-muted-foreground">
                   <div className="flex justify-between">
-                    <span>Request initiated:</span>
+                    <span>{tr("Request initiated:")}</span>
                     <span className="font-medium">
-                      {new Date(disconnectStatus.requestedAt).toLocaleDateString()}
+                      {formatDate(disconnectStatus.requestedAt)}
                     </span>
                   </div>
                   {disconnectStatus.bothAgreedAt && (
                     <div className="flex justify-between">
-                      <span>Both agreed:</span>
+                      <span>{tr("Both agreed:")}</span>
                       <span className="font-medium">
-                        {new Date(disconnectStatus.bothAgreedAt).toLocaleDateString()}
+                        {formatDate(disconnectStatus.bothAgreedAt)}
                       </span>
                     </div>
                   )}
                   <div className="flex justify-between">
-                    <span>Grace period ends:</span>
+                    <span>{tr("Grace period ends:")}</span>
                     <span className="font-medium">
-                      {new Date(disconnectStatus.gracePeriodEnds).toLocaleDateString()}
+                      {formatDate(disconnectStatus.gracePeriodEnds)}
                     </span>
                   </div>
                   <div className="flex justify-between pt-2 border-t">
-                    <span className="font-semibold">Time remaining:</span>
+                    <span className="font-semibold">{tr("Time remaining:")}</span>
                     <span className="font-semibold text-error-500">
                       {getDaysRemainingText(disconnectStatus.daysRemaining)}
                     </span>
@@ -320,28 +338,30 @@ export function PartnerDisconnectDialog({
               <Button
                 variant="outline"
                 onClick={() => onOpenChange(false)}
-                className="w-full sm:w-auto"
+                className="tbo-action w-full sm:w-auto"
               >
-                Close
+
+                {tr("Close")}
               </Button>
               {disconnectStatus.status === 'pending' && !disconnectStatus.userRequested && (
                 <Button
                   variant="destructive"
                   onClick={handleRequestDisconnect}
                   disabled={isLoading}
-                  className="w-full sm:w-auto"
+                  className="tbo-action w-full sm:w-auto"
                 >
-                  {isLoading ? 'Processing...' : 'Agree to Disconnect'}
+                  {isLoading && <LoadingMark />}
+                  {isLoading ? tr("Processing...") : tr("Agree to Disconnect")}
                 </Button>
               )}
               <Button
                 variant="default"
                 onClick={handleCancelDisconnect}
                 disabled={isLoading}
-                className="w-full sm:w-auto bg-success-500 hover:bg-success-700"
+                className="tbo-action w-full sm:w-auto bg-success-500 hover:bg-success-700"
               >
-                <Heart className="w-4 h-4 mr-2" />
-                {isLoading ? 'Cancelling...' : 'Cancel Disconnect'}
+                {isLoading ? <LoadingMark className="mr-2" /> : <Heart className="w-4 h-4 mr-2" />}
+                {isLoading ? tr("Cancelling...") : tr("Cancel Disconnect")}
               </Button>
             </DialogFooter>
           </>

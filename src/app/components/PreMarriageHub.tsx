@@ -1,3 +1,6 @@
+import { useUiCopy } from '../utils/uiTranslation';
+import { guidanceMessages, guidanceLabel } from '../locales/guidance';
+import { BackButton } from './BackButton';
 /* MARKER-MAKE-KIT-DISCOVERY-READ */
 import { useState, useEffect } from "react";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -364,16 +367,17 @@ function ModuleCard({
   progress: number;
   onModuleClick: (id: string) => void;
 }) {
+  const tr = useUiCopy(guidanceMessages);
   const { t } = useLanguage();
   const [hovered, setHovered] = useState(false);
   const isComplete = progress === 100;
   const hasStarted = progress > 0 && !isComplete;
 
   const ctaLabel = isComplete
-    ? t?.common?.previous || "Review"
+    ? t?.common?.previous || tr("Review")
     : hasStarted
-      ? t?.common?.next || "Continue"
-      : t?.common?.ok || "Start";
+      ? t?.common?.next || tr("Continue")
+      : t?.common?.ok || tr("Start");
 
   return (
     <div
@@ -462,21 +466,19 @@ function ModuleCard({
               gap: "8px",
             }}
           >
-            <p
+            <p className="tbo-body"
               style={{
-                fontSize: "16px",
-                fontWeight: 600,
+
                 color: "#0f172a",
                 margin: 0,
-                lineHeight: 1.3,
+
               }}
             >
-              {module.title}
+              {tr(module.title)}
             </p>
-            <span
+            <span className="tbo-caption"
               style={{
-                fontSize: "12px",
-                fontWeight: 600,
+
                 color: module.accentColor,
                 backgroundColor: module.accentBg,
                 borderRadius: "9999px",
@@ -487,15 +489,15 @@ function ModuleCard({
               {String(index + 1).padStart(2, "0")}
             </span>
           </div>
-          <p
+          <p className="tbo-supporting"
             style={{
-              fontSize: "14px",
+
               color: module.accentColor,
-              fontWeight: 500,
+
               margin: "2px 0 0 0",
             }}
           >
-            {module.subtitle}
+            {tr(module.subtitle)}
           </p>
         </div>
       </div>
@@ -519,11 +521,11 @@ function ModuleCard({
         >
           {module.scripture}
         </p>
-        <p
+        <p className="tbo-caption"
           style={{
-            fontSize: "12px",
+
             color: module.accentColor,
-            fontWeight: 600,
+
             margin: 0,
           }}
         >
@@ -531,15 +533,15 @@ function ModuleCard({
         </p>
       </div>
 
-      <p
+      <p className="tbo-supporting"
         style={{
-          fontSize: "14px",
+
           color: "#475569",
-          lineHeight: 1.6,
+
           margin: 0,
         }}
       >
-        {module.description}
+        {tr(module.description)}
       </p>
 
       <div
@@ -567,9 +569,9 @@ function ModuleCard({
                 flexShrink: 0,
               }}
             />
-            <span
+            <span className="tbo-supporting"
               style={{
-                fontSize: "13px",
+
                 color: "#475569",
                 flex: 1,
                 overflow: "hidden",
@@ -577,29 +579,28 @@ function ModuleCard({
                 whiteSpace: "nowrap",
               }}
             >
-              {lesson.title}
+              {tr(lesson.title)}
             </span>
-            <span
+            <span className="tbo-caption"
               style={{
-                fontSize: "12px",
+
                 color: "#94a3b8",
                 flexShrink: 0,
               }}
             >
-              {lesson.duration}
+              {guidanceLabel(tr, lesson.duration)}
             </span>
           </div>
         ))}
         {module.lessons && module.lessons.length > 3 && (
-          <span
+          <span className="tbo-caption"
             style={{
-              fontSize: "12px",
+
               color: "#94a3b8",
               paddingLeft: 14,
             }}
           >
-            +{module.lessons.length - 3} more lessons
-          </span>
+            +{tr("{count} more lessons", { count: module.lessons.length - 3 })}</span>
         )}
       </div>
 
@@ -621,24 +622,23 @@ function ModuleCard({
               marginBottom: "4px",
             }}
           >
-            <span
-              style={{ fontSize: "12px", color: "#64748b" }}
+            <span className="tbo-caption"
+              style={{  color: "#64748b" }}
             >
-              {module.lessons?.length || 0} lessons ·{" "}
-              {module.duration}
+              {tr("{count} lessons · {duration}", { count: module.lessons?.length || 0, duration: guidanceLabel(tr, module.duration) })}
             </span>
-            <span
+            <span className="tbo-caption"
               style={{
-                fontSize: "12px",
+
                 color: isComplete ? "#16a34a" : "#64748b",
-                fontWeight: 500,
+
               }}
             >
               {isComplete
                 ? "✓ Complete"
                 : hasStarted
                   ? `${progress}%`
-                  : "Not started"}
+                  : tr("Not started")}
             </span>
           </div>
           <LinearProgress
@@ -648,7 +648,7 @@ function ModuleCard({
         </div>
 
         {!module.isLocked && (
-          <div
+          <div className="tbo-label"
             style={{
               display: "flex",
               alignItems: "center",
@@ -657,8 +657,7 @@ function ModuleCard({
               color: "#ffffff",
               borderRadius: "9999px",
               padding: "6px 14px",
-              fontSize: "13px",
-              fontWeight: 600,
+
               flexShrink: 0,
               minWidth: 90,
               justifyContent: "center",
@@ -679,6 +678,7 @@ export function PreMarriageHub({
   onBack,
   onViewReadiness,
 }: PreMarriageHubProps) {
+  const tr = useUiCopy(guidanceMessages);
   const { t, language: appLanguage } = useLanguage();
   const [progressMap, setProgressMap] = useState<
     Record<string, number>
@@ -711,6 +711,8 @@ export function PreMarriageHub({
   useEffect(() => {
     setApiModules(null);
     setFetchError(null);
+    let active = true;
+    const controller = new AbortController();
 
     // Explicitly bypass loading online database values for standard English to use default configurations
     if (selectedLanguage === "en") {
@@ -721,7 +723,7 @@ export function PreMarriageHub({
     const token = accessToken || publicAnonKey;
     fetch(
       `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/modules?language=${selectedLanguage}`,
-      { headers: { Authorization: `Bearer ${token}` } },
+      { headers: { Authorization: `Bearer ${token}` }, signal: controller.signal },
     )
       .then((r) =>
         r.ok
@@ -729,6 +731,7 @@ export function PreMarriageHub({
           : Promise.reject(`Server returned HTTP ${r.status}`),
       )
       .then((data) => {
+        if (!active) return;
         if (data && Array.isArray(data.modules)) {
           if (data.modules.length === 0) {
             setApiModules([]);
@@ -753,15 +756,15 @@ export function PreMarriageHub({
         }
       })
       .catch((err) => {
+        if (!active) return;
         console.error(
           "[PreMarriageHub] Fetch modules failed:",
           err,
         );
-        setFetchError(String(err));
-        toast.error(
-          `Could not sync language modules: ${String(err)}`,
-        );
+        setFetchError("Could not sync language modules");
+        toast.error(tr("Could not sync language modules"));
       });
+    return () => { active = false; controller.abort(); };
   }, [accessToken, selectedLanguage]);
 
   useEffect(() => {
@@ -829,25 +832,7 @@ export function PreMarriageHub({
       }}
     >
       {onBack && (
-        <button
-          onClick={onBack}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "4px",
-            fontSize: "14px",
-            color: "#475569",
-            fontWeight: 500,
-            background: "none",
-            border: "none",
-            padding: 0,
-            cursor: "pointer",
-            alignSelf: "flex-start",
-          }}
-        >
-          <ChevronLeft style={{ width: 18, height: 18 }} />
-          {t?.common?.back || "Back"}
-        </button>
+        <BackButton label={t.common.back} onClick={onBack} className="self-start" />
       )}
 
       {/* Hero Banner */}
@@ -888,25 +873,20 @@ export function PreMarriageHub({
             />
           </div>
           <div>
-            <h1
+            <h1 className="tbo-page-title"
               style={{
-                fontSize: "20px",
-                fontWeight: 700,
+
                 color: "#ffffff",
                 margin: 0,
               }}
-            >
-              Pre-Marriage Guidance
-            </h1>
-            <p
+            >{tr("Pre-Marriage Guidance")} </h1>
+            <p className="tbo-supporting"
               style={{
-                fontSize: "14px",
+
                 color: "rgba(255,255,255,0.85)",
                 margin: "2px 0 0 0",
               }}
-            >
-              Prepare for a Christ-centered marriage
-            </p>
+            >{tr("Prepare for a Christ-centered marriage")} </p>
           </div>
         </div>
 
@@ -925,19 +905,16 @@ export function PreMarriageHub({
               marginBottom: "8px",
             }}
           >
-            <span
+            <span className="tbo-label"
               style={{
-                fontSize: "14px",
+
                 color: "rgba(255,255,255,0.9)",
-                fontWeight: 500,
+
               }}
-            >
-              Overall Progress
-            </span>
-            <span
+            >{tr("Overall Progress")} </span>
+            <span className="tbo-card-title"
               style={{
-                fontSize: "18px",
-                fontWeight: 700,
+
                 color: "#ffffff",
               }}
             >
@@ -961,18 +938,16 @@ export function PreMarriageHub({
               }}
             />
           </div>
-          <p
+          <p className="tbo-caption"
             style={{
-              fontSize: "12px",
+
               color: "rgba(255,255,255,0.75)",
               margin: "8px 0 0 0",
             }}
           >
-            {completedCount} of {modules.length} modules
-            completed
-            {completedCount === modules.length &&
+            {tr("{done} of {total} modules completed", { done: completedCount, total: modules.length })} {completedCount === modules.length &&
               modules.length > 0 &&
-              " · Certificate ready! 🎓"}
+              ` · ${tr("Certificate ready! 🎓")}`}
           </p>
         </div>
       </div>
@@ -999,8 +974,8 @@ export function PreMarriageHub({
               <span style={{ fontSize: 20 }}>💑</span>
             </div>
             <div>
-              <p style={{ margin: 0, fontSize: 15, fontWeight: 700, color: "var(--foreground)" }}>Marriage Readiness Analysis</p>
-              <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--muted-foreground)" }}>AI-powered report · Score · Certificate</p>
+              <p className="tbo-card-title" style={{ margin: 0,   color: "var(--foreground)" }}>{tr("Marriage Readiness Analysis")}</p>
+              <p className="tbo-caption" style={{ margin: "2px 0 0",  color: "var(--muted-foreground)" }}>{tr("AI-powered report · Score · Certificate")}</p>
             </div>
           </div>
           <ChevronLeft style={{ width: 18, height: 18, color: "var(--primary)", transform: "rotate(180deg)" }} />
@@ -1008,29 +983,24 @@ export function PreMarriageHub({
       )}
 
       {/* Language Toggle Options */}
-      
 
       {/* Segment Header */}
       <div>
-        <h2
+        <h2 className="tbo-section-title"
           style={{
-            fontSize: "16px",
-            fontWeight: 600,
+
             color: "#1e293b",
             margin: "0 0 2px 0",
           }}
-        >
-          Your Learning Path
-        </h2>
-        <p
+        >{tr("Your Learning Path")} </h2>
+        <p className="tbo-supporting"
           style={{
-            fontSize: "14px",
+
             color: "#64748b",
             margin: 0,
           }}
         >
-          {modules.length} modules · Work through them in order
-        </p>
+          {tr("{count} modules · Work through them in order", { count: modules.length })}</p>
       </div>
 
       {/* Explicit Fetch Error Diagnostics Display panel */}
@@ -1055,24 +1025,21 @@ export function PreMarriageHub({
             }}
           />
           <div>
-            <p
+            <p className="tbo-supporting"
               style={{
-                fontSize: "14px",
-                fontWeight: 600,
+
                 color: "#9f1239",
                 margin: 0,
               }}
-            >
-              Network Sync Failed
-            </p>
-            <p
+            >{tr("Network Sync Failed")} </p>
+            <p className="tbo-caption"
               style={{
-                fontSize: "12px",
+
                 color: "#be123c",
                 margin: "2px 0 0 0",
               }}
             >
-              {fetchError}
+              {tr(fetchError)}
             </p>
           </div>
         </div>
@@ -1089,26 +1056,20 @@ export function PreMarriageHub({
             border: "1px dashed #cbd5e1",
           }}
         >
-          <p
+          <p className="tbo-body"
             style={{
-              fontSize: "16px",
-              fontWeight: 600,
+
               color: "#334155",
               margin: "0 0 8px 0",
             }}
-          >
-            No modules yet in this language configuration
-          </p>
-          <p
+          >{tr("No modules yet in this language configuration")} </p>
+          <p className="tbo-supporting"
             style={{
-              fontSize: "14px",
+
               color: "#64748b",
               margin: 0,
             }}
-          >
-            Upload this language dataset inside Admin → Learning
-            Modules → Import
-          </p>
+          >{tr("Upload this language dataset inside Admin → Learning Modules → Import")} </p>
         </div>
       )}
 
@@ -1139,26 +1100,20 @@ export function PreMarriageHub({
               textAlign: "center",
             }}
           >
-            <p
+            <p className="tbo-body"
               style={{
-                fontSize: "16px",
-                fontWeight: 700,
+
                 color: "#15803d",
                 margin: "0 0 4px 0",
               }}
-            >
-              🎓 All Modules Complete!
-            </p>
-            <p
+            >{tr("🎓 All Modules Complete!")} </p>
+            <p className="tbo-supporting"
               style={{
-                fontSize: "14px",
+
                 color: "#166534",
                 margin: 0,
               }}
-            >
-              You've earned your Pre-Marriage Certificate. Well
-              done!
-            </p>
+            >{tr("You've earned your Pre-Marriage Certificate. Well done!")} </p>
           </div>
         )}
     </div>

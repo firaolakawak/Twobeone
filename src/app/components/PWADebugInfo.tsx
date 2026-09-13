@@ -1,9 +1,12 @@
+import { useUiCopy } from '../utils/uiTranslation';
+import { systemDiagnosticsMessages } from '../locales/systemDiagnostics';
 import { useEffect, useState } from 'react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Smartphone, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 
 export function PWADebugInfo() {
+  const tr = useUiCopy(systemDiagnosticsMessages);
   const [debugInfo, setDebugInfo] = useState<any>({});
   const [showDebug, setShowDebug] = useState(false);
 
@@ -96,76 +99,73 @@ export function PWADebugInfo() {
       <Card className="bg-card  p-24 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
         <div className="flex items-center gap-12 mb-24">
           <Smartphone className="w-24 h-24 text-primary-600" />
-          <h2 className="text-foreground dark:text-white">PWA Debug Info</h2>
+          <h2 className="tbo-section-title text-foreground dark:text-white">{tr("PWA Debug Info")}</h2>
         </div>
 
         <div className="space-y-16">
           <div className="space-y-8">
-            <h3 className="text-foreground  flex items-center gap-8">
+            <h3 className="tbo-card-title text-foreground flex items-center gap-8">
               <AlertCircle className="w-20 h-20" />
-              Device & Browser
-            </h3>
-            <div className="pl-28 space-y-4 text-sm">
+               {tr("Device & Browser")} </h3>
+            <div className="tbo-supporting pl-28 space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground dark:text-muted-foreground">iOS Device</span>
+                <span className="text-muted-foreground dark:text-muted-foreground">{tr("iOS Device")}</span>
                 <StatusIcon value={debugInfo.isIOS} />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground dark:text-muted-foreground">Android Device</span>
+                <span className="text-muted-foreground dark:text-muted-foreground">{tr("Android Device")}</span>
                 <StatusIcon value={debugInfo.isAndroid} />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground dark:text-muted-foreground">Safari Browser</span>
+                <span className="text-muted-foreground dark:text-muted-foreground">{tr("Safari Browser")}</span>
                 <StatusIcon value={debugInfo.isSafari} />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground dark:text-muted-foreground">Chrome Browser</span>
+                <span className="text-muted-foreground dark:text-muted-foreground">{tr("Chrome Browser")}</span>
                 <StatusIcon value={debugInfo.isChrome} />
               </div>
             </div>
           </div>
 
           <div className="space-y-8">
-            <h3 className="text-foreground  flex items-center gap-8">
+            <h3 className="tbo-card-title text-foreground flex items-center gap-8">
               <AlertCircle className="w-20 h-20" />
-              PWA Status
-            </h3>
-            <div className="pl-28 space-y-4 text-sm">
+               {tr("PWA Status")} </h3>
+            <div className="tbo-supporting pl-28 space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground dark:text-muted-foreground">Standalone Mode</span>
+                <span className="text-muted-foreground dark:text-muted-foreground">{tr("Standalone Mode")}</span>
                 <StatusIcon value={debugInfo.isStandalone} />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground dark:text-muted-foreground">Standalone (iOS)</span>
+                <span className="text-muted-foreground dark:text-muted-foreground">{tr("Standalone (iOS)")}</span>
                 <StatusIcon value={debugInfo.isStandaloneNavigator} />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground dark:text-muted-foreground">Installable</span>
+                <span className="text-muted-foreground dark:text-muted-foreground">{tr("Installable")}</span>
                 <StatusIcon value={debugInfo.isInstallable} />
               </div>
             </div>
           </div>
 
           <div className="space-y-8">
-            <h3 className="text-foreground  flex items-center gap-8">
+            <h3 className="tbo-card-title text-foreground flex items-center gap-8">
               <AlertCircle className="w-20 h-20" />
-              Requirements
-            </h3>
-            <div className="pl-28 space-y-4 text-sm">
+               {tr("Requirements")} </h3>
+            <div className="tbo-supporting pl-28 space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground dark:text-muted-foreground">Service Worker Support</span>
+                <span className="text-muted-foreground dark:text-muted-foreground">{tr("Service Worker Support")}</span>
                 <StatusIcon value={debugInfo.hasServiceWorker} />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground dark:text-muted-foreground">Service Worker Ready</span>
+                <span className="text-muted-foreground dark:text-muted-foreground">{tr("Service Worker Ready")}</span>
                 <StatusIcon value={debugInfo.serviceWorkerReady} />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground dark:text-muted-foreground">Manifest Present</span>
+                <span className="text-muted-foreground dark:text-muted-foreground">{tr("Manifest Present")}</span>
                 <StatusIcon value={debugInfo.hasManifest} />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground dark:text-muted-foreground">Apple Touch Icon</span>
+                <span className="text-muted-foreground dark:text-muted-foreground">{tr("Apple Touch Icon")}</span>
                 <StatusIcon value={debugInfo.hasAppleTouchIcon} />
               </div>
               <div className="flex items-center justify-between">
@@ -177,37 +177,35 @@ export function PWADebugInfo() {
 
           {debugInfo.isIOS && !debugInfo.isStandalone && (
             <div className="bg-warning-50 dark:bg-neutral-900/20 border border-warning-500/30 dark:border-warning-700 rounded-lg p-16">
-              <h4 className="text-warning-700 dark:text-warning-50 mb-8">iOS Installation Steps</h4>
-              <ol className="list-decimal list-inside space-y-4 text-sm text-warning-700 dark:text-warning-500">
-                <li>Tap the Share button in Safari</li>
-                <li>Scroll down and tap "Add to Home Screen"</li>
-                <li>Tap "Add" to install the app</li>
+              <h4 className="tbo-label text-warning-700 dark:text-warning-50 mb-8">{tr("iOS Installation Steps")}</h4>
+              <ol className="tbo-supporting list-decimal list-inside space-y-4 text-warning-700 dark:text-warning-500">
+                <li>{tr("Tap the Share button in Safari")}</li>
+                <li>{tr("Scroll down and tap \"Add to Home Screen\"")}</li>
+                <li>{tr("Tap \"Add\" to install the app")}</li>
               </ol>
             </div>
           )}
 
-          <div className="bg-muted  rounded-lg p-12 text-xs font-mono">
+          <div className="tbo-caption bg-muted rounded-lg p-12 font-mono">
             <div className="text-muted-foreground dark:text-muted-foreground">
-              User Agent: {window.navigator.userAgent.substring(0, 100)}...
+               {tr("User Agent:")} {window.navigator.userAgent.substring(0, 100)}...
             </div>
           </div>
         </div>
 
         <div className="mt-24 flex gap-8">
           <Button onClick={() => setShowDebug(false)} className="flex-1">
-            Close
-          </Button>
+             {tr("Close")} </Button>
           <Button 
             onClick={() => {
               const debugText = JSON.stringify(debugInfo, null, 2);
               navigator.clipboard?.writeText(debugText);
-              alert('Debug info copied to clipboard!');
+              alert(tr("Debug info copied to clipboard!"));
             }}
             variant="outline"
             className="flex-1"
           >
-            Copy Info
-          </Button>
+             {tr("Copy Info")} </Button>
         </div>
       </Card>
     </div>

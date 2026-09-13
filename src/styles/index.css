@@ -4,3 +4,7 @@
 @import './fonts.css';
 @import './default_theme.css';
 @import './globals.css';
+
+@import './typography.css';
+@import './navigation.css';
+@import './loading.css';

@@ -1,3 +1,6 @@
+import { BrandLoader } from '../BrandLoader';
+import { useUiCopy } from "../../utils/uiTranslation";
+import { adminLandingMessages } from "../../locales/adminLanding";
 import { useState, useEffect } from 'react';
 import { 
   Save, RefreshCw, Plus, Trash2, Edit, RotateCcw, Eye, Mail,
@@ -130,6 +133,7 @@ const colorGradientOptions = [
 ];
 
 export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
+  const tr = useUiCopy(adminLandingMessages);
   const [content, setContent] = useState<LandingContent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -165,7 +169,7 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
       }
     } catch (error) {
       console.error('Failed to load landing page content:', error);
-      toast.error('Failed to load content');
+      toast.error(tr("Failed to load content"));
     } finally {
       setIsLoading(false);
     }
@@ -229,21 +233,21 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
       );
 
       if (response.ok) {
-        toast.success('Landing page content saved successfully!');
+        toast.success(tr("Landing page content saved successfully!"));
         setIsDirty(false);
       } else {
         throw new Error('Failed to save content');
       }
     } catch (error) {
       console.error('Failed to save landing page content:', error);
-      toast.error('Failed to save content');
+      toast.error(tr("Failed to save content"));
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleReset = async () => {
-    if (!confirm('Are you sure you want to reset to default content? This cannot be undone.')) {
+    if (!confirm(tr("Are you sure you want to reset to default content? This cannot be undone."))) {
       return;
     }
 
@@ -260,14 +264,14 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
       );
 
       if (response.ok) {
-        toast.success('Content reset to default successfully!');
+        toast.success(tr("Content reset to default successfully!"));
         loadContent();
       } else {
         throw new Error('Failed to reset content');
       }
     } catch (error) {
       console.error('Failed to reset content:', error);
-      toast.error('Failed to reset content');
+      toast.error(tr("Failed to reset content"));
     } finally {
       setIsSaving(false);
     }
@@ -285,9 +289,7 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
 
   if (isLoading || !content) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <RefreshCw className="w-8 h-8 animate-spin text-primary-600" />
-      </div>
+      <BrandLoader className="py-20" label={tr("Loading landing page…")} />
     );
   }
 
@@ -335,8 +337,7 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
             ) : (
               <>
                 <RefreshCw className="w-4 h-4 mr-2" />
-                Reload
-              </>
+                {tr("Reload")}</>
             )}
           </Button>
           <Button 
@@ -384,7 +385,7 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
           <div className="flex items-center gap-3">
             <Star className="w-8 h-8 text-warning-500" />
             <div>
-              <p className="text-sm text-muted-foreground font-bold">Testimonials</p>
+              <p className="text-sm text-muted-foreground font-bold">{tr("Testimonials")}</p>
               <p className="text-2xl font-semibold">{content.testimonials.length}</p>
             </div>
           </div>
@@ -449,7 +450,7 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
                   />
                 </div>
                 <div>
-                  <Label>Description</Label>
+                  <Label>{tr("Description")}</Label>
                   <Textarea
                     value={content.hero.description}
                     onChange={(e) => setContent({
@@ -558,7 +559,7 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
                       </Button>
                     </div>
                     <div>
-                      <Label>Title</Label>
+                      <Label>{tr("Title")}</Label>
                       <Input
                         value={feature.title}
                         onChange={(e) => {
@@ -569,7 +570,7 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
                       />
                     </div>
                     <div>
-                      <Label>Description</Label>
+                      <Label>{tr("Description")}</Label>
                       <Textarea
                         value={feature.description}
                         onChange={(e) => {
@@ -681,7 +682,7 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
                       </Button>
                     </div>
                     <div>
-                      <Label>Label</Label>
+                      <Label>{tr("Label")}</Label>
                       <Input
                         value={stat.label}
                         onChange={(e) => {
@@ -692,7 +693,7 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
                       />
                     </div>
                     <div>
-                      <Label>Value</Label>
+                      <Label>{tr("Value")}</Label>
                       <Input
                         value={stat.value}
                         onChange={(e) => {
@@ -744,7 +745,7 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label>Name</Label>
+                        <Label>{tr("Name")}</Label>
                         <Input
                           value={testimonial.name}
                           onChange={(e) => {
@@ -755,7 +756,7 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
                         />
                       </div>
                       <div>
-                        <Label>Location</Label>
+                        <Label>{tr("Location")}</Label>
                         <Input
                           value={testimonial.location}
                           onChange={(e) => {
@@ -767,7 +768,7 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
                       </div>
                     </div>
                     <div>
-                      <Label>Quote</Label>
+                      <Label>{tr("Quote")}</Label>
                       <Textarea
                         value={testimonial.quote}
                         onChange={(e) => {
@@ -875,7 +876,7 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
                       </Button>
                     </div>
                     <div>
-                      <Label>Question</Label>
+                      <Label>{tr("Question")}</Label>
                       <Input
                         value={faq.question}
                         onChange={(e) => {
@@ -886,7 +887,7 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
                       />
                     </div>
                     <div>
-                      <Label>Answer</Label>
+                      <Label>{tr("Answer")}</Label>
                       <Textarea
                         value={faq.answer}
                         onChange={(e) => {
@@ -911,8 +912,7 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
                   className="w-full"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Add FAQ
-                </Button>
+                  {tr("Add FAQ")}</Button>
               </div>
             )}
           </Card>
@@ -937,7 +937,7 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
             {expandedSections.has('cta') && (
               <div className="space-y-4">
                 <div>
-                  <Label>Title</Label>
+                  <Label>{tr("Title")}</Label>
                   <Input
                     value={content.cta.title}
                     onChange={(e) => setContent({
@@ -947,7 +947,7 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
                   />
                 </div>
                 <div>
-                  <Label>Description</Label>
+                  <Label>{tr("Description")}</Label>
                   <Textarea
                     value={content.cta.description}
                     onChange={(e) => setContent({
@@ -1035,7 +1035,7 @@ export function LandingPageManager({ accessToken }: LandingPageManagerProps) {
             ) : (
               <div className="text-center py-10 text-muted-foreground">
                 <Mail className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                <p>No subscribers yet</p>
+                <p>{tr("No subscribers yet")}</p>
               </div>
             )}
           </Card>

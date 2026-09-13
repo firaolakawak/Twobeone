@@ -1,6 +1,6 @@
-import { act, cleanup, render, screen } from '@testing-library/react';
+import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { LanguageProvider, useLanguage } from '../../contexts/LanguageContext';
 import { LanguageSelector } from '../LanguageSelector';
 
@@ -13,6 +13,7 @@ describe('LanguageSelector', () => {
   afterEach(() => {
     cleanup();
     localStorage.clear();
+    vi.restoreAllMocks();
   });
 
   it('switches the complete UI context to Afaan Oromo and persists the choice', async () => {
@@ -46,5 +47,16 @@ describe('LanguageSelector', () => {
     });
 
     expect(screen.getAllByText(/^am:/)).toHaveLength(2);
+  });
+
+  it('works on a public entry point without a provider and saves the selected language code', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue({ ok: true } as Response);
+    render(<LanguageSelector accessToken="fixture-token" userId="fixture-user" />);
+    await userEvent.click(screen.getByRole('button', { name: 'Select language' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: /Afaan Oromo/ }));
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(expect.stringMatching(/\/profile$/), expect.objectContaining({
+      method: 'POST', body: JSON.stringify({ language: 'om' }),
+    })));
+    expect(document.documentElement.lang).toBe('om');
   });
 });

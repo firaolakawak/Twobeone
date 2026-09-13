@@ -1,3 +1,5 @@
+import { useUiCopy } from '../utils/uiTranslation';
+import { guidanceMessages, guidanceLabel } from '../locales/guidance';
 import { ContactShadows, Html, OrbitControls, RoundedBox } from '@react-three/drei';
 import { Canvas, useThree } from '@react-three/fiber';
 import { Suspense, useEffect, useMemo, useState } from 'react';
@@ -200,6 +202,7 @@ function RoomFurniture({ room, finishes, wood }: { room: Room; finishes: HouseFi
 }
 
 function RoomCell({ room, index, count, width, depth, y, wallColor, floorColor, wood, finishes, selected, furnished, detailMode, onSelect }: { room: Room; index: number; count: number; width: number; depth: number; y: number; wallColor: string; floorColor: string; wood: string; finishes: HouseFinishes; selected: boolean; furnished: boolean; detailMode: boolean; onSelect: () => void }) {
+  const tr = useUiCopy(guidanceMessages);
   const placement = roomPlacement(index, count, width, depth);
   const { x, z, cellWidth, cellDepth, column, row } = placement;
   const muted = detailMode && !selected;
@@ -209,7 +212,7 @@ function RoomCell({ room, index, count, width, depth, y, wallColor, floorColor, 
     {!muted && (column > 0 || detailMode) && <Box position={[x - cellWidth / 2, y + 1.3, z]} args={[.14, 2.6, cellDepth]} color={wallColor} />}
     {!muted && (row > 0 || detailMode) && <Box position={[x, y + 1.3, z - cellDepth / 2]} args={[cellWidth, 2.6, .14]} color={wallColor} />}
     {!muted && furnished && <group position={[x, y + .16, z]} scale={furnitureScale}><RoomFurniture room={room} finishes={finishes} wood={wood} /></group>}
-    {selected && <Html position={[x, y + 2.65, z]} center distanceFactor={9} style={{ pointerEvents: 'none' }}><div className="whitespace-nowrap rounded-full bg-stone-950/90 px-3 py-1.5 text-xs font-bold text-white shadow-xl">{room.name}</div></Html>}
+    {selected && <Html position={[x, y + 2.65, z]} center distanceFactor={9} style={{ pointerEvents: 'none' }}><div className="tbo-caption whitespace-nowrap rounded-full bg-stone-950/90 px-3 py-1.5 text-white shadow-xl">{guidanceLabel(tr, room.name)}</div></Html>}
   </group>;
 }
 
@@ -277,17 +280,18 @@ function CameraControls({ props, width, depth }: { props: CharacterHouse3DProps;
 }
 
 export function CharacterHouse3D(props: CharacterHouse3DProps) {
+  const tr = useUiCopy(guidanceMessages);
   const [canvasError, setCanvasError] = useState(false);
   const dimensions = useMemo(() => dimensionsFor(props.homeType), [props.homeType]);
   const initialCamera = useMemo<[number, number, number]>(() => [dimensions.width * .85, Math.max(8, props.floors.length * 4.4), dimensions.width * 1.05], [dimensions.width, props.floors.length]);
-  if (canvasError) return <div className="grid min-h-[32rem] place-items-center rounded-[2rem] bg-stone-100 p-8 text-center text-sm text-stone-600">This device could not start the 3D viewer. Please enable WebGL or try a current browser.</div>;
+  if (canvasError) return <div className="tbo-supporting grid min-h-[32rem] place-items-center rounded-[2rem] bg-stone-100 p-8 text-center text-stone-600">{tr("This device could not start the 3D viewer. Please enable WebGL or try a current browser.")}</div>;
   return <div className="relative h-[38rem] overflow-hidden rounded-[2rem] border border-emerald-900/10 bg-gradient-to-b from-cyan-50 to-emerald-100 shadow-inner">
-    <Canvas shadows dpr={[1, 1.65]} camera={{ position: initialCamera, fov: props.viewMode === 'room' ? 32 : 38, near: .1, far: 140 }} gl={{ antialias: true, alpha: true, powerPreference: 'high-performance', toneMapping: THREE.ACESFilmicToneMapping }} onCreated={({ gl }) => { gl.toneMappingExposure = 1.08; gl.shadowMap.type = THREE.PCFSoftShadowMap; gl.domElement.setAttribute('aria-label', 'Detailed interactive 3D cutaway house. Drag to rotate, scroll or pinch to zoom, and tap a room.'); gl.domElement.addEventListener('webglcontextlost', () => setCanvasError(true), { once: true }); }}>
+    <Canvas role="img" aria-label={tr("Detailed interactive 3D cutaway house. Drag to rotate, scroll or pinch to zoom, and tap a room.")} shadows dpr={[1, 1.65]} camera={{ position: initialCamera, fov: props.viewMode === 'room' ? 32 : 38, near: .1, far: 140 }} gl={{ antialias: true, alpha: true, powerPreference: 'high-performance', toneMapping: THREE.ACESFilmicToneMapping }} onCreated={({ gl }) => { gl.toneMappingExposure = 1.08; gl.shadowMap.type = THREE.PCFSoftShadowMap; gl.domElement.addEventListener('webglcontextlost', () => setCanvasError(true), { once: true }); }}>
       <color attach="background" args={['#cdd9d5']} /><fog attach="fog" args={['#cdd9d5', 38, 76]} />
       <ambientLight intensity={.48} /><hemisphereLight args={['#fff4da', '#493426', 1.15]} /><directionalLight position={[13, 19, 9]} intensity={3.1} color="#fff1d6" castShadow shadow-mapSize={[2048, 2048]} shadow-camera-near={1} shadow-camera-far={55} shadow-camera-left={-22} shadow-camera-right={22} shadow-camera-top={22} shadow-camera-bottom={-22} shadow-bias={-.00035} /><directionalLight position={[-10, 8, -12]} intensity={.55} color="#9dc5d0" />
       <Suspense fallback={null}><SoilGround width={dimensions.width} depth={dimensions.depth} landscaped={props.reveal > .88} /><HouseScene {...props} /><ContactShadows position={[0, -.92, 0]} opacity={.5} scale={34} blur={2.15} far={20} color="#24170f" /></Suspense>
       <CameraControls props={props} width={dimensions.width} depth={dimensions.depth} />
     </Canvas>
-    <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-stone-950/78 px-3 py-1.5 text-[11px] font-semibold text-white backdrop-blur">{props.viewMode === 'room' ? 'Room detail · Drag to inspect · Pinch to zoom' : 'Full house · Drag to orbit · Tap a room'}</div>
+    <div className="tbo-caption pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 max-w-[calc(100%-1.5rem)] text-center rounded-full bg-stone-950/78 px-3 py-1.5 text-white backdrop-blur">{props.viewMode === 'room' ? tr("Room detail · Drag to inspect · Pinch to zoom") : tr("Full house · Drag to orbit · Tap a room")}</div>
   </div>;
 }

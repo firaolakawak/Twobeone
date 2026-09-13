@@ -1,5 +1,7 @@
 "use client";
 
+import { useUiCopy } from "../../utils/uiTranslation";
+
 import * as React from "react";
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
@@ -177,6 +179,7 @@ function CarouselPrevious({
   size = "icon",
   ...props
 }: React.ComponentProps<typeof Button>) {
+  const tr = useUiCopy();
   const { orientation, scrollPrev, canScrollPrev } = useCarousel();
 
   return (
@@ -196,7 +199,7 @@ function CarouselPrevious({
       {...props}
     >
       <ArrowLeft />
-      <span className="sr-only">Previous slide</span>
+      <span className="sr-only">{tr("Previous slide")}</span>
     </Button>
   );
 }
@@ -207,6 +210,7 @@ function CarouselNext({
   size = "icon",
   ...props
 }: React.ComponentProps<typeof Button>) {
+  const tr = useUiCopy();
   const { orientation, scrollNext, canScrollNext } = useCarousel();
 
   return (
@@ -226,7 +230,7 @@ function CarouselNext({
       {...props}
     >
       <ArrowRight />
-      <span className="sr-only">Next slide</span>
+      <span className="sr-only">{tr("Next slide")}</span>
     </Button>
   );
 }

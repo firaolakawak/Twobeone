@@ -1,3 +1,7 @@
+import { useUiCopy } from '../utils/uiTranslation';
+import { guidanceMessages, guidanceLabel } from '../locales/guidance';
+import { BrandLoader } from './BrandLoader';
+import { BackButton } from './BackButton';
 import { useState, useEffect } from "react";
 
 const mdToHtml = (md: string): string => {
@@ -14,8 +18,8 @@ const mdToHtml = (md: string): string => {
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/_(.*?)_/g, '<em>$1</em>')
       .replace(/\*(.*?)\*/g, '<em>$1</em>');
-    if (/^### (.+)/.test(l)) { closeList(); out.push(`<h3 style="font-size:1em;font-weight:700;margin:8px 0 3px;color:var(--foreground)">${l.replace(/^### /, '')}</h3>`); }
-    else if (/^## (.+)/.test(l)) { closeList(); out.push(`<h2 style="font-size:1.2em;font-weight:700;margin:10px 0 4px;color:var(--foreground)">${l.replace(/^## /, '')}</h2>`); }
+    if (/^### (.+)/.test(l)) { closeList(); out.push(`<h3 class="tbo-card-title" style="margin:8px 0 3px;color:var(--foreground)">${l.replace(/^### /, '')}</h3>`); }
+    else if (/^## (.+)/.test(l)) { closeList(); out.push(`<h2 class="tbo-section-title" style="margin:10px 0 4px;color:var(--foreground)">${l.replace(/^## /, '')}</h2>`); }
     else if (/^> (.+)/.test(l)) { closeList(); out.push(`<blockquote style="border-left:3px solid var(--border);padding-left:12px;color:var(--muted-foreground);margin:6px 0;font-style:italic">${l.replace(/^> /, '')}</blockquote>`); }
     else if (/^---$/.test(l.trim())) { closeList(); out.push(`<hr style="border:none;border-top:1px solid var(--border);margin:12px 0">`); }
     else if (/^- (.+)/.test(l)) { if (!inUl) { if (inOl) { out.push('</ol>'); inOl = false; } out.push('<ul style="list-style:disc;padding-left:20px;margin:6px 0">'); inUl = true; } out.push(`<li style="margin:2px 0">${l.replace(/^- /, '')}</li>`); }
@@ -28,14 +32,12 @@ const mdToHtml = (md: string): string => {
 };
 import { useLanguage } from "../contexts/LanguageContext";
 import {
-  ArrowLeft,
   BookOpen,
   FileText,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
   Quote,
-  Loader2,
   Lock,
 } from "lucide-react";
 import {
@@ -115,7 +117,7 @@ function toStaticModule(
   const langKey =
     currentLang === "am" || currentLang === "om"
       ? currentLang
-      : "am";
+      : "en";
   const localFallback = SCRIPTURE_FALLBACKS[langKey]?.[
     modId
   ] || { text: m.description || "", ref: "" };
@@ -156,6 +158,7 @@ export function LessonScreen({
   onBack,
   accessToken,
 }: LessonScreenProps) {
+  const tr = useUiCopy(guidanceMessages);
   const [notes, setNotes] = useState("");
   const [isCompleted, setIsCompleted] = useState(false);
   const [currentLessonIndex, setCurrentLessonIndex] =
@@ -172,14 +175,21 @@ export function LessonScreen({
 
   const staticModule = getStaticModule(moduleId);
   const module: StaticModule | undefined =
-    staticModule ?? apiModule ?? undefined;
+    (language === 'en' ? staticModule : apiModule) ?? staticModule ?? apiModule ?? undefined;
 
   useEffect(() => {
-    if (staticModule) return;
+    setApiModule(null);
+    if (staticModule && language === 'en') {
+      setIsLoadingModule(false);
+      return;
+    }
+    let active = true;
+    const controller = new AbortController();
     setIsLoadingModule(true);
     fetch(
-      `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/modules/${moduleId}`,
+      `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/modules/${moduleId}?language=${language}`,
       {
+        signal: controller.signal,
         headers: {
           Authorization: `Bearer ${accessToken || publicAnonKey}`,
         },
@@ -187,11 +197,12 @@ export function LessonScreen({
     )
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        if (data?.module)
+        if (active && data?.module && (!data.module.language || data.module.language === language))
           setApiModule(toStaticModule(data.module, language));
       })
       .catch(() => {})
-      .finally(() => setIsLoadingModule(false));
+      .finally(() => { if (active) setIsLoadingModule(false); });
+    return () => { active = false; controller.abort(); };
   }, [moduleId, accessToken, staticModule, language]);
 
   useEffect(() => {
@@ -221,16 +232,9 @@ export function LessonScreen({
 
   if (isLoadingModule) {
     return (
-      <div style={{ padding: "40px", textAlign: "center" }}>
-        <Loader2
-          style={{
-            width: 32,
-            height: 32,
-            margin: "0 auto",
-            animation: "spin 1s linear infinite",
-            color: "#e11d48",
-          }}
-        />
+      <div className="relative" style={{ padding: "40px", textAlign: "center" }}>
+        <BackButton label={t.common.back} onClick={onBack} className="absolute left-4 top-4" />
+        <BrandLoader />
       </div>
     );
   }
@@ -275,26 +279,8 @@ export function LessonScreen({
   if (!module || module.lessons.length === 0) {
     return (
       <div style={{ padding: "24px", textAlign: "center" }}>
-        <button
-          onClick={onBack}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            color: "#475569",
-            fontSize: "14px",
-            marginBottom: "24px",
-          }}
-        >
-          <ArrowLeft style={{ width: 18, height: 18 }} />{" "}
-          {t?.common?.back || "Back"}
-        </button>
-        <p style={{ color: "#64748b", fontSize: "14px" }}>
-          Module not found.
-        </p>
+        <BackButton label={t.common.back} onClick={onBack} showLabel className="mb-6" />
+        <p className="tbo-supporting" style={{ color: "#64748b",  }}>{tr("Module not found.")} </p>
       </div>
     );
   }
@@ -307,7 +293,7 @@ export function LessonScreen({
       // Lessons unlock sequentially — lesson N requires lesson N-1 completed
       const prevLesson = idx > 0 ? module.lessons[idx - 1] : null;
       if (prevLesson && !completedLessonIds.has(prevLesson.id)) {
-        toast.error("Complete the previous lesson first.");
+        toast.error(tr("Complete the previous lesson first."));
         return;
       }
       setCurrentLessonIndex(idx);
@@ -319,7 +305,7 @@ export function LessonScreen({
 
   const handleMarkComplete = async () => {
     if (notes.trim().length < MIN_NOTE_LENGTH) {
-      toast.error(`Please write at least ${MIN_NOTE_LENGTH} characters in your notes before completing this lesson.`);
+      toast.error(tr('Please write at least {count} characters in your notes before completing this lesson.', { count: MIN_NOTE_LENGTH }));
       return;
     }
     setIsSaving(true);
@@ -338,7 +324,7 @@ export function LessonScreen({
         );
         if (!nr.ok) {
           const err = await nr.json().catch(() => ({}));
-          throw new Error(err.error || "Failed to save notes");
+          throw new Error(err.error || tr("Failed to save notes"));
         }
       }
 
@@ -354,7 +340,7 @@ export function LessonScreen({
       );
       if (!cr.ok) {
         const err = await cr.json().catch(() => ({}));
-        throw new Error(err.error || "Failed to mark complete");
+        throw new Error(err.error || tr("Failed to mark complete"));
       }
 
       setIsCompleted(true);
@@ -367,14 +353,14 @@ export function LessonScreen({
         if (currentLessonIndex < totalLessons - 1) {
           goTo(currentLessonIndex + 1);
           toast.success(
-            "Great work! Moving to the next lesson.",
+            tr("Great work! Moving to the next lesson."),
           );
         } else {
-          toast.success("Module complete! Well done. 🎉");
+          toast.success(tr("Module complete! Well done. 🎉"));
         }
       }, 700);
     } catch (err: any) {
-      toast.error(err.message || "Something went wrong");
+      toast.error(err.message || tr("Something went wrong"));
     } finally {
       setIsSaving(false);
     }
@@ -400,56 +386,35 @@ export function LessonScreen({
           gap: "12px",
         }}
       >
-        <button
-          onClick={onBack}
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: "50%",
-            border: "1px solid #e2e8f0",
-            backgroundColor: "#ffffff",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            flexShrink: 0,
-          }}
-        >
-          <ArrowLeft
-            style={{ width: 18, height: 18, color: "#475569" }}
-          />
-        </button>
+        <BackButton label={t.common.back} onClick={onBack} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <p
+          <p className="tbo-eyebrow"
             style={{
-              fontSize: "12px",
+
               color: accent,
-              fontWeight: 600,
+
               margin: 0,
             }}
           >
-            {module.title}
+            {tr(module.title)}
           </p>
-          <p
+          <h1 className="tbo-page-title break-words"
             style={{
-              fontSize: "14px",
-              fontWeight: 600,
+
               color: "#0f172a",
               margin: 0,
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
+
             }}
           >
-            {currentLesson.title}
-          </p>
+            {tr(currentLesson.title)}
+          </h1>
         </div>
-        <span
+        <span className="tbo-caption"
           style={{
-            fontSize: "12px",
+
             color: "#64748b",
             flexShrink: 0,
-            fontWeight: 500,
+
           }}
         >
           {currentLessonIndex + 1}/{totalLessons}
@@ -474,20 +439,18 @@ export function LessonScreen({
             marginBottom: "8px",
           }}
         >
-          <span
+          <span className="tbo-label"
             style={{
-              fontSize: "12px",
+
               color: "#475569",
-              fontWeight: 500,
+
             }}
-          >
-            Module Progress
-          </span>
-          <span
+          >{tr("Module Progress")} </span>
+          <span className="tbo-caption"
             style={{
-              fontSize: "12px",
+
               color: accent,
-              fontWeight: 600,
+
             }}
           >
             {moduleProgress}%
@@ -511,16 +474,14 @@ export function LessonScreen({
             }}
           />
         </div>
-        <p
+        <p className="tbo-caption"
           style={{
-            fontSize: "12px",
+
             color: "#64748b",
             margin: "4px 0 0 0",
           }}
         >
-          {completedLessonIds.size} of {totalLessons} lessons
-          completed
-        </p>
+          {tr("{done} of {total} lessons completed", { done: completedLessonIds.size, total: totalLessons })}</p>
       </div>
 
       {/* Scripture banner */}
@@ -555,11 +516,11 @@ export function LessonScreen({
           >
             {module.scripture}
           </p>
-          <p
+          <p className="tbo-caption"
             style={{
-              fontSize: "12px",
+
               color: accent,
-              fontWeight: 600,
+
               margin: "4px 0 0 0",
             }}
           >
@@ -581,7 +542,7 @@ export function LessonScreen({
           boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
         }}
       >
-        <button
+        <button className="tbo-action"
           onClick={() => goTo(currentLessonIndex - 1)}
           disabled={currentLessonIndex === 0}
           style={{
@@ -596,25 +557,24 @@ export function LessonScreen({
                 : "pointer",
             color:
               currentLessonIndex === 0 ? "#cbd5e1" : "#475569",
-            fontSize: "12px",
-            fontWeight: 500,
+
           }}
         >
           <ChevronLeft style={{ width: 16, height: 16 }} />{" "}
-          {t?.common?.previous || "Previous"}
+          {t?.common?.previous || tr("Previous")}
         </button>
 
-        <span
+        <span className="tbo-caption"
           style={{
-            fontSize: "12px",
+
             color: "#64748b",
-            fontWeight: 500,
+
           }}
         >
-          {currentLesson.duration}
+          {guidanceLabel(tr, currentLesson.duration)}
         </span>
 
-        <button
+        <button className="tbo-action"
           onClick={() => goTo(currentLessonIndex + 1)}
           disabled={currentLessonIndex === totalLessons - 1}
           style={{
@@ -631,11 +591,10 @@ export function LessonScreen({
               currentLessonIndex === totalLessons - 1
                 ? "#cbd5e1"
                 : "#475569",
-            fontSize: "12px",
-            fontWeight: 500,
+
           }}
         >
-          {t?.common?.next || "Next"}{" "}
+          {t?.common?.next || tr("Next")}{" "}
           <ChevronRight style={{ width: 16, height: 16 }} />
         </button>
       </div>
@@ -663,23 +622,25 @@ export function LessonScreen({
           <BookOpen
             style={{ width: 18, height: 18, color: accent }}
           />
-          <span
+          <span className="tbo-label"
             style={{
-              fontSize: "14px",
-              fontWeight: 600,
+
               color: "var(--foreground)",
             }}
-          >
-            Lesson Content
-          </span>
+          >{tr("Lesson Content")} </span>
         </div>
-        <div
+        {language !== 'en' && staticModule && !apiModule && (
+          <p className="tbo-supporting px-5 pt-4 text-muted-foreground">
+            {tr('Lesson text is shown in English while this translation is unavailable.')}
+          </p>
+        )}
+        <div className="tbo-body"
+          lang={staticModule && !apiModule ? 'en' : language}
           style={{
             padding: "20px",
             maxHeight: 480,
             overflowY: "auto",
-            fontSize: "14px",
-            lineHeight: 1.75,
+
             color: "var(--foreground)",
           }}
           dangerouslySetInnerHTML={{ __html: mdToHtml(currentLesson.content) }}
@@ -708,25 +669,22 @@ export function LessonScreen({
           <FileText
             style={{ width: 18, height: 18, color: "#7c3aed" }}
           />
-          <span
+          <span className="tbo-label"
             style={{
-              fontSize: "14px",
-              fontWeight: 600,
+
               color: "#0f172a",
             }}
-          >
-            Your Notes
-          </span>
+          >{tr("Your Notes")} </span>
         </div>
         <div style={{ padding: "16px" }}>
-          <textarea
+          <textarea className="tbo-field"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Reflect on what you've learned. How will you apply this together? (minimum 100 characters)"
+            placeholder={tr("Reflect on what you've learned. How will you apply this together? (minimum 100 characters)")}
             style={{
               width: "100%",
               minHeight: 120,
-              fontSize: "14px",
+
               color: "var(--foreground)",
               backgroundColor: "var(--muted)",
               border: `1px solid ${notes.trim().length >= 100 ? 'var(--success-500, #22c55e)' : 'var(--border)'}`,
@@ -734,7 +692,7 @@ export function LessonScreen({
               padding: "12px",
               resize: "vertical",
               fontFamily: "inherit",
-              lineHeight: 1.6,
+
               outline: "none",
               boxSizing: "border-box",
               transition: "border-color 0.2s",
@@ -744,10 +702,10 @@ export function LessonScreen({
           />
           {/* Character counter */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "6px" }}>
-            <span style={{ fontSize: "11px", color: notes.trim().length >= 100 ? "var(--success-700, #15803d)" : "var(--muted-foreground)" }}>
-              {notes.trim().length >= 100 ? "✓ Minimum reached" : `${100 - notes.trim().length} more characters needed`}
+            <span className="tbo-caption" style={{  color: notes.trim().length >= 100 ? "var(--success-700, #15803d)" : "var(--muted-foreground)" }}>
+              {notes.trim().length >= 100 ? tr("✓ Minimum reached") : tr("{count} more characters needed", { count: 100 - notes.trim().length })}
             </span>
-            <span style={{ fontSize: "11px", color: notes.trim().length >= 100 ? "var(--success-700, #15803d)" : "var(--muted-foreground)", fontVariantNumeric: "tabular-nums" }}>
+            <span className="tbo-caption" style={{  color: notes.trim().length >= 100 ? "var(--success-700, #15803d)" : "var(--muted-foreground)", fontVariantNumeric: "tabular-nums" }}>
               {notes.trim().length} / 100
             </span>
           </div>
@@ -769,10 +727,10 @@ export function LessonScreen({
         const notesReady = notes.trim().length >= 100;
         const disabled = isCompleted || isSaving || !notesReady;
         return (
-          <button
+          <button className="tbo-action"
             onClick={handleMarkComplete}
             disabled={disabled}
-            title={!notesReady && !isCompleted ? `Write at least 100 characters in your notes (${notes.trim().length}/100)` : undefined}
+            title={!notesReady && !isCompleted ? tr("Write at least 100 characters in your notes ({count}/100)", { count: notes.trim().length }) : undefined}
             style={{
               display: "flex",
               alignItems: "center",
@@ -785,8 +743,7 @@ export function LessonScreen({
               cursor: disabled ? "not-allowed" : "pointer",
               backgroundColor: isCompleted ? "var(--success-50, #f0fdf4)" : notesReady ? accent : "var(--muted)",
               color: isCompleted ? "var(--success-700, #166534)" : notesReady ? "#ffffff" : "var(--muted-foreground)",
-              fontSize: "14px",
-              fontWeight: 600,
+
               transition: "opacity 0.15s ease, background-color 0.2s ease",
               opacity: isSaving ? 0.7 : 1,
             }}
@@ -795,12 +752,12 @@ export function LessonScreen({
               ? <Lock style={{ width: 16, height: 16 }} />
               : <CheckCircle2 style={{ width: 18, height: 18 }} />}
             {isSaving
-              ? t?.common?.saving || "Saving..."
+              ? t?.common?.saving || tr("Saving...")
               : isCompleted
-                ? `${t?.devotionals?.completed || "Completed"} ✓`
+                ? `${t?.devotionals?.completed || tr("Completed")} ✓`
                 : notesReady
-                  ? t?.devotionals?.markComplete || "Mark Complete"
-                  : `Notes required (${notes.trim().length}/100)`}
+                  ? t?.devotionals?.markComplete || tr("Mark Complete")
+                  : tr("Notes required ({count}/100)", { count: notes.trim().length })}
           </button>
         );
       })()}
@@ -821,15 +778,12 @@ export function LessonScreen({
             borderBottom: "1px solid #e2e8f0",
           }}
         >
-          <span
+          <span className="tbo-label"
             style={{
-              fontSize: "14px",
-              fontWeight: 600,
+
               color: "#0f172a",
             }}
-          >
-            All Lessons
-          </span>
+          >{tr("All Lessons")} </span>
         </div>
         <div style={{ padding: "8px 0" }}>
           {module.lessons.map((lesson, idx) => {
@@ -842,7 +796,7 @@ export function LessonScreen({
                 key={lesson.id}
                 onClick={() => goTo(idx)}
                 disabled={locked}
-                title={locked ? "Complete the previous lesson first" : undefined}
+                title={locked ? tr("Complete the previous lesson first") : undefined}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -884,17 +838,16 @@ export function LessonScreen({
                   ) : locked ? (
                     <Lock style={{ width: 14, height: 14, color: "var(--muted-foreground)" }} />
                   ) : (
-                    <span style={{ fontSize: "12px", fontWeight: 600, color: active ? "#ffffff" : "var(--muted-foreground)" }}>
+                    <span className="tbo-caption" style={{   color: active ? "#ffffff" : "var(--muted-foreground)" }}>
                       {idx + 1}
                     </span>
                   )}
                 </div>
 
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p
+                  <p className="tbo-label"
                     style={{
-                      fontSize: "14px",
-                      fontWeight: active ? 600 : 500,
+
                       color: done
                         ? "var(--success-700, #166534)"
                         : locked
@@ -908,17 +861,15 @@ export function LessonScreen({
                       whiteSpace: "nowrap",
                     }}
                   >
-                    {lesson.title}
+                    {tr(lesson.title)}
                   </p>
-                  <p style={{ fontSize: "12px", color: "var(--muted-foreground)", margin: 0 }}>
-                    {locked ? "Locked" : lesson.duration}
+                  <p className="tbo-caption" style={{  color: "var(--muted-foreground)", margin: 0 }}>
+                    {locked ? tr("Locked") : guidanceLabel(tr, lesson.duration)}
                   </p>
                 </div>
 
                 {done && (
-                  <span style={{ fontSize: "12px", color: "var(--success-700, #16a34a)", fontWeight: 600, flexShrink: 0 }}>
-                    Done ✓
-                  </span>
+                  <span className="tbo-caption" style={{  color: "var(--success-700, #16a34a)",  flexShrink: 0 }}>{tr("Done ✓")} </span>
                 )}
                 {locked && (
                   <Lock style={{ width: 14, height: 14, color: "var(--muted-foreground)", flexShrink: 0 }} />

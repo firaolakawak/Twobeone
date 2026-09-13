@@ -1,3 +1,5 @@
+import { useUiCopy } from "../../utils/uiTranslation";
+import { adminCommunityMessages } from "../../locales/adminCommunity";
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
 import { toast } from 'sonner';
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
@@ -45,6 +47,7 @@ function normalizeGroup(raw: Record<string, unknown>): Group | null {
 }
 
 export function GroupsManager({ accessToken }: GroupsManagerProps) {
+  const tr = useUiCopy(adminCommunityMessages);
   const [groups, setGroups] = useState<Group[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -72,12 +75,12 @@ export function GroupsManager({ accessToken }: GroupsManagerProps) {
       setSelectedId((current) => current && nextGroups.some((group) => group.id === current) ? current : nextGroups[0]?.id || null);
     } catch (error) {
       console.error('Failed to load groups:', error);
-      toast.error('Could not load community groups');
+      toast.error(tr("Could not load community groups"));
       setGroups([]);
     } finally {
       setIsLoading(false);
     }
-  }, [authHeaders, endpoint]);
+  }, [authHeaders, endpoint, tr]);
 
   useEffect(() => { void loadGroups(); }, [loadGroups]);
 
@@ -95,14 +98,14 @@ export function GroupsManager({ accessToken }: GroupsManagerProps) {
   const openNew = () => { setEditingGroup(null); setFormData({ ...emptyGroup }); setIsDialogOpen(true); };
   const handleEdit = (group: Group) => { setEditingGroup(group); setFormData(group); setIsDialogOpen(true); };
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this community group? This cannot be undone.')) return;
+    if (!confirm(tr("Delete this community group? This cannot be undone."))) return;
     try {
       const response = await fetch(`${endpoint}/${id}`, { method: 'DELETE', headers: authHeaders });
       if (!response.ok) throw new Error('Delete failed');
       setGroups((current) => current.filter((group) => group.id !== id));
       setSelectedId((current) => current === id ? null : current);
-      toast.success('Group deleted successfully');
-    } catch (error) { console.error('Failed to delete group:', error); toast.error('Could not delete group'); }
+      toast.success(tr("Group deleted successfully"));
+    } catch (error) { console.error('Failed to delete group:', error); toast.error(tr("Could not delete group")); }
   };
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -113,10 +116,10 @@ export function GroupsManager({ accessToken }: GroupsManagerProps) {
         body: JSON.stringify({ ...formData, memberCount: Number(formData.members || 0) }),
       });
       if (!response.ok) throw new Error('Save failed');
-      toast.success(editingGroup ? 'Group updated successfully' : 'Group created successfully');
+      toast.success(tr(editingGroup ? 'Group updated successfully' : 'Group created successfully'));
       setIsDialogOpen(false); setEditingGroup(null); setFormData({ ...emptyGroup });
       await loadGroups();
-    } catch (error) { console.error('Failed to save group:', error); toast.error('Could not save group'); }
+    } catch (error) { console.error('Failed to save group:', error); toast.error(tr("Could not save group")); }
   };
 
   return <GroupsWorkspace

@@ -1,10 +1,14 @@
+import { formatUiTime } from '../utils/uiDateTime';
+import { BrandLoader, LoadingMark } from './BrandLoader';
+import { useUiCopy, UI_LOCALES } from '../utils/uiTranslation';
+import { questionsUiMessages } from '../locales/questionsUi';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useState, useEffect, useRef } from 'react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { ScrollArea } from './ui/scroll-area';
-import { Send, Loader2, MessageSquare } from 'lucide-react';
+import { Send, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
 import { sendNotification } from '../utils/notifications';
 
@@ -48,7 +52,8 @@ export function DiscussionThread({
   currentUserName,
   partner
 }: DiscussionThreadProps) {
-  const { t } = useLanguage();
+  const tr = useUiCopy(questionsUiMessages);
+  const { t, language } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
@@ -133,14 +138,14 @@ export function DiscussionThread({
       setMessages(prev => [...prev, sentMessage]);
       setNewMessage('');
 
-      toast.success('Message sent!');
+      toast.success(tr("Message sent!"));
 
       // Send notification to partner
       if (partner) {
         try {
           await sendNotification({
             recipientId: partner.id,
-            title: '💬 New Message in Discussion',
+            title: tr("💬 New Message in Discussion"),
             message: `${currentUserName}: ${newMessage.substring(0, 50)}${newMessage.length > 50 ? '...' : ''}`,
             type: 'question_answered',
             projectId,
@@ -155,7 +160,7 @@ export function DiscussionThread({
       await loadMessages();
     } catch (error) {
       console.error('Error sending message:', error);
-      toast.error('Failed to send message');
+      toast.error(tr("Failed to send message"));
     } finally {
       setIsSending(false);
     }
@@ -194,9 +199,10 @@ export function DiscussionThread({
             <MessageSquare className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="font-semibold text-foreground">{t.questions.discuss}</h3>
-            <p className="text-sm text-muted-foreground">
-              Chat about this question with your partner
+            <h3 className="tbo-card-title text-foreground">{t.questions.discuss}</h3>
+            <p className="tbo-supporting text-muted-foreground">
+
+              {tr("Chat about this question with your partner")}
             </p>
           </div>
         </div>
@@ -206,7 +212,7 @@ export function DiscussionThread({
       <div className="p-6 space-y-4">
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+            <BrandLoader />
           </div>
         ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 text-center space-y-3">
@@ -214,9 +220,9 @@ export function DiscussionThread({
               <MessageSquare className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h4 className="font-semibold text-foreground mb-1">{t.questions.notAnsweredYet}</h4>
-              <p className="text-sm text-muted-foreground">
-                {t.questions.shareYourThoughts} about this question
+              <h4 className="tbo-card-title text-foreground mb-1">{t.questions.notAnsweredYet}</h4>
+              <p className="tbo-supporting text-muted-foreground">
+                {t.questions.shareYourThoughts}  {tr("about this question")}
               </p>
             </div>
           </div>
@@ -237,14 +243,14 @@ export function DiscussionThread({
                     }`}
                   >
                     <div className="space-y-1">
-                      <p className={`text-xs font-medium ${isCurrentUser ? 'text-white/80' : 'text-muted-foreground'}`}>
+                      <p className={`tbo-caption ${isCurrentUser ? 'text-white/80' : 'text-muted-foreground'}`}>
                         {msg.userName}
                       </p>
-                      <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                      <p className="tbo-supporting whitespace-pre-wrap break-words">
                         {msg.message}
                       </p>
-                      <p className={`text-xs ${isCurrentUser ? 'text-white/60' : 'text-muted-foreground'}`}>
-                        {new Date(msg.timestamp).toLocaleTimeString('en-US', {
+                      <p className={`tbo-caption ${isCurrentUser ? 'text-white/60' : 'text-muted-foreground'}`}>
+                        {formatUiTime(new Date(msg.timestamp), UI_LOCALES[language], {
                           hour: 'numeric',
                           minute: '2-digit'
                         })}
@@ -266,25 +272,27 @@ export function DiscussionThread({
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder={partner ? `Message ${partner.name}...` : 'Share your thoughts...'}
-            className="flex-1 min-h-[80px] resize-none bg-card"
+            placeholder={partner ? tr('Message {name}...', { name: partner.name }) : tr("Share your thoughts...")}
+            className="tbo-field flex-1 min-h-[80px] resize-none bg-card"
             disabled={isSending}
           />
           <Button
             onClick={handleSendMessage}
+            aria-label={tr(isSending ? 'Sending...' : 'Send')}
             disabled={isSending || !newMessage.trim()}
-            className={`self-end bg-gradient-to-r ${getCategoryColor(question.category)} text-white hover:opacity-90`}
+            className={`tbo-action self-end bg-gradient-to-r ${getCategoryColor(question.category)} text-white hover:opacity-90`}
             size="icon"
           >
             {isSending ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <LoadingMark />
             ) : (
               <Send className="w-4 h-4" />
             )}
           </Button>
         </div>
-        <p className="text-xs text-muted-foreground mt-2">
-          Press Enter to send, Shift + Enter for new line
+        <p className="tbo-caption text-muted-foreground mt-2">
+
+          {tr("Press Enter to send, Shift + Enter for new line")}
         </p>
       </div>
     </Card>

@@ -1,3 +1,7 @@
+import { formatUiDate } from './utils/uiDateTime';
+import { useProfileLanguage } from "./hooks/useProfileLanguage";
+import { useUiCopy, UI_LOCALES } from './utils/uiTranslation';
+import { shellMessages } from './locales/shell';
 import {
   useState,
   useEffect,
@@ -8,6 +12,12 @@ import {
   Suspense,
   startTransition,
 } from "react";
+import headerLogo from "../assets/twobeone-header-logo.png";
+import { BackButton } from "./components/BackButton";
+import { BrandLoader } from "./components/BrandLoader";
+import { getCurrentLanguage, isLanguage, useCurrentLanguage } from "./utils/languageStore";
+import { saveLanguagePreference } from "./utils/languagePreference";
+import { getNotificationCopy } from "./utils/notificationCopy";
 
 // ── Critical path — loaded eagerly (needed before/at first paint) ──────────
 import { SEOHead } from "./components/SEOHead";
@@ -26,8 +36,6 @@ import { OfflineIndicator } from "./components/OfflineIndicator";
 import { CalendarAlarmManager } from "./components/CalendarAlarmManager";
 import { Button } from "./components/ui/button";
 import {
-  Heart,
-  Loader2,
   AlertCircle,
   BookOpen,
   HandHeart,
@@ -121,15 +129,7 @@ import type {
 
 // Shared fallback for lazy-loaded screens
 function ScreenLoader() {
-  return (
-    <div style={{
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      minHeight: '60vh', flexDirection: 'column', gap: 'var(--spacing-3)',
-    }}>
-      <Loader2 style={{ width: 28, height: 28, color: 'var(--primary-500)', animation: 'spin 1s linear infinite' }} />
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-    </div>
-  );
+  return <BrandLoader className="min-h-[60vh] p-6" />;
 }
 
 const QA_CATEGORY_LABELS: Record<string, string> = {
@@ -238,6 +238,7 @@ function isDirectAppPath(): boolean {
 }
 
 export default function App() {
+  const tr = useUiCopy(shellMessages);
   const [isAppShell] = useState(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -392,33 +393,12 @@ export default function App() {
     };
   }, [accessToken, activeTab, partner?.id]);
 
-  const [currentLangCode, setCurrentLangCode] = useState<"en" | "am" | "om">(() => {
-    const saved = typeof window === "undefined" ? null : window.localStorage.getItem("twobeone_language");
-    return saved === "am" || saved === "om" ? saved : "en";
-  });
+  const currentLangCode = useCurrentLanguage();
   const vocabulary =
     APP_TRANSLATIONS[currentLangCode] || APP_TRANSLATIONS.en;
   const uiTranslations = getTranslations(currentLangCode);
 
-  useEffect(() => {
-    const handleLanguageChange = (event: Event) => {
-      const next = (event as CustomEvent<string>).detail;
-      if (next === "en" || next === "am" || next === "om") setCurrentLangCode(next);
-    };
-    window.addEventListener("twobeone:language-change", handleLanguageChange);
-    return () => window.removeEventListener("twobeone:language-change", handleLanguageChange);
-  }, []);
-
-  // The saved profile is the cross-device source of truth. LanguageSelector
-  // writes changes back to the profile, while this hydrates a newly opened
-  // browser or installed app from that preference.
-  useEffect(() => {
-    const profileLanguage = profile?.language;
-    if (profileLanguage !== "en" && profileLanguage !== "am" && profileLanguage !== "om") return;
-    if (profileLanguage === currentLangCode) return;
-    window.localStorage.setItem("twobeone_language", profileLanguage);
-    window.dispatchEvent(new CustomEvent("twobeone:language-change", { detail: profileLanguage }));
-  }, [profile?.language, currentLangCode]);
+  useProfileLanguage(profile);
 
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
@@ -598,18 +578,17 @@ export default function App() {
         );
 
         newNotifications.forEach((notification: any) => {
+          const notificationCopy = getNotificationCopy(notification, getCurrentLanguage());
           if (notification.type === "question_answered") {
-            const categoryLabel =
-              notification.data?.categoryLabel ?? "a question";
             const categoryId = notification.data?.categoryId;
             toast.success(
-              notification.title || "💬 Your partner answered!",
+              notificationCopy.title || tr("💬 Your partner answered!"),
               {
-                description: `They answered in "${categoryLabel}". Tap to view.`,
+                description: tr("Your partner answered a question. Tap to view."),
                 duration: 8000,
                 action: categoryId
                   ? {
-                      label: "Go there",
+                      label: tr("Go there"),
                       onClick: () => {
                         setActiveTab("home");
                         setSelectedQACategory(categoryId);
@@ -621,7 +600,7 @@ export default function App() {
             );
           } else if (notification.type === "verse_shared") {
             toast.success(
-              `${notification.data?.sharedBy || "Your partner"} shared a verse with you!`,
+              tr("{name} shared a verse with you!", { name: notification.data?.sharedBy || tr("Your partner") }),
               {
                 description: notification.data?.reference,
                 duration: 5000,
@@ -631,33 +610,33 @@ export default function App() {
             notification.type === "profile_update" &&
             notification.data?.relationshipStart
           ) {
-            const date = new Date(
+            const date = formatUiDate(new Date(
               notification.data.relationshipStart,
-            ).toLocaleDateString("en-US", {
+            ), UI_LOCALES[currentLangCode], {
               month: "long",
               day: "numeric",
               year: "numeric",
             });
-            toast.success("💕 Relationship Date Set!", {
-              description: `Your partner set your relationship start date to ${date}`,
+            toast.success(tr("💕 Relationship Date Set!"), {
+              description: tr("Your partner set your relationship start date to {date}", { date }),
               duration: 6000,
             });
           } else if (notification.type === "mood_report") {
-            toast.success(notification.title, {
-              description: `${notification.data?.period || "Your weekly mood report is ready!"}`,
+            toast.success(notificationCopy.title, {
+              description: `${notification.data?.period || tr("Your weekly mood report is ready!")}`,
               duration: 8000,
             });
             // Mark read immediately so it never re-surfaces on the next login
             api.notifications.markAsRead(notification.id).catch(() => {});
           } else if (notification.type === "mood_analysis") {
-            toast.success(notification.title || "🧠 AI analysis ready", {
-              description: notification.data?.summary || "Your AI mood analysis is ready to review.",
+            toast.success(notificationCopy.title || tr("🧠 AI analysis ready"), {
+              description: notification.data?.summary || tr("Your AI mood analysis is ready to review."),
               duration: 8000,
             });
             api.notifications.markAsRead(notification.id).catch(() => {});
           } else {
-            toast.info(notification.title, {
-              description: notification.message.substring(
+            toast.info(notificationCopy.title, {
+              description: notificationCopy.message.substring(
                 0,
                 100,
               ),
@@ -751,7 +730,7 @@ export default function App() {
       checkForProfileUpdates();
     }, 60000);
     return () => clearInterval(interval);
-  }, [user, accessToken, selectedScreen]);
+  }, [user, accessToken, selectedScreen, tr, currentLangCode]);
 
   const loadUserData = async (token?: string) => {
     const authToken = token || accessToken;
@@ -763,6 +742,7 @@ export default function App() {
 
     try {
       const profileData = await api.profile.get();
+      if (!profileData.profile) throw new Error("Profile data unavailable");
       setProfile(profileData.profile || null);
       setPartner(profileData.partner || null);
 
@@ -833,13 +813,14 @@ export default function App() {
         errorMsg.includes("401") ||
         errorMsg.includes("Unauthorized")
       ) {
-        // Safe to ignore
+        if (!profile) setLoadError("Your session expired. Please sign in again.");
       } else if (errorMsg.includes("BLOCKED_BY_CLIENT")) {
         setLoadError(
           "Your ad blocker is blocking the app. Please whitelist this site.",
         );
       } else {
-        setLoadError(errorMsg);
+        console.error("Profile load failed:", errorMsg);
+        setLoadError("Could not load your profile. Please try again.");
       }
     } finally {
       setIsLoading(false);
@@ -860,8 +841,9 @@ export default function App() {
       setResponses({ user: [], partner: [] });
       setShowAdmin(false);
     } catch (error) {
-      setLoadError(`Sign out error: ${error}`);
-      toast.error(`Sign out error: ${error}`);
+      console.error("Sign out failed:", error);
+      setLoadError("Could not sign out. Please try again.");
+      toast.error(tr("Could not sign out. Please try again."));
     }
   }, []);
 
@@ -953,9 +935,9 @@ export default function App() {
         setJournalEntries((prev) =>
           prev.filter((entry) => entry.id !== id),
         );
-        toast.success("Entry deleted!");
+        toast.success(tr("Entry deleted!"));
       } catch (error) {
-        toast.error("Failed to delete entry");
+        toast.error(tr("Failed to delete entry"));
       }
     },
     [accessToken],
@@ -1042,7 +1024,7 @@ export default function App() {
         if (!response.ok)
           throw new Error("Failed to mark as prayed");
         await loadUserData();
-        toast.success("Marked as prayed! 🙏");
+        toast.success(tr("Marked as prayed! 🙏"));
       } catch (error) {
         throw error;
       }
@@ -1139,7 +1121,7 @@ export default function App() {
 
         if (!responseData.ok)
           throw new Error("Failed to save response");
-        toast.success("Answer saved!");
+        toast.success(tr("Answer saved!"));
 
         api.questions
           .getResponses()
@@ -1151,7 +1133,7 @@ export default function App() {
           )
           .catch(() => {});
       } catch (error: any) {
-        toast.error("Failed to save answer");
+        toast.error(tr("Failed to save answer"));
         throw error;
       }
     },
@@ -1239,9 +1221,9 @@ export default function App() {
       }
       setDevotionalCompletionVersion((version) => version + 1);
 
-      toast.success("Devotional completed! 🎉");
+      toast.success(tr("Devotional completed! 🎉"));
     } catch (error) {
-      toast.error("Failed to mark as complete");
+      toast.error(tr("Failed to mark as complete"));
     }
   }, [accessToken, selectedDevotionalId]);
 
@@ -1328,10 +1310,7 @@ export default function App() {
         <SEOHead />
         <div className="flex items-center justify-center min-h-screen bg-background">
           <div className="text-center space-y-4">
-            <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto" />
-            <p className="text-muted-foreground">
-              {vocabulary.loading}
-            </p>
+            <BrandLoader label={vocabulary.loading} />
           </div>
         </div>
       </LanguageProvider>
@@ -1388,10 +1367,7 @@ export default function App() {
     );
   }
 
-  const todaysPrompt =
-    REFLECTION_PROMPTS[
-      new Date().getDate() % REFLECTION_PROMPTS.length
-    ];
+  const todaysPrompt = tr(REFLECTION_PROMPTS[new Date().getDate() % REFLECTION_PROMPTS.length]);
 
   if (isAdmin && selectedScreen === "admin") {
     return (
@@ -1414,13 +1390,11 @@ export default function App() {
           <div className="min-h-screen bg-background">
             <div className="pt-11 pb-28">
               <div className="max-w-6xl mx-auto px-4">
-                <Button
+                <BackButton
                   onClick={() => setSelectedScreen("dashboard")}
-                  variant="outline"
+                  label={tr("Back to Dashboard")}
                   className="mb-4"
-                >
-                  ← Back to Dashboard
-                </Button>
+                />
                 <DebugQuestions />
               </div>
             </div>
@@ -1450,8 +1424,16 @@ export default function App() {
           <div className="w-full max-w-2xl mx-auto px-4 flex min-h-16 items-center justify-between">
             {/* Platform Brand Title Identification */}
             <div className="flex items-center gap-2">
-              <Heart className="h-6 w-6 fill-rose-500 text-rose-500 animate-pulse" />
-              <span className="text-base font-extrabold text-slate-950 tracking-tight">
+              <img
+                src={headerLogo}
+                alt=""
+                aria-hidden="true"
+                width={32}
+                height={32}
+                draggable={false}
+                className="-m-1 h-8 w-8 shrink-0 object-contain"
+              />
+              <span className="tbo-wordmark text-foreground">
                 TwoBeOne
               </span>
             </div>
@@ -1555,7 +1537,7 @@ export default function App() {
                       {vocabulary.errorTitle}
                     </h3>
                     <p className="text-xs text-rose-700 mt-1">
-                      {loadError}
+                      {tr(loadError)}
                     </p>
                     <Button
                       variant="outline"
@@ -1572,6 +1554,7 @@ export default function App() {
 
             {/* Main Application Interface Core Components Render Frame */}
             <main className={isCoupleDashboard ? "w-full" : "container mx-auto px-2 max-w-2xl"}>
+              {!profile && !loadError ? <ScreenLoader /> : (
               <Suspense fallback={<ScreenLoader />}>
               {activeTab === "home" &&
                 selectedScreen === "dashboard" && (
@@ -1843,7 +1826,7 @@ export default function App() {
                 <PartnerChat
                   accessToken={accessToken}
                   currentUserId={profile?.id || user.id}
-                  partnerName={partnerPreferences?.name || partner?.full_name || "Partner"}
+                  partnerName={partnerPreferences?.name || partner?.full_name || tr("Partner")}
                   partnerOnline={partnerOnline}
                   onUnreadChange={setChatUnreadCount}
                   onBack={() => {
@@ -1869,6 +1852,12 @@ export default function App() {
                   partner={partner || undefined}
                   onSignOut={handleSignOut}
                   onUpdateProfile={async (data) => {
+                    if (Object.keys(data).length === 1 && isLanguage(data.language)) {
+                      if (!accessToken || !profile) throw new Error('Session unavailable');
+                      await saveLanguagePreference({ language: data.language, accessToken, userId: profile.id });
+                      setProfile(previous => previous?.id === profile.id ? { ...previous, language: data.language } : previous);
+                      return;
+                    }
                     try {
                       const response = await fetch(
                         `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/profile`,
@@ -1890,17 +1879,16 @@ export default function App() {
 
                       if (data.relationshipStart && partner) {
                         toast.success(
-                          vocabulary.profileSyncSuccess,
+                          APP_TRANSLATIONS[getCurrentLanguage()].profileSyncSuccess,
                         );
                       } else {
                         toast.success(
-                          vocabulary.profileSuccess,
+                          APP_TRANSLATIONS[getCurrentLanguage()].profileSuccess,
                         );
                       }
                     } catch (error: any) {
                       toast.error(
-                        error.message ||
-                          "Failed to update profile",
+                        tr("Failed to update profile"),
                       );
                       throw error;
                     }
@@ -1929,6 +1917,7 @@ export default function App() {
                 <ProgressSection progress={progress} />
               )}
               </Suspense>
+              )}
             </main>
 
             <BottomNavigation

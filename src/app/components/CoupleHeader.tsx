@@ -25,8 +25,8 @@ export function CoupleHeader({ userName, partnerName, daysTogetherDate }: Couple
     <div className="relative">
       {/* Love Messages */}
       <div className="flex justify-between items-start mb-4 px-2">
-        <div className="text-sm">{t.dashboard.loveYou}</div>
-        <div className="text-sm">{t.dashboard.loveYou}</div>
+        <div className="tbo-supporting">{t.dashboard.loveYou}</div>
+        <div className="tbo-supporting">{t.dashboard.loveYou}</div>
       </div>
 
       {/* Couple Avatars with Distance */}
@@ -43,7 +43,7 @@ export function CoupleHeader({ userName, partnerName, daysTogetherDate }: Couple
 
         {/* Distance Badge */}
         <div className="bg-card px-4 py-2 rounded-full shadow-md border border-border">
-          <span className="text-sm font-medium text-foreground">? km</span>
+          <span className="tbo-label text-foreground">? km</span>
         </div>
 
         {/* Partner Avatar */}

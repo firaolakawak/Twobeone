@@ -1,3 +1,6 @@
+import { BrandLoader, LoadingMark } from '../BrandLoader';
+import { useUiCopy } from "../../utils/uiTranslation";
+import { adminMessagingMessages } from "../../locales/adminMessaging";
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, BellRing, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, FilePlus2, RefreshCw, Send, Sparkles, Users } from 'lucide-react';
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
@@ -32,6 +35,7 @@ interface DeliveryResult { totalSubscribers: number; sent: number; failed: numbe
 interface PushSubscriber { userId: string; name: string; email: string; status: 'enabled'; }
 
 export function PushNotificationsManager({ accessToken }: PushNotificationsManagerProps) {
+  const tr = useUiCopy(adminMessagingMessages);
   const initial = PUSH_TEMPLATES[0];
   const [selectedId, setSelectedId] = useState(initial.id);
   const [title, setTitle] = useState(initial.title);
@@ -104,17 +108,17 @@ export function PushNotificationsManager({ accessToken }: PushNotificationsManag
   return (
     <main className="push-console">
       <header className="push-console__hero">
-        <div><span className="push-console__eyebrow"><Sparkles aria-hidden="true" />Member communication</span><h1>Push Notifications</h1><p>Start with a thoughtful template or create a new message for subscribed members.</p></div>
+        <div><span className="push-console__eyebrow"><Sparkles aria-hidden="true" />{tr("Member communication")}</span><h1>{tr("Push Notifications")}</h1><p>{tr("Start with a thoughtful template or create a new message for subscribed members.")}</p></div>
         <div className="push-console__hero-actions">
-          <span><i className={subscribersLoading ? 'is-pulsing' : ''} />{subscribersLoading ? 'Syncing subscribers' : 'Delivery service connected'}</span>
-          <button type="button" className="admin-secondary-button" onClick={createNew}><FilePlus2 aria-hidden="true" />Create new</button>
+          <span><i className={subscribersLoading ? 'is-pulsing' : ''} />{subscribersLoading ? tr("Syncing subscribers") : tr("Delivery service connected")}</span>
+          <button type="button" className="admin-secondary-button" onClick={createNew}><FilePlus2 aria-hidden="true" />{tr("Create new")}</button>
         </div>
       </header>
 
       <section className="push-console__templates" aria-labelledby="template-heading">
-        <div className="push-console__templates-heading"><div><h2 id="template-heading">Message templates</h2><p>Select a template, then personalize it before sending.</p></div><span>{PUSH_TEMPLATES.length} templates</span></div>
+        <div className="push-console__templates-heading"><div><h2 id="template-heading">{tr("Message templates")}</h2><p>{tr("Select a template, then personalize it before sending.")}</p></div><span>{tr('{count} templates', { count: PUSH_TEMPLATES.length })}</span></div>
         <label className="push-console__template-select">
-          <span>Choose a message template</span>
+          <span>{tr("Choose a message template")}</span>
           <select
             value={selectedId}
             onChange={(event) => {
@@ -123,10 +127,10 @@ export function PushNotificationsManager({ accessToken }: PushNotificationsManag
               if (template) chooseTemplate(template);
             }}
           >
-            <option value="custom">Custom notification</option>
+            <option value="custom">{tr("Custom notification")}</option>
             {categories.map((category) => (
-              <optgroup label={category} key={category}>
-                {PUSH_TEMPLATES.filter((template) => template.category === category).map((template) => <option value={template.id} key={template.id}>{template.name} — {template.title}</option>)}
+              <optgroup label={tr(category)} key={category}>
+                {PUSH_TEMPLATES.filter((template) => template.category === category).map((template) => <option value={template.id} key={template.id}>{tr(template.name)}</option>)}
               </optgroup>
             ))}
           </select>
@@ -135,67 +139,66 @@ export function PushNotificationsManager({ accessToken }: PushNotificationsManag
 
       <div className="push-console__layout">
         <section className="push-console__composer" aria-labelledby="composer-heading">
-          <div className="push-console__section-heading"><span className="push-console__section-icon"><BellRing aria-hidden="true" /></span><div><h2 id="composer-heading">{selectedId === 'custom' ? 'Create new notification' : 'Edit notification'}</h2><p>Keep it warm, clear, and easy to act on.</p></div></div>
+          <div className="push-console__section-heading"><span className="push-console__section-icon"><BellRing aria-hidden="true" /></span><div><h2 id="composer-heading">{selectedId === 'custom' ? tr("Create new notification") : tr("Edit notification")}</h2><p>{tr("Keep it warm, clear, and easy to act on.")}</p></div></div>
           <div className="push-console__fields">
-            <label><span>Title <small>{title.length}/80</small></span><input value={title} maxLength={80} onChange={(event) => { setTitle(event.target.value); resetFeedback(); }} placeholder="Notification title" /></label>
-            <label><span>Message <small>{body.length}/240</small></span><textarea value={body} maxLength={240} rows={4} onChange={(event) => { setBody(event.target.value); resetFeedback(); }} placeholder="Write a short, meaningful message" /></label>
-            <label><span>Open this page</span><select value={url} onChange={(event) => { setUrl(event.target.value); resetFeedback(); }}>{DESTINATIONS.map((destination) => <option value={destination.value} key={destination.value}>{destination.label}</option>)}</select></label>
+            <label><span>{tr("Title")}{' '}<small>{title.length}/80</small></span><input value={title} maxLength={80} onChange={(event) => { setTitle(event.target.value); resetFeedback(); }} placeholder={tr("Notification title")} /></label>
+            <label><span>{tr("Message")}{' '}<small>{body.length}/240</small></span><textarea value={body} maxLength={240} rows={4} onChange={(event) => { setBody(event.target.value); resetFeedback(); }} placeholder={tr("Write a short, meaningful message")} /></label>
+            <label><span>{tr("Open this page")}</span><select value={url} onChange={(event) => { setUrl(event.target.value); resetFeedback(); }}>{DESTINATIONS.map((destination) => <option value={destination.value} key={destination.value}>{tr(destination.label)}</option>)}</select></label>
           </div>
-          {hasPlaceholder && <div className="push-console__placeholder-note"><AlertTriangle aria-hidden="true" />Replace the verse placeholder before sending.</div>}
-          <div className="push-console__preview" aria-label="Notification preview"><div className="push-console__app-icon" aria-hidden="true">♥</div><div><span>TwoBeOne · now</span><strong>{title || 'Your notification title'}</strong><p>{body || 'Your message will appear here.'}</p></div></div>
-          <div className="push-console__audience"><Users aria-hidden="true" /><div><strong>All subscribed users</strong><span>Only devices that granted push permission will receive it.</span></div></div>
-          <label className="push-console__confirmation"><input type="checkbox" checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} /><span>I have reviewed the message, destination, and audience.</span></label>
-          <button className="push-console__send" type="button" disabled={!canSend} onClick={sendNotification}><Send aria-hidden="true" />{sending ? 'Sending notification…' : 'Send push notification'}</button>
-          <div className="push-console__feedback" aria-live="polite">{result && <div className={result.sent === 0 && result.totalSubscribers > 0 ? 'push-console__error' : 'push-console__result'}>{result.sent === 0 && result.totalSubscribers > 0 ? <AlertTriangle aria-hidden="true" /> : <CheckCircle2 aria-hidden="true" />}<div><strong>{result.sent === 0 && result.totalSubscribers > 0 ? 'Broadcast failed' : 'Broadcast complete'}</strong><span>{result.sent} of {result.totalSubscribers} subscribed device{result.totalSubscribers === 1 ? '' : 's'} reached.</span>{(result.failed > 0 || result.invalidSubscriptions > 0) && <small>{result.failed} failed · {result.invalidSubscriptions} expired subscription{result.invalidSubscriptions === 1 ? '' : 's'} removed</small>}{result.failureReasons.map((failure) => <small key={failure.reason}>{failure.reason}{failure.count > 1 ? ` (${failure.count} devices)` : ''}</small>)}</div></div>}{error && <div className="push-console__error" role="alert"><AlertTriangle aria-hidden="true" /><span>{error}</span></div>}</div>
+          {hasPlaceholder && <div className="push-console__placeholder-note"><AlertTriangle aria-hidden="true" />{tr("Replace the verse placeholder before sending.")}</div>}
+          <div className="push-console__preview" aria-label={tr("Notification preview")}><div className="push-console__app-icon" aria-hidden="true">♥</div><div><span>{tr("TwoBeOne · now")}</span><strong>{title || tr("Your notification title")}</strong><p>{body || tr("Your message will appear here.")}</p></div></div>
+          <div className="push-console__audience"><Users aria-hidden="true" /><div><strong>{tr("All subscribed users")}</strong><span>{tr("Only devices that granted push permission will receive it.")}</span></div></div>
+          <label className="push-console__confirmation"><input type="checkbox" checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} /><span>{tr("I have reviewed the message, destination, and audience.")}</span></label>
+          <button className="push-console__send" type="button" disabled={!canSend} onClick={sendNotification}><>{sending ? <LoadingMark /> : <Send aria-hidden="true" />}</>{sending ? tr("Sending notification…") : tr("Send push notification")}</button>
+          <div className="push-console__feedback" aria-live="polite">{result && <div className={result.sent === 0 && result.totalSubscribers > 0 ? 'push-console__error' : 'push-console__result'}>{result.sent === 0 && result.totalSubscribers > 0 ? <AlertTriangle aria-hidden="true" /> : <CheckCircle2 aria-hidden="true" />}<div><strong>{result.sent === 0 && result.totalSubscribers > 0 ? tr("Broadcast failed") : tr("Broadcast complete")}</strong><span>{tr('{sent} of {total} subscribed devices reached.', { sent: result.sent, total: result.totalSubscribers })}</span>{(result.failed > 0 || result.invalidSubscriptions > 0) && <small>{tr('{failed} failed · {expired} expired subscriptions removed', { failed: result.failed, expired: result.invalidSubscriptions })}</small>}{result.failureReasons.map((failure) => <small key={failure.reason}>{tr(failure.reason)}{failure.count > 1 ? ` ${tr('({count} devices)', { count: failure.count })}` : ''}</small>)}</div></div>}{error && <div className="push-console__error" role="alert"><AlertTriangle aria-hidden="true" /><span>{tr(error)}</span></div>}</div>
         </section>
-        <aside className="push-console__guidance"><span className="push-console__guidance-icon"><BellRing aria-hidden="true" /></span><h2>Before you send</h2><p>This is a real broadcast and may appear immediately on members’ devices.</p><ul><li>Use a clear title and one focused action.</li><li>Admin authorization is verified by the server.</li><li>Expired subscriptions are removed automatically.</li><li>Every delivery is recorded in the audit log.</li></ul></aside>
+        <aside className="push-console__guidance"><span className="push-console__guidance-icon"><BellRing aria-hidden="true" /></span><h2>{tr("Before you send")}</h2><p>{tr("This is a real broadcast and may appear immediately on members’ devices.")}</p><ul><li>{tr("Use a clear title and one focused action.")}</li><li>{tr("Admin authorization is verified by the server.")}</li><li>{tr("Expired subscriptions are removed automatically.")}</li><li>{tr("Every delivery is recorded in the audit log.")}</li></ul></aside>
       </div>
 
       <section className="push-console__subscribers" aria-labelledby="subscribers-heading">
         <div className="push-console__subscribers-heading">
           <div>
-            <p className="admin-eyebrow">Push audience</p>
-            <h2 id="subscribers-heading">Subscribed users</h2>
-            <p>Members with an active browser notification subscription.</p>
+            <p className="admin-eyebrow">{tr("Push audience")}</p>
+            <h2 id="subscribers-heading">{tr("Subscribed users")}</h2>
+            <p>{tr("Members with an active browser notification subscription.")}</p>
           </div>
           <div className="push-console__subscribers-actions">
-            <span className="push-console__subscriber-count"><span aria-hidden="true" />{subscribersLoading ? 'Loading…' : `${subscribers.length} enabled`}</span>
-            <button type="button" className="push-console__refresh" onClick={() => void loadSubscribers()} disabled={subscribersLoading} aria-label="Refresh subscribed users">
-              <RefreshCw aria-hidden="true" className={subscribersLoading ? 'is-spinning' : ''} />
-              Refresh
-            </button>
+            <span className="push-console__subscriber-count"><span aria-hidden="true" />{subscribersLoading ? tr("Loading…") : tr('{count} enabled', { count: subscribers.length })}</span>
+            <button type="button" className="push-console__refresh" onClick={() => void loadSubscribers()} disabled={subscribersLoading} aria-label={tr("Refresh subscribed users")}>
+              {subscribersLoading ? <LoadingMark /> : <RefreshCw aria-hidden="true" />}
+              {tr("Refresh")}</button>
             <button type="button" className="push-console__expand" onClick={() => setSubscribersExpanded((expanded) => !expanded)} aria-expanded={subscribersExpanded} aria-controls="push-subscriber-list">
               {subscribersExpanded ? <ChevronUp aria-hidden="true" /> : <ChevronDown aria-hidden="true" />}
-              {subscribersExpanded ? 'Hide list' : 'Show list'}
+              {subscribersExpanded ? tr("Hide list") : tr("Show list")}
             </button>
           </div>
         </div>
 
         {subscribersExpanded && <div id="push-subscriber-list">
-          {subscribersError && <div className="push-console__subscriber-error" role="alert"><AlertTriangle aria-hidden="true" /><span>{subscribersError}</span></div>}
+          {subscribersError && <div className="push-console__subscriber-error" role="alert"><AlertTriangle aria-hidden="true" /><span>{tr(subscribersError)}</span></div>}
           {subscribersLoading && subscribers.length === 0 ? (
-            <div className="push-console__subscriber-state" role="status">Loading subscribed users…</div>
+            <BrandLoader className="push-console__subscriber-state" label={tr("Loading subscribed users…")} />
           ) : subscribers.length === 0 ? (
-            <div className="push-console__subscriber-state"><BellRing aria-hidden="true" /><strong>No subscribed users yet</strong><span>Enabled members will appear here after their browser subscription is saved.</span></div>
+            <div className="push-console__subscriber-state"><BellRing aria-hidden="true" /><strong>{tr("No subscribed users yet")}</strong><span>{tr("Enabled members will appear here after their browser subscription is saved.")}</span></div>
           ) : (
             <>
               <div className="push-console__subscriber-table-wrap">
                 <table className="push-console__subscriber-table">
-                  <thead><tr><th scope="col">Name</th><th scope="col">Email</th></tr></thead>
+                  <thead><tr><th scope="col">{tr("Name")}</th><th scope="col">{tr("Email")}</th></tr></thead>
                   <tbody>{visibleSubscribers.map((subscriber) => (
                     <tr key={subscriber.userId}>
                       <td><strong>{subscriber.name}</strong></td>
-                      <td>{subscriber.email || 'No email available'}</td>
+                      <td>{subscriber.email || tr("No email available")}</td>
                     </tr>
                   ))}</tbody>
                 </table>
               </div>
-              <nav className="push-console__pagination" aria-label="Subscribed users pagination">
-                <span>Showing {(currentSubscriberPage - 1) * subscribersPerPage + 1}–{Math.min(currentSubscriberPage * subscribersPerPage, subscribers.length)} of {subscribers.length}</span>
+              <nav className="push-console__pagination" aria-label={tr("Subscribed users pagination")}>
+                <span>{tr('Showing {from}–{to} of {total}', { from: (currentSubscriberPage - 1) * subscribersPerPage + 1, to: Math.min(currentSubscriberPage * subscribersPerPage, subscribers.length), total: subscribers.length })}</span>
                 <div>
-                  <button type="button" onClick={() => setSubscriberPage((page) => Math.max(1, page - 1))} disabled={currentSubscriberPage === 1} aria-label="Previous subscriber page"><ChevronLeft aria-hidden="true" />Previous</button>
-                  <strong>Page {currentSubscriberPage} of {subscriberPageCount}</strong>
-                  <button type="button" onClick={() => setSubscriberPage((page) => Math.min(subscriberPageCount, page + 1))} disabled={currentSubscriberPage === subscriberPageCount} aria-label="Next subscriber page">Next<ChevronRight aria-hidden="true" /></button>
+                  <button type="button" onClick={() => setSubscriberPage((page) => Math.max(1, page - 1))} disabled={currentSubscriberPage === 1} aria-label={tr("Previous subscriber page")}><ChevronLeft aria-hidden="true" />{tr("Previous")}</button>
+                  <strong>{tr('Page {page} of {pages}', { page: currentSubscriberPage, pages: subscriberPageCount })}</strong>
+                  <button type="button" onClick={() => setSubscriberPage((page) => Math.min(subscriberPageCount, page + 1))} disabled={currentSubscriberPage === subscriberPageCount} aria-label={tr("Next subscriber page")}>{tr("Next")}<ChevronRight aria-hidden="true" /></button>
                 </div>
               </nav>
             </>

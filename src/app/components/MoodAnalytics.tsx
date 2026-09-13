@@ -1,3 +1,7 @@
+import { formatUiDate } from '../utils/uiDateTime';
+import { BrandLoader, LoadingMark } from './BrandLoader';
+import { useUiCopy } from '../utils/uiTranslation';
+import { moodUiMessages } from '../locales/moodUi';
 import { useState, useEffect } from "react";
 import { useLanguage } from "../contexts/LanguageContext";
 import {
@@ -8,6 +12,7 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Button } from "./ui/button";
+import { BackButton } from "./BackButton";
 import { Textarea } from "./ui/textarea";
 import { Badge } from "./ui/badge";
 import { ScrollArea } from "./ui/scroll-area";
@@ -25,10 +30,8 @@ import {
   BarChart3,
   Clock,
   MessageCircle,
-  Loader2,
   ChevronRight,
   AlertCircle,
-  ArrowLeft,
   X,
   BookOpen,
   Star,
@@ -98,13 +101,14 @@ export function buildWhatsAppReportUrl(title: string, report: string, period?: s
 }
 
 function EngagementReportSummary({ summary, language }: { summary: any; language: 'en' | 'am' | 'om' }) {
+  const tr = useUiCopy(moodUiMessages);
   if (!summary?.week?.totalSeconds) return null;
   const words = language === 'am'
     ? { title: 'የዚህ ሳምንት የጋራ ጊዜ', reading: 'ንባብ', answering: 'መመለስ', journaling: 'ማስታወሻ', praying: 'ጸሎት' }
     : language === 'om'
       ? { title: 'Yeroo waliinii torban kanaa', reading: 'Dubbisuu', answering: 'Deebisuu', journaling: 'Yaadannoo', praying: 'Kadhachuu' }
       : { title: 'Intentional time this week', reading: 'Reading', answering: 'Answering', journaling: 'Journaling', praying: 'Praying' };
-  return <div className="mt-4 rounded-xl bg-rose-50/70 p-3"><p className="mb-2 text-xs font-semibold text-rose-700">{words.title} · {Math.round(summary.week.totalSeconds / 60)} min</p><div className="grid grid-cols-2 gap-2 text-xs text-slate-600">{(['reading', 'answering', 'journaling', 'praying'] as const).map(key => <span key={key}>{words[key]} <strong>{Math.round((summary.week.byCategory[key] || 0) / 60)}m</strong></span>)}</div></div>;
+  return <div className="mt-4 rounded-xl bg-rose-50/70 p-3"><p className="tbo-caption mb-2 text-rose-700">{words.title} · {Math.round(summary.week.totalSeconds / 60)}  {tr("min")}</p><div className="tbo-caption grid grid-cols-2 gap-2 text-slate-600">{(['reading', 'answering', 'journaling', 'praying'] as const).map(key => <span key={key}>{words[key]} <strong>{Math.round((summary.week.byCategory[key] || 0) / 60)}m</strong></span>)}</div></div>;
 }
 
 export function MoodAnalytics({
@@ -112,6 +116,7 @@ export function MoodAnalytics({
   partner,
   onClose,
 }: MoodAnalyticsProps) {
+  const tr = useUiCopy(moodUiMessages);
   const { t, language } = useLanguage();
   const dateLocale = language === 'am' ? 'am-ET' : language === 'om' ? 'om-ET' : 'en-US';
   const [moods, setMoods] = useState<MoodEntry[]>([]);
@@ -199,7 +204,7 @@ export function MoodAnalytics({
       }
     } catch (error: any) {
       console.error("Mood AI analysis failed:", error?.message);
-      const msg = error?.message || "Failed to generate AI analysis";
+      const msg = error?.message || tr("Failed to generate AI analysis");
       if (msg.includes("not configured")) {
         toast.error(t.messages.errorOccurred + ': ' + msg, { duration: 8000 });
       } else {
@@ -225,7 +230,7 @@ export function MoodAnalytics({
       setWeeklyReport({
         ...report,
         analysis: cleanReportFormatting(report.analysis),
-        period: `${weekAgo.toLocaleDateString(dateLocale, { month: "short", day: "numeric" })} – ${now.toLocaleDateString(dateLocale, { month: "short", day: "numeric", year: "numeric" })}`,
+        period: `${formatUiDate(weekAgo, dateLocale, { month: "short", day: "numeric" })} – ${formatUiDate(now, dateLocale, { month: "short", day: "numeric", year: "numeric" })}`,
       });
     } catch (error: any) {
       console.error("Error generating weekly report:", error);
@@ -316,7 +321,7 @@ export function MoodAnalytics({
         : null;
 
     return {
-      date: date.toLocaleDateString("en-US", {
+      date: formatUiDate(date, dateLocale, {
         month: "short",
         day: "numeric",
       }),
@@ -413,17 +418,17 @@ export function MoodAnalytics({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6 [overflow-wrap:anywhere] [&_button]:min-w-0 [&_button]:whitespace-normal">
       {/* Gemini availability alert */}
       {hasQuotaError && (
         <Alert className="border-2 border-warning-500 bg-gradient-to-r from-warning-50 to-warning-50">
           <AlertCircle className="h-5 w-5 text-warning-500" />
           <AlertDescription className="ml-2">
             <div className="space-y-2">
-              <p className="font-medium text-warning-700">
+              <p className="tbo-body text-warning-700">
                 {t.mood.basicMoodSummary}
               </p>
-              <p className="text-sm text-warning-700">
+              <p className="tbo-supporting text-warning-700">
                 {t.mood.reportUnavailable}
               </p>
             </div>
@@ -432,23 +437,16 @@ export function MoodAnalytics({
       )}
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex min-w-0 flex-1 basis-56 items-center gap-3">
           {onClose && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="h-10 w-10 rounded-full hover:bg-primary-100"
-            >
-              <ArrowLeft className="h-5 w-5 text-foreground" />
-            </Button>
+            <BackButton label={t.common.back} onClick={onClose} />
           )}
-          <div>
-            <h1 className="text-2xl font-semibold">
+          <div className="min-w-0">
+            <h1 className="tbo-page-title">
               {t.mood.analytics}
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="tbo-supporting text-muted-foreground">
               {t.mood.analyticsDescription}
             </p>
           </div>
@@ -457,11 +455,11 @@ export function MoodAnalytics({
           <Button
             onClick={handleGenerateWeeklyReport}
             disabled={weeklyReportLoading}
-            className="bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
+            className="tbo-action bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
           >
             {weeklyReportLoading ? (
               <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                <LoadingMark className="mr-2" />
                 {t.mood.generating}
               </>
             ) : (
@@ -477,17 +475,17 @@ export function MoodAnalytics({
       {/* Track Today's Mood */}
       <Card className="border-2 border-primary-200 bg-gradient-to-br from-primary-50 to-primary-100">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="tbo-card-title flex items-center gap-2">
             <Heart className="w-5 h-5 text-primary-600" />
             {t.mood.howAreYouFeelingToday}
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="tbo-supporting">
             {t.mood.shareEmotionalState}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Mood Selection */}
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 3.25rem), 1fr))' }}>
             {(
               Object.entries(MOOD_CONFIG) as [
                 keyof typeof MOOD_CONFIG,
@@ -505,7 +503,7 @@ export function MoodAnalytics({
                     alignItems: "center",
                     justifyContent: "center",
                     gap: "var(--spacing-2)",
-                    height: "80px",
+                    minHeight: "80px",
                     borderRadius: "var(--radius-md)",
                     border: `2px solid ${isSelected ? cfg.border : "var(--neutral-200)"}`,
                     background: isSelected
@@ -527,10 +525,9 @@ export function MoodAnalytics({
                   >
                     {cfg.emoji}
                   </span>
-                  <span
+                  <span className="tbo-caption"
                     style={{
-                      fontSize: "var(--text-label)",
-                      fontWeight: "var(--font-weight-semibold)",
+
                       color: isSelected
                         ? cfg.color
                         : "var(--neutral-500)",
@@ -545,11 +542,11 @@ export function MoodAnalytics({
 
           {/* Optional Note */}
           <div className="space-y-2">
-            <label className="text-sm font-medium flex items-center gap-2">
+            <label className="tbo-label flex items-center gap-2">
               <MessageCircle className="w-4 h-4 text-primary-600" />
               {t.mood.addNote}
             </label>
-            <Textarea
+            <Textarea className="tbo-field"
               placeholder={t.mood.notePlaceholder}
               value={moodNote}
               onChange={(e) => setMoodNote(e.target.value)}
@@ -560,15 +557,16 @@ export function MoodAnalytics({
           <Button
             onClick={handleSaveMood}
             disabled={isSaving}
-            className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-600"
+            className="tbo-action w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-600"
           >
             {isSaving ? (
               <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Saving...
+                <LoadingMark className="mr-2" />
+
+                {tr("Saving...")}
               </>
             ) : (
-              "Post Mood"
+              tr("Post Mood")
             )}
           </Button>
         </CardContent>
@@ -576,12 +574,13 @@ export function MoodAnalytics({
 
       {/* Statistics Cards */}
       {partner && (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 9rem), 1fr))' }}>
           {/* Your Average */}
           <Card>
             <CardHeader className="pb-3">
-              <CardDescription>
-                Your Average (30 days)
+              <CardDescription className="tbo-supporting">
+
+                {tr("Your Average (30 days)")}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -593,8 +592,8 @@ export function MoodAnalytics({
                   <p className="text-2xl font-bold">
                     {userAverage.toFixed(1)}/4
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    {userMoods.length} entries
+                  <p className="tbo-caption text-muted-foreground">
+                    {userMoods.length}  {tr("entries")}
                   </p>
                 </div>
               </div>
@@ -608,8 +607,8 @@ export function MoodAnalytics({
           {/* Partner Average */}
           <Card>
             <CardHeader className="pb-3">
-              <CardDescription>
-                {partner.name}'s Average
+              <CardDescription className="tbo-supporting">
+                {tr("{name}'s Average", { name: partner.name })}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -621,8 +620,8 @@ export function MoodAnalytics({
                   <p className="text-2xl font-bold">
                     {partnerAverage.toFixed(1)}/4
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    {partnerMoods.length} entries
+                  <p className="tbo-caption text-muted-foreground">
+                    {partnerMoods.length}  {tr("entries")}
                   </p>
                 </div>
               </div>
@@ -642,12 +641,14 @@ export function MoodAnalytics({
         ) && (
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="tbo-card-title flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-success-700" />
-                Mood Trends (Last 30 Days)
+
+                {tr("Mood Trends (Last 30 Days)")}
               </CardTitle>
-              <CardDescription>
-                Track your emotional patterns over time
+              <CardDescription className="tbo-supporting">
+
+                {tr("Track your emotional patterns over time")}
               </CardDescription>
             </CardHeader>
             <CardContent
@@ -674,17 +675,17 @@ export function MoodAnalytics({
                 >
                   {[
                     {
-                      label: "Great",
+                      label: tr("Great"),
                       bg: "var(--success-500)",
                     },
                     {
-                      label: "Good",
+                      label: tr("Good"),
                       bg: "var(--secondary-500)",
                     },
-                    { label: "Okay", bg: "var(--warning-500)" },
-                    { label: "Sad", bg: "var(--error-500)" },
+                    { label: tr("Okay"), bg: "var(--warning-500)" },
+                    { label: tr("Sad"), bg: "var(--error-500)" },
                     {
-                      label: "No entry",
+                      label: tr("No entry"),
                       bg: "var(--neutral-200)",
                     },
                   ].map(({ label, bg }) => (
@@ -705,9 +706,9 @@ export function MoodAnalytics({
                           flexShrink: 0,
                         }}
                       />
-                      <span
+                      <span className="tbo-caption"
                         style={{
-                          fontSize: "var(--text-label)",
+
                           color: "var(--muted-foreground)",
                         }}
                       >
@@ -727,11 +728,11 @@ export function MoodAnalytics({
                 >
                   {[
                     {
-                      name: profile?.name || "You",
+                      name: profile?.name || tr("You"),
                       key: "you" as const,
                     },
                     {
-                      name: partner?.name || "Partner",
+                      name: partner?.name || tr("Partner"),
                       key: "partner" as const,
                     },
                   ].map(({ name, key }) => {
@@ -748,19 +749,17 @@ export function MoodAnalytics({
                     };
                     const moodLabel = (val: number | null) => {
                       if (val === null || val === undefined)
-                        return "No entry";
-                      if (val >= 3.5) return "Great";
-                      if (val >= 2.5) return "Good";
-                      if (val >= 1.5) return "Okay";
-                      return "Sad";
+                        return tr("No entry");
+                      if (val >= 3.5) return tr("Great");
+                      if (val >= 2.5) return tr("Good");
+                      if (val >= 1.5) return tr("Okay");
+                      return tr("Sad");
                     };
                     return (
                       <div key={key}>
-                        <p
+                        <p className="tbo-supporting"
                           style={{
-                            fontSize: "var(--text-caption)",
-                            fontWeight:
-                              "var(--font-weight-semibold)",
+
                             color: "var(--foreground)",
                             marginBottom: "var(--spacing-1)",
                           }}
@@ -812,25 +811,26 @@ export function MoodAnalytics({
       {partner && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="tbo-card-title flex items-center gap-2">
               <BarChart3 className="w-5 h-5 text-sky-600" />
-              Mood Distribution (Last 30 Days)
+
+              {tr("Mood Distribution (Last 30 Days)")}
             </CardTitle>
-            <CardDescription>
-              How often you felt each emotion
+            <CardDescription className="tbo-supporting">
+
+              {tr("How often you felt each emotion")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Your Distribution */}
             <div className="space-y-3">
-              <p
+              <p className="tbo-supporting"
                 style={{
-                  fontSize: "var(--text-callout)",
-                  fontWeight: "var(--font-weight-semibold)",
+
                   color: "var(--foreground)",
                 }}
               >
-                {profile?.name || "You"}
+                {profile?.name || tr("You")}
               </p>
               <div className="grid grid-cols-4 gap-2">
                 {(
@@ -871,9 +871,9 @@ export function MoodAnalytics({
                     >
                       {userMoodCounts[mood]}
                     </span>
-                    <span
+                    <span className="tbo-caption"
                       style={{
-                        fontSize: "var(--text-label)",
+
                         color: cfg.color,
                       }}
                     >
@@ -888,10 +888,9 @@ export function MoodAnalytics({
 
             {/* Partner Distribution */}
             <div className="space-y-3">
-              <p
+              <p className="tbo-supporting"
                 style={{
-                  fontSize: "var(--text-callout)",
-                  fontWeight: "var(--font-weight-semibold)",
+
                   color: "var(--foreground)",
                 }}
               >
@@ -936,9 +935,9 @@ export function MoodAnalytics({
                     >
                       {partnerMoodCounts[mood]}
                     </span>
-                    <span
+                    <span className="tbo-caption"
                       style={{
-                        fontSize: "var(--text-label)",
+
                         color: cfg.color,
                       }}
                     >
@@ -956,11 +955,11 @@ export function MoodAnalytics({
       {partner && (
         <Card className="border-2 border-primary-200 bg-gradient-to-br from-primary-50/50 to-primary-50/50">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="tbo-card-title flex items-center gap-2">
               <Brain className="w-5 h-5 text-primary-600" />
               {t.mood.relationshipReflection}
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="tbo-supporting">
               {t.mood.reflectionDescription}
             </CardDescription>
           </CardHeader>
@@ -990,10 +989,9 @@ export function MoodAnalytics({
                   )}
                   <div className="flex-1">
                     <p
-                      className="text-sm font-medium mb-2"
+                      className="tbo-supporting mb-2"
                       style={{
-                        fontWeight:
-                          "var(--font-weight-semibold)",
+
                         color: "var(--foreground)",
                       }}
                     >
@@ -1002,9 +1000,9 @@ export function MoodAnalytics({
                         : t.mood.relationshipReflection}
                     </p>
                     <div
-                      className="whitespace-pre-wrap leading-relaxed"
+                      className="tbo-supporting whitespace-pre-wrap"
                       style={{
-                        fontSize: "var(--text-callout)",
+
                         color: "var(--foreground)",
                       }}
                     >
@@ -1014,9 +1012,9 @@ export function MoodAnalytics({
                   </div>
                 </div>
                 <Separator className="my-3" />
-                <div
+                <div className="tbo-caption"
                   style={{
-                    fontSize: "var(--text-label)",
+
                     color: "var(--muted-foreground)",
                     display: "flex",
                     alignItems: "center",
@@ -1029,7 +1027,7 @@ export function MoodAnalytics({
                         const d = new Date(analysis.createdAt);
                         return isNaN(d.getTime())
                           ? t.time.justNow
-                          : d.toLocaleDateString(dateLocale, {
+                          : formatUiDate(d, dateLocale, {
                               month: "long",
                               day: "numeric",
                               year: "numeric",
@@ -1043,7 +1041,8 @@ export function MoodAnalytics({
                         color: "var(--muted-foreground)",
                       }}
                     >
-                      · Stats-based
+
+                      {tr("· Stats-based")}
                     </span>
                   )}
                 </div>
@@ -1051,7 +1050,7 @@ export function MoodAnalytics({
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="mt-4 w-full border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                  className="tbo-action mt-4 w-full border-emerald-200 text-emerald-700 hover:bg-emerald-50"
                   onClick={() => shareReport(analysis.analysis, undefined, analysis.engagement)}
                 >
                   <Share2 className="mr-2 h-4 w-4" />{shareLabel}
@@ -1064,10 +1063,10 @@ export function MoodAnalytics({
                   style={{ color: "var(--primary-300)" }}
                 />
                 <p
-                  className="text-sm mb-4"
+                  className="tbo-supporting mb-4"
                   style={{
                     color: "var(--muted-foreground)",
-                    fontSize: "var(--text-callout)",
+
                   }}
                 >
                   {t.mood.reflectionDescription}
@@ -1077,11 +1076,11 @@ export function MoodAnalytics({
             <Button
               onClick={handleAnalyze}
               disabled={isAnalyzing}
-              className="w-full bg-gradient-to-r from-primary-600 to-sky-600 hover:from-primary-700 hover:to-sky-700"
+              className="tbo-action w-full bg-gradient-to-r from-primary-600 to-sky-600 hover:from-primary-700 hover:to-sky-700"
             >
               {isAnalyzing ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <LoadingMark className="mr-2" />
                   {t.mood.generating}
                 </>
               ) : (
@@ -1098,19 +1097,21 @@ export function MoodAnalytics({
       {/* Recent Moods */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="tbo-card-title flex items-center gap-2">
             <Clock className="w-5 h-5 text-muted-foreground" />
-            Recent Mood History
+
+            {tr("Recent Mood History")}
           </CardTitle>
-          <CardDescription>
-            Your last 10 mood entries
+          <CardDescription className="tbo-supporting">
+
+            {tr("Your last 10 mood entries")}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ScrollArea className="h-[400px] pr-4">
+          <ScrollArea className="h-[400px] pr-4 [&_[data-slot=scroll-area-viewport]>div]:!block">
             {loading ? (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="w-6 h-6 animate-spin text-primary-600" />
+                <BrandLoader />
               </div>
             ) : moods.length > 0 ? (
               <div className="space-y-3">
@@ -1119,34 +1120,34 @@ export function MoodAnalytics({
                     key={mood.id}
                     className={`p-4 rounded-lg border-2 ${getMoodColor(mood.mood)}`}
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-start gap-3 flex-1">
+                    <div className="flex min-w-0 flex-wrap items-start justify-between gap-3">
+                      <div className="flex min-w-0 flex-1 basis-40 flex-wrap items-start gap-3">
                         {getMoodIcon(mood.mood, "w-6 h-6")}
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
+                        <div className="min-w-0 flex-1 basis-32">
+                          <div className="mb-1 flex flex-wrap items-center gap-2">
                             <Badge
                               variant="outline"
-                              className="capitalize"
+                              className="tbo-caption max-w-full whitespace-normal capitalize"
                             >
-                              {mood.mood}
+                              {MOOD_CONFIG[mood.mood]?.label ?? mood.mood}
                             </Badge>
-                            <span className="text-xs text-muted-foreground">
+                            <span className="tbo-caption text-muted-foreground">
                               {mood.userId === profile?.id
-                                ? "You"
+                                ? tr("You")
                                 : partner?.name}
                             </span>
                           </div>
                           {mood.note && (
-                            <p className="text-sm text-foreground mt-2">
+                            <p className="tbo-supporting text-foreground mt-2">
                               {mood.note}
                             </p>
                           )}
                         </div>
                       </div>
-                      <div className="text-xs text-muted-foreground whitespace-nowrap">
-                        {new Date(
+                      <div className="tbo-caption min-w-0 text-muted-foreground">
+                        {formatUiDate(new Date(
                           mood.createdAt,
-                        ).toLocaleDateString("en-US", {
+                        ), dateLocale, {
                           month: "short",
                           day: "numeric",
                           hour: "2-digit",
@@ -1160,12 +1161,13 @@ export function MoodAnalytics({
             ) : (
               <div className="text-center py-8">
                 <Heart className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground">
-                  No mood entries yet
+                <p className="tbo-supporting text-muted-foreground">
+
+                  {tr("No mood entries yet")}
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Start tracking your moods to see patterns and
-                  insights
+                <p className="tbo-caption text-muted-foreground mt-1">
+
+                  {tr("Start tracking your moods to see patterns and insights")}
                 </p>
               </div>
             )}
@@ -1195,11 +1197,11 @@ export function MoodAnalytics({
                 <Heart className="w-4 h-4" style={{ color: "var(--primary)" }} />
               </div>
               <div>
-                <h2 className="text-base font-semibold" style={{ color: "var(--foreground)" }}>
+                <h2 className="tbo-section-title" style={{ color: "var(--foreground)" }}>
                   {t.mood.weeklyReflection}
                 </h2>
                 {weeklyReport.period && (
-                  <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+                  <p className="tbo-caption" style={{ color: "var(--muted-foreground)" }}>
                     {weeklyReport.period}
                   </p>
                 )}
@@ -1232,11 +1234,11 @@ export function MoodAnalytics({
                     className="rounded-2xl p-4 border"
                     style={{ background: "var(--card)", borderColor: "var(--border)" }}
                   >
-                    <p className="text-xs font-medium mb-1" style={{ color: "var(--muted-foreground)" }}>
+                    <p className="tbo-caption mb-1" style={{ color: "var(--muted-foreground)" }}>
                       {p.name}
                     </p>
                     <p className="text-2xl font-bold mb-1" style={{ color: "var(--foreground)" }}>
-                      {p.avg}<span className="text-sm font-normal" style={{ color: "var(--muted-foreground)" }}>/4</span>
+                      {p.avg}<span className="tbo-supporting" style={{ color: "var(--muted-foreground)" }}>/4</span>
                     </p>
                     <div
                       className="h-1.5 rounded-full mb-2"
@@ -1248,8 +1250,8 @@ export function MoodAnalytics({
                       />
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium" style={{ color: "var(--primary)" }}>{label}</span>
-                      <span className="text-xs" style={{ color: "var(--muted-foreground)" }}>{p.count} {p.count === 1 ? t.mood.entry : t.mood.entries}</span>
+                      <span className="tbo-caption" style={{ color: "var(--primary)" }}>{label}</span>
+                      <span className="tbo-caption" style={{ color: "var(--muted-foreground)" }}>{p.count} {p.count === 1 ? t.mood.entry : t.mood.entries}</span>
                     </div>
                   </div>
                 );
@@ -1258,7 +1260,7 @@ export function MoodAnalytics({
 
             <div className="rounded-2xl border p-6" style={{ background: "var(--card)", borderColor: "var(--border)" }}>
               {cleanReportFormatting(weeklyReport.analysis).split(/\n{2,}/).filter(Boolean).map((paragraph, index) => (
-                <p key={index} className="text-sm leading-7 not-first:mt-4" style={{ color: "var(--foreground)" }}>
+                <p key={index} className="tbo-supporting not-first:mt-4" style={{ color: "var(--foreground)" }}>
                   {paragraph}
                 </p>
               ))}
@@ -1271,21 +1273,21 @@ export function MoodAnalytics({
               style={{ background: "color-mix(in srgb, var(--primary) 8%, transparent)" }}
             >
               <Heart className="w-6 h-6 mx-auto mb-2" style={{ color: "var(--primary)" }} />
-              <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>
+              <p className="tbo-supporting" style={{ color: "var(--foreground)" }}>
                 {t.dashboard.growingTogetherInFaith} 💕
               </p>
             </div>
 
             <Button
               variant="outline"
-              className="w-full border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+              className="tbo-action w-full border-emerald-200 text-emerald-700 hover:bg-emerald-50"
               onClick={() => shareReport(weeklyReport.analysis, weeklyReport.period, weeklyReport.engagement)}
             >
               <Share2 className="mr-2 h-4 w-4" />{shareLabel}
             </Button>
 
             <Button
-              className="w-full"
+              className="tbo-action w-full"
               onClick={() => setWeeklyReport(null)}
               style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
             >

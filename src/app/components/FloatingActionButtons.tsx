@@ -1,5 +1,6 @@
 import { Camera, HandHeart } from 'lucide-react';
 import { Button } from './ui/button';
+import { useUiCopy } from '../utils/uiTranslation';
 
 interface FloatingActionButtonsProps {
   onCameraClick?: () => void;
@@ -7,10 +8,12 @@ interface FloatingActionButtonsProps {
 }
 
 export function FloatingActionButtons({ onCameraClick, onPrayClick }: FloatingActionButtonsProps) {
+  const tr = useUiCopy();
   return (
     <div className="fixed bottom-20 right-4 z-40 flex flex-col gap-3">
       {onCameraClick && (
         <Button
+          aria-label={tr('Take a photo')}
           onClick={onCameraClick}
           className="w-14 h-14 rounded-full bg-warning-500/30 hover:bg-warning-500 text-foreground shadow-lg"
         >

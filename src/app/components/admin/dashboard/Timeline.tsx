@@ -1,3 +1,7 @@
+import { formatUiDate } from '../../../utils/uiDateTime';
+import { useCurrentLanguage } from '../../../utils/languageStore';
+import { useUiCopy, UI_LOCALES } from "../../../utils/uiTranslation";
+import { adminCommonMessages } from "../../../locales/adminCommon";
 import { memo, useRef, useState, type KeyboardEvent } from "react";
 
 export interface TimelineEvent {
@@ -8,11 +12,11 @@ export interface TimelineEvent {
   details: string;
 }
 
-function formatActivityTime(value: string) {
+function formatActivityTime(value: string, locale: string) {
   const timestamp = new Date(value).getTime();
   if (Number.isNaN(timestamp)) return value;
   const elapsedSeconds = Math.round((timestamp - Date.now()) / 1000);
-  const formatter = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
+  const formatter = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
   if (Math.abs(elapsedSeconds) < 60) return formatter.format(elapsedSeconds, "second");
   const elapsedMinutes = Math.round(elapsedSeconds / 60);
   if (Math.abs(elapsedMinutes) < 60) return formatter.format(elapsedMinutes, "minute");
@@ -20,10 +24,12 @@ function formatActivityTime(value: string) {
   if (Math.abs(elapsedHours) < 24) return formatter.format(elapsedHours, "hour");
   const elapsedDays = Math.round(elapsedHours / 24);
   if (Math.abs(elapsedDays) < 30) return formatter.format(elapsedDays, "day");
-  return new Date(timestamp).toLocaleDateString();
+  return formatUiDate(new Date(timestamp), locale);
 }
 
 export const Timeline = memo(function Timeline({ events = [] }: { events?: TimelineEvent[] }) {
+  const language = useCurrentLanguage();
+  const tr = useUiCopy(adminCommonMessages);
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
   const [hovered, setHovered] = useState<string | null>(null);
   const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -47,10 +53,10 @@ export const Timeline = memo(function Timeline({ events = [] }: { events?: Timel
     itemRefs.current[next]?.focus();
   };
 
-  if (!events.length) return <p className="admin-empty">No recent activity yet.</p>;
+  if (!events.length) return <p className="admin-empty">{tr("No recent activity yet.")}</p>;
 
   return (
-    <ol className="admin-timeline" aria-label="Recent activity" role="list">
+    <ol className="admin-timeline" aria-label={tr("Recent activity")} role="list">
       {events.map((item, index) => {
         const isExpanded = expanded.has(item.id) || hovered === item.id;
         const detailsId = `timeline-details-${item.id}`;
@@ -67,11 +73,11 @@ export const Timeline = memo(function Timeline({ events = [] }: { events?: Timel
               onKeyDown={(event) => navigate(event, index)}
               aria-expanded={isExpanded}
               aria-controls={detailsId}
-              aria-label={`${item.title}, ${item.time}. ${isExpanded ? "Collapse" : "Expand"} details`}
+              aria-label={tr('{title}, {time}. {action} details', { title: item.title, time: formatActivityTime(item.time, UI_LOCALES[language]), action: tr(isExpanded ? 'Collapse' : 'Expand') })}
             >
               <span className="admin-timeline__copy">
                 <strong>{item.title}</strong>
-                <time dateTime={item.time}>{formatActivityTime(item.time)}</time>
+                <time dateTime={item.time}>{formatActivityTime(item.time, UI_LOCALES[language])}</time>
               </span>
               <span className="admin-timeline__chevron" aria-hidden="true">⌄</span>
             </button>

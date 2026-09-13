@@ -1,7 +1,12 @@
+import { formatUiDate } from '../utils/uiDateTime';
+import { useCurrentLanguage } from '../utils/languageStore';
+import { UI_LOCALES, useUiCopy } from '../utils/uiTranslation';
+import { publicStaticMessages } from '../locales/publicStatic';
+import { LanguageSelector } from './LanguageSelector';
+import { LoadingMark } from './BrandLoader';
 import { useState } from "react";
 import {
   Heart,
-  ArrowLeft,
   BookOpen,
   HelpCircle,
   Users,
@@ -19,6 +24,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { Input } from "./ui/input";
+import { BackButton } from "./BackButton";
 import { PrivacyPolicy } from "../legal/privacy-policy";
 import { TermsOfService } from "../legal/terms-of-service";
 import { toast } from "sonner";
@@ -34,10 +40,11 @@ interface PageShellProps {
 }
 
 function PageShell({ onBack, onGetStarted, children }: PageShellProps) {
+  const tr = useUiCopy(publicStaticMessages);
   return (
     <div
       className="min-h-screen antialiased"
-      style={{ background: "var(--background)", color: "var(--foreground)" }}
+      style={{ background: "var(--background)", color: "var(--foreground)", overflowWrap: "anywhere" }}
     >
       {/* Sticky nav */}
       <nav
@@ -49,30 +56,21 @@ function PageShell({ onBack, onGetStarted, children }: PageShellProps) {
           borderColor: "var(--primary-100)",
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-2 min-h-16 py-2">
           {/* Back + logo */}
-          <div className="flex items-center gap-4">
-            <button
-              onClick={onBack}
-              className="flex items-center gap-1.5 text-sm font-medium transition-colors"
-              style={{ color: "var(--neutral-500)" }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--primary-600)")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--neutral-500)")}
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back
-            </button>
+          <div className="flex flex-wrap items-center gap-2 min-w-0 max-w-full">
+            <BackButton onClick={onBack} label={tr("Back")} />
             <div
               className="w-px h-5"
               style={{ background: "var(--neutral-200)" }}
             />
-            <div className="flex items-center gap-2 select-none">
+            <div className="flex items-center gap-2 min-w-0 max-w-full select-none">
               <Heart
                 className="w-5 h-5 fill-current"
                 style={{ color: "var(--primary-500)" }}
               />
               <span
-                className="text-base font-bold bg-clip-text text-transparent"
+                className="tbo-wordmark bg-clip-text text-transparent"
                 style={{
                   backgroundImage:
                     "linear-gradient(135deg, var(--primary-600), var(--primary-400))",
@@ -84,17 +82,18 @@ function PageShell({ onBack, onGetStarted, children }: PageShellProps) {
           </div>
 
           {/* CTA */}
+          <div className="flex flex-wrap items-center justify-end gap-2 max-w-full ml-auto">
           <button
             onClick={onGetStarted}
-            className="h-9 px-5 rounded-xl text-sm font-semibold text-white transition-all"
+            className="tbo-action min-h-9 px-5 py-2 max-w-full rounded-xl text-white transition-all"
             style={{
               background:
                 "linear-gradient(135deg, var(--primary-500), var(--primary-600))",
               boxShadow: "0 4px 15px rgba(244,63,94,0.30)",
             }}
-          >
-            Get Started
-          </button>
+          > {tr("Get Started")} </button>
+          <LanguageSelector />
+          </div>
         </div>
       </nav>
 
@@ -117,20 +116,17 @@ function PageShell({ onBack, onGetStarted, children }: PageShellProps) {
               className="w-4 h-4 fill-current"
               style={{ color: "var(--primary-500)" }}
             />
-            <span className="text-sm font-bold text-white">TwoBeOne</span>
+            <span className="tbo-supporting text-white">TwoBeOne</span>
           </div>
-          <p className="text-xs" style={{ color: "var(--neutral-500)" }}>
-            © {new Date().getFullYear()} TwoBeOne. All rights reserved.
-          </p>
+          <p className="tbo-caption " style={{ color: "var(--neutral-500)" }}>
+            © {new Date().getFullYear()} {tr("TwoBeOne. All rights reserved.")} </p>
           <button
             onClick={onGetStarted}
-            className="text-xs font-semibold transition-colors"
+            className="tbo-action transition-colors"
             style={{ color: "var(--primary-400)" }}
             onMouseEnter={(e) => (e.currentTarget.style.color = "var(--primary-300)")}
             onMouseLeave={(e) => (e.currentTarget.style.color = "var(--primary-400)")}
-          >
-            Join Free →
-          </button>
+          > {tr("Join Free →")} </button>
         </div>
       </footer>
     </div>
@@ -156,6 +152,7 @@ function PageHeader({
   iconGradientFrom?: string;
   iconGradientTo?: string;
 }) {
+  const tr = useUiCopy(publicStaticMessages);
   return (
     <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
       <div className="flex justify-center">
@@ -170,26 +167,26 @@ function PageHeader({
         </div>
       </div>
       <span
-        className="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold border"
+        className="tbo-caption inline-flex items-center px-4 py-1.5 rounded-full border"
         style={{
           background: "var(--primary-50)",
           color: "var(--primary-700)",
           borderColor: "var(--primary-200)",
         }}
       >
-        {eyebrow}
+        {tr(eyebrow)}
       </span>
       <h1
-        className="text-4xl md:text-5xl font-bold tracking-tight"
+        className="tbo-page-title "
         style={{ color: "var(--neutral-900)" }}
       >
-        {title}
+        {tr(title)}
       </h1>
       <p
-        className="text-lg leading-relaxed"
+        className="tbo-body "
         style={{ color: "var(--neutral-600)" }}
       >
-        {subtitle}
+        {tr(subtitle)}
       </p>
     </div>
   );
@@ -280,6 +277,8 @@ interface BlogPageProps {
 }
 
 export function BlogPage({ onBack, onGetStarted }: BlogPageProps) {
+  const tr = useUiCopy(publicStaticMessages);
+  const language = useCurrentLanguage();
   return (
     <PageShell onBack={onBack} onGetStarted={onGetStarted}>
       <PageHeader
@@ -323,61 +322,61 @@ export function BlogPage({ onBack, onGetStarted }: BlogPageProps) {
             />
             <div className="p-6 flex flex-col flex-1 space-y-3">
               {/* Category + meta */}
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <span
-                  className="px-2.5 py-1 rounded-full text-xs font-bold"
+                  className="tbo-caption px-2.5 py-1 rounded-full"
                   style={{
                     background: post.categoryBg,
                     color: post.categoryColor,
                   }}
                 >
-                  {post.category}
+                  {tr(post.category)}
                 </span>
                 <div
-                  className="flex items-center gap-1 text-xs"
+                  className="tbo-caption flex items-center gap-1"
                   style={{ color: "var(--neutral-400)" }}
                 >
                   <Clock className="w-3 h-3" />
-                  {post.readTime}
+                  {tr('{count} min read', { count: Number.parseInt(post.readTime, 10) })}
                 </div>
               </div>
 
               {/* Title */}
               <h2
-                className="text-base font-bold leading-snug"
+                className="tbo-card-title "
                 style={{ color: "var(--neutral-900)" }}
               >
-                {post.title}
+                {tr(post.title)}
               </h2>
 
               {/* Excerpt */}
               <p
-                className="text-sm leading-relaxed flex-1"
+                className="tbo-supporting flex-1"
                 style={{ color: "var(--neutral-600)" }}
               >
-                {post.excerpt}
+                {tr(post.excerpt)}
               </p>
 
               {/* Author + date */}
               <div
-                className="flex items-center justify-between pt-3 border-t"
+                className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t"
                 style={{ borderColor: "var(--neutral-100)" }}
               >
                 <div className="flex items-center gap-2">
                   <span className="text-base select-none">{post.emoji}</span>
                   <span
-                    className="text-xs font-semibold"
+                    className="tbo-caption "
                     style={{ color: "var(--neutral-700)" }}
                   >
-                    {post.author}
+                    {tr(post.author)}
                   </span>
                 </div>
                 <div
-                  className="flex items-center gap-1 text-xs"
+                  className="tbo-caption flex items-center gap-1"
                   style={{ color: "var(--neutral-400)" }}
                 >
                   <Calendar className="w-3 h-3" />
-                  {post.date}
+                  {formatUiDate(new Date(post.date), UI_LOCALES[language], { year: 'numeric', month: 'long', day: 'numeric' })}
                 </div>
               </div>
             </div>
@@ -388,15 +387,13 @@ export function BlogPage({ onBack, onGetStarted }: BlogPageProps) {
       {/* Load more placeholder */}
       <div className="text-center mt-12">
         <button
-          className="inline-flex items-center gap-2 h-12 px-8 rounded-xl text-sm font-bold border-2 transition-all"
+          className="tbo-action inline-flex items-center gap-2 min-h-12 py-3 px-6 max-w-full rounded-xl border-2 transition-all"
           style={{
             borderColor: "var(--primary-300)",
             color: "var(--primary-700)",
             background: "var(--primary-50)",
           }}
-        >
-          Load More Articles
-          <ExternalLink className="w-4 h-4" />
+        > {tr("Load More Articles")} <ExternalLink className="w-4 h-4" />
         </button>
       </div>
     </PageShell>
@@ -461,6 +458,7 @@ interface HelpCenterPageProps {
 }
 
 export function HelpCenterPage({ onBack, onGetStarted }: HelpCenterPageProps) {
+  const tr = useUiCopy(publicStaticMessages);
   const [search, setSearch] = useState("");
 
   return (
@@ -484,7 +482,7 @@ export function HelpCenterPage({ onBack, onGetStarted }: HelpCenterPageProps) {
         </div>
         <Input
           type="text"
-          placeholder="Search help articles…"
+          placeholder={tr("Search help articles…")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="h-13 pl-12 rounded-2xl text-base border shadow-sm"
@@ -532,16 +530,16 @@ export function HelpCenterPage({ onBack, onGetStarted }: HelpCenterPageProps) {
                 </div>
                 <div>
                   <h3
-                    className="text-base font-bold mb-1"
+                    className="tbo-card-title mb-1"
                     style={{ color: "var(--neutral-900)" }}
                   >
-                    {cat.title}
+                    {tr(cat.title)}
                   </h3>
                   <p
-                    className="text-sm leading-relaxed"
+                    className="tbo-supporting "
                     style={{ color: "var(--neutral-600)" }}
                   >
-                    {cat.description}
+                    {tr(cat.description)}
                   </p>
                 </div>
               </div>
@@ -549,7 +547,7 @@ export function HelpCenterPage({ onBack, onGetStarted }: HelpCenterPageProps) {
                 {cat.articles.map((article, i) => (
                   <li key={i}>
                     <button
-                      className="w-full text-left text-sm py-1.5 flex items-center gap-2 transition-colors group"
+                      className="tbo-action w-full text-left py-1.5 flex items-center gap-2 transition-colors group"
                       style={{ color: "var(--neutral-600)" }}
                       onMouseEnter={(e) => (e.currentTarget.style.color = cat.color)}
                       onMouseLeave={(e) => (e.currentTarget.style.color = "var(--neutral-600)")}
@@ -558,7 +556,7 @@ export function HelpCenterPage({ onBack, onGetStarted }: HelpCenterPageProps) {
                         className="w-1 h-1 rounded-full flex-shrink-0"
                         style={{ background: cat.color }}
                       />
-                      {article}
+                      {tr(article)}
                     </button>
                   </li>
                 ))}
@@ -571,16 +569,14 @@ export function HelpCenterPage({ onBack, onGetStarted }: HelpCenterPageProps) {
       {/* Popular articles */}
       <div className="max-w-2xl mx-auto">
         <h2
-          className="text-xl font-bold mb-6 text-center"
+          className="tbo-section-title mb-6 text-center"
           style={{ color: "var(--neutral-900)" }}
-        >
-          Popular Articles
-        </h2>
+        > {tr("Popular Articles")} </h2>
         <div className="space-y-2.5">
           {POPULAR_ARTICLES.map((article, idx) => (
             <button
               key={idx}
-              className="w-full text-left flex items-center justify-between p-4 rounded-xl border transition-all duration-150"
+              className="w-full text-left flex flex-wrap items-center justify-between gap-2 p-4 rounded-xl border transition-all duration-150"
               style={{
                 background: "rgba(255,255,255,0.8)",
                 borderColor: "var(--neutral-200)",
@@ -597,10 +593,10 @@ export function HelpCenterPage({ onBack, onGetStarted }: HelpCenterPageProps) {
               }}
             >
               <span
-                className="text-sm font-medium"
+                className="tbo-supporting "
                 style={{ color: "var(--neutral-800)" }}
               >
-                {article}
+                {tr(article)}
               </span>
               <ExternalLink
                 className="w-4 h-4 flex-shrink-0"
@@ -658,6 +654,7 @@ interface CommunityPageProps {
 }
 
 export function CommunityPage({ onBack, onGetStarted }: CommunityPageProps) {
+  const tr = useUiCopy(publicStaticMessages);
   return (
     <PageShell onBack={onBack} onGetStarted={onGetStarted}>
       <PageHeader
@@ -695,25 +692,25 @@ export function CommunityPage({ onBack, onGetStarted }: CommunityPageProps) {
           >
             <div className="text-4xl select-none">{item.emoji}</div>
             <h3
-              className="text-lg font-bold"
+              className="tbo-card-title "
               style={{ color: "var(--neutral-900)" }}
             >
-              {item.title}
+              {tr(item.title)}
             </h3>
             <p
-              className="text-sm leading-relaxed"
+              className="tbo-supporting "
               style={{ color: "var(--neutral-600)" }}
             >
-              {item.description}
+              {tr(item.description)}
             </p>
             <span
-              className="inline-block px-3 py-1 rounded-full text-xs font-bold"
+              className="tbo-caption inline-block px-3 py-1 rounded-full"
               style={{
                 background: "var(--primary-50)",
                 color: "var(--primary-700)",
               }}
             >
-              {item.members}
+              {tr(item.members.endsWith('couples') ? '{count}+ couples' : '{count}+ members', { count: item.members.split('+')[0] })}
             </span>
           </div>
         ))}
@@ -721,7 +718,7 @@ export function CommunityPage({ onBack, onGetStarted }: CommunityPageProps) {
 
       {/* Community values + CTA */}
       <div
-        className="max-w-3xl mx-auto rounded-3xl p-10 text-center border space-y-6"
+        className="max-w-3xl mx-auto rounded-3xl p-6 sm:p-10 text-center border space-y-6"
         style={{
           background:
             "linear-gradient(135deg, var(--primary-50) 0%, rgba(255,255,255,0.9) 100%)",
@@ -730,40 +727,34 @@ export function CommunityPage({ onBack, onGetStarted }: CommunityPageProps) {
         }}
       >
         <h2
-          className="text-2xl font-bold"
+          className="tbo-section-title "
           style={{ color: "var(--neutral-900)" }}
-        >
-          A Community Built on Christ
-        </h2>
+        > {tr("A Community Built on Christ")} </h2>
         <p
-          className="text-base leading-relaxed max-w-xl mx-auto"
+          className="tbo-body max-w-xl mx-auto"
           style={{ color: "var(--neutral-600)" }}
-        >
-          Our community is carefully maintained to be a safe, encouraging, and
-          biblical space. Every group is led by experienced Christian couples who
-          understand what it means to walk in covenant love.
-        </p>
+        > {tr("Our community is carefully maintained to be a safe, encouraging, and biblical space. Every group is led by experienced Christian couples who understand what it means to walk in covenant love.")} </p>
         <div className="grid sm:grid-cols-2 gap-3 max-w-md mx-auto">
           {COMMUNITY_VALUES.map((val, idx) => {
             const Icon = val.icon;
             return (
               <div
                 key={idx}
-                className="flex items-center gap-2 text-sm font-medium"
+                className="tbo-supporting flex items-center gap-2"
                 style={{ color: "var(--neutral-700)" }}
               >
                 <Icon
                   className="w-4 h-4 flex-shrink-0"
                   style={{ color: "var(--success-500)" }}
                 />
-                {val.text}
+                {tr(val.text)}
               </div>
             );
           })}
         </div>
         <button
           onClick={onGetStarted}
-          className="inline-flex items-center gap-2 h-12 px-8 rounded-xl text-sm font-bold text-white transition-all"
+          className="tbo-action inline-flex items-center gap-2 min-h-12 py-3 px-6 max-w-full rounded-xl text-white transition-all"
           style={{
             background:
               "linear-gradient(135deg, var(--primary-500), var(--primary-600))",
@@ -777,9 +768,7 @@ export function CommunityPage({ onBack, onGetStarted }: CommunityPageProps) {
             e.currentTarget.style.boxShadow = "0 8px 24px rgba(244,63,94,0.35)";
             e.currentTarget.style.transform = "translateY(0)";
           }}
-        >
-          Join the Community Free
-          <Heart className="w-4 h-4 fill-white text-white" />
+        > {tr("Join the Community Free")} <Heart className="w-4 h-4 fill-white text-white" />
         </button>
       </div>
     </PageShell>
@@ -823,6 +812,7 @@ interface ContactPageProps {
 }
 
 export function ContactPage({ onBack, onGetStarted }: ContactPageProps) {
+  const tr = useUiCopy(publicStaticMessages);
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [sending, setSending] = useState(false);
 
@@ -831,7 +821,7 @@ export function ContactPage({ onBack, onGetStarted }: ContactPageProps) {
     if (!form.name.trim() || !form.email.trim() || !form.message.trim()) return;
     setSending(true);
     await new Promise((r) => setTimeout(r, 1000));
-    toast.success("Message sent! We'll get back to you within 24 hours. 💕");
+    toast.success(tr("Message sent! We'll get back to you within 24 hours. 💕"));
     setForm({ name: "", email: "", subject: "", message: "" });
     setSending(false);
   };
@@ -851,11 +841,9 @@ export function ContactPage({ onBack, onGetStarted }: ContactPageProps) {
         {/* Left — contact methods */}
         <div className="lg:col-span-2 space-y-5">
           <h2
-            className="text-xl font-bold mb-6"
+            className="tbo-section-title mb-6"
             style={{ color: "var(--neutral-900)" }}
-          >
-            Get in Touch
-          </h2>
+          > {tr("Get in Touch")} </h2>
           {CONTACT_METHODS.map((method, idx) => {
             const Icon = method.icon;
             return (
@@ -887,22 +875,22 @@ export function ContactPage({ onBack, onGetStarted }: ContactPageProps) {
                 </div>
                 <div>
                   <p
-                    className="text-sm font-bold"
+                    className="tbo-label "
                     style={{ color: "var(--neutral-900)" }}
                   >
-                    {method.title}
+                    {tr(method.title)}
                   </p>
                   <p
-                    className="text-sm font-medium"
+                    className="tbo-label "
                     style={{ color: method.color }}
                   >
-                    {method.description}
+                    {tr(method.description)}
                   </p>
                   <p
-                    className="text-xs mt-0.5"
+                    className="tbo-caption mt-0.5"
                     style={{ color: "var(--neutral-500)" }}
                   >
-                    {method.detail}
+                    {tr(method.detail)}
                   </p>
                 </div>
               </div>
@@ -921,23 +909,19 @@ export function ContactPage({ onBack, onGetStarted }: ContactPageProps) {
             }}
           >
             <h2
-              className="text-xl font-bold mb-6"
+              className="tbo-section-title mb-6"
               style={{ color: "var(--neutral-900)" }}
-            >
-              Send a Message
-            </h2>
+            > {tr("Send a Message")} </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label
-                    className="block text-xs font-semibold uppercase tracking-wider"
+                    className="tbo-label block"
                     style={{ color: "var(--neutral-500)" }}
-                  >
-                    Full Name *
-                  </label>
+                  > {tr("Full Name *")} </label>
                   <Input
                     type="text"
-                    placeholder="Your name"
+                    placeholder={tr("Your name")}
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                     required
@@ -951,11 +935,9 @@ export function ContactPage({ onBack, onGetStarted }: ContactPageProps) {
                 </div>
                 <div className="space-y-1.5">
                   <label
-                    className="block text-xs font-semibold uppercase tracking-wider"
+                    className="tbo-label block"
                     style={{ color: "var(--neutral-500)" }}
-                  >
-                    Email Address *
-                  </label>
+                  > {tr("Email Address *")} </label>
                   <Input
                     type="email"
                     placeholder="your@email.com"
@@ -973,14 +955,12 @@ export function ContactPage({ onBack, onGetStarted }: ContactPageProps) {
               </div>
               <div className="space-y-1.5">
                 <label
-                  className="block text-xs font-semibold uppercase tracking-wider"
+                  className="tbo-label block"
                   style={{ color: "var(--neutral-500)" }}
-                >
-                  Subject
-                </label>
+                > {tr("Subject")} </label>
                 <Input
                   type="text"
-                  placeholder="What's this about?"
+                  placeholder={tr("What's this about?")}
                   value={form.subject}
                   onChange={(e) => setForm({ ...form, subject: e.target.value })}
                   className="h-11 rounded-xl text-sm border"
@@ -993,13 +973,11 @@ export function ContactPage({ onBack, onGetStarted }: ContactPageProps) {
               </div>
               <div className="space-y-1.5">
                 <label
-                  className="block text-xs font-semibold uppercase tracking-wider"
+                  className="tbo-label block"
                   style={{ color: "var(--neutral-500)" }}
-                >
-                  Message *
-                </label>
+                > {tr("Message *")} </label>
                 <textarea
-                  placeholder="Tell us how we can help…"
+                  placeholder={tr("Tell us how we can help…")}
                   value={form.message}
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
                   required
@@ -1019,15 +997,15 @@ export function ContactPage({ onBack, onGetStarted }: ContactPageProps) {
               <button
                 type="submit"
                 disabled={sending}
-                className="w-full h-12 rounded-xl text-sm font-bold text-white transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+                className="tbo-action w-full min-h-12 py-3 rounded-xl text-white transition-all flex items-center justify-center gap-2 disabled:opacity-60"
                 style={{
                   background:
                     "linear-gradient(135deg, var(--primary-500), var(--primary-600))",
                   boxShadow: "0 8px 24px rgba(244,63,94,0.35)",
                 }}
               >
-                {sending ? "Sending…" : "Send Message"}
-                <Send className="w-4 h-4" />
+                {tr(sending ? "Sending…" : "Send Message")}
+                {sending ? <LoadingMark /> : <Send className="w-4 h-4 flex-shrink-0" />}
               </button>
             </form>
           </div>
@@ -1088,6 +1066,7 @@ interface CookiePolicyPageProps {
 }
 
 export function CookiePolicyPage({ onBack, onGetStarted }: CookiePolicyPageProps) {
+  const tr = useUiCopy(publicStaticMessages);
   const [openSection, setOpenSection] = useState<number | null>(0);
 
   return (
@@ -1102,25 +1081,21 @@ export function CookiePolicyPage({ onBack, onGetStarted }: CookiePolicyPageProps
       />
 
       {/* Last updated badge */}
-      <div className="max-w-3xl mx-auto mb-8 flex items-center justify-between">
+      <div className="max-w-3xl mx-auto mb-8 flex flex-wrap items-center justify-between gap-2">
         <span
-          className="inline-flex items-center gap-1.5 text-xs font-medium"
+          className="tbo-caption inline-flex items-center gap-1.5"
           style={{ color: "var(--neutral-500)" }}
         >
-          <Calendar className="w-3.5 h-3.5" />
-          Last updated: August 1, 2026
-        </span>
+          <Calendar className="w-3.5 h-3.5" /> {tr("Last updated: August 1, 2026")} </span>
         <span
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border"
+          className="tbo-caption inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border"
           style={{
             background: "var(--success-50)",
             color: "var(--success-700)",
             borderColor: "var(--success-50)",
           }}
         >
-          <CheckCircle2 className="w-3.5 h-3.5" />
-          GDPR Compliant
-        </span>
+          <CheckCircle2 className="w-3.5 h-3.5" /> {tr("GDPR Compliant")} </span>
       </div>
 
       <div className="max-w-3xl mx-auto space-y-3">
@@ -1141,12 +1116,13 @@ export function CookiePolicyPage({ onBack, onGetStarted }: CookiePolicyPageProps
               <button
                 className="w-full flex justify-between items-center px-6 py-5 text-left gap-4"
                 onClick={() => setOpenSection(isOpen ? null : idx)}
+                aria-expanded={isOpen}
               >
                 <h3
-                  className="text-sm font-bold"
+                  className="tbo-card-title "
                   style={{ color: "var(--neutral-900)" }}
                 >
-                  {section.title}
+                  {tr(section.title)}
                 </h3>
                 <ChevronDown
                   className="w-5 h-5 flex-shrink-0 transition-transform duration-300"
@@ -1159,7 +1135,7 @@ export function CookiePolicyPage({ onBack, onGetStarted }: CookiePolicyPageProps
               <div
                 className="overflow-hidden transition-all duration-300"
                 style={{
-                  maxHeight: isOpen ? "500px" : "0px",
+                  display: isOpen ? "block" : "none",
                   opacity: isOpen ? 1 : 0,
                 }}
               >
@@ -1169,24 +1145,24 @@ export function CookiePolicyPage({ onBack, onGetStarted }: CookiePolicyPageProps
                     style={{ borderColor: "var(--warning-400)" }}
                   >
                     <p
-                      className="text-sm leading-relaxed"
+                      className="tbo-supporting "
                       style={{ color: "var(--neutral-600)" }}
                     >
-                      {section.content}
+                      {tr(section.content)}
                     </p>
                     {section.examples && (
                       <ul className="space-y-1.5">
                         {section.examples.map((ex, i) => (
                           <li
                             key={i}
-                            className="flex items-center gap-2 text-sm"
+                            className="tbo-supporting flex items-center gap-2"
                             style={{ color: "var(--neutral-600)" }}
                           >
                             <span
                               className="w-1.5 h-1.5 rounded-full flex-shrink-0"
                               style={{ background: "var(--warning-500)" }}
                             />
-                            {ex}
+                            {tr(ex)}
                           </li>
                         ))}
                       </ul>
@@ -1215,7 +1191,7 @@ export function PrivacyPolicyPage({ onBack, onGetStarted }: PrivacyPolicyPagePro
   return (
     <PageShell onBack={onBack} onGetStarted={onGetStarted}>
       <div className="max-w-4xl mx-auto">
-        <PrivacyPolicy language="en" />
+        <PrivacyPolicy />
       </div>
     </PageShell>
   );
@@ -1234,7 +1210,7 @@ export function TermsOfServicePage({ onBack, onGetStarted }: TermsOfServicePageP
   return (
     <PageShell onBack={onBack} onGetStarted={onGetStarted}>
       <div className="max-w-4xl mx-auto">
-        <TermsOfService language="en" />
+        <TermsOfService />
       </div>
     </PageShell>
   );

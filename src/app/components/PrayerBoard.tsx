@@ -1,3 +1,7 @@
+import { formatUiDate } from '../utils/uiDateTime';
+import { useUiCopy, UI_LOCALES } from '../utils/uiTranslation';
+import { prayerUiMessages } from '../locales/prayerUi';
+import { LoadingMark } from './BrandLoader';
 import { useState } from "react";
 import { useLanguage } from '../contexts/LanguageContext';
 import { Card, CardContent } from "./ui/card";
@@ -129,7 +133,8 @@ export function PrayerBoard({
   onDeletePrayer,
   onMarkPrayed,
 }: PrayerBoardProps) {
-  const { t } = useLanguage();
+  const tr = useUiCopy(prayerUiMessages);
+  const { t, language } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [editingPrayer, setEditingPrayer] =
@@ -190,17 +195,17 @@ export function PrayerBoard({
 
       if (editingPrayer) {
         await onUpdatePrayer(editingPrayer.id, prayerData);
-        toast.success("Prayer updated!");
+        toast.success(tr("Prayer updated!"));
       } else {
         await onAddPrayer(prayerData);
-        toast.success("Prayer request added!");
+        toast.success(tr("Prayer request added!"));
       }
 
       resetForm();
       setIsOpen(false);
     } catch (error) {
       console.error("Failed to save prayer:", error);
-      toast.error("Failed to save prayer request");
+      toast.error(tr("Failed to save prayer request"));
     } finally {
       setIsLoading(false);
     }
@@ -241,7 +246,7 @@ export function PrayerBoard({
         });
       }
     } catch (error) {
-      toast.error("Failed to update prayer");
+      toast.error(tr("Failed to update prayer"));
     }
   };
 
@@ -252,11 +257,11 @@ export function PrayerBoard({
       });
       toast.success(
         prayer.isAnswered
-          ? "Marked as ongoing"
-          : "Praise God! Prayer answered! 🎉",
+          ? tr("Marked as ongoing")
+          : tr("Praise God! Prayer answered! 🎉"),
       );
     } catch (error) {
-      toast.error("Failed to update prayer");
+      toast.error(tr("Failed to update prayer"));
     }
   };
 
@@ -278,7 +283,7 @@ export function PrayerBoard({
       if (
         !prayer.title.toLowerCase().includes(query) &&
         !prayer.description.toLowerCase().includes(query) &&
-        !prayer.category.toLowerCase().includes(query)
+        !tr(prayer.category).toLocaleLowerCase().includes(query)
       ) {
         return false;
       }
@@ -307,7 +312,7 @@ export function PrayerBoard({
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
+    return formatUiDate(date, UI_LOCALES[language], {
       month: "short",
       day: "numeric",
       year:
@@ -340,48 +345,49 @@ export function PrayerBoard({
         <div className="relative">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-xs font-semibold tracking-wide text-rose-700 shadow-sm ring-1 ring-rose-100">
+              <div className="tbo-caption mb-4 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-rose-700 shadow-sm ring-1 ring-rose-100">
                 <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" aria-hidden="true" />
-                Held together in prayer
+
+                {tr("Held together in prayer")}
               </div>
-              <h1 className="text-3xl font-bold tracking-[-0.035em] text-slate-950 sm:text-4xl">{t.prayer.title}</h1>
-              <p className="mt-2 max-w-lg text-[15px] leading-7 text-slate-600">Bring your hopes, needs, and gratitude into one shared sacred space.</p>
+              <h1 className="tbo-page-title break-words text-slate-950">{t.prayer.title}</h1>
+              <p className="tbo-supporting mt-2 max-w-lg text-slate-600">{tr("Bring your hopes, needs, and gratitude into one shared sacred space.")}</p>
             </div>
-            <Button type="button" onClick={openPrayerForm} className="h-11 rounded-full bg-rose-600 px-5 font-bold text-white shadow-lg shadow-rose-200 hover:bg-rose-700">
+            <Button type="button" onClick={openPrayerForm} className="tbo-action min-h-11 h-auto whitespace-normal rounded-full bg-rose-600 px-5 text-white shadow-lg shadow-rose-200 hover:bg-rose-700">
               <Plus className="h-4 w-4" aria-hidden="true" />
               {t.prayer.newRequest}
             </Button>
           </div>
-          <div className="mt-7 grid grid-cols-3 gap-3 border-t border-rose-100/80 pt-5">
-            <div><p className="text-xl font-bold text-slate-900">{activePrayerCount}</p><p className="mt-0.5 text-xs font-medium text-slate-500">Active</p></div>
-            <div className="border-l border-rose-100 pl-3"><p className="text-xl font-bold text-slate-900">{togetherPrayerCount}</p><p className="mt-0.5 text-xs font-medium text-slate-500">Together</p></div>
-            <div className="border-l border-rose-100 pl-3"><p className="text-xl font-bold text-slate-900">{answeredPrayerCount}</p><p className="mt-0.5 text-xs font-medium text-slate-500">Answered</p></div>
+          <div className="mt-7 grid grid-cols-3 gap-3 border-t border-rose-100/80 pt-5 [overflow-wrap:anywhere]">
+            <div><p className="text-xl font-bold text-slate-900">{activePrayerCount}</p><p className="tbo-caption mt-0.5 text-slate-500">{tr("Active")}</p></div>
+            <div className="border-l border-rose-100 pl-3"><p className="text-xl font-bold text-slate-900">{togetherPrayerCount}</p><p className="tbo-caption mt-0.5 text-slate-500">{tr("Together")}</p></div>
+            <div className="border-l border-rose-100 pl-3"><p className="text-xl font-bold text-slate-900">{answeredPrayerCount}</p><p className="tbo-caption mt-0.5 text-slate-500">{tr("Answered")}</p></div>
           </div>
         </div>
       </header>
 
       <div className="space-y-5">
-        <div className="grid h-14 w-full grid-cols-3 gap-1 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-[inset_0_1px_2px_rgba(15,23,42,0.04),0_10px_30px_-24px_rgba(15,23,42,0.45)]" role="tablist" aria-label="Prayer sections">
+        <div className="grid min-h-14 w-full grid-cols-3 gap-1 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-[inset_0_1px_2px_rgba(15,23,42,0.04),0_10px_30px_-24px_rgba(15,23,42,0.45)]" role="tablist" aria-label={tr("Prayer sections")}>
           <button
             type="button"
             role="tab"
             aria-selected={activeTab === "requests"}
             onClick={() => setActiveTab("requests")}
-            className={`flex h-full items-center justify-center gap-2 rounded-[0.9rem] px-2 text-xs font-semibold transition-all sm:text-sm ${
+            className={`tbo-action flex min-h-11 min-w-0 flex-wrap items-center justify-center gap-2 rounded-[0.9rem] px-2 py-2 [overflow-wrap:anywhere] transition-all ${
               activeTab === "requests"
                 ? "bg-white text-rose-700 shadow-sm ring-1 ring-rose-100"
                 : "text-slate-500 hover:bg-white/65 hover:text-slate-800"
             }`}
           >
             <MessageCircle className="h-4 w-4" aria-hidden="true" />
-            <span className="hidden sm:inline">{t.prayer.prayerRequests}</span><span className="sm:hidden">Active</span>
+            <span className="hidden sm:inline">{t.prayer.prayerRequests}</span><span className="sm:hidden">{tr("Active")}</span>
           </button>
           <button
             type="button"
             role="tab"
             aria-selected={activeTab === "answered"}
             onClick={() => setActiveTab("answered")}
-            className={`flex h-full items-center justify-center gap-2 rounded-[0.9rem] px-2 text-xs font-semibold transition-all sm:text-sm ${
+            className={`tbo-action flex min-h-11 min-w-0 flex-wrap items-center justify-center gap-2 rounded-[0.9rem] px-2 py-2 [overflow-wrap:anywhere] transition-all ${
               activeTab === "answered"
                 ? "bg-white text-rose-700 shadow-sm ring-1 ring-rose-100"
                 : "text-slate-500 hover:bg-white/65 hover:text-slate-800"
@@ -395,7 +401,7 @@ export function PrayerBoard({
             role="tab"
             aria-selected={activeTab === "together"}
             onClick={() => setActiveTab("together")}
-            className={`flex h-full items-center justify-center gap-2 rounded-[0.9rem] px-2 text-xs font-semibold transition-all sm:text-sm ${
+            className={`tbo-action flex min-h-11 min-w-0 flex-wrap items-center justify-center gap-2 rounded-[0.9rem] px-2 py-2 [overflow-wrap:anywhere] transition-all ${
               activeTab === "together"
                 ? "bg-white text-rose-700 shadow-sm ring-1 ring-rose-100"
                 : "text-slate-500 hover:bg-white/65 hover:text-slate-800"
@@ -414,11 +420,11 @@ export function PrayerBoard({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(event) => { if (event.key === "Escape") setSearchQuery(""); }}
-            aria-label="Search prayers"
-            className="h-12 rounded-2xl border-slate-200 bg-white pl-11 pr-11 shadow-[0_8px_25px_-22px_rgba(15,23,42,0.55)] placeholder:text-slate-400 focus-visible:border-rose-300 focus-visible:ring-4 focus-visible:ring-rose-100"
+            aria-label={tr("Search prayers")}
+            className="tbo-field h-12 rounded-2xl border-slate-200 bg-white pl-11 pr-11 shadow-[0_8px_25px_-22px_rgba(15,23,42,0.55)] placeholder:text-slate-400 focus-visible:border-rose-300 focus-visible:ring-4 focus-visible:ring-rose-100"
           />
           {searchQuery && (
-            <button type="button" onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700" aria-label="Clear prayer search">
+            <button type="button" onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700" aria-label={tr("Clear prayer search")}>
               <X className="h-4 w-4" aria-hidden="true" />
             </button>
           )}
@@ -432,13 +438,13 @@ export function PrayerBoard({
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 text-rose-500">
               <Users className="h-8 w-8" aria-hidden="true" />
             </div>
-            <h3 className="mb-2 text-lg font-bold text-slate-900">
-              Connect with Your Partner
+            <h3 className="tbo-card-title mb-2 text-slate-900">
+
+              {tr("Connect with Your Partner")}
             </h3>
-            <p className="mx-auto max-w-md text-sm leading-6 text-slate-500">
-              Prayer sharing is available when you're connected
-              as a couple. Share your invite code or enter your
-              partner's code to start praying together.
+            <p className="tbo-supporting mx-auto max-w-md text-slate-500">
+
+              {tr("Prayer sharing is available when you're connected as a couple. Share your invite code or enter your partner's code to start praying together.")}
             </p>
           </Card>
         ) : filteredPrayers.length === 0 ? (
@@ -446,26 +452,26 @@ export function PrayerBoard({
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 text-rose-500">
               {searchQuery ? <Search className="h-7 w-7" aria-hidden="true" /> : <Heart className="h-8 w-8" aria-hidden="true" />}
             </div>
-            <h3 className="mb-2 text-lg font-bold text-slate-900">
+            <h3 className="tbo-card-title mb-2 text-slate-900">
               {searchQuery
-                ? "No matching prayers"
+                ? tr("No matching prayers")
                 : activeTab === "together"
                 ? t.prayer.prayTogether
                 : activeTab === "answered"
                   ? t.prayer.answered
                   : t.prayer.noRequests}
             </h3>
-            <p className="text-sm leading-6 text-slate-500">
+            <p className="tbo-supporting text-slate-500">
               {searchQuery
-                ? "Try a different title, category, or prayer detail."
+                ? tr("Try a different title, category, or prayer detail.")
                 : activeTab === "together"
-                ? "Pray together as a couple to strengthen your bond"
+                ? tr("Pray together as a couple to strengthen your bond")
                 : activeTab === "answered"
-                  ? "Answered prayers will appear here"
-                  : "Start by adding a prayer request"}
+                  ? tr("Answered prayers will appear here")
+                  : tr("Start by adding a prayer request")}
             </p>
             {searchQuery && (
-              <Button type="button" variant="ghost" onClick={() => setSearchQuery("")} className="mt-4 rounded-full text-rose-700 hover:bg-rose-100/70 hover:text-rose-800">Clear search</Button>
+              <Button type="button" variant="ghost" onClick={() => setSearchQuery("")} className="tbo-action mt-4 rounded-full text-rose-700 hover:bg-rose-100/70 hover:text-rose-800">{tr("Clear search")}</Button>
             )}
           </Card>
         ) : (
@@ -493,34 +499,35 @@ export function PrayerBoard({
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-medium text-slate-500">
-                        <span className="text-rose-700">{prayer.category}</span>
+                      <div className="tbo-caption mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-slate-500">
+                        <span className="text-rose-700">{tr(prayer.category)}</span>
                         <span aria-hidden="true">•</span>
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
                           {formatDate(prayer.createdAt)}
                         </span>
                         {prayer.isAnswered && (
-                          <Badge className="border-0 bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 shadow-none hover:bg-emerald-50">
-                            Answered
+                          <Badge className="tbo-caption border-0 bg-emerald-50 px-2 py-0.5 text-emerald-700 shadow-none hover:bg-emerald-50">
+
+                            {tr("Answered")}
                           </Badge>
                         )}
                         {!prayer.isPartner && (
-                          <Badge variant="outline" className="border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] text-slate-600">
-                            {prayer.isSharedWithPartner === false ? <><UserRound className="mr-1 h-3 w-3" />Private</> : prayer.isSurprise ? <><Lock className="mr-1 h-3 w-3" />Surprise</> : <><Users className="mr-1 h-3 w-3" />Shared</>}
+                          <Badge variant="outline" className="tbo-caption border-slate-200 bg-slate-50 px-2 py-0.5 text-slate-600">
+                            {prayer.isSharedWithPartner === false ? <><UserRound className="mr-1 h-3 w-3" />{tr("Private")}</> : prayer.isSurprise ? <><Lock className="mr-1 h-3 w-3" />{tr("Surprise")}</> : <><Users className="mr-1 h-3 w-3" />{tr("Shared")}</>}
                           </Badge>
                         )}
                       </div>
-                      <h3 className="mb-1.5 text-base font-bold leading-snug text-slate-900 sm:text-lg">
+                      <h3 className="tbo-card-title break-words mb-1.5 text-slate-900">
                         {prayer.title}
                       </h3>
                       <p
-                        className={`text-sm leading-6 text-slate-600 ${
+                        className={`tbo-body break-words text-slate-600 ${
                           isExpanded ? "" : "line-clamp-2"
                         }`}
                       >
                         {prayer.isLockedForPartner
-                          ? `Surprise — locked until ${prayer.unlockAt ? formatDate(prayer.unlockAt) : "the reveal date"}.`
+                          ? tr('Surprise — locked until {date}.', { date: prayer.unlockAt ? formatDate(prayer.unlockAt) : tr('the reveal date') })
                           : prayer.description}
                       </p>
                     </div>
@@ -528,8 +535,8 @@ export function PrayerBoard({
                     {!prayer.isLockedForPartner && <button
                       type="button"
                       onClick={() => toggleExpand(prayer.id)}
-                      className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-slate-500 transition-colors hover:bg-rose-50 hover:text-rose-700"
-                      aria-label={`${isExpanded ? "Collapse" : "Expand"} ${prayer.title}`}
+                      className="tbo-action flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-slate-500 transition-colors hover:bg-rose-50 hover:text-rose-700"
+                      aria-label={tr(isExpanded ? 'Collapse {title}' : 'Expand {title}', { title: prayer.title })}
                       aria-expanded={isExpanded}
                     >
                       {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
@@ -542,28 +549,30 @@ export function PrayerBoard({
                         onClick={() => handleTogglePrayed(prayer, "you")}
                         disabled={!canTrack}
                         aria-pressed={Boolean(prayer.isPartner ? prayer.partnerPrayed : prayer.youPrayed)}
-                        className={`flex min-h-10 items-center gap-2 rounded-full px-3.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${(prayer.isPartner ? prayer.partnerPrayed : prayer.youPrayed) ? "bg-rose-100 text-rose-700" : "bg-slate-50 text-slate-600 hover:bg-rose-50 hover:text-rose-700"}`}
+                        className={`tbo-action flex min-h-10 items-center gap-2 rounded-full px-3.5 transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${(prayer.isPartner ? prayer.partnerPrayed : prayer.youPrayed) ? "bg-rose-100 text-rose-700" : "bg-slate-50 text-slate-600 hover:bg-rose-50 hover:text-rose-700"}`}
                       >
                         <span className={`flex h-5 w-5 items-center justify-center rounded-full ${(prayer.isPartner ? prayer.partnerPrayed : prayer.youPrayed) ? "bg-rose-500 text-white" : "border border-slate-300 bg-white"}`}>
                           {(prayer.isPartner ? prayer.partnerPrayed : prayer.youPrayed) && <Check className="h-3.5 w-3.5" aria-hidden="true" />}
                         </span>
-                        You prayed
+
+                        {tr("You prayed")}
                       </button>
                       {!prayer.isPartner && <button
                         type="button"
                         onClick={() => handleTogglePrayed(prayer, "partner")}
                         disabled={!canTrack}
                         aria-pressed={Boolean(prayer.partnerPrayed)}
-                        className={`flex min-h-10 items-center gap-2 rounded-full px-3.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${prayer.partnerPrayed ? "bg-amber-100 text-amber-800" : "bg-slate-50 text-slate-600 hover:bg-amber-50 hover:text-amber-800"}`}
+                        className={`tbo-action flex min-h-10 items-center gap-2 rounded-full px-3.5 transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${prayer.partnerPrayed ? "bg-amber-100 text-amber-800" : "bg-slate-50 text-slate-600 hover:bg-amber-50 hover:text-amber-800"}`}
                       >
                         <span className={`flex h-5 w-5 items-center justify-center rounded-full ${prayer.partnerPrayed ? "bg-amber-500 text-white" : "border border-slate-300 bg-white"}`}>
                           {prayer.partnerPrayed && <Check className="h-3.5 w-3.5" aria-hidden="true" />}
                         </span>
-                        Partner prayed
+
+                        {tr("Partner prayed")}
                       </button>}
-                      <span className="ml-auto flex items-center gap-1.5 text-xs font-medium text-slate-500">
+                      <span className="tbo-caption ml-auto flex items-center gap-1.5 text-slate-500">
                         <Heart className="h-3.5 w-3.5 text-rose-500" aria-hidden="true" />
-                        {prayerCount} praying
+                        {prayerCount}  {tr("praying")}
                       </span>
                     </div>
                   </div>
@@ -574,9 +583,10 @@ export function PrayerBoard({
                         variant="outline"
                         size="sm"
                         onClick={() => handleEdit(prayer)}
-                        className="rounded-full border-slate-200 bg-white text-xs"
+                        className="tbo-action rounded-full border-slate-200 bg-white"
                       >
-                        Edit
+
+                        {tr("Edit")}
                       </Button>
                       <Button
                         variant="outline"
@@ -584,23 +594,24 @@ export function PrayerBoard({
                         onClick={() =>
                           handleToggleAnswered(prayer)
                         }
-                        className="rounded-full border-slate-200 bg-white text-xs"
+                        className="tbo-action rounded-full border-slate-200 bg-white"
                       >
                         {prayer.isAnswered
-                          ? "Mark Active"
+                          ? tr("Mark Active")
                           : t.prayer.markAnswered}
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          if (confirm("Delete this prayer?")) {
+                          if (confirm(tr("Delete this prayer?"))) {
                             onDeletePrayer(prayer.id);
                           }
                         }}
-                        className="rounded-full border-slate-200 bg-white text-xs text-red-600 hover:bg-red-50 hover:text-red-700"
+                        className="tbo-action rounded-full border-slate-200 bg-white text-red-600 hover:bg-red-50 hover:text-red-700"
                       >
-                        Delete
+
+                        {tr("Delete")}
                       </Button>
                     </div>
                   )}
@@ -621,20 +632,21 @@ export function PrayerBoard({
       >
         <DialogContent className="max-h-[92dvh] gap-0 overflow-y-auto rounded-[1.75rem] border-rose-100 p-0 sm:max-w-xl">
           <DialogHeader className="border-b border-rose-100 bg-gradient-to-br from-rose-50 via-white to-amber-50 px-6 py-6 pr-12 text-left">
-            <DialogTitle className="text-2xl font-bold text-slate-900">
+            <DialogTitle className="tbo-dialog-title text-slate-900">
               {editingPrayer
-                ? "Edit Prayer"
-                : "New Prayer Request"}
+                ? tr("Edit Prayer")
+                : tr("New Prayer Request")}
             </DialogTitle>
-            <DialogDescription className="leading-6 text-slate-600">
-              Create a space to return to this prayer together.
+            <DialogDescription className="tbo-supporting text-slate-600">
+
+              {tr("Create a space to return to this prayer together.")}
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-5 p-6">
             {/* Category Selection */}
             <div className="space-y-2">
-              <Label>Category</Label>
+              <Label className="tbo-label">{tr("Category")}</Label>
               <div className="grid grid-cols-3 gap-2">
                 {CATEGORIES.map((cat) => (
                   <button
@@ -651,8 +663,8 @@ export function PrayerBoard({
                     <span className="text-2xl mb-1">
                       {cat.emoji}
                     </span>
-                    <span className="text-xs text-center leading-tight">
-                      {cat.value}
+                    <span className="tbo-caption text-center">
+                      {tr(cat.value)}
                     </span>
                   </button>
                 ))}
@@ -661,36 +673,37 @@ export function PrayerBoard({
 
             {/* Title */}
             <div className="space-y-2">
-              <Label htmlFor="title">{t.prayer.requestTitle}</Label>
+              <Label className="tbo-label" htmlFor="title">{t.prayer.requestTitle}</Label>
               <Input
                 id="title"
-                placeholder="What are you praying for?"
+                placeholder={tr("What are you praying for?")}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                className="h-11 rounded-xl border-slate-200 focus-visible:ring-rose-400"
+                className="tbo-field h-11 rounded-xl border-slate-200 focus-visible:ring-rose-400"
               />
             </div>
 
             {/* Description */}
             <div className="space-y-2">
-              <Label htmlFor="description">Details</Label>
+              <Label className="tbo-label" htmlFor="description">{tr("Details")}</Label>
               <Textarea
                 id="description"
-                placeholder="Share more about this prayer request..."
+                placeholder={tr("Share more about this prayer request...")}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={4}
                 required
-                className="rounded-xl border-slate-200 focus-visible:ring-rose-400"
+                className="tbo-field rounded-xl border-slate-200 focus-visible:ring-rose-400"
               />
             </div>
 
             {/* Reminder Date */}
             <div className="space-y-2">
-              <Label htmlFor="reminder">
+              <Label className="tbo-label" htmlFor="reminder">
                 <Bell className="w-4 h-4 inline mr-1" />
-                Set Reminder (Optional)
+
+                {tr("Set Reminder (Optional)")}
               </Label>
               <Input
                 id="reminder"
@@ -700,15 +713,15 @@ export function PrayerBoard({
                   setReminderDate(e.target.value)
                 }
                 min={new Date().toISOString().split("T")[0]}
-                className="h-11 rounded-xl border-slate-200 focus-visible:ring-rose-400"
+                className="tbo-field h-11 rounded-xl border-slate-200 focus-visible:ring-rose-400"
               />
             </div>
 
             <div className="space-y-3 rounded-2xl border border-violet-100 bg-violet-50/50 p-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <Label htmlFor="partner-sharing" className="cursor-pointer font-medium">Share with Partner</Label>
-                  <p className="mt-1 text-xs text-slate-500">Turn this off to keep the prayer in your private list.</p>
+                  <Label htmlFor="partner-sharing" className="tbo-label cursor-pointer">{tr("Share with Partner")}</Label>
+                  <p className="tbo-caption mt-1 text-slate-500">{tr("Turn this off to keep the prayer in your private list.")}</p>
                 </div>
                 <Switch id="partner-sharing" checked={isSharedWithPartner} onCheckedChange={(checked) => { setIsSharedWithPartner(checked); if (!checked) { setIsSurprise(false); setIsSharedWithCommunity(false); } }} />
               </div>
@@ -716,12 +729,12 @@ export function PrayerBoard({
                 <>
                   <div className="flex items-center justify-between gap-4 border-t border-violet-100 pt-3">
                     <div>
-                      <Label htmlFor="surprise-lock" className="cursor-pointer font-medium">Make it a surprise</Label>
-                      <p className="mt-1 text-xs text-slate-500">Your partner sees only a locked surprise until the date.</p>
+                      <Label htmlFor="surprise-lock" className="tbo-label cursor-pointer">{tr("Make it a surprise")}</Label>
+                      <p className="tbo-caption mt-1 text-slate-500">{tr("Your partner sees only a locked surprise until the date.")}</p>
                     </div>
                     <Switch id="surprise-lock" checked={isSurprise} onCheckedChange={setIsSurprise} />
                   </div>
-                  {isSurprise && <div className="space-y-2"><Label htmlFor="prayer-unlock">Unlock date</Label><Input id="prayer-unlock" type="date" required value={unlockAt} min={new Date().toISOString().slice(0, 10)} onChange={(event) => setUnlockAt(event.target.value)} className="h-11 rounded-xl bg-white" /></div>}
+                  {isSurprise && <div className="space-y-2"><Label className="tbo-label" htmlFor="prayer-unlock">{tr("Unlock date")}</Label><Input id="prayer-unlock" type="date" required value={unlockAt} min={new Date().toISOString().slice(0, 10)} onChange={(event) => setUnlockAt(event.target.value)} className="tbo-field h-11 rounded-xl bg-white" /></div>}
                 </>
               )}
             </div>
@@ -731,13 +744,14 @@ export function PrayerBoard({
               <div className="flex-1">
                 <Label
                   htmlFor="community"
-                  className="cursor-pointer font-medium"
+                  className="tbo-label cursor-pointer"
                 >
-                  Share with Community
+
+                  {tr("Share with Community")}
                 </Label>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Allow other couples to see and pray for this
-                  request
+                <p className="tbo-caption text-muted-foreground mt-1">
+
+                  {tr("Allow other couples to see and pray for this request")}
                 </p>
               </div>
               <Switch
@@ -753,20 +767,22 @@ export function PrayerBoard({
                 type="button"
                 variant="outline"
                 onClick={() => setIsOpen(false)}
-                className="rounded-full"
+                className="tbo-action rounded-full"
               >
-                Cancel
+
+                {tr("Cancel")}
               </Button>
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="rounded-full bg-rose-600 px-6 text-white shadow-sm hover:bg-rose-700"
+                className="tbo-action rounded-full bg-rose-600 px-6 text-white shadow-sm hover:bg-rose-700"
               >
+                {isLoading && <LoadingMark />}
                 {isLoading
-                  ? "Saving..."
+                  ? tr("Saving...")
                   : editingPrayer
-                    ? "Update"
-                    : "Add Prayer"}
+                    ? tr("Update")
+                    : tr("Add Prayer")}
               </Button>
             </DialogFooter>
           </form>

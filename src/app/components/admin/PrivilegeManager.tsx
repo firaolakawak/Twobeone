@@ -1,3 +1,5 @@
+import { useUiCopy } from "../../utils/uiTranslation";
+import { adminPrivilegesMessages } from "../../locales/adminPrivileges";
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
@@ -10,6 +12,7 @@ export interface PrivilegeActivity { id?: string; action: 'granted' | 'revoked';
 interface PrivilegeManagerProps { accessToken?: string; }
 
 export function PrivilegeManager({ accessToken }: PrivilegeManagerProps) {
+  const tr = useUiCopy(adminPrivilegesMessages);
   const [users, setUsers] = useState<PrivilegeUser[]>([]);
   const [admins, setAdmins] = useState<AdminUser[]>([]);
   const [activity, setActivity] = useState<PrivilegeActivity[]>([]);
@@ -34,9 +37,9 @@ export function PrivilegeManager({ accessToken }: PrivilegeManagerProps) {
       const nextUsers = Array.isArray(usersData.users) ? usersData.users : [];
       setUsers(nextUsers); setAdmins(Array.isArray(adminsData.admins) ? adminsData.admins : []); setActivity(Array.isArray(activityData.activityLog) ? activityData.activityLog : []);
       setSelectedId((current) => current && nextUsers.some((user: PrivilegeUser) => user.id === current) ? current : nextUsers[0]?.id || null);
-    } catch (error) { console.error('Error loading privilege data:', error); toast.error('Could not load access-control data'); }
+    } catch (error) { console.error('Error loading privilege data:', error); toast.error(tr("Could not load access-control data")); }
     finally { setIsLoading(false); }
-  }, [base, headers]);
+  }, [base, headers, tr]);
   useEffect(() => { void loadData(); }, [loadData]);
 
   const filteredUsers = useMemo(() => { const query = searchTerm.trim().toLowerCase(); return users.filter((user) => !query || [user.name, user.email].some((value) => value.toLowerCase().includes(query))).filter((user) => roleFilter === 'all' || (roleFilter === 'admin' ? user.isAdmin : !user.isAdmin)); }, [users, searchTerm, roleFilter]);
@@ -50,9 +53,9 @@ export function PrivilegeManager({ accessToken }: PrivilegeManagerProps) {
       const response = await fetch(`${base}/${action}`, { method: 'POST', headers, body: JSON.stringify({ targetUserId: user.id }) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || `Failed to ${action} admin privilege`);
-      toast.success(data.message || `Administrator access ${action === 'grant' ? 'granted' : 'revoked'}`);
+      toast.success(tr(action === 'grant' ? 'Administrator access granted' : 'Administrator access revoked'));
       setPendingChange(null); await loadData();
-    } catch (error) { const message = error instanceof Error ? error.message : 'Privilege change failed'; console.error('Privilege update failed:', error); toast.error(message); }
+    } catch (error) { const message = error instanceof Error ? error.message : 'Privilege change failed'; console.error('Privilege update failed:', error); toast.error(tr('Privilege change failed')); }
     finally { setProcessingUserId(null); }
   };
 

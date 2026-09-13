@@ -1,3 +1,5 @@
+import { formatUiTime } from '../utils/uiDateTime';
+import { UI_LOCALES } from '../utils/uiTranslation';
 import { useState } from 'react';
 import { Question } from '../data/questions';
 import { Card } from './ui/card';
@@ -41,12 +43,12 @@ export function QAResultsView({
   projectId,
   accessToken
 }: QAResultsViewProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [activeAnswers, setActiveAnswers] = useState<{ [key: number]: string }>({});
   const [isPrivateAnswers, setIsPrivateAnswers] = useState<{ [key: number]: boolean }>({});
   const [replyMode, setReplyMode] = useState<{ [key: number]: boolean }>({});
   const [replyTexts, setReplyTexts] = useState<{ [key: number]: string }>({});
-  
+
   const getAnswerForPrompt = (promptIndex: number, isPartner: boolean): Answer | undefined => {
     const answersArray = isPartner ? partnerAnswers : userAnswers;
     return answersArray.find(
@@ -66,9 +68,9 @@ export function QAResultsView({
   const handleSubmit = async (promptIndex: number) => {
     const answer = activeAnswers[promptIndex];
     if (!answer?.trim()) return;
-    
+
     await onSubmitAnswer(promptIndex, answer, isPrivateAnswers[promptIndex] || false);
-    
+
     // Clear the input after successful submission
     setActiveAnswers(prev => ({ ...prev, [promptIndex]: '' }));
   };
@@ -76,9 +78,9 @@ export function QAResultsView({
   const handleReply = async (promptIndex: number) => {
     const reply = replyTexts[promptIndex];
     if (!reply?.trim()) return;
-    
+
     await onSubmitAnswer(promptIndex, reply, false); // Replies are always shared
-    
+
     // Clear the reply input and close reply mode
     setReplyTexts(prev => ({ ...prev, [promptIndex]: '' }));
     setReplyMode(prev => ({ ...prev, [promptIndex]: false }));
@@ -87,7 +89,7 @@ export function QAResultsView({
   const getRepliesForPrompt = (promptIndex: number): Answer[] => {
     const questionId = `${question.id}:prompt:${promptIndex}`;
     const allAnswers = [...userAnswers, ...partnerAnswers];
-    
+
     // Get all answers for this question, sorted by creation time
     return allAnswers
       .filter(a => a.questionId === questionId)
@@ -105,7 +107,7 @@ export function QAResultsView({
           <Card key={index} className="border-2 border-border overflow-hidden bg-card shadow-sm">
             <div className="p-5 space-y-4">
               {/* Question */}
-              <h3 className="text-foreground leading-relaxed">
+              <h3 className="tbo-card-title text-foreground">
                 <span className="font-semibold">{index + 1}. </span>{prompt}
               </h3>
 
@@ -116,7 +118,7 @@ export function QAResultsView({
                   {getRepliesForPrompt(index).map((reply, replyIdx) => {
                     const isCurrentUser = reply.userId === userProfile.id;
                     const isPrivateReply = reply.isPrivate;
-                    
+
                     return (
                       <div key={reply.id} className={`flex items-start gap-3 ${isCurrentUser ? '' : 'justify-end'}`}>
                         {isCurrentUser ? (
@@ -140,14 +142,14 @@ export function QAResultsView({
                               {isPrivateReply && (
                                 <div className="flex items-center gap-1.5 mb-1">
                                   <Lock className="w-3 h-3 text-sky-600" />
-                                  <span className="text-xs text-sky-600 font-medium">{t.questions.private}</span>
+                                  <span className="tbo-caption text-sky-600">{t.questions.private}</span>
                                 </div>
                               )}
-                              <p className="text-foreground text-sm leading-relaxed">
+                              <p className="tbo-supporting text-foreground">
                                 {reply.response}
                               </p>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {new Date(reply.createdAt).toLocaleTimeString('en-US', {
+                              <p className="tbo-caption text-muted-foreground mt-1">
+                                {formatUiTime(new Date(reply.createdAt), UI_LOCALES[language], {
                                   hour: 'numeric',
                                   minute: '2-digit',
                                   hour12: true
@@ -158,11 +160,11 @@ export function QAResultsView({
                         ) : (
                           <>
                             <div className="flex-1 max-w-[75%] bg-muted rounded-2xl rounded-tr-sm px-4 py-3">
-                              <p className="text-foreground text-sm leading-relaxed">
+                              <p className="tbo-supporting text-foreground">
                                 {reply.response}
                               </p>
-                              <p className="text-xs text-muted-foreground mt-1 text-right">
-                                {new Date(reply.createdAt).toLocaleTimeString('en-US', {
+                              <p className="tbo-caption text-muted-foreground mt-1 text-right">
+                                {formatUiTime(new Date(reply.createdAt), UI_LOCALES[language], {
                                   hour: 'numeric',
                                   minute: '2-digit',
                                   hour12: true
@@ -194,7 +196,7 @@ export function QAResultsView({
                           onClick={() => setReplyMode(prev => ({ ...prev, [index]: true }))}
                           variant="ghost"
                           size="sm"
-                          className="text-muted-foreground hover:text-foreground"
+                          className="tbo-action text-muted-foreground hover:text-foreground"
                         >
                           <Reply className="w-4 h-4 mr-1.5" />
                           {t.questions.reply}
@@ -208,7 +210,7 @@ export function QAResultsView({
                               [index]: e.target.value 
                             }))}
                             placeholder={t.questions.writeAReply}
-                            className="min-h-[80px] resize-none text-sm bg-card"
+                            className="tbo-field min-h-[80px] resize-none bg-card"
                             autoFocus
                           />
                           <div className="flex items-center gap-2">
@@ -216,7 +218,7 @@ export function QAResultsView({
                               onClick={() => handleReply(index)}
                               disabled={isSubmitting || !replyTexts[index]?.trim()}
                               size="sm"
-                              className="bg-gradient-to-r from-sky-500 to-sky-600 text-white hover:opacity-90"
+                              className="tbo-action bg-gradient-to-r from-sky-500 to-sky-600 text-white hover:opacity-90"
                             >
                               <Send className="w-3.5 h-3.5 mr-1.5" />
                               {t.common.save}
@@ -228,7 +230,7 @@ export function QAResultsView({
                               }}
                               size="sm"
                               variant="ghost"
-                              className="text-muted-foreground"
+                              className="tbo-action text-muted-foreground"
                             >
                               {t.common.cancel}
                             </Button>
@@ -242,13 +244,13 @@ export function QAResultsView({
                 /* Answer Input Form - when no one has answered yet */
                 <div className="space-y-3 bg-muted rounded-lg p-4 border border-border">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-foreground">{t.questions.shareYourAnswer}</span>
+                    <span className="tbo-supporting text-foreground">{t.questions.shareYourAnswer}</span>
                     <button
                       onClick={() => setIsPrivateAnswers(prev => ({ 
                         ...prev, 
                         [index]: !prev[index] 
                       }))}
-                      className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                      className="tbo-action flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
                     >
                       {isPrivateAnswers[index] ? (
                         <>
@@ -270,13 +272,13 @@ export function QAResultsView({
                       [index]: e.target.value 
                     }))}
                     placeholder={t.questions.shareYourThoughts}
-                    className="min-h-[100px] resize-none text-sm bg-card"
+                    className="tbo-field min-h-[100px] resize-none bg-card"
                   />
                   <Button
                     onClick={() => handleSubmit(index)}
                     disabled={isSubmitting || !activeAnswers[index]?.trim()}
                     size="sm"
-                    className="w-full bg-gradient-to-r from-sky-500 to-sky-600 text-white hover:opacity-90"
+                    className="tbo-action w-full bg-gradient-to-r from-sky-500 to-sky-600 text-white hover:opacity-90"
                   >
                     <Send className="w-4 h-4 mr-2" />
                     {isPrivateAnswers[index] ? t.questions.savePriva : t.questions.sendAndSave}
@@ -293,7 +295,7 @@ export function QAResultsView({
         <Button
           onClick={onDiscuss}
           variant="outline"
-          className="w-full text-foreground hover:text-foreground hover:bg-muted border-2"
+          className="tbo-action w-full text-foreground hover:text-foreground hover:bg-muted border-2"
         >
           <MessageCircle className="w-4 h-4 mr-2" />
           {t.questions.discuss} "{question.category}"

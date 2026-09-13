@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Heart, Loader2, CheckCircle2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { BrandLoader } from './BrandLoader';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -11,116 +11,30 @@ interface SplashScreenProps {
 
 export function SplashScreen({ onComplete, checkingAuth = true, authStatus = 'checking' }: SplashScreenProps) {
   const { t } = useLanguage();
+  const reducedMotion = useReducedMotion();
   const [isVisible, setIsVisible] = useState(true);
-  const [statusMessage, setStatusMessage] = useState(t.common.loading);
+  const statusMessage = authStatus === 'checking'
+    ? t.splash.checkingAuthentication
+    : authStatus === 'authenticated' ? t.splash.welcomeBack : t.splash.redirecting;
 
   useEffect(() => {
-    // Update status message based on auth status
-    if (authStatus === 'checking') {
-      setStatusMessage(t.splash.checkingAuthentication);
-    } else if (authStatus === 'authenticated') {
-      setStatusMessage(t.splash.welcomeBack);
-    } else if (authStatus === 'unauthenticated') {
-      setStatusMessage(t.splash.redirecting);
-    }
-  }, [authStatus, t]);
+    if (checkingAuth) return;
+    setIsVisible(false);
+    const timer = window.setTimeout(onComplete, reducedMotion ? 0 : 250);
+    return () => window.clearTimeout(timer);
+  }, [checkingAuth, onComplete, reducedMotion]);
 
-  useEffect(() => {
-    // If auth check is complete, wait a bit then fade out
-    if (!checkingAuth) {
-      const timer = setTimeout(() => {
-        setIsVisible(false);
-        setTimeout(onComplete, 500); // Wait for fade out animation
-      }, 800);
-
-      return () => clearTimeout(timer);
-    }
-  }, [checkingAuth, onComplete]);
-
-  return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-primary-500 via-primary-500 to-sky-500"
-        >
-          <div className="text-center px-6">
-            {/* Animated Heart Logo */}
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{
-                type: "spring",
-                stiffness: 260,
-                damping: 20,
-                delay: 0.2
-              }}
-              className="mb-6 flex justify-center"
-            >
-              <div className="relative">
-                <Heart className="w-24 h-24 text-white fill-white drop-shadow-2xl" />
-                <motion.div
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.5, 0.8, 0.5],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                  className="absolute inset-0"
-                >
-                  <Heart className="w-24 h-24 text-white/50" />
-                </motion.div>
-              </div>
-            </motion.div>
-
-            {/* App Name */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
-            >
-              <h1 className="text-5xl text-white mb-2">TwoBeOne</h1>
-              <p className="text-white/90 text-lg">{t.splash.tagline}</p>
-            </motion.div>
-
-            {/* Status Indicator */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1, duration: 0.5 }}
-              className="mt-12 space-y-3"
-            >
-              {authStatus === 'authenticated' ? (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                >
-                  <CheckCircle2 className="w-8 h-8 text-white mx-auto" />
-                </motion.div>
-              ) : (
-                <Loader2 className="w-8 h-8 text-white animate-spin mx-auto" />
-              )}
-              
-              <motion.p
-                key={statusMessage}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="text-white/80 text-sm"
-              >
-                {statusMessage}
-              </motion.p>
-            </motion.div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
+  return <AnimatePresence>
+    {isVisible && <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: reducedMotion ? 0 : 0.25 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-background"
+    >
+      <div className="text-center px-6 space-y-4">
+        <h1 className="text-4xl font-extrabold tracking-tight text-foreground">TwoBeOne</h1>
+        <p className="tbo-body text-muted-foreground">{t.splash.tagline}</p>
+        <BrandLoader label={statusMessage} size={96} className="pt-6" />
+      </div>
+    </motion.div>}
+  </AnimatePresence>;
 }

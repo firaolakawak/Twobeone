@@ -1,5 +1,9 @@
+import { useUiCopy } from '../utils/uiTranslation';
+import { LoadingMark } from './BrandLoader';
+import { questionsUiMessages } from '../locales/questionsUi';
 import { useEffect, useState } from 'react';
-import { ArrowLeft, ArrowUpRight, Check, MessageCircleHeart } from 'lucide-react';
+import { ArrowUpRight, Check, MessageCircleHeart } from 'lucide-react';
+import { BackButton } from './BackButton';
 import { motion, useReducedMotion } from 'motion/react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { questions as questionsApi } from '../utils/api';
@@ -51,6 +55,7 @@ interface CategorySelectionProps {
 }
 
 export function CategorySelection({ onSelectCategory, onBack, responses }: CategorySelectionProps) {
+  const tr = useUiCopy(questionsUiMessages);
   const { t, language } = useLanguage();
   const prefersReducedMotion = useReducedMotion();
   const [questions, setQuestions] = useState<CategoryQuestion[]>([]);
@@ -138,9 +143,7 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
     <div className="min-h-screen bg-[linear-gradient(180deg,rgba(251,247,249,0.9)_0%,#fff_28%,#fff_100%)] pb-20">
       <div className="mx-auto max-w-5xl space-y-7 px-4 py-5 sm:px-6 sm:py-8">
         {onBack && (
-          <button type="button" onClick={onBack} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border/70 bg-white px-4 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
-            <ArrowLeft className="h-4 w-4" /> Back home
-          </button>
+          <BackButton label={tr("Back home")} onClick={onBack} />
         )}
 
         {/* Header */}
@@ -148,11 +151,11 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-100 text-primary-700">
             <MessageCircleHeart className="h-6 w-6" />
           </div>
-          <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-primary-600">{t.questions.title}</p>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          <p className="tbo-eyebrow mb-2 text-primary-600">{t.questions.title}</p>
+          <h1 className="tbo-page-title text-foreground">
             {t.questions.selectCategory}
           </h1>
-          <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">
+          <p className="tbo-supporting mx-auto mt-3 max-w-xl text-muted-foreground">
             {t.questions.knowEachOther}
           </p>
         </div>
@@ -184,34 +187,34 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
 
                     <div className="min-w-0 flex-1">
                       <div className="mb-1 flex items-start justify-between gap-3">
-                        <h3 className={`text-lg font-semibold tracking-[-0.01em] ${visual.text}`}>
+                        <h3 className={`tbo-card-title ${visual.text}`}>
                           {category.label}
                         </h3>
                         {!isLoadingProgress && progress.total > 0 && (
-                          <span className={`inline-flex flex-shrink-0 items-center gap-1 rounded-full border border-black/[0.05] bg-white/80 px-2.5 py-1 text-[11px] font-bold ${visual.text}`}>
+                          <span className={`tbo-caption inline-flex flex-shrink-0 items-center gap-1 rounded-full border border-black/[0.05] bg-white/80 px-2.5 py-1 ${visual.text}`}>
                             {isComplete && <Check className="h-3 w-3" strokeWidth={3} />}
                             {progress.percentage}%
                           </span>
                         )}
                       </div>
-                      <p className="text-sm leading-relaxed text-muted-foreground">
+                      <p className="tbo-supporting text-muted-foreground">
                         {category.description}
                       </p>
 
-                      <div className="mt-4 rounded-2xl border border-black/[0.045] bg-white/65 p-3" aria-label={`${category.label} progress`}>
+                      <div className="mt-4 rounded-2xl border border-black/[0.045] bg-white/65 p-3" aria-label={tr('{category} progress', { category: category.label })}>
                         {isLoadingProgress ? (
-                          <div className="space-y-2" aria-label="Loading progress">
-                            <div className="h-3 w-2/3 animate-pulse rounded-full bg-white/80" />
-                            <div className="h-2.5 animate-pulse rounded-full bg-white/70" />
+                          <div className="tbo-caption flex items-center gap-2" role="status">
+                            <LoadingMark />
+                            <span>{tr('Loading progress')}</span>
                           </div>
                         ) : progress.total > 0 ? (
                           <>
                             <div className="mb-2 flex items-center justify-between gap-3 text-xs font-medium">
                               <span className="text-muted-foreground">
-                                {progress.answered} of {progress.total} answered
+                                {tr('{count} of {total} answered', { count: progress.answered, total: progress.total })}
                               </span>
                               <span className={`font-semibold ${visual.text}`}>
-                                {progress.remaining === 0 ? 'Complete' : `${progress.remaining} remaining`}
+                                {progress.remaining === 0 ? tr("Complete") : tr('{count} remaining', { count: progress.remaining })}
                               </span>
                             </div>
                             <div className="h-2.5 overflow-hidden rounded-full bg-white/90 ring-1 ring-black/[0.04]" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress.percentage}>
@@ -224,12 +227,12 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
                             </div>
                           </>
                         ) : (
-                          <p className="text-xs text-muted-foreground">No questions available</p>
+                          <p className="tbo-caption text-muted-foreground">{tr("No questions available")}</p>
                         )}
                       </div>
 
                       <div className={`mt-4 flex items-center justify-end gap-1.5 text-xs font-semibold ${visual.text}`}>
-                        <span>{isComplete ? 'Review together' : progress.answered > 0 ? 'Continue conversation' : 'Start conversation'}</span>
+                        <span>{isComplete ? tr("Review together") : progress.answered > 0 ? tr("Continue conversation") : tr("Start conversation")}</span>
                         <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:translate-x-0.5" />
                       </div>
                     </div>

@@ -1,3 +1,6 @@
+import { useUiCopy } from "../../utils/uiTranslation";
+import { adminContentMessages } from "../../locales/adminContent";
+import { LoadingMark } from "../BrandLoader";
 import { useState, useEffect, useMemo } from 'react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -9,7 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
-import { Plus, Search, Edit, Trash2, Loader2, X, MessageCircle, Download, Upload, FileJson, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, X, MessageCircle, Download, Upload, FileJson, CheckCircle2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { projectId, publicAnonKey } from '../../utils/supabase/info';
 import { createClient } from '../../utils/supabase/client';
@@ -44,6 +47,7 @@ interface QuestionsManagerProps {
 }
 
 export function QuestionsManager({ accessToken: propAccessToken }: QuestionsManagerProps) {
+  const tr = useUiCopy(adminContentMessages);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
@@ -86,6 +90,7 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
   const [importLanguage, setImportLanguage] = useState<'auto' | 'en' | 'am' | 'om'>('auto');
   const [importPreview, setImportPreview] = useState<Partial<Question>[] | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
+  const [importErrorParams, setImportErrorParams] = useState<Record<string, string | number>>({});
   const [isImporting, setIsImporting] = useState(false);
   const [exportCategory, setExportCategory] = useState('all');
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
@@ -119,7 +124,7 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
       }
       
       if (!token) {
-        toast.error('No valid session. Please sign in again.');
+        toast.error(tr("No valid session. Please sign in again."));
         return;
       }
       
@@ -138,7 +143,7 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
       }
     } catch (error) {
       console.error('Failed to load questions:', error);
-      toast.error('Failed to load questions');
+      toast.error(tr("Failed to load questions"));
     } finally {
       setIsLoading(false);
     }
@@ -218,13 +223,13 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this question?')) {
+    if (confirm(tr("Are you sure you want to delete this question?"))) {
       deleteQuestion(id);
     }
   };
 
   const handleDeduplicateAll = async () => {
-    if (!confirm('Remove all duplicate questions? The oldest copy of each unique title will be kept.')) return;
+    if (!confirm(tr("Remove all duplicate questions? The oldest copy of each unique title will be kept."))) return;
     try {
       const token = accessToken || publicAnonKey;
       const res = await fetch(
@@ -233,13 +238,13 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
       );
       if (res.ok) {
         const data = await res.json();
-        toast.success(`✅ Removed ${data.removed} duplicates (${data.before} → ${data.after} questions)`);
+        toast.success(tr('✅ Removed {removed} duplicates ({before} → {after} questions)', { removed: data.removed, before: data.before, after: data.after }));
         await loadQuestions();
       } else {
-        toast.error('Deduplication failed');
+        toast.error(tr("Deduplication failed"));
       }
     } catch {
-      toast.error('Could not connect to server');
+      toast.error(tr("Could not connect to server"));
     }
   };
 
@@ -258,14 +263,14 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
 
       if (response.ok) {
         setQuestions(questions.filter(q => q.id !== id));
-        toast.success('Question deleted successfully');
+        toast.success(tr("Question deleted successfully"));
       } else {
         const error = await response.json();
-        toast.error(error.error || 'Failed to delete question');
+        toast.error(tr('Failed to delete question'));
       }
     } catch (error) {
       console.error('Delete question error:', error);
-      toast.error('Failed to delete question');
+      toast.error(tr("Failed to delete question"));
     }
   };
 
@@ -274,7 +279,7 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
     
     const validPrompts = formData.prompts?.filter(p => p.text.trim()) || [];
     if (validPrompts.length < 1) {
-      toast.error('Please add at least one question prompt');
+      toast.error(tr("Please add at least one question prompt"));
       return;
     }
 
@@ -283,7 +288,7 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
       if (['multiple_choice', 'multiple_select'].includes(prompt.type)) {
         const validOptions = prompt.options?.filter(o => o.trim()) || [];
         if (validOptions.length < 2) {
-          toast.error(`Please provide at least 2 options for "${prompt.text}"`);
+          toast.error(tr('Please provide at least 2 options for "{prompt}"', { prompt: prompt.text }));
           return;
         }
         prompt.options = validOptions;
@@ -321,17 +326,17 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
       if (response.ok) {
         const result = await response.json();
         console.log('Create response:', result);
-        toast.success('Question created successfully');
+        toast.success(tr("Question created successfully"));
         loadQuestions(); // Reload questions from backend
         resetForm();
       } else {
         const error = await response.json();
         console.error('Create error response:', error);
-        toast.error(error.error || 'Failed to create question');
+        toast.error(tr('Failed to create question'));
       }
     } catch (error) {
       console.error('Create question error:', error);
-      toast.error('Failed to create question');
+      toast.error(tr("Failed to create question"));
     }
   };
 
@@ -351,16 +356,16 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
       );
 
       if (response.ok) {
-        toast.success('Question updated successfully');
+        toast.success(tr("Question updated successfully"));
         loadQuestions(); // Reload questions from backend
         resetForm();
       } else {
         const error = await response.json();
-        toast.error(error.error || 'Failed to update question');
+        toast.error(tr('Failed to update question'));
       }
     } catch (error) {
       console.error('Update question error:', error);
-      toast.error('Failed to update question');
+      toast.error(tr("Failed to update question"));
     }
   };
 
@@ -384,7 +389,7 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
       : questions.filter(q => q.category === exportCategory);
 
     if (toExport.length === 0) {
-      toast.error('No questions found for the selected category');
+      toast.error(tr("No questions found for the selected category"));
       return;
     }
 
@@ -405,7 +410,7 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
     a.download = `qa-questions-${catLabel}-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success(`Exported ${toExport.length} question(s)`);
+    toast.success(tr('Exported {count} question(s)', { count: toExport.length }));
     setIsExportDialogOpen(false);
   };
 
@@ -423,7 +428,7 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
         try {
           json = JSON.parse(text);
         } catch (parseErr: any) {
-          setImportError(`JSON syntax error: ${parseErr.message}. Fix the file and try again.`);
+          setImportError("JSON syntax error: {detail}. Fix the file and try again."); setImportErrorParams({ detail: parseErr.message });
           return;
         }
 
@@ -445,7 +450,7 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
 
         if (raw.length === 0) {
           const topKeys = Object.keys(json).join(', ');
-          setImportError(`No question array found. File has keys: [${topKeys}]. Expected a "questions" array.`);
+          setImportError('No question array found. File has keys: [{keys}]. Expected a "questions" array.'); setImportErrorParams({ keys: topKeys });
           return;
         }
 
@@ -454,7 +459,7 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
         const withPrompts = valid.filter(q => Array.isArray(q.prompts) && q.prompts.length > 0);
 
         if (valid.length === 0) {
-          setImportError(`Found ${raw.length} items but none have a "title" field.`);
+          setImportError('Found {count} items but none have a "title" field.'); setImportErrorParams({ count: raw.length });
           return;
         }
 
@@ -467,7 +472,7 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
         // Use questions with prompts if available, otherwise all valid ones
         setImportPreview(withPrompts.length > 0 ? withPrompts : valid);
       } catch (err: any) {
-        setImportError(`Unexpected error: ${err?.message || err}`);
+        setImportError("Unexpected error: {detail}"); setImportErrorParams({ detail: String(err?.message || err) });
       }
     };
     reader.readAsText(file, 'UTF-8');
@@ -509,8 +514,8 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
     }
 
     setIsImporting(false);
-    if (succeeded > 0) toast.success(`Imported ${succeeded} question(s) successfully`);
-    if (failed > 0) toast.error(`${failed} question(s) failed to import`);
+    if (succeeded > 0) toast.success(tr('Imported {count} question(s) successfully', { count: succeeded }));
+    if (failed > 0) toast.error(tr('{count} question(s) failed to import', { count: failed }));
     setIsImportDialogOpen(false);
     setImportPreview(null);
     setImportError(null);
@@ -592,7 +597,7 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
       importLanguage={importLanguage}
       onImportLanguageChange={setImportLanguage}
       importPreview={importPreview}
-      importError={importError}
+      importError={importError ? tr(importError, importErrorParams) : null}
       isImporting={isImporting}
       onImportFile={handleImportFile}
       onImportSubmit={handleImportSubmit}
@@ -616,8 +621,7 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
             <DialogTrigger asChild>
               <Button variant="outline" size="sm" className="gap-2">
                 <Download className="w-4 h-4" />
-                Export
-              </Button>
+                {tr("Export")}</Button>
             </DialogTrigger>
             <DialogContent className="max-w-md">
               <DialogHeader>
@@ -658,11 +662,10 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
                   </ul>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => setIsExportDialogOpen(false)} className="flex-1">Cancel</Button>
+                  <Button variant="outline" onClick={() => setIsExportDialogOpen(false)} className="flex-1">{tr("Cancel")}</Button>
                   <Button onClick={handleExport} className="flex-1 bg-success-500 hover:bg-success-700 gap-2">
                     <Download className="w-4 h-4" />
-                    Download JSON
-                  </Button>
+                    {tr("Download JSON")}</Button>
                 </div>
               </div>
             </DialogContent>
@@ -694,7 +697,7 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
 
                 {/* Language selector */}
                 <div>
-                  <Label className="text-sm font-semibold mb-2 block">Content Language</Label>
+                  <Label className="text-sm font-semibold mb-2 block">{tr("Content Language")}</Label>
                   <div className="flex flex-wrap gap-2">
                     {([
                       { code: 'auto' as const, label: 'Auto-detect', flag: '🔍' },
@@ -786,7 +789,7 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
                           <span className="flex-1 min-w-0 truncate font-medium" lang={q.language === 'am' || q.language === 'om' ? q.language : undefined}>
                             {q.title}
                           </span>
-                          <Badge variant="outline" className="text-[10px] flex-shrink-0">{q.category || importCategory}</Badge>
+                          <Badge variant="outline" className="tbo-caption flex-shrink-0">{q.category || importCategory}</Badge>
                           <span className="text-muted-foreground flex-shrink-0">{q.prompts?.length || 0}p</span>
                         </div>
                       ))}
@@ -798,14 +801,14 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
 
               {/* Sticky footer — always visible */}
               <div className="flex-shrink-0 flex gap-2 pt-3 border-t border-border mt-1">
-                <Button variant="outline" onClick={() => setIsImportDialogOpen(false)} className="flex-1">Cancel</Button>
+                <Button variant="outline" onClick={() => setIsImportDialogOpen(false)} className="flex-1">{tr("Cancel")}</Button>
                 <Button
                   onClick={handleImportSubmit}
                   disabled={!importPreview || importPreview.length === 0 || isImporting}
                   className="flex-1 bg-primary-600 hover:bg-primary-700 gap-2"
                 >
-                  {isImporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-                  {isImporting ? 'Saving…' : `Save ${importPreview?.length ?? 0} Questions`}
+                  {isImporting ? <LoadingMark className="w-4 h-4" /> : <Upload className="w-4 h-4" />}
+                  {isImporting ? tr("Saving…") : `Save ${importPreview?.length ?? 0} Questions`}
                 </Button>
               </div>
             </DialogContent>
@@ -856,7 +859,7 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
               <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="category" className="text-xs sm:text-sm">Category</Label>
+                    <Label htmlFor="category" className="text-xs sm:text-sm">{tr("Category")}</Label>
                     <select
                       id="category"
                       value={formData.category}
@@ -872,15 +875,15 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
                     </select>
                   </div>
                   <div>
-                    <Label htmlFor="status" className="text-xs sm:text-sm">Status</Label>
+                    <Label htmlFor="status" className="text-xs sm:text-sm">{tr("Status")}</Label>
                     <select
                       id="status"
                       value={formData.status}
                       onChange={(e) => setFormData({ ...formData, status: e.target.value as 'active' | 'inactive' })}
                       className="w-full h-10 px-3 rounded-md border border-border text-xs sm:text-sm"
                     >
-                      <option value="active">Active</option>
-                      <option value="inactive">Inactive</option>
+                      <option value="active">{tr("Active")}</option>
+                      <option value="inactive">{tr("Inactive")}</option>
                     </select>
                   </div>
                 </div>
@@ -923,7 +926,7 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
                 </div>
 
                 <div>
-                  <Label htmlFor="language" className="text-xs sm:text-sm">Language</Label>
+                  <Label htmlFor="language" className="text-xs sm:text-sm">{tr("Language")}</Label>
                   <select
                     id="language"
                     value={formData.language || 'en'}
@@ -943,8 +946,7 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
                     <Label className="text-xs sm:text-sm">Discussion Questions</Label>
                     <Button type="button" variant="outline" size="sm" onClick={addPrompt} className="w-full sm:w-auto">
                       <Plus className="w-4 h-4 mr-1" />
-                      Add Question
-                    </Button>
+                      {tr("Add Question")}</Button>
                   </div>
 
                   {(formData.prompts || []).map((prompt, promptIndex) => (
@@ -1057,10 +1059,9 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
                     onClick={() => setIsDialogOpen(false)}
                     className="w-full sm:w-auto"
                   >
-                    Cancel
-                  </Button>
+                    {tr("Cancel")}</Button>
                   <Button type="submit" className="flex-1 sm:flex-1">
-                    {editingQuestion ? 'Update' : 'Create'} Question
+                    {editingQuestion ? 'Update' : tr("Create")} Question
                   </Button>
                 </div>
               </form>
@@ -1106,7 +1107,7 @@ export function QuestionsManager({ accessToken: propAccessToken }: QuestionsMana
           <p className="text-xl sm:text-2xl font-semibold font-bold">{questions.length}</p>
         </Card>
         <Card className="p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-muted-foreground mb-1 text-[14px] font-bold">Active</p>
+          <p className="text-xs sm:text-sm text-muted-foreground mb-1 text-[14px] font-bold">{tr("Active")}</p>
           <p className="text-xl sm:text-2xl font-semibold text-success-700 font-bold">
             {questions.filter(q => q.status === 'active').length}
           </p>

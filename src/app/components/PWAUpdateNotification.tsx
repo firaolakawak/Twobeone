@@ -65,8 +65,8 @@ export function PWAUpdateNotification() {
               <RefreshCw className="w-5 h-5" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold mb-1">{t.pwaUpdate.title}</h3>
-              <p className="text-sm text-sky-100">
+              <h3 className="tbo-card-title mb-1">{t.pwaUpdate.title}</h3>
+              <p className="tbo-supporting text-sky-100">
                 {t.pwaUpdate.description}
               </p>
             </div>

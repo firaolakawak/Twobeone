@@ -1,3 +1,6 @@
+import { BrandLoader, LoadingMark } from '../BrandLoader';
+import { useUiCopy } from "../../utils/uiTranslation";
+import { adminActivityMessages } from "../../locales/adminActivity";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { BookOpen, GraduationCap, Heart, MessageCircle, RefreshCw, TrendingUp, Users } from "lucide-react";
 import { toast } from "sonner";
@@ -69,6 +72,7 @@ const initialColumns: KanbanColumn[] = [
 ];
 
 export function AdminDashboard({ accessToken, onNavigate }: AdminDashboardProps) {
+  const tr = useUiCopy(adminActivityMessages);
   const [stats, setStats] = useState<DashboardStats>(emptyStats);
   const [activityLog, setActivityLog] = useState<ActivityLogEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -90,13 +94,13 @@ export function AdminDashboard({ accessToken, onNavigate }: AdminDashboardProps)
       const nextStats = statsResult.value.stats;
       if (nextStats?._error) {
         console.error("Admin stats query failed:", nextStats._error);
-        toast.error(`Could not load KPI data: ${nextStats._error}`);
+        toast.error(tr('Could not load KPI data'));
       } else {
         setStats({ ...emptyStats, ...(nextStats ?? {}) });
       }
     } else {
       console.error("Failed to load KPI data:", statsResult.reason);
-      toast.error(`Could not load KPI data: ${statsResult.reason?.message ?? "Unknown error"}`);
+      toast.error(tr('Could not load KPI data'));
     }
 
     if (activityResult.status === "fulfilled") {
@@ -106,7 +110,7 @@ export function AdminDashboard({ accessToken, onNavigate }: AdminDashboardProps)
       console.error("Failed to load recent activity:", activityResult.reason);
     }
     setIsLoading(false);
-  }, [accessToken]);
+  }, [accessToken, tr]);
 
   useEffect(() => {
     void loadDashboardData();
@@ -124,14 +128,14 @@ export function AdminDashboard({ accessToken, onNavigate }: AdminDashboardProps)
   const events = useMemo<TimelineEvent[]>(() => {
     const formatEventName = (event: string) => {
       const words = event.replace(/[._-]+/g, " ").trim();
-      return words ? words.charAt(0).toUpperCase() + words.slice(1) : "Activity recorded";
+      return tr(words ? words.charAt(0).toUpperCase() + words.slice(1) : "Activity recorded");
     };
     const formatDetails = (entry: ActivityLogEntry) => {
       const metadata = Object.entries(entry.metadata ?? {})
         .filter(([, value]) => value !== undefined && value !== null && value !== "")
         .map(([key, value]) => `${key.replace(/([A-Z])/g, " $1").toLowerCase()}: ${String(value)}`)
         .join(" · ");
-      const actor = entry.userName || entry.userEmail || entry.userId || "Unknown user";
+      const actor = entry.userName || entry.userEmail || entry.userId || tr("Unknown user");
       return metadata ? `${actor} · ${metadata}` : actor;
     };
 
@@ -142,7 +146,7 @@ export function AdminDashboard({ accessToken, onNavigate }: AdminDashboardProps)
       time: entry.timestamp,
       details: formatDetails(entry),
     }));
-  }, [activityLog]);
+  }, [activityLog, tr]);
 
   const persistKanban = useCallback(async (payload: KanbanStatePayload) => {
     if (!accessToken) throw new Error("An admin session is required");
@@ -158,41 +162,41 @@ export function AdminDashboard({ accessToken, onNavigate }: AdminDashboardProps)
     <main className="admin-dashboard" aria-busy={isLoading}>
       <header className="admin-dashboard__hero">
         <div>
-          <p className="admin-eyebrow">Overview</p>
-          <h1>Good morning, Admin</h1>
-          <p>Here’s what’s happening across TwoBeOne today.</p>
+          <p className="admin-eyebrow">{tr("Overview")}</p>
+          <h1>{tr("Good morning, Admin")}</h1>
+          <p>{tr("Here’s what’s happening across TwoBeOne today.")}</p>
         </div>
-        <button className="admin-secondary-button" type="button" onClick={() => void loadDashboardData()} aria-label="Refresh dashboard data" disabled={isLoading}>
-          <RefreshCw aria-hidden="true" /> {isLoading ? "Refreshing…" : "Refresh"}
+        <button className="admin-secondary-button" type="button" onClick={() => void loadDashboardData()} aria-label={tr("Refresh dashboard data")} disabled={isLoading}>
+          {isLoading ? <LoadingMark /> : <RefreshCw aria-hidden="true" />} {isLoading ? tr("Refreshing…") : tr("Refresh")}
         </button>
       </header>
 
-      <section className="admin-grid admin-kpi-grid" aria-label="Platform metrics">
+      <section className="admin-grid admin-kpi-grid" aria-label={tr("Platform metrics")}>
         {kpis.map((kpi) => <KPICard key={kpi.label} {...kpi} />)}
       </section>
 
       <section className="admin-grid admin-dashboard__content">
         <div className="admin-panel admin-dashboard__timeline">
           <div className="admin-panel__heading">
-            <div><p className="admin-eyebrow">Live feed</p><h2>Recent activity</h2></div>
-            <span className="admin-live-chip">Live</span>
+            <div><p className="admin-eyebrow">{tr("Live feed")}</p><h2>{tr("Recent activity")}</h2></div>
+            <span className="admin-live-chip">{tr("Live")}</span>
           </div>
           <Timeline events={events} />
         </div>
 
         <div className="admin-panel admin-dashboard__health">
-          <p className="admin-eyebrow">Platform health</p>
-          <h2>Strong momentum</h2>
-          <div className="admin-health-score"><span>{stats.completionRate}%</span><small>completion rate</small></div>
-          <p>Couples are consistently returning to complete weekly content.</p>
+          <p className="admin-eyebrow">{tr("Platform health")}</p>
+          <h2>{tr("Strong momentum")}</h2>
+          <div className="admin-health-score"><span>{stats.completionRate}%</span><small>{tr("completion rate")}</small></div>
+          <p>{tr("Couples are consistently returning to complete weekly content.")}</p>
         </div>
 
         <div className="admin-panel admin-dashboard__kanban">
           <div className="admin-panel__heading">
-            <div><p className="admin-eyebrow">Editorial workflow</p><h2>Content pipeline</h2></div>
-            <p>Use Space, then arrow keys, to move cards.</p>
+            <div><p className="admin-eyebrow">{tr("Editorial workflow")}</p><h2>{tr("Content pipeline")}</h2></div>
+            <p>{tr("Use Space, then arrow keys, to move cards.")}</p>
           </div>
-          <Suspense fallback={<div className="admin-kanban-skeleton" aria-label="Loading content pipeline" />}>
+          <Suspense fallback={<BrandLoader label={tr("Loading content pipeline")} />}>
             <MiniKanban columns={initialColumns} onPersist={persistKanban} />
           </Suspense>
         </div>

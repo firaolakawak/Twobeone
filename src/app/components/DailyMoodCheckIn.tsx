@@ -1,5 +1,6 @@
+import { LoadingMark } from './BrandLoader';
 import { useEffect, useRef, useState } from 'react';
-import { Check, Heart, Loader2 } from 'lucide-react';
+import { Check, Heart } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MOOD_EMOJI, type MoodValue } from '../utils/dailyMood';
 import { Button } from './ui/button';
@@ -183,7 +184,7 @@ function UserMoodCheckIn({ userId, userName, partnerName, mood, loaded, onSave, 
           type="button"
           variant="outline"
           size="sm"
-          className="h-11 rounded-full border-rose-200/70 bg-card/80 px-4 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:border-rose-900/50 dark:text-rose-300 dark:hover:bg-rose-950/30"
+          className="tbo-action h-11 rounded-full border-rose-200/70 bg-card/80 px-4 text-rose-600 hover:bg-rose-50 dark:border-rose-900/50 dark:text-rose-300 dark:hover:bg-rose-950/30"
           aria-label={t.dashboard.todaysMood}
           onClick={openManually}
           disabled={!loaded}
@@ -192,7 +193,7 @@ function UserMoodCheckIn({ userId, userName, partnerName, mood, loaded, onSave, 
           {t.dashboard.todaysMood}
         </Button>
         {onViewAnalytics && (
-          <Button type="button" variant="link" size="sm" className="h-11 rounded-lg px-1 text-xs font-medium text-muted-foreground hover:text-foreground" onClick={onViewAnalytics} aria-label={t.mood.analytics}>
+          <Button type="button" variant="link" size="sm" className="tbo-action h-11 rounded-lg px-1 text-muted-foreground hover:text-foreground" onClick={onViewAnalytics} aria-label={t.mood.analytics}>
             {t.mood.analytics}
           </Button>
         )}
@@ -206,15 +207,15 @@ function UserMoodCheckIn({ userId, userName, partnerName, mood, loaded, onSave, 
           onInteractOutside={(event) => { if (!canDismiss) event.preventDefault(); }}
         >
           <DialogHeader className="gap-3 border-b border-border bg-muted/40 px-5 py-5 text-left sm:px-6">
-            <div className="flex items-center gap-2 pr-6 text-sm font-semibold text-primary">
+            <div className="tbo-label flex items-center gap-2 pr-6 text-primary">
               <Heart className="h-5 w-5" aria-hidden="true" />
               {t.dashboard.todaysMood}
             </div>
-            <DialogTitle className="text-xl font-bold leading-tight tracking-tight text-foreground">{t.mood.howAreYouFeelingToday}</DialogTitle>
-            <DialogDescription className="text-sm leading-relaxed">
+            <DialogTitle className="tbo-dialog-title text-foreground">{t.mood.howAreYouFeelingToday}</DialogTitle>
+            <DialogDescription className="tbo-supporting">
               {t.mood.shareEmotionalState}
             </DialogDescription>
-            <p className="flex flex-wrap items-center gap-1.5 text-xs font-medium text-muted-foreground">
+            <p className="tbo-caption flex flex-wrap items-center gap-1.5 text-muted-foreground">
               <span>{userName || t.mood.you}</span>
               {partnerName && <><span aria-hidden="true">&amp;</span><span>{partnerName}</span></>}
             </p>
@@ -238,17 +239,17 @@ function UserMoodCheckIn({ userId, userName, partnerName, mood, loaded, onSave, 
                   >
                     {isSelected && <Check className="absolute right-1 top-1 h-3 w-3" strokeWidth={3} aria-hidden="true" />}
                     <span className="text-[1.75rem] leading-none" aria-hidden="true">{MOOD_EMOJI[value]}</span>
-                    <span className="break-words text-center text-xs font-semibold">{t.mood[value]}</span>
+                    <span className="tbo-caption break-words text-center">{t.mood[value]}</span>
                   </button>
                 );
               })}
             </div>
-            {saveError && <p role="alert" className="rounded-xl border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">{t.mood.failedSave}. {t.messages.tryAgainLater}</p>}
-            <Button type="button" className="h-12 w-full rounded-xl font-semibold" disabled={!selected || saving} onClick={saveMood}>
-              {saving && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
+            {saveError && <p role="alert" className="tbo-supporting rounded-xl border border-destructive/30 bg-destructive/5 px-3 py-2 text-destructive">{t.mood.failedSave}. {t.messages.tryAgainLater}</p>}
+            <Button type="button" className="tbo-action h-12 w-full rounded-xl" disabled={!selected || saving} onClick={saveMood}>
+              {saving && <LoadingMark />}
               {saving ? t.common.loading : t.mood.saveMood}
             </Button>
-            {canDismiss && <Button type="button" variant="ghost" className="w-full rounded-xl text-muted-foreground" onClick={() => setOpen(false)}>{t.common.close}</Button>}
+            {canDismiss && <Button type="button" variant="ghost" className="tbo-action w-full rounded-xl text-muted-foreground" onClick={() => setOpen(false)}>{t.common.close}</Button>}
           </div>
         </DialogContent>
       </Dialog>

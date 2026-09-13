@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, ReactNode } from 'react';
 import { Language, getTranslations, Translations } from '../utils/i18n';
+import { setCurrentLanguage, useCurrentLanguage } from '../utils/languageStore';
 
 interface LanguageContextType {
   language: Language;
@@ -14,64 +15,11 @@ interface LanguageProviderProps {
 }
 
 export function LanguageProvider({ children }: LanguageProviderProps) {
-  // Initialize language from localStorage or default to English
-  const [language, setLanguageState] = useState<Language>(() => {
-    const saved = typeof window === 'undefined' ? null : window.localStorage.getItem('twobeone_language');
-    return (saved === 'en' || saved === 'am' || saved === 'om') ? saved as Language : 'en';
-  });
-
-  // Get translations for current language
+  const language = useCurrentLanguage();
   const t = getTranslations(language);
 
-  // Save language preference
-  const setLanguage = (lang: Language) => {
-    setLanguageState(lang);
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem('twobeone_language', lang);
-      window.dispatchEvent(new CustomEvent('twobeone:language-change', { detail: lang }));
-    }
-  };
-
-  // Keep every provider instance and other open tabs in sync. The app has
-  // separate provider boundaries for public, authentication, and app routes.
-  useEffect(() => {
-    const applyExternalLanguage = (next: unknown) => {
-      if (next === 'en' || next === 'am' || next === 'om') setLanguageState(next);
-    };
-    const handleLanguageChange = (event: Event) => {
-      applyExternalLanguage((event as CustomEvent<unknown>).detail);
-    };
-    const handleStorage = (event: StorageEvent) => {
-      if (event.key === 'twobeone_language') applyExternalLanguage(event.newValue);
-    };
-    window.addEventListener('twobeone:language-change', handleLanguageChange);
-    window.addEventListener('storage', handleStorage);
-    return () => {
-      window.removeEventListener('twobeone:language-change', handleLanguageChange);
-      window.removeEventListener('storage', handleStorage);
-    };
-  }, []);
-
-  // Keep browser accessibility metadata and the Ethiopic font in sync on every change.
-  useEffect(() => {
-    document.documentElement.lang = language;
-    document.documentElement.dir = 'ltr';
-    document.body.dataset.language = language;
-
-    if (language === 'am' || language === 'om') {
-      const id = 'ethiopic-font';
-      if (!document.getElementById(id)) {
-        const link = document.createElement('link');
-        link.id = id;
-        link.rel = 'stylesheet';
-        link.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wdth,wght@75..125,100..900&display=swap';
-        document.head.appendChild(link);
-      }
-    }
-  }, [language]);
-
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage: setCurrentLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );

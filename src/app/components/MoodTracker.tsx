@@ -1,3 +1,5 @@
+import { useUiCopy } from '../utils/uiTranslation';
+import { moodUiMessages } from '../locales/moodUi';
 import { Smile } from 'lucide-react';
 import { Card } from './ui/card';
 import { useState } from 'react';
@@ -75,6 +77,7 @@ const MoodFaceMini = ({ mood, size = 40 }: { mood: string; size?: number }) => {
 };
 
 export function MoodTracker({ onMoodSelect, userMood, partnerMood }: MoodTrackerProps) {
+  const tr = useUiCopy(moodUiMessages);
   const { t } = useLanguage();
   const moods = [
     { value: 'great', label: t.mood.great, bg: 'linear-gradient(135deg, var(--success-50), var(--warning-50))', border: 'var(--success-400)', glow: 'var(--success-100)' },
@@ -90,10 +93,10 @@ export function MoodTracker({ onMoodSelect, userMood, partnerMood }: MoodTracker
     setIsSaving(true);
     try {
       await moodsApi.save(moodValue as 'great' | 'good' | 'okay' | 'sad');
-      toast.success('Mood saved!');
+      toast.success(tr("Mood saved!"));
     } catch (error) {
       console.error('Error saving mood:', error);
-      toast.error('Failed to save mood');
+      toast.error(tr("Failed to save mood"));
     } finally {
       setIsSaving(false);
     }

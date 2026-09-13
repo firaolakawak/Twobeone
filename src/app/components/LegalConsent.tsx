@@ -7,6 +7,7 @@ import { Shield, FileText, AlertCircle } from 'lucide-react';
 import { PrivacyPolicy } from '../legal/privacy-policy';
 import { TermsOfService } from '../legal/terms-of-service';
 import { getTranslations, Language } from '../utils/i18n';
+import { useCurrentLanguage } from '../utils/languageStore';
 
 interface LegalConsentProps {
   language?: Language;
@@ -14,7 +15,9 @@ interface LegalConsentProps {
   isLoading?: boolean;
 }
 
-export function LegalConsent({ language = 'en', onAccept, isLoading = false }: LegalConsentProps) {
+export function LegalConsent({ language: suppliedLanguage, onAccept, isLoading = false }: LegalConsentProps) {
+  const currentLanguage = useCurrentLanguage();
+  const language = suppliedLanguage ?? currentLanguage;
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
@@ -33,7 +36,7 @@ export function LegalConsent({ language = 'en', onAccept, isLoading = false }: L
             <AlertCircle className="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" />
             <div>
               <h4 className="font-semibold text-primary-900 mb-1">{content.importantNote}</h4>
-              <p className="text-sm text-primary-800">{content.partnerSharingNote}</p>
+              <p className="tbo-supporting text-primary-800">{content.partnerSharingNote}</p>
             </div>
           </div>
         </div>
@@ -52,7 +55,7 @@ export function LegalConsent({ language = 'en', onAccept, isLoading = false }: L
               <div className="flex-1">
                 <Label
                   htmlFor="terms"
-                  className="text-sm cursor-pointer leading-relaxed"
+                  className="tbo-label cursor-pointer"
                 >
                   {content.agreeTerms}
                 </Label>
@@ -61,7 +64,7 @@ export function LegalConsent({ language = 'en', onAccept, isLoading = false }: L
             <Button
               variant="link"
               size="sm"
-              className="h-auto p-0 text-xs text-primary-600 hover:text-primary-700 ml-8"
+              className="tbo-action h-auto p-0 text-primary-600 hover:text-primary-700 ml-8"
               onClick={() => setShowTerms(true)}
             >
               <FileText className="w-3 h-3 mr-1" />
@@ -81,7 +84,7 @@ export function LegalConsent({ language = 'en', onAccept, isLoading = false }: L
               <div className="flex-1">
                 <Label
                   htmlFor="privacy"
-                  className="text-sm cursor-pointer leading-relaxed"
+                  className="tbo-label cursor-pointer"
                 >
                   {content.agreePrivacy}
                 </Label>
@@ -90,7 +93,7 @@ export function LegalConsent({ language = 'en', onAccept, isLoading = false }: L
             <Button
               variant="link"
               size="sm"
-              className="h-auto p-0 text-xs text-primary-600 hover:text-primary-700 ml-8"
+              className="tbo-action h-auto p-0 text-primary-600 hover:text-primary-700 ml-8"
               onClick={() => setShowPrivacy(true)}
             >
               <Shield className="w-3 h-3 mr-1" />
@@ -101,7 +104,7 @@ export function LegalConsent({ language = 'en', onAccept, isLoading = false }: L
 
         {/* Error Message */}
         {!canProceed && (
-          <p className="text-xs text-muted-foreground text-center">
+          <p className="tbo-caption text-muted-foreground text-center">
             {content.mustAgree}
           </p>
         )}

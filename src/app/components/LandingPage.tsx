@@ -1,3 +1,6 @@
+import { useUiCopy } from "../utils/uiTranslation";
+import { publicLandingMessages } from "../locales/publicLanding";
+import { LoadingMark } from "./BrandLoader";
 import {
   useEffect,
   useRef,
@@ -15,7 +18,6 @@ import {
   Globe2,
   Heart,
   Link2,
-  Loader2,
   Mail,
   Menu,
   MessageCircle,
@@ -35,6 +37,7 @@ import {
 } from "../utils/publicRoutes";
 import { AppLaunchPreview } from "./landing/AppLaunchPreview";
 import { StoreDownloadButtons } from "./landing/StoreDownloadButtons";
+import { LanguageSelector } from './LanguageSelector';
 import {
   BlogPage,
   HelpCenterPage,
@@ -108,6 +111,7 @@ export function LandingPage({
   onGetStarted,
   initialPage = null,
 }: LandingPageProps) {
+  const tr = useUiCopy(publicLandingMessages);
   const { t } = useLanguage();
   const [activePage, setActivePage] = useState<StaticPage>(initialPage);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -235,18 +239,15 @@ export function LandingPage({
   return (
     <div className="launch-landing">
       <a className="ll-skip" href="#main-content">
-        Skip to content
-      </a>
+        {tr("Skip to content")}</a>
       <div className="ll-announcement">
-        <span className="ll-announcement-dot" /> A new chapter for your
-        relationship.
-        <a href="#download" onClick={(event) => scrollTo(event, "download")}>
-          Meet TwoBeOne <ArrowUpRight size={13} aria-hidden="true" />
+        <span className="ll-announcement-dot" /> {tr("A new chapter for your relationship.")}<a href="#download" onClick={(event) => scrollTo(event, "download")}>
+          {tr("Meet TwoBeOne")}<ArrowUpRight size={13} aria-hidden="true" />
         </a>
       </div>
       <header className="ll-header">
-        <nav className="ll-container ll-nav" aria-label="Main navigation">
-          <a className="ll-home" href="/" aria-label="TwoBeOne home">
+        <nav className="ll-container ll-nav" aria-label={tr("Main navigation")}>
+          <a className="ll-home" href="/" aria-label={tr("TwoBeOne home")}>
             <Brand />
           </a>
           <div className="ll-desktop-links">
@@ -256,11 +257,12 @@ export function LandingPage({
                 href={`#${link.id}`}
                 onClick={(event) => scrollTo(event, link.id)}
               >
-                {link.label}
+                {tr(link.label)}
               </a>
             ))}
           </div>
           <div className="ll-nav-actions">
+            <LanguageSelector />
             <button className="ll-signin" onClick={onGetStarted}>
               {t.auth.signIn}
             </button>
@@ -268,13 +270,13 @@ export function LandingPage({
               className="ll-button ll-button--small"
               onClick={onGetStarted}
             >
-              Get started <ArrowUpRight size={16} aria-hidden="true" />
+              {tr("Get started")}<ArrowUpRight size={16} aria-hidden="true" />
             </button>
             <button
               ref={menuButton}
               className="ll-menu-toggle"
               type="button"
-              aria-label={menuOpen ? "Close navigation" : "Open navigation"}
+              aria-label={menuOpen ? tr("Close navigation") : tr("Open navigation")}
               aria-expanded={menuOpen}
               aria-controls="landing-mobile-menu"
               onClick={() => setMenuOpen(!menuOpen)}
@@ -290,12 +292,12 @@ export function LandingPage({
                   href={`#${link.id}`}
                   onClick={(event) => scrollTo(event, link.id)}
                 >
-                  {link.label}
+                  {tr(link.label)}
                   <ArrowUpRight size={16} aria-hidden="true" />
                 </a>
               ))}
               <button onClick={onGetStarted}>
-                Sign in to your account{" "}
+                {tr("Sign in to your account")}{" "}
                 <ArrowRight size={16} aria-hidden="true" />
               </button>
             </div>
@@ -309,21 +311,17 @@ export function LandingPage({
         >
           <div className="ll-hero-copy">
             <div className="ll-eyebrow">
-              <span /> A LITTLE FAITH. A LITTLE TIME. A DEEPER LOVE.
-            </div>
+              <span /> {tr("A LITTLE FAITH. A LITTLE TIME. A DEEPER LOVE.")}</div>
             <h1 id="landing-title">
-              Love is a journey.
-              <br />
-              Grow <em>together.</em>
+              {tr("Love is a journey.")}<br />
+              <em>{tr('Grow together.')}</em>
             </h1>
             <p className="ll-hero-description">
-              Make room for what matters. A shared space for you and your
-              partner to connect, pray, and build a life rooted in faith.
-            </p>
+              {tr("Make room for what matters. A shared space for you and your partner to connect, pray, and build a life rooted in faith.")}</p>
             <StoreDownloadButtons onInstallIOS={openAppleInstallGuide} />
             <div className="ll-hero-actions ll-hero-actions--web">
               <button className="ll-text-link" onClick={onGetStarted}>
-                Open the web app <ArrowUpRight size={16} aria-hidden="true" />
+                {tr("Open the web app")}<ArrowUpRight size={16} aria-hidden="true" />
               </button>
               <a
                 className="ll-text-link"
@@ -333,16 +331,13 @@ export function LandingPage({
                 <span className="ll-play-icon">
                   <ArrowDown size={16} aria-hidden="true" />
                 </span>{" "}
-                Explore the app
-              </a>
+                {tr("Explore the app")}</a>
             </div>
             <div className="ll-hero-notes">
               <span>
-                <Check size={14} aria-hidden="true" /> Free to get started
-              </span>
+                <Check size={14} aria-hidden="true" /> {tr("Free to get started")}</span>
               <span>
-                <Check size={14} aria-hidden="true" /> Made for the two of you
-              </span>
+                <Check size={14} aria-hidden="true" /> {tr("Made for the two of you")}</span>
             </div>
             <div className="ll-hero-bottom">
               <span className="ll-mini-hearts" aria-hidden="true">
@@ -351,9 +346,8 @@ export function LandingPage({
                 <Heart />
               </span>
               <p>
-                For the first chapter.
-                <br />
-                <strong>And every chapter after.</strong>
+                {tr("For the first chapter.")}<br />
+                <strong>{tr("And every chapter after.")}</strong>
               </p>
               <span className="ll-hero-spark" aria-hidden="true">
                 <Sparkles />
@@ -365,20 +359,17 @@ export function LandingPage({
         <div className="ll-beliefs">
           <div className="ll-container ll-beliefs-inner">
             <span>
-              Small moments. <em>Lasting connection.</em>
+              {tr("Small moments.")}{' '}<em>{tr("Lasting connection.")}</em>
             </span>
             <span>
               <BookOpen />
-              Rooted in Scripture
-            </span>
+              {tr("Rooted in Scripture")}</span>
             <span>
               <Heart />
-              Designed for two
-            </span>
+              {tr("Designed for two")}</span>
             <span>
               <Globe2 />
-              Together, wherever you are
-            </span>
+              {tr("Together, wherever you are")}</span>
           </div>
         </div>
         <section
@@ -389,20 +380,15 @@ export function LandingPage({
         >
           <div className="ll-section-top">
             <div>
-              <p className="ll-eyebrow">YOUR EVERYDAY, A LITTLE CLOSER</p>
+              <p className="ll-eyebrow">{tr("YOUR EVERYDAY, A LITTLE CLOSER")}</p>
               <h2 id="features-title">
-                Good things grow
-                <br />
-                with <em>small daily habits.</em>
+                <em>{tr('Good things grow with small daily habits.')}</em>
               </h2>
             </div>
             <p>
-              Less scrolling past each other.
-              <br />
-              More showing up for each other.
-              <br />
-              Make a little space for the two of you.
-            </p>
+              {tr("Less scrolling past each other.")}<br />
+              {tr("More showing up for each other.")}<br />
+              {tr("Make a little space for the two of you.")}</p>
           </div>
           <div className="ll-feature-grid">
             <article className="ll-feature ll-feature--pink">
@@ -413,31 +399,25 @@ export function LandingPage({
                 <div className="ll-paper ll-paper--back" />
                 <div className="ll-paper">
                   <BookOpen size={23} />
-                  <small>A MOMENT IN THE WORD</small>
+                  <small>{tr("A MOMENT IN THE WORD")}</small>
                   <span>
-                    Love is patient.
-                    <br />
-                    Love is kind.
-                  </span>
+                    {tr("Love is patient.")}<br />
+                    {tr("Love is kind.")}</span>
                   <i />
-                  <small>1 CORINTHIANS 13:4</small>
+                  <small>{tr("1 CORINTHIANS 13:4")}</small>
                 </div>
                 <span className="ll-art-spark">✳</span>
               </div>
               <div className="ll-feature-copy">
-                <span className="ll-feature-label">01 / GROW IN FAITH</span>
+                <span className="ll-feature-label">{tr("01 / GROW IN FAITH")}</span>
                 <h3>
-                  One devotion.
-                  <br />
-                  Two open hearts.
-                </h3>
+                  {tr("One devotion.")}<br />
+                  {tr("Two open hearts.")}</h3>
                 <p>
-                  Bring Scripture into your everyday with devotionals that
-                  invite you to reflect and grow together.
-                </p>
+                  {tr("Bring Scripture into your everyday with devotionals that invite you to reflect and grow together.")}</p>
                 <button
                   onClick={onGetStarted}
-                  aria-label="Explore daily devotionals"
+                  aria-label={tr("Explore daily devotionals")}
                 >
                   <ArrowUpRight size={20} />
                 </button>
@@ -449,16 +429,13 @@ export function LandingPage({
                 aria-hidden="true"
               >
                 <span className="ll-chat-bubble">
-                  Let’s go a little deeper. <Heart size={14} />
+                  {tr("Let’s go a little deeper.")}<Heart size={14} />
                 </span>
                 <div className="ll-question-card">
                   <MessageCircle size={21} />
-                  <small>TONIGHT’S CONVERSATION</small>
+                  <small>{tr("TONIGHT’S CONVERSATION")}</small>
                   <span>
-                    What makes you feel
-                    <br />
-                    most loved by me?
-                  </span>
+                    {tr('What makes you feel most loved by me?')}</span>
                   <div>
                     <i />
                     <i />
@@ -468,20 +445,14 @@ export function LandingPage({
               </div>
               <div className="ll-feature-copy">
                 <span className="ll-feature-label">
-                  02 / REALLY KNOW EACH OTHER
-                </span>
+                  {tr("02 / REALLY KNOW EACH OTHER")}</span>
                 <h3>
-                  Go beyond
-                  <br />
-                  “How was your day?”
-                </h3>
+                  {tr('Go beyond “How was your day?”')}</h3>
                 <p>
-                  Discover thoughtful questions that spark honest conversations,
-                  new perspectives, and deeper connection.
-                </p>
+                  {tr("Discover thoughtful questions that spark honest conversations, new perspectives, and deeper connection.")}</p>
                 <button
                   onClick={onGetStarted}
-                  aria-label="Explore conversation questions"
+                  aria-label={tr("Explore conversation questions")}
                 >
                   <ArrowUpRight size={20} />
                 </button>
@@ -500,25 +471,19 @@ export function LandingPage({
                   <span>
                     <Check size={13} />
                   </span>{" "}
-                  A prayer shared. A heart held.
-                </div>
+                  {tr("A prayer shared. A heart held.")}</div>
               </div>
               <div className="ll-feature-copy">
                 <span className="ll-feature-label">
-                  03 / KEEP FAITH AT THE CENTER
-                </span>
+                  {tr("03 / KEEP FAITH AT THE CENTER")}</span>
                 <h3>
-                  Your hopes.
-                  <br />
-                  Your prayers. Together.
-                </h3>
+                  {tr("Your hopes.")}<br />
+                  {tr("Your prayers. Together.")}</h3>
                 <p>
-                  Share what’s on your heart, pray for one another, and remember
-                  the answers along the way.
-                </p>
+                  {tr("Share what’s on your heart, pray for one another, and remember the answers along the way.")}</p>
                 <button
                   onClick={onGetStarted}
-                  aria-label="Explore shared prayer"
+                  aria-label={tr("Explore shared prayer")}
                 >
                   <ArrowUpRight size={20} />
                 </button>
@@ -526,19 +491,15 @@ export function LandingPage({
             </article>
           </div>
           <div className="ll-more-features">
-            <span>And room for so much more</span>
+            <span>{tr("And room for so much more")}</span>
             <span>
-              <NotebookPen size={17} /> Shared journals
-            </span>
+              <NotebookPen size={17} /> {tr("Shared journals")}</span>
             <span>
-              <Heart size={17} /> Mood check-ins
-            </span>
+              <Heart size={17} /> {tr("Mood check-ins")}</span>
             <span>
-              <Sprout size={17} /> Learning together
-            </span>
+              <Sprout size={17} /> {tr("Learning together")}</span>
             <span>
-              <Sparkles size={17} /> Your milestones
-            </span>
+              <Sparkles size={17} /> {tr("Your milestones")}</span>
           </div>
         </section>
         <section
@@ -550,70 +511,57 @@ export function LandingPage({
           <div className="ll-container ll-how-grid">
             <div className="ll-how-visual">
               <span className="ll-eyebrow">
-                A SHARED SPACE. A SHARED DIRECTION.
-              </span>
+                {tr("A SHARED SPACE. A SHARED DIRECTION.")}</span>
               <div className="ll-connection-art" aria-hidden="true">
                 <span className="ll-connection-ring" />
-                <span className="ll-connection-person">You</span>
+                <span className="ll-connection-person">{tr("You")}</span>
                 <span className="ll-connection-plus">
                   <Plus />
                 </span>
                 <span className="ll-connection-person">
-                  Your
-                  <br />
-                  person
-                </span>
+                  {tr('Your person')}</span>
                 <Heart className="ll-connection-heart" />
               </div>
               <p>
-                Two people.
-                <br />
-                <em>One beautiful journey.</em>
+                {tr("Two people.")}<br />
+                <em>{tr("One beautiful journey.")}</em>
               </p>
               <span className="ll-how-caption">
-                <Link2 size={15} /> Connected by your own invite code
-              </span>
+                <Link2 size={15} /> {tr("Connected by your own invite code")}</span>
             </div>
             <div className="ll-how-copy">
-              <p className="ll-eyebrow">LESS SETUP. MORE TOGETHER.</p>
+              <p className="ll-eyebrow">{tr("LESS SETUP. MORE TOGETHER.")}</p>
               <h2 id="how-title">
-                Your next chapter
-                <br />
-                starts <em>right here.</em>
+                <em>{tr('Your next chapter starts right here.')}</em>
               </h2>
               <ol className="ll-steps">
                 <li>
                   <span>01</span>
                   <div>
-                    <h3>Make yourself at home</h3>
+                    <h3>{tr("Make yourself at home")}</h3>
                     <p>
-                      Create your free account. Bring your story, just as it is.
-                    </p>
+                      {tr("Create your free account. Bring your story, just as it is.")}</p>
                   </div>
                 </li>
                 <li>
                   <span>02</span>
                   <div>
-                    <h3>Invite your favorite person</h3>
+                    <h3>{tr("Invite your favorite person")}</h3>
                     <p>
-                      Share your unique code and connect your accounts in a
-                      space made for you both.
-                    </p>
+                      {tr("Share your unique code and connect your accounts in a space made for you both.")}</p>
                   </div>
                 </li>
                 <li>
                   <span>03</span>
                   <div>
-                    <h3>Find your daily rhythm</h3>
+                    <h3>{tr("Find your daily rhythm")}</h3>
                     <p>
-                      A devotion, a question, a prayer. Start with one small
-                      moment and keep growing.
-                    </p>
+                      {tr("A devotion, a question, a prayer. Start with one small moment and keep growing.")}</p>
                   </div>
                 </li>
               </ol>
               <button className="ll-text-link" onClick={onGetStarted}>
-                Let’s begin <ArrowUpRight size={19} aria-hidden="true" />
+                {tr("Let’s begin")}<ArrowUpRight size={19} aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -627,27 +575,21 @@ export function LandingPage({
           <span className="ll-mission-flower" aria-hidden="true">
             ✳
           </span>
-          <p className="ll-eyebrow">THE HEART BEHIND TWOBEONE</p>
+          <p className="ll-eyebrow">{tr("THE HEART BEHIND TWOBEONE")}</p>
           <h2 id="mission-title">
-            A stronger “us” starts with
-            <br />
-            <em>the little things.</em>
+            <em>{tr('A stronger “us” starts with the little things.')}</em>
           </h2>
           <p className="ll-mission-description">
-            We believe a Christ-centered relationship is built in everyday
-            moments. The prayer before a big day. The question you’ve never
-            asked. The choice to listen a little longer. TwoBeOne helps you make
-            more of those moments.
-          </p>
+            {tr("We believe a Christ-centered relationship is built in everyday moments. The prayer before a big day. The question you’ve never asked. The choice to listen a little longer. TwoBeOne helps you make more of those moments.")}</p>
           <div className="ll-chapters">
-            <span>Dating with intention</span>
+            <span>{tr("Dating with intention")}</span>
             <i />
-            <span>Preparing for marriage</span>
+            <span>{tr("Preparing for marriage")}</span>
             <i />
-            <span>Growing through marriage</span>
+            <span>{tr("Growing through marriage")}</span>
           </div>
           <blockquote>
-            “Two are better than one.”<cite>ECCLESIASTES 4:9</cite>
+            {tr("“Two are better than one.”")}<cite>{tr("ECCLESIASTES 4:9")}</cite>
           </blockquote>
         </section>
         <section
@@ -658,23 +600,20 @@ export function LandingPage({
         >
           <div className="ll-container ll-faq-grid">
             <div className="ll-faq-intro">
-              <p className="ll-eyebrow">A FEW THINGS YOU MIGHT WONDER</p>
+              <p className="ll-eyebrow">{tr("A FEW THINGS YOU MIGHT WONDER")}</p>
               <h2 id="faq-title">
-                Good questions.
-                <br />
-                <em>Honest answers.</em>
+                {tr("Good questions.")}<br />
+                <em>{tr("Honest answers.")}</em>
               </h2>
               <p>
-                Something else on your mind?
-                <br />
-                We’d love to help.
-              </p>
+                {tr("Something else on your mind?")}<br />
+                {tr("We’d love to help.")}</p>
               <a
                 className="ll-text-link"
                 href={STATIC_PAGE_PATHS.contact}
                 onClick={(event) => navigate(event, "contact")}
               >
-                Get in touch <ArrowUpRight size={17} aria-hidden="true" />
+                {tr("Get in touch")}<ArrowUpRight size={17} aria-hidden="true" />
               </a>
             </div>
             <div className="ll-faq-list">
@@ -693,7 +632,7 @@ export function LandingPage({
                         setOpenFaq(openFaq === index ? null : index)
                       }
                     >
-                      {faq.question}
+                      {tr(faq.question)}
                       <ChevronDown size={18} aria-hidden="true" />
                     </button>
                   </h3>
@@ -703,7 +642,7 @@ export function LandingPage({
                     aria-labelledby={`faq-question-${index}`}
                     hidden={openFaq !== index}
                   >
-                    <p>{faq.answer}</p>
+                    <p>{tr(faq.answer)}</p>
                   </div>
                 </div>
               ))}
@@ -724,21 +663,17 @@ export function LandingPage({
             <span className="ll-download-icon">
               <Heart aria-hidden="true" />
             </span>
-            <p className="ll-eyebrow">YOUR STORY IS STILL BEING WRITTEN</p>
+            <p className="ll-eyebrow">{tr("YOUR STORY IS STILL BEING WRITTEN")}</p>
             <h2 id="download-title">
-              Make the next chapter
-              <br />
-              <em>your closest yet.</em>
+              <em>{tr('Make the next chapter your closest yet.')}</em>
             </h2>
             <p>
-              A little time for each other. A little space for God.
-              <br />A beautiful place to begin.
-            </p>
+              {tr("A little time for each other. A little space for God.")}<br />{tr("A beautiful place to begin.")}</p>
             <button
               className="ll-button ll-button--light"
               onClick={onGetStarted}
             >
-              Get started for free <ArrowUpRight size={19} aria-hidden="true" />
+              {tr("Get started for free")}<ArrowUpRight size={19} aria-hidden="true" />
             </button>
             <StoreDownloadButtons onInstallIOS={openAppleInstallGuide} />
           </div>
@@ -753,23 +688,20 @@ export function LandingPage({
             </span>
             <div>
               <h2 id="newsletter-title">
-                A little encouragement in your inbox.
-              </h2>
+                {tr("A little encouragement in your inbox.")}</h2>
               <p>
-                Shabbat Shalom. Faith, reflection, and a moment to reconnect.
-              </p>
+                {tr("Shabbat Shalom. Faith, reflection, and a moment to reconnect.")}</p>
             </div>
           </div>
           <form onSubmit={handleNewsletterSignup}>
             <label className="ll-sr-only" htmlFor="landing-email">
-              Your email address
-            </label>
+              {tr("Your email address")}</label>
             <div className="ll-email-field">
               <input
                 id="landing-email"
                 type="email"
                 autoComplete="email"
-                placeholder="Your email address"
+                placeholder={tr("Your email address")}
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 required
@@ -779,37 +711,30 @@ export function LandingPage({
               <button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
-                    <Loader2
-                      className="ll-spinner"
-                      size={16}
-                      aria-hidden="true"
-                    />{" "}
-                    Joining…
-                  </>
+                    <LoadingMark className="ll-spinner" />{" "}
+                    {tr("Joining…")}</>
                 ) : (
                   <>
-                    Count me in <ArrowUpRight size={16} aria-hidden="true" />
+                    {tr("Count me in")}<ArrowUpRight size={16} aria-hidden="true" />
                   </>
                 )}
               </button>
             </div>
             <p id="newsletter-note">
-              By subscribing, you agree to our{" "}
+              {tr("By subscribing, you agree to our")}{" "}
               <a
                 href={STATIC_PAGE_PATHS["privacy-policy"]}
                 onClick={(event) => navigate(event, "privacy-policy")}
               >
-                privacy policy
-              </a>
-              . Unsubscribe anytime.
-            </p>
+                {tr("privacy policy")}</a>
+              {tr(". Unsubscribe anytime.")}</p>
             <p
               id="newsletter-status"
               className={newsletterError ? "ll-form-error" : "ll-form-success"}
               role="status"
               aria-live="polite"
             >
-              {newsletterMessage}
+              {tr(newsletterMessage)}
             </p>
           </form>
         </section>
@@ -818,29 +743,27 @@ export function LandingPage({
         <div className="ll-container">
           <div className="ll-footer-top">
             <div className="ll-footer-brand">
-              <a className="ll-home" href="/" aria-label="TwoBeOne home">
+              <a className="ll-home" href="/" aria-label={tr("TwoBeOne home")}>
                 <Brand />
               </a>
               <p>
-                A little closer to each other.
-                <br />A little closer to God.
-              </p>
-              <span>Made with faith. Built for love.</span>
+                {tr("A little closer to each other.")}<br />{tr("A little closer to God.")}</p>
+              <span>{tr("Made with faith. Built for love.")}</span>
             </div>
             <div className="ll-footer-column">
-              <h3>Explore</h3>
+              <h3>{tr("Explore")}</h3>
               {NAV_LINKS.map((link) => (
                 <a
                   key={link.id}
                   href={`#${link.id}`}
                   onClick={(event) => scrollTo(event, link.id)}
                 >
-                  {link.label}
+                  {tr(link.label)}
                 </a>
               ))}
             </div>
             <div className="ll-footer-column">
-              <h3>Stay connected</h3>
+              <h3>{tr("Stay connected")}</h3>
               {(
                 [
                   ["blog", "Our journal"],
@@ -854,22 +777,22 @@ export function LandingPage({
                   href={STATIC_PAGE_PATHS[page]}
                   onClick={(event) => navigate(event, page)}
                 >
-                  {label}
+                  {tr(label)}
                 </a>
               ))}
             </div>
             <div className="ll-footer-note">
               <Globe2 size={21} aria-hidden="true" />
-              <h3>Love speaks your language.</h3>
+              <h3>{tr("Love speaks your language.")}</h3>
               <p>English · አማርኛ · Afaan Oromo</p>
               <button className="ll-text-link" onClick={onGetStarted}>
-                Find your shared rhythm{" "}
+                {tr("Find your shared rhythm")}{" "}
                 <ArrowUpRight size={16} aria-hidden="true" />
               </button>
             </div>
           </div>
           <div className="ll-footer-bottom">
-            <p>© {new Date().getFullYear()} TwoBeOne. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} {' '}{tr("TwoBeOne. All rights reserved.")}</p>
             <div>
               {(
                 [
@@ -883,12 +806,12 @@ export function LandingPage({
                   href={STATIC_PAGE_PATHS[page]}
                   onClick={(event) => navigate(event, page)}
                 >
-                  {label}
+                  {tr(label)}
                 </a>
               ))}
             </div>
             <span>
-              Two hearts. One purpose. <Heart size={13} aria-hidden="true" />
+              {tr("Two hearts. One purpose.")}<Heart size={13} aria-hidden="true" />
             </span>
           </div>
         </div>

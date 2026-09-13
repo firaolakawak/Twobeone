@@ -1,3 +1,6 @@
+import { useUiCopy } from '../utils/uiTranslation';
+import { guidanceMessages, quizResultLabel } from '../locales/guidance';
+import { BackButton } from './BackButton';
 import { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
@@ -6,7 +9,6 @@ import { Progress } from './ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { 
   Heart, 
-  ChevronLeft, 
   BookOpen, 
   MessageCircle, 
   Sparkles,
@@ -38,6 +40,7 @@ interface QuizResult {
 }
 
 export function QuizzesHub({ profile, partner, accessToken, onBack }: QuizzesHubProps) {
+  const tr = useUiCopy(guidanceMessages);
   const [activeView, setActiveView] = useState<'hub' | 'loveLanguages' | 'faithJourney' | 'conflictStyle' | 'comparison'>('hub');
   const [results, setResults] = useState<QuizResult[]>([]);
   const [partnerResults, setPartnerResults] = useState<QuizResult[]>([]);
@@ -86,15 +89,15 @@ export function QuizzesHub({ profile, partner, accessToken, onBack }: QuizzesHub
       );
 
       if (!response.ok) {
-        throw new Error('Failed to save quiz result');
+        throw new Error(tr("Failed to save quiz result"));
       }
 
-      toast.success('Quiz completed! Results saved.');
+      toast.success(tr("Quiz completed! Results saved."));
       await loadResults();
       setActiveView('hub');
     } catch (error) {
       console.error('Failed to save quiz result:', error);
-      toast.error('Failed to save quiz result');
+      toast.error(tr("Failed to save quiz result"));
     }
   };
 
@@ -114,8 +117,8 @@ export function QuizzesHub({ profile, partner, accessToken, onBack }: QuizzesHub
   const quizzes = [
     {
       id: 'loveLanguages',
-      title: 'Love Languages',
-      description: 'Discover how you give and receive love',
+      title: tr("Love Languages"),
+      description: tr("Discover how you give and receive love"),
       icon: Heart,
       color: 'from-primary-500 to-primary-500',
       bgColor: 'from-primary-50 to-primary-50',
@@ -125,8 +128,8 @@ export function QuizzesHub({ profile, partner, accessToken, onBack }: QuizzesHub
     },
     {
       id: 'faithJourney',
-      title: 'Faith Journey',
-      description: 'Assess your spiritual growth and practices',
+      title: tr("Faith Journey"),
+      description: tr("Assess your spiritual growth and practices"),
       icon: BookOpen,
       color: 'from-sky-500 to-sky-500',
       bgColor: 'from-sky-50 to-sky-100',
@@ -136,8 +139,8 @@ export function QuizzesHub({ profile, partner, accessToken, onBack }: QuizzesHub
     },
     {
       id: 'conflictStyle',
-      title: 'Conflict Style',
-      description: 'Learn how you handle disagreements',
+      title: tr("Conflict Style"),
+      description: tr("Learn how you handle disagreements"),
       icon: MessageCircle,
       color: 'from-primary-500 to-primary-500',
       bgColor: 'from-primary-50 to-primary-50',
@@ -194,10 +197,8 @@ export function QuizzesHub({ profile, partner, accessToken, onBack }: QuizzesHub
       {/* Header */}
       <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm border-b">
         <div className="flex items-center justify-between px-4 py-4">
-          <Button variant="ghost" size="icon" onClick={onBack}>
-            <ChevronLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="text-xl font-semibold">Discovery Quizzes</h1>
+          <BackButton label={tr("Back")} onClick={onBack} />
+          <h1 className="tbo-page-title min-w-0 break-words">{tr("Discovery Quizzes")}</h1>
           <div className="w-10" />
         </div>
       </div>
@@ -208,10 +209,8 @@ export function QuizzesHub({ profile, partner, accessToken, onBack }: QuizzesHub
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 mb-4">
             <Brain className="w-8 h-8 text-white" />
           </div>
-          <h2 className="text-2xl font-bold mb-2">Discover Your Relationship</h2>
-          <p className="text-muted-foreground max-w-xl mx-auto">
-            Take biblical-based quizzes to understand yourself and your partner better. Compare results and grow together in love.
-          </p>
+          <h2 className="tbo-section-title mb-2">{tr("Discover Your Relationship")}</h2>
+          <p className="tbo-body text-muted-foreground max-w-xl mx-auto">{tr("Take biblical-based quizzes to understand yourself and your partner better. Compare results and grow together in love.")} </p>
         </div>
 
         {/* Stats Card */}
@@ -221,17 +220,17 @@ export function QuizzesHub({ profile, partner, accessToken, onBack }: QuizzesHub
               <div className="grid grid-cols-3 gap-4">
                 <div className="text-center">
                   <div className="text-3xl font-bold">{results.length}</div>
-                  <div className="text-sm opacity-90">Completed</div>
+                  <div className="tbo-supporting opacity-90">{tr("Completed")}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold">{3 - results.length}</div>
-                  <div className="text-sm opacity-90">Remaining</div>
+                  <div className="tbo-supporting opacity-90">{tr("Remaining")}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold">
                     {partner ? partnerResults.length : 0}
                   </div>
-                  <div className="text-sm opacity-90">Partner's</div>
+                  <div className="tbo-supporting opacity-90">{tr("Partner's")}</div>
                 </div>
               </div>
             </CardContent>
@@ -260,26 +259,24 @@ export function QuizzesHub({ profile, partner, accessToken, onBack }: QuizzesHub
                     <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${quiz.color} flex items-center justify-center flex-shrink-0`}>
                       <QuizIcon className="w-6 h-6 text-white" />
                     </div>
-                    
+
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-lg">{quiz.title}</h3>
+                        <h3 className="tbo-card-title">{quiz.title}</h3>
                         {isCompleted && (
-                          <Badge className="bg-success-500">
-                            <CheckCircle className="w-3 h-3 mr-1" />
-                            Done
-                          </Badge>
+                          <Badge className="tbo-caption bg-success-500">
+                            <CheckCircle className="w-3 h-3 mr-1" />{tr("Done")} </Badge>
                         )}
                       </div>
-                      
-                      <p className="text-sm text-muted-foreground mb-3">{quiz.description}</p>
-                      
+
+                      <p className="tbo-supporting text-muted-foreground mb-3">{quiz.description}</p>
+
                       <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
-                        <span>{quiz.questions} questions</span>
+                        <span>{quiz.questions}{tr("questions")}</span>
                         <span>•</span>
-                        <span>{quiz.duration}</span>
+                        <span>{tr(quiz.duration)}</span>
                       </div>
-                      
+
                       <div className="flex items-start gap-2 p-3 bg-sky-50 rounded-lg mb-4">
                         <Sparkles className="w-4 h-4 text-sky-600 flex-shrink-0 mt-0.5" />
                         <p className="text-xs text-sky-700 italic">{quiz.scripture}</p>
@@ -287,29 +284,27 @@ export function QuizzesHub({ profile, partner, accessToken, onBack }: QuizzesHub
 
                       {isCompleted && userResult && (
                         <div className="mb-4 p-3 bg-card rounded-lg border">
-                          <p className="text-xs text-muted-foreground mb-1">Your Result:</p>
-                          <p className="font-medium text-sm">{userResult.result.primary || userResult.result.topLanguage || userResult.result.style}</p>
+                          <p className="tbo-caption text-muted-foreground mb-1">{tr("Your Result:")}</p>
+                          <p className="tbo-supporting">{quizResultLabel(tr, userResult.result.primary || userResult.result.topLanguage || userResult.result.style || userResult.result.stage)}</p>
                         </div>
                       )}
-                      
-                      <div className="flex gap-2">
+
+                      <div className="flex flex-wrap gap-2">
                         <Button
                           onClick={() => setActiveView(quiz.id as any)}
-                          className={`flex-1 bg-gradient-to-r ${quiz.color}`}
+                          className={`tbo-action flex-1 min-h-11 h-auto whitespace-normal bg-gradient-to-r ${quiz.color}`}
                         >
-                          {isCompleted ? 'Retake Quiz' : 'Start Quiz'}
+                          {isCompleted ? tr("Retake Quiz") : tr("Start Quiz")}
                           <ArrowRight className="w-4 h-4 ml-2" />
                         </Button>
-                        
+
                         {canCompare && (
                           <Button
                             onClick={() => handleViewComparison(quiz.id)}
                             variant="outline"
-                            className="flex items-center gap-2"
+                            className="tbo-action flex items-center gap-2"
                           >
-                            <Users className="w-4 h-4" />
-                            Compare
-                          </Button>
+                            <Users className="w-4 h-4" />{tr("Compare")} </Button>
                         )}
                       </div>
                     </div>
@@ -323,31 +318,29 @@ export function QuizzesHub({ profile, partner, accessToken, onBack }: QuizzesHub
         {/* Info Card */}
         <Card className="bg-gradient-to-br from-primary-50 to-primary-100 border-primary-200">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-primary-900">
-              <Trophy className="w-5 h-5" />
-              Why Take These Quizzes?
-            </CardTitle>
+            <CardTitle className="tbo-card-title flex items-center gap-2 text-primary-900">
+              <Trophy className="w-5 h-5" />{tr("Why Take These Quizzes?")} </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-start gap-3">
               <Heart className="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="font-medium text-primary-900">Deepen Understanding</p>
-                <p className="text-sm text-primary-700">Learn how you and your partner express love and handle challenges</p>
+                <p className="tbo-body text-primary-900">{tr("Deepen Understanding")}</p>
+                <p className="tbo-supporting text-primary-700">{tr("Learn how you and your partner express love and handle challenges")}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <BookOpen className="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="font-medium text-primary-900">Biblical Insights</p>
-                <p className="text-sm text-primary-700">Each result includes Scripture-based guidance for growth</p>
+                <p className="tbo-body text-primary-900">{tr("Biblical Insights")}</p>
+                <p className="tbo-supporting text-primary-700">{tr("Each result includes Scripture-based guidance for growth")}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <Users className="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="font-medium text-primary-900">Partner Comparison</p>
-                <p className="text-sm text-primary-700">Compare results to find compatibility and areas to work on together</p>
+                <p className="tbo-body text-primary-900">{tr("Partner Comparison")}</p>
+                <p className="tbo-supporting text-primary-700">{tr("Compare results to find compatibility and areas to work on together")}</p>
               </div>
             </div>
           </CardContent>

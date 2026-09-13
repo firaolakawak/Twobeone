@@ -1,3 +1,5 @@
+import { useUiCopy } from '../utils/uiTranslation';
+import { guidanceMessages } from '../locales/guidance';
 import { GraduationCap } from 'lucide-react';
 import { Card } from './ui/card';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -14,14 +16,15 @@ interface PreMarriageGuidanceProps {
 }
 
 export function PreMarriageGuidance({ modules }: PreMarriageGuidanceProps) {
+  const tr = useUiCopy(guidanceMessages);
   const { t } = useLanguage();
   return (
     <Card className="bg-card rounded-2xl p-6">
       <div className="flex items-center gap-2 text-warning-700 mb-6">
         <GraduationCap className="w-5 h-5" />
-        <h3 className="font-medium">{t.dashboard.preMarriageGuidance}</h3>
+        <h3 className="tbo-card-title">{t.dashboard.preMarriageGuidance}</h3>
       </div>
-      
+
       <div className="grid grid-cols-3 gap-4">
         {modules.map((module) => (
           <div key={module.id} className="text-center">
@@ -49,15 +52,15 @@ export function PreMarriageGuidance({ modules }: PreMarriageGuidanceProps) {
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-sm font-medium">{module.progress}%</span>
+                <span className="tbo-label">{module.progress}%</span>
               </div>
             </div>
-            
-            <h4 className="text-sm font-medium text-foreground mb-1">
-              {module.title}
+
+            <h4 className="tbo-card-title text-foreground mb-1">
+              {tr(module.title)}
             </h4>
-            <p className="text-xs text-muted-foreground leading-tight">
-              {module.subtitle}
+            <p className="tbo-caption text-muted-foreground">
+              {tr(module.subtitle)}
             </p>
           </div>
         ))}

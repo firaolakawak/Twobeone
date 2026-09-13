@@ -1,3 +1,7 @@
+import { formatUiDate } from '../utils/uiDateTime';
+import { useUiCopy, UI_LOCALES } from '../utils/uiTranslation';
+import { LoadingMark } from './BrandLoader';
+import { profileUiMessages } from '../locales/profileUi';
 import { useState, useEffect } from 'react';
 import { Heart, Camera, Upload, Edit2, Save, X, Link2, Users, Calendar, MapPin, Check } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
@@ -41,16 +45,17 @@ interface CoupleData {
 }
 
 export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, onRefresh }: CoupleProfileProps) {
-  const { t } = useLanguage();
+  const tr = useUiCopy(profileUiMessages);
+  const { t, language } = useLanguage();
   const [isEditing, setIsEditing] = useState(false);
   const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  
+
   // Profile data
   const [userName, setUserName] = useState(profile?.name || '');
   const [userPicture, setUserPicture] = useState(profile?.profilePicture || '');
-  
+
   // Couple data
   const [coupleData, setCoupleData] = useState<CoupleData>({
     coupleStory: '',
@@ -116,7 +121,7 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
       // Convert image to base64
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      
+
       reader.onload = async () => {
         const base64Image = reader.result as string;
 
@@ -138,7 +143,7 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
         );
 
         if (!response.ok) {
-          throw new Error('Failed to upload image');
+          throw new Error(tr("Failed to upload image"));
         }
 
         const data = await response.json();
@@ -192,7 +197,7 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
       );
 
       if (!response.ok) {
-        throw new Error('Failed to save couple data');
+        throw new Error(tr("Failed to save couple data"));
       }
 
       if (!updates) {
@@ -233,11 +238,11 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to link couple');
+        throw new Error(error.error || tr("Failed to link couple"));
       }
 
       const data = await response.json();
-      
+
       // Store couple ID
       if (data.coupleId) {
         localStorage.setItem('twobeone_couple_id', data.coupleId);
@@ -248,7 +253,7 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
       if (onRefresh) onRefresh();
     } catch (error: any) {
       console.error('Link error:', error);
-      toast.error(error.message || t.partner.failedConnect);
+      toast.error(t.partner.failedConnect);
     }
   };
 
@@ -268,23 +273,26 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
     <div className="space-y-6 pb-20">
       {/* Header with Action Button */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl">Couple Profile</h1>
+        <h1 className="tbo-page-title">{tr("Couple Profile")}</h1>
         {!partner ? (
-          <Button onClick={() => setIsLinkDialogOpen(true)} className="bg-primary-600 hover:bg-primary-700">
+          <Button onClick={() => setIsLinkDialogOpen(true)} className="tbo-action bg-primary-600 hover:bg-primary-700">
             <Link2 className="w-4 h-4 mr-2" />
-            Link Partner
+
+            {tr("Link Partner")}
           </Button>
         ) : (
-          <Button onClick={() => setIsEditing(!isEditing)} variant={isEditing ? "outline" : "default"}>
+          <Button className="tbo-action" onClick={() => setIsEditing(!isEditing)} variant={isEditing ? "outline" : "default"}>
             {isEditing ? (
               <>
                 <X className="w-4 h-4 mr-2" />
-                Cancel
+
+                {tr("Cancel")}
               </>
             ) : (
               <>
                 <Edit2 className="w-4 h-4 mr-2" />
-                Edit Profile
+
+                {tr("Edit Profile")}
               </>
             )}
           </Button>
@@ -296,30 +304,34 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
         <CardHeader className="bg-gradient-to-r from-primary-50 to-primary-100 border-b">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>My Profile</CardTitle>
-              <CardDescription>Manage your personal information</CardDescription>
+              <CardTitle className="tbo-card-title">{tr("My Profile")}</CardTitle>
+              <CardDescription className="tbo-supporting">{tr("Manage your personal information")}</CardDescription>
             </div>
             {!isEditing ? (
-              <Button onClick={() => setIsEditing(true)} variant="outline" size="sm">
+              <Button className="tbo-action" onClick={() => setIsEditing(true)} variant="outline" size="sm">
                 <Edit2 className="w-4 h-4 mr-2" />
-                Edit Profile
+
+                {tr("Edit Profile")}
               </Button>
             ) : (
               <div className="flex gap-2">
-                <Button onClick={() => setIsEditing(false)} variant="outline" size="sm">
+                <Button className="tbo-action" onClick={() => setIsEditing(false)} variant="outline" size="sm">
                   <X className="w-4 h-4 mr-2" />
-                  Cancel
+
+                  {tr("Cancel")}
                 </Button>
-                <Button onClick={handleSaveProfile} disabled={isSaving} size="sm">
+                <Button className="tbo-action" onClick={handleSaveProfile} disabled={isSaving} size="sm">
                   {isSaving ? (
                     <>
-                      <Upload className="w-4 h-4 mr-2 animate-spin" />
-                      Saving...
+                      <LoadingMark className="mr-2" />
+
+                      {tr("Saving...")}
                     </>
                   ) : (
                     <>
                       <Save className="w-4 h-4 mr-2" />
-                      Save
+
+                      {tr("Save")}
                     </>
                   )}
                 </Button>
@@ -338,33 +350,33 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
                 </AvatarFallback>
               </Avatar>
               {isEditing && (
-                <label className="absolute bottom-0 right-0 cursor-pointer">
+                <label className="tbo-label absolute bottom-0 right-0 cursor-pointer">
                   <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center shadow-lg hover:bg-primary-700 transition-colors">
                     <Camera className="w-5 h-5 text-white" />
                   </div>
                   <input
                     type="file"
                     accept="image/*"
-                    className="hidden"
+                    className="tbo-field hidden"
                     onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'user')}
                     disabled={isUploading}
                   />
                 </label>
               )}
             </div>
-            
+
             <div className="text-center mt-4">
               {isEditing ? (
                 <Input
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
-                  className="text-center max-w-[200px]"
-                  placeholder="Your name"
+                  className="tbo-field text-center max-w-[200px]"
+                  placeholder={tr("Your name")}
                 />
               ) : (
-                <h2 className="text-2xl font-semibold">{userName}</h2>
+                <h2 className="tbo-section-title">{userName}</h2>
               )}
-              <p className="text-sm text-muted-foreground mt-1">{profile?.email}</p>
+              <p className="tbo-supporting text-muted-foreground mt-1">{profile?.email}</p>
             </div>
           </div>
         </CardContent>
@@ -374,21 +386,24 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
       {!partner && (
         <Card>
           <CardHeader className="bg-gradient-to-r from-primary-50 to-primary-100 border-b">
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="tbo-card-title flex items-center gap-2">
               <Link2 className="w-5 h-5 text-primary-600" />
-              Connect with Your Partner
+
+              {tr("Connect with Your Partner")}
             </CardTitle>
-            <CardDescription>
-              Link your account with your partner to share your spiritual journey
+            <CardDescription className="tbo-supporting">
+
+              {tr("Link your account with your partner to share your spiritual journey")}
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
             <Button 
               onClick={() => setIsLinkDialogOpen(true)}
-              className="w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
+              className="tbo-action w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
             >
               <Users className="w-4 h-4 mr-2" />
-              Add Partner
+
+              {tr("Add Partner")}
             </Button>
           </CardContent>
         </Card>
@@ -400,30 +415,31 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
           {/* Couple Picture Upload */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="tbo-card-title flex items-center gap-2">
                 <Camera className="w-5 h-5 text-primary-600" />
-                Couple Picture
+
+                {tr("Couple Picture")}
               </CardTitle>
-              <CardDescription>Share a special photo together</CardDescription>
+              <CardDescription className="tbo-supporting">{tr("Share a special photo together")}</CardDescription>
             </CardHeader>
             <CardContent>
               {coupleData.couplePicture ? (
                 <div className="relative group">
                   <img 
                     src={coupleData.couplePicture} 
-                    alt="Couple" 
+                    alt={tr("Couple")}
                     className="w-full h-64 object-cover rounded-lg shadow-md"
                   />
                   {isEditing && (
-                    <label className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-lg">
+                    <label className="tbo-label absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-lg">
                       <div className="text-white text-center">
                         <Upload className="w-8 h-8 mx-auto mb-2" />
-                        <p className="text-sm">Change Photo</p>
+                        <p className="tbo-supporting">{tr("Change Photo")}</p>
                       </div>
                       <input
                         type="file"
                         accept="image/*"
-                        className="hidden"
+                        className="tbo-field hidden"
                         onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'couple')}
                         disabled={isUploading}
                       />
@@ -431,14 +447,14 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
                   )}
                 </div>
               ) : (
-                <label className="border-2 border-dashed border-border rounded-lg p-12 flex flex-col items-center justify-center cursor-pointer hover:border-primary-400 transition-colors">
+                <label className="tbo-label border-2 border-dashed border-border rounded-lg p-12 flex flex-col items-center justify-center cursor-pointer hover:border-primary-400 transition-colors">
                   <Upload className="w-12 h-12 text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground mb-2">Upload a couple photo</p>
-                  <p className="text-xs text-muted-foreground">PNG, JPG up to 5MB</p>
+                  <p className="tbo-body text-muted-foreground mb-2">{tr("Upload a couple photo")}</p>
+                  <p className="tbo-caption text-muted-foreground">{tr("PNG, JPG up to 5MB")}</p>
                   <input
                     type="file"
                     accept="image/*"
-                    className="hidden"
+                    className="tbo-field hidden"
                     onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'couple')}
                     disabled={isUploading || !isEditing}
                   />
@@ -450,24 +466,25 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
           {/* Our Story */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="tbo-card-title flex items-center gap-2">
                 <Heart className="w-5 h-5 text-primary-600" />
-                Our Story
+
+                {tr("Our Story")}
               </CardTitle>
-              <CardDescription>Share your love journey</CardDescription>
+              <CardDescription className="tbo-supporting">{tr("Share your love journey")}</CardDescription>
             </CardHeader>
             <CardContent>
               {isEditing ? (
                 <Textarea
                   value={coupleData.coupleStory}
                   onChange={(e) => setCoupleData(prev => ({ ...prev, coupleStory: e.target.value }))}
-                  placeholder="Tell your story... How did you meet? What makes your relationship special?"
+                  placeholder={tr("Tell your story... How did you meet? What makes your relationship special?")}
                   rows={6}
-                  className="resize-none"
+                  className="tbo-field resize-none"
                 />
               ) : (
-                <p className="text-foreground whitespace-pre-wrap">
-                  {coupleData.coupleStory || 'No story added yet. Click Edit Profile to add your story!'}
+                <p className="tbo-body text-foreground whitespace-pre-wrap">
+                  {coupleData.coupleStory || tr("No story added yet. Click Edit Profile to add your story!")}
                 </p>
               )}
             </CardContent>
@@ -476,68 +493,72 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
           {/* Relationship Details */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="tbo-card-title flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-sky-600" />
-                Relationship Details
+
+                {tr("Relationship Details")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="startDate" className="flex items-center gap-2 mb-2">
+                <Label htmlFor="startDate" className="tbo-label flex items-center gap-2 mb-2">
                   <Heart className="w-4 h-4 text-primary-500" />
-                  Relationship Started
+
+                  {tr("Relationship Started")}
                 </Label>
                 {isEditing ? (
-                  <Input
+                  <Input className="tbo-field"
                     id="startDate"
                     type="date"
                     value={coupleData.relationshipStartDate}
                     onChange={(e) => setCoupleData(prev => ({ ...prev, relationshipStartDate: e.target.value }))}
                   />
                 ) : (
-                  <p className="text-foreground">
+                  <p className="tbo-body text-foreground">
                     {coupleData.relationshipStartDate 
-                      ? new Date(coupleData.relationshipStartDate).toLocaleDateString('en-US', { 
+                      ? formatUiDate(new Date(coupleData.relationshipStartDate), UI_LOCALES[language], {
                           year: 'numeric', 
                           month: 'long', 
                           day: 'numeric' 
                         })
-                      : 'Not set'}
+                      : tr("Not set")}
                   </p>
                 )}
               </div>
 
               <div>
-                <Label htmlFor="location" className="flex items-center gap-2 mb-2">
+                <Label htmlFor="location" className="tbo-label flex items-center gap-2 mb-2">
                   <MapPin className="w-4 h-4 text-success-700" />
-                  Location
+
+                  {tr("Location")}
                 </Label>
                 {isEditing ? (
-                  <Input
+                  <Input className="tbo-field"
                     id="location"
                     value={coupleData.location}
                     onChange={(e) => setCoupleData(prev => ({ ...prev, location: e.target.value }))}
-                    placeholder="City, Country"
+                    placeholder={tr("City, Country")}
                   />
                 ) : (
-                  <p className="text-foreground">{coupleData.location || 'Not set'}</p>
+                  <p className="tbo-body text-foreground">{coupleData.location || tr("Not set")}</p>
                 )}
               </div>
 
               <div>
-                <Label htmlFor="milestone" className="flex items-center gap-2 mb-2">
+                <Label htmlFor="milestone" className="tbo-label flex items-center gap-2 mb-2">
                   <Check className="w-4 h-4 text-primary-600" />
-                  Current Milestone
+
+                  {tr("Current Milestone")}
                 </Label>
                 {isEditing ? (
-                  <Input
+                  <Input className="tbo-field"
                     id="milestone"
                     value={coupleData.milestone}
                     onChange={(e) => setCoupleData(prev => ({ ...prev, milestone: e.target.value }))}
-                    placeholder="e.g., Engaged, Dating, Married"
+                    placeholder={tr("e.g., Engaged, Dating, Married")}
                   />
                 ) : (
-                  <p className="text-foreground">{coupleData.milestone || 'Not set'}</p>
+                  <p className="tbo-body text-foreground">{coupleData.milestone || tr("Not set")}</p>
                 )}
               </div>
             </CardContent>
@@ -545,9 +566,10 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
 
           {/* Save Button */}
           {isEditing && (
-            <Button onClick={handleSaveProfile} className="w-full" size="lg" disabled={isUploading}>
+            <Button onClick={handleSaveProfile} className="tbo-action w-full" size="lg" disabled={isUploading}>
               <Save className="w-5 h-5 mr-2" />
-              Save Changes
+
+              {tr("Save Changes")}
             </Button>
           )}
         </>
@@ -557,12 +579,14 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
       <Dialog open={isLinkDialogOpen} onOpenChange={setIsLinkDialogOpen}>
         <DialogContent aria-describedby="link-partner-description">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="tbo-dialog-title flex items-center gap-2">
               <Link2 className="w-5 h-5 text-primary-600" />
-              Link with Your Partner
+
+              {tr("Link with Your Partner")}
             </DialogTitle>
-            <DialogDescription id="link-partner-description">
-              Connect your accounts to share your spiritual journey together
+            <DialogDescription className="tbo-supporting" id="link-partner-description">
+
+              {tr("Connect your accounts to share your spiritual journey together")}
             </DialogDescription>
           </DialogHeader>
 
@@ -570,37 +594,40 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
             <div className="flex gap-2">
               <Button
                 variant={linkMethod === 'email' ? 'default' : 'outline'}
-                className="flex-1"
+                className="tbo-action flex-1"
                 onClick={() => setLinkMethod('email')}
               >
-                Email
+
+                {tr("Email")}
               </Button>
               <Button
                 variant={linkMethod === 'code' ? 'default' : 'outline'}
-                className="flex-1"
+                className="tbo-action flex-1"
                 onClick={() => setLinkMethod('code')}
               >
-                Invite Code
+
+                {tr("Invite Code")}
               </Button>
             </div>
 
             {linkMethod === 'email' ? (
               <div>
-                <Label htmlFor="partner-email">Partner's Email</Label>
-                <Input
+                <Label className="tbo-label" htmlFor="partner-email">{tr("Partner's Email")}</Label>
+                <Input className="tbo-field"
                   id="partner-email"
                   type="email"
                   placeholder="partner@example.com"
                   value={partnerEmail}
                   onChange={(e) => setPartnerEmail(e.target.value)}
                 />
-                <p className="text-xs text-muted-foreground mt-2">
-                  Enter your partner's registered email address
+                <p className="tbo-caption text-muted-foreground mt-2">
+
+                  {tr("Enter your partner's registered email address")}
                 </p>
               </div>
             ) : (
               <div>
-                <Label htmlFor="invite-code">Partner's Invite Code</Label>
+                <Label className="tbo-label" htmlFor="invite-code">{tr("Partner's Invite Code")}</Label>
                 <Input
                   id="invite-code"
                   type="text"
@@ -608,22 +635,25 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
                   value={inviteCode}
                   onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
                   maxLength={6}
-                  className="uppercase tracking-wider text-center text-lg"
+                  className="tbo-field text-center"
                 />
-                <p className="text-xs text-muted-foreground mt-2">
-                  Enter the 6-character code your partner shared with you
+                <p className="tbo-caption text-muted-foreground mt-2">
+
+                  {tr("Enter the 6-character code your partner shared with you")}
                 </p>
               </div>
             )}
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsLinkDialogOpen(false)}>
-              Cancel
+            <Button className="tbo-action" variant="outline" onClick={() => setIsLinkDialogOpen(false)}>
+
+              {tr("Cancel")}
             </Button>
-            <Button onClick={handleLinkCouple} className="bg-primary-600 hover:bg-primary-700">
+            <Button onClick={handleLinkCouple} className="tbo-action bg-primary-600 hover:bg-primary-700">
               <Link2 className="w-4 h-4 mr-2" />
-              Link Partner
+
+              {tr("Link Partner")}
             </Button>
           </DialogFooter>
         </DialogContent>

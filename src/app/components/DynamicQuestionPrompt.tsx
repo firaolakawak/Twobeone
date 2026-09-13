@@ -1,3 +1,5 @@
+import { useUiCopy } from '../utils/uiTranslation';
+import { questionsUiMessages } from '../locales/questionsUi';
 import { Check, Heart, HeartCrack, ThumbsDown, ThumbsUp, X } from 'lucide-react';
 import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
@@ -23,6 +25,7 @@ const optionBase = 'group relative w-full rounded-2xl border px-4 py-3.5 text-le
 const choiceBase = 'group relative flex min-h-28 flex-1 flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border p-4 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]';
 
 export function DynamicQuestionPrompt({ prompt, value, onChange, disabled = false }: DynamicQuestionPromptProps) {
+  const tr = useUiCopy(questionsUiMessages);
   const setValue = (newValue: string | string[] | number) => {
     if (!disabled) onChange(newValue);
   };
@@ -42,12 +45,12 @@ export function DynamicQuestionPrompt({ prompt, value, onChange, disabled = fals
               id={`prompt-${prompt.id}`}
               value={(value as string) || ''}
               onChange={(event) => setValue(event.target.value)}
-              placeholder="Share what is on your heart…"
+              placeholder={tr("Share what is on your heart…")}
               rows={5}
               disabled={disabled}
-              className="min-h-32 resize-y rounded-2xl border-primary-100 bg-white/80 px-4 py-4 text-base leading-relaxed shadow-sm transition-all placeholder:text-muted-foreground/70 focus-visible:border-primary-300 focus-visible:ring-primary-200"
+              className="tbo-field min-h-32 resize-y rounded-2xl border-primary-100 bg-white/80 px-4 py-4 shadow-sm transition-all placeholder:text-muted-foreground/70 focus-visible:border-primary-300 focus-visible:ring-primary-200"
             />
-            <span className="pointer-events-none absolute bottom-3 right-4 text-xs text-muted-foreground">Take your time</span>
+            <span className="tbo-caption pointer-events-none absolute bottom-3 right-4 text-muted-foreground">{tr("Take your time")}</span>
           </div>
         );
 
@@ -67,7 +70,7 @@ export function DynamicQuestionPrompt({ prompt, value, onChange, disabled = fals
                   className={`${optionBase} ${isSelected ? 'border-primary-300 bg-primary-50 text-primary-950 shadow-[0_8px_28px_rgba(190,68,112,0.10)]' : 'border-border/70 bg-white/75 text-foreground hover:border-primary-200 hover:bg-primary-50/40 hover:shadow-sm'}`}
                 >
                   <span className="flex items-center justify-between gap-3">
-                    <span className={`text-[15px] leading-snug ${isSelected ? 'font-semibold' : 'font-medium'}`}>{option}</span>
+                    <span className={`tbo-label ${isSelected ? "" : ""}`}>{option}</span>
                     {isSelected ? selectedMark : <span className="h-5 w-5 shrink-0 rounded-full border-2 border-neutral-200 transition-colors group-hover:border-primary-200" aria-hidden="true" />}
                   </span>
                 </button>
@@ -95,7 +98,7 @@ export function DynamicQuestionPrompt({ prompt, value, onChange, disabled = fals
                     <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border-2 transition-colors ${isSelected ? 'border-primary-600 bg-primary-600 text-white' : 'border-neutral-200 bg-white group-hover:border-primary-200'}`} aria-hidden="true">
                       {isSelected && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
                     </span>
-                    <span className={`text-[15px] ${isSelected ? 'font-semibold' : 'font-medium'}`}>{option}</span>
+                    <span className={`tbo-label ${isSelected ? "" : ""}`}>{option}</span>
                   </span>
                 </button>
               );
@@ -108,8 +111,8 @@ export function DynamicQuestionPrompt({ prompt, value, onChange, disabled = fals
         return (
           <div className="grid grid-cols-2 gap-3 py-1" role="radiogroup" aria-labelledby={`prompt-label-${prompt.id}`}>
             {[
-              { key: 'like', label: 'Like', Icon: ThumbsUp, selected: 'border-emerald-300 bg-emerald-50 text-emerald-800 shadow-sm' },
-              { key: 'dislike', label: 'Dislike', Icon: ThumbsDown, selected: 'border-rose-300 bg-rose-50 text-rose-800 shadow-sm' },
+              { key: 'like', label: tr("Like"), Icon: ThumbsUp, selected: 'border-emerald-300 bg-emerald-50 text-emerald-800 shadow-sm' },
+              { key: 'dislike', label: tr("Dislike"), Icon: ThumbsDown, selected: 'border-rose-300 bg-rose-50 text-rose-800 shadow-sm' },
             ].map(({ key, label, Icon, selected }) => {
               const isSelected = value === key;
               return (
@@ -127,8 +130,8 @@ export function DynamicQuestionPrompt({ prompt, value, onChange, disabled = fals
         return (
           <div className="grid grid-cols-2 gap-3 py-1" role="radiogroup" aria-labelledby={`prompt-label-${prompt.id}`}>
             {[
-              { key: 'love', label: 'Love', Icon: Heart, selected: 'border-primary-300 bg-primary-50 text-primary-700 shadow-sm' },
-              { key: 'hate', label: 'Not for me', Icon: HeartCrack, selected: 'border-neutral-300 bg-neutral-100 text-neutral-700 shadow-sm' },
+              { key: 'love', label: tr("Love"), Icon: Heart, selected: 'border-primary-300 bg-primary-50 text-primary-700 shadow-sm' },
+              { key: 'hate', label: tr("Not for me"), Icon: HeartCrack, selected: 'border-neutral-300 bg-neutral-100 text-neutral-700 shadow-sm' },
             ].map(({ key, label, Icon, selected }) => {
               const isSelected = value === key;
               return (
@@ -151,13 +154,13 @@ export function DynamicQuestionPrompt({ prompt, value, onChange, disabled = fals
               {Array.from({ length: scaleMax }, (_, index) => index + 1).map(num => {
                 const isSelected = currentValue === num;
                 return (
-                  <button type="button" role="radio" aria-checked={isSelected} aria-label={`${num} out of ${scaleMax}`} key={num} onClick={() => setValue(num)} disabled={disabled} className={`aspect-square min-h-10 rounded-xl border text-sm font-bold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:opacity-50 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-95 ${isSelected ? 'border-primary-600 bg-primary-600 text-white shadow-[0_7px_18px_rgba(190,68,112,0.24)]' : 'border-border/70 bg-white text-muted-foreground hover:border-primary-200 hover:bg-primary-50'}`}>
+                  <button type="button" role="radio" aria-checked={isSelected} aria-label={tr('{value} out of {max}', { value: num, max: scaleMax })} key={num} onClick={() => setValue(num)} disabled={disabled} className={`tbo-action aspect-square min-h-10 rounded-xl border transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:opacity-50 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-95 ${isSelected ? 'border-primary-600 bg-primary-600 text-white shadow-[0_7px_18px_rgba(190,68,112,0.24)]' : 'border-border/70 bg-white text-muted-foreground hover:border-primary-200 hover:bg-primary-50'}`}>
                     {num}
                   </button>
                 );
               })}
             </div>
-            <div className="mt-3 flex justify-between text-xs font-medium text-muted-foreground"><span>Not at all</span><span>Very much</span></div>
+            <div className="tbo-caption mt-3 flex justify-between text-muted-foreground"><span>{tr("Not at all")}</span><span>{tr("Very much")}</span></div>
           </div>
         );
       }
@@ -166,8 +169,8 @@ export function DynamicQuestionPrompt({ prompt, value, onChange, disabled = fals
         return (
           <div className="grid grid-cols-2 gap-3 py-1" role="radiogroup" aria-labelledby={`prompt-label-${prompt.id}`}>
             {[
-              { key: 'yes', label: 'Yes', Icon: Check, selected: 'border-emerald-300 bg-emerald-50 text-emerald-800 shadow-sm' },
-              { key: 'no', label: 'No', Icon: X, selected: 'border-rose-300 bg-rose-50 text-rose-800 shadow-sm' },
+              { key: 'yes', label: tr("Yes"), Icon: Check, selected: 'border-emerald-300 bg-emerald-50 text-emerald-800 shadow-sm' },
+              { key: 'no', label: tr("No"), Icon: X, selected: 'border-rose-300 bg-rose-50 text-rose-800 shadow-sm' },
             ].map(({ key, label, Icon, selected }) => {
               const isSelected = value === key;
               return (
@@ -182,16 +185,16 @@ export function DynamicQuestionPrompt({ prompt, value, onChange, disabled = fals
         );
 
       default:
-        return <p className="text-muted-foreground">Unsupported question type</p>;
+        return <p className="tbo-body text-muted-foreground">{tr("Unsupported question type")}</p>;
     }
   };
 
   return (
     <section className="space-y-3 rounded-3xl border border-primary-100/80 bg-gradient-to-br from-white via-white to-primary-50/45 p-4 shadow-[0_12px_36px_rgba(83,45,67,0.06)] sm:p-5">
-      <Label id={`prompt-label-${prompt.id}`} htmlFor={`prompt-${prompt.id}`} className="block text-base font-semibold leading-snug text-foreground sm:text-lg">
+      <Label id={`prompt-label-${prompt.id}`} htmlFor={`prompt-${prompt.id}`} className="tbo-label block text-foreground">
         {prompt.text}
       </Label>
-      {prompt.type === 'multiple_select' && <p className="-mt-1 text-xs text-muted-foreground">Choose all that feel true for you</p>}
+      {prompt.type === 'multiple_select' && <p className="tbo-caption -mt-1 text-muted-foreground">{tr("Choose all that feel true for you")}</p>}
       {renderPromptInput()}
     </section>
   );

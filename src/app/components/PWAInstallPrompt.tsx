@@ -1,3 +1,6 @@
+import { useCurrentLanguage } from '../utils/languageStore';
+import { useUiCopy } from '../utils/uiTranslation';
+import { systemMessages } from '../locales/system';
 import { useEffect, useState, type ReactNode } from 'react';
 import { Download, Heart, Plus, Share, Smartphone, X } from 'lucide-react';
 import { Button } from './ui/button';
@@ -51,10 +54,7 @@ function isMobileDevice() {
 
 export function PWAInstallPrompt() {
   const [appShell] = useState(isAppShellEnvironment);
-  const [language, setLanguage] = useState<Language>(() => {
-    const saved = localStorage.getItem('twobeone_language');
-    return saved === 'am' || saved === 'om' ? saved : 'en';
-  });
+  const language = useCurrentLanguage();
   const t = getTranslations(language);
   const [platform, setPlatform] = useState<InstallPlatform>('browser');
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
@@ -122,24 +122,6 @@ export function PWAInstallPrompt() {
     };
   }, [appShell]);
 
-  useEffect(() => {
-    const applyLanguage = (next: unknown) => {
-      if (next === 'en' || next === 'am' || next === 'om') setLanguage(next);
-    };
-    const handleLanguageChange = (event: Event) => {
-      applyLanguage((event as CustomEvent<unknown>).detail);
-    };
-    const handleStorage = (event: StorageEvent) => {
-      if (event.key === 'twobeone_language') applyLanguage(event.newValue);
-    };
-    window.addEventListener('twobeone:language-change', handleLanguageChange);
-    window.addEventListener('storage', handleStorage);
-    return () => {
-      window.removeEventListener('twobeone:language-change', handleLanguageChange);
-      window.removeEventListener('storage', handleStorage);
-    };
-  }, []);
-
   const dismiss = () => {
     setShowPrompt(false);
   };
@@ -159,7 +141,7 @@ export function PWAInstallPrompt() {
       role="dialog"
       aria-modal="false"
       aria-labelledby="install-twobeone-title"
-      className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+5.75rem)] z-[220] mx-auto max-w-md animate-in slide-in-from-bottom-4 fade-in duration-300 md:bottom-6 md:left-auto md:right-6 md:mx-0 md:w-[25rem]"
+      className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+5.75rem)] z-[220] mx-auto max-h-[calc(100dvh-env(safe-area-inset-bottom)-6.75rem)] max-w-md overflow-y-auto rounded-[1.75rem] animate-in slide-in-from-bottom-4 fade-in duration-300 md:bottom-6 md:left-auto md:right-6 md:mx-0 md:w-[25rem]"
     >
       <div className="overflow-hidden rounded-[1.75rem] border border-rose-100 bg-white/95 shadow-[0_22px_60px_-18px_rgba(136,19,55,0.35)] backdrop-blur-xl">
         <div className="relative bg-gradient-to-br from-rose-500 via-pink-500 to-rose-600 px-5 pb-4 pt-5 text-white">
@@ -177,8 +159,8 @@ export function PWAInstallPrompt() {
               <Heart className="h-6 w-6 fill-rose-500 text-rose-500" />
             </div>
             <div>
-              <h2 id="install-twobeone-title" className="text-base font-bold text-white">{t.install.title}</h2>
-              <p className="mt-0.5 text-xs text-white/85">{t.install.subtitle}</p>
+              <h2 id="install-twobeone-title" className="tbo-dialog-title text-white">{t.install.title}</h2>
+              <p className="tbo-caption mt-0.5 text-white/85">{t.install.subtitle}</p>
             </div>
           </div>
         </div>
@@ -191,31 +173,31 @@ export function PWAInstallPrompt() {
                 <InstallStep number="2" icon={<Plus className="h-4 w-4" />} label={t.install.iosStep2} />
                 <InstallStep number="3" icon={<Smartphone className="h-4 w-4" />} label={t.install.iosStep3} />
               </div>
-              <p className="text-center text-[11px] leading-relaxed text-muted-foreground">
+              <p className="tbo-caption text-center text-muted-foreground">
                 {t.install.iosInstructions}
               </p>
-              <Button type="button" variant="outline" onClick={dismiss} className="h-10 w-full rounded-xl font-semibold">
+              <Button type="button" variant="outline" onClick={dismiss} className="tbo-action h-10 w-full rounded-xl">
                 {t.install.gotIt}
               </Button>
             </div>
           ) : platform === 'native' && deferredPrompt ? (
             <div className="space-y-3">
-              <p className="text-sm text-muted-foreground">{t.install.subtitle}</p>
-              <Button type="button" onClick={install} className="h-11 w-full rounded-xl bg-rose-600 font-semibold text-white hover:bg-rose-700">
+              <p className="tbo-supporting text-muted-foreground">{t.install.subtitle}</p>
+              <Button type="button" onClick={install} className="tbo-action h-11 w-full rounded-xl bg-rose-600 text-white hover:bg-rose-700">
                 <Download className="mr-2 h-4 w-4" /> {t.install.installButton}
               </Button>
             </div>
           ) : platform === 'android' ? (
             <div className="space-y-3" data-testid="android-install-steps">
-              <p className="text-sm text-muted-foreground">
+              <p className="tbo-supporting text-muted-foreground">
                 {t.install.androidInstructions}
               </p>
-              <Button type="button" variant="outline" onClick={dismiss} className="h-10 w-full rounded-xl font-semibold">{t.install.gotIt}</Button>
+              <Button type="button" variant="outline" onClick={dismiss} className="tbo-action h-10 w-full rounded-xl">{t.install.gotIt}</Button>
             </div>
           ) : (
-            <div className="space-y-3 text-sm text-muted-foreground">
-              <p>{t.install.androidInstructions}</p>
-              <Button type="button" variant="outline" onClick={dismiss} className="h-10 w-full rounded-xl font-semibold">{t.install.gotIt}</Button>
+            <div className="tbo-supporting space-y-3 text-muted-foreground">
+              <p className="tbo-supporting">{t.install.androidInstructions}</p>
+              <Button type="button" variant="outline" onClick={dismiss} className="tbo-action h-10 w-full rounded-xl">{t.install.gotIt}</Button>
             </div>
           )}
         </div>
@@ -225,12 +207,13 @@ export function PWAInstallPrompt() {
 }
 
 function InstallStep({ number, icon, label }: { number: string; icon: ReactNode; label: string }) {
+  const tr = useUiCopy(systemMessages);
   return (
     <div className="rounded-2xl bg-rose-50 px-2 py-3">
       <div className="mx-auto mb-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-white text-rose-600 shadow-sm">
         {icon}
       </div>
-      <p className="text-[11px] font-semibold text-foreground"><span className="sr-only">Step {number}: </span>{label}</p>
+      <p className="tbo-caption text-foreground"><span className="sr-only">{tr("Step")} {number}: </span>{label}</p>
     </div>
   );
 }

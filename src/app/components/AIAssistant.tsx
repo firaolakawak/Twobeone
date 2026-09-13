@@ -1,5 +1,8 @@
+import { BrandLoader, LoadingMark } from './BrandLoader';
+import { useUiCopy } from '../utils/uiTranslation';
+import { systemMessages } from '../locales/system';
 import { useState } from 'react';
-import { Sparkles, Loader2, BookOpen, MessageCircle, Lightbulb, X } from 'lucide-react';
+import { Sparkles,  BookOpen, MessageCircle, Lightbulb, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { ScrollArea } from './ui/scroll-area';
@@ -71,6 +74,7 @@ async function callAI(feature: string, questions: Question[], customPrompt?: str
 }
 
 export function AIAssistant({ questions, onClose }: AIAssistantProps) {
+  const tr = useUiCopy(systemMessages);
   const { t } = useLanguage();
   const [activeFeature, setActiveFeature] = useState<'generate' | 'summarize' | 'verse' | 'custom' | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -96,7 +100,7 @@ export function AIAssistant({ questions, onClose }: AIAssistantProps) {
       };
       toast.success(t.messages.savedSuccessfully);
     } catch (error: any) {
-      toast.error(error.message || t.messages.tryAgainLater);
+      toast.error(error.message ? tr(error.message) : t.messages.tryAgainLater);
     } finally {
       setIsLoading(false);
     }
@@ -114,7 +118,7 @@ export function AIAssistant({ questions, onClose }: AIAssistantProps) {
       setIsAIPowered(response.aiPowered);
       toast.success(t.messages.savedSuccessfully);
     } catch (error: any) {
-      toast.error(error.message || t.messages.tryAgainLater);
+      toast.error(error.message ? tr(error.message) : t.messages.tryAgainLater);
     } finally {
       setIsLoading(false);
     }
@@ -126,6 +130,8 @@ export function AIAssistant({ questions, onClose }: AIAssistantProps) {
         padding: 'var(--spacing-6)',
         display: 'flex',
         flexDirection: 'column',
+        minWidth: 0,
+        overflowWrap: 'anywhere',
         gap: 'var(--spacing-5)',
         background: 'var(--primary-50)',
         border: '2px solid var(--primary-200)',
@@ -134,7 +140,7 @@ export function AIAssistant({ questions, onClose }: AIAssistantProps) {
     >
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', minWidth: 0, flex: 1 }}>
           <div
             style={{
               width: '48px',
@@ -149,23 +155,20 @@ export function AIAssistant({ questions, onClose }: AIAssistantProps) {
           >
             <Sparkles className="w-6 h-6" style={{ color: 'var(--primary-foreground)' }} />
           </div>
-          <div>
-            <h3
+          <div className="min-w-0 break-words">
+            <h3 className="tbo-card-title"
               style={{
-                fontSize: 'var(--text-heading)',
-                fontWeight: 'var(--font-weight-semibold)',
+
                 color: 'var(--foreground)',
                 margin: 0,
               }}
             >
-              AI Assistant
-            </h3>
-            <p style={{ fontSize: 'var(--text-caption)', color: 'var(--muted-foreground)', margin: 0 }}>
-              Faith-centred insights — powered by Gemini
-            </p>
+               {tr("AI Assistant")} </h3>
+            <p className="tbo-supporting" style={{  color: 'var(--muted-foreground)', margin: 0 }}>
+               {tr("Faith-centred insights — powered by Gemini")} </p>
           </div>
         </div>
-        <Button variant="ghost" size="sm" onClick={onClose}>
+        <Button className="tbo-action" variant="ghost" size="icon" aria-label={tr("Close")} onClick={onClose}>
           <X className="w-5 h-5" />
         </Button>
       </div>
@@ -176,24 +179,24 @@ export function AIAssistant({ questions, onClose }: AIAssistantProps) {
           {
             feature: 'generate' as const,
             icon: <Lightbulb className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--warning-500)' }} />,
-            label: 'Generate 3 New Questions',
-            sub: 'AI-powered faith-based topics',
+            label: tr("Generate 3 New Questions"),
+            sub: tr("AI-powered faith-based topics"),
             disabled: isLoading,
           },
           {
             feature: 'summarize' as const,
             icon: <MessageCircle className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--secondary-500)' }} />,
-            label: 'Summarise Our Discussions',
+            label: tr("Summarise Our Discussions"),
             sub: answeredQuestions.length > 0
-              ? `${answeredQuestions.length} discussion${answeredQuestions.length !== 1 ? 's' : ''} to analyse`
-              : 'No discussions yet — start answering together!',
+              ? tr("{count} discussions to analyse", { count: answeredQuestions.length })
+              : tr("No discussions yet — start answering together!"),
             disabled: isLoading || answeredQuestions.length === 0,
           },
           {
             feature: 'verse' as const,
             icon: <BookOpen className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--primary-600)' }} />,
-            label: 'Recommend a Verse',
-            sub: 'Personalised for your current journey',
+            label: tr("Recommend a Verse"),
+            sub: tr("Personalised for your current journey"),
             disabled: isLoading,
           },
         ].map(({ feature, icon, label, sub, disabled }) => (
@@ -218,10 +221,10 @@ export function AIAssistant({ questions, onClose }: AIAssistantProps) {
           >
             {icon}
             <div>
-              <p style={{ fontSize: 'var(--text-body)', fontWeight: 'var(--font-weight-medium)', color: 'var(--foreground)', margin: 0 }}>
+              <p className="tbo-body" style={{   color: 'var(--foreground)', margin: 0 }}>
                 {label}
               </p>
-              <p style={{ fontSize: 'var(--text-caption)', color: 'var(--muted-foreground)', margin: 0 }}>
+              <p className="tbo-supporting" style={{  color: 'var(--muted-foreground)', margin: 0 }}>
                 {sub}
               </p>
             </div>
@@ -231,24 +234,23 @@ export function AIAssistant({ questions, onClose }: AIAssistantProps) {
 
       {/* Custom Prompt */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-2)' }}>
-        <label style={{ fontSize: 'var(--text-body)', fontWeight: 'var(--font-weight-medium)', color: 'var(--foreground)' }}>
-          Ask AI Assistant
-        </label>
-        <Textarea
-          placeholder="E.g. 'Help us think through career decisions' or 'Suggest questions about financial planning'…"
+        <label className="tbo-label" style={{   color: 'var(--foreground)' }}>
+           {tr("Ask AI Assistant")} </label>
+        <Textarea className="tbo-field"
+          placeholder={tr("E.g. 'Help us think through career decisions' or 'Suggest questions about financial planning'…")}
           value={customPrompt}
           onChange={(e) => setCustomPrompt(e.target.value)}
           style={{ background: 'var(--card)' }}
         />
-        <Button
+        <Button className="tbo-action min-h-10 h-auto whitespace-normal py-2"
           onClick={handleCustomPrompt}
           disabled={isLoading || !customPrompt.trim()}
           style={{ width: '100%' }}
         >
           {isLoading && activeFeature === 'custom' ? (
-            <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Processing…</>
+            <><LoadingMark className="w-4 h-4 mr-2 " />{tr("Processing…")}</>
           ) : (
-            <><Sparkles className="w-4 h-4 mr-2" />Ask AI</>
+            <><Sparkles className="w-4 h-4 mr-2" />{tr("Ask AI")}</>
           )}
         </Button>
       </div>
@@ -256,14 +258,14 @@ export function AIAssistant({ questions, onClose }: AIAssistantProps) {
       {/* Loading spinner */}
       {isLoading && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--spacing-8)' }}>
-          <Loader2 className="w-8 h-8 animate-spin" style={{ color: 'var(--primary-600)' }} />
+          <BrandLoader label={tr("Processing…")} />
         </div>
       )}
 
       {/* Result */}
       {result && !isLoading && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-2)' }}>
-          <div
+          <div className="tbo-caption"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -272,13 +274,12 @@ export function AIAssistant({ questions, onClose }: AIAssistantProps) {
               background: 'var(--primary-600)',
               color: 'var(--primary-foreground)',
               borderRadius: 'var(--radius-full)',
-              fontSize: 'var(--text-caption-small)',
-              fontWeight: 'var(--font-weight-semibold)',
+
               width: 'fit-content',
             }}
           >
             <Sparkles className="w-3 h-3" />
-            {isAIPowered ? 'Gemini AI Response' : 'Basic Summary (AI unavailable)'}
+            {isAIPowered ? tr("Gemini AI Response") : tr("Basic Summary (AI unavailable)")}
           </div>
           <ScrollArea className="h-96">
             <div
@@ -308,9 +309,8 @@ export function AIAssistant({ questions, onClose }: AIAssistantProps) {
       )}
 
       {/* Disclaimer */}
-      <p style={{ fontSize: 'var(--text-label)', color: 'var(--muted-foreground)', textAlign: 'center', margin: 0 }}>
-        💡 AI suggestions are meant to inspire conversation and should be prayerfully considered together
-      </p>
+      <p className="tbo-caption" style={{  color: 'var(--muted-foreground)', textAlign: 'center', margin: 0 }}>
+         {tr("💡 AI suggestions are meant to inspire conversation and should be prayerfully considered together")} </p>
     </div>
   );
 }

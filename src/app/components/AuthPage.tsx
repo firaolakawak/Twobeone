@@ -1,11 +1,15 @@
+import { LoadingMark } from "./BrandLoader";
+import { useUiCopy } from "../utils/uiTranslation";
+import { publicAuthMessages } from "../locales/publicAuth";
 import { useState } from 'react';
-import { Loader2, Mail, Lock, User as UserIcon, Eye, EyeOff, ArrowLeft, Heart, CheckCircle2, Copy } from 'lucide-react';
+import { Mail, Lock, User as UserIcon, Eye, EyeOff, Heart, CheckCircle2, Copy } from 'lucide-react';
 import { createClient } from '../utils/supabase/client';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { toast } from 'sonner';
 import { useLanguage } from '../contexts/LanguageContext';
 import { LanguageSelector } from './LanguageSelector';
 import { LegalConsent } from './LegalConsent';
+import { BackButton } from './BackButton';
 import type { User } from '@supabase/supabase-js';
 
 interface AuthPageProps {
@@ -39,6 +43,7 @@ const FloatingOrb = ({ style }: { style: React.CSSProperties }) => (
 );
 
 export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProps) {
+  const tr = useUiCopy(publicAuthMessages);
   const [authMode, setAuthMode] = useState<AuthMode>(initialMode);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -84,7 +89,7 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
       document.execCommand('copy');
       document.body.removeChild(el);
     }
-    toast.success('Invite code copied!');
+    toast.success(tr("Invite code copied!"));
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -133,7 +138,7 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
       if (signInError) throw signInError;
       if (sessionData.session?.access_token) {
         if (sessionData.user?.id) localStorage.setItem('twobeone_user_id', sessionData.user.id);
-        toast.success('Welcome to TwoBeOne 🙏');
+        toast.success(tr("Welcome to TwoBeOne 🙏"));
         onAuthSuccess(sessionData.session.access_token, sessionData.user!);
       }
     } catch (err: any) {
@@ -184,7 +189,7 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
           if (confirmRes.ok && confirmData.access_token && confirmData.user) {
             if (confirmData.user.id) localStorage.setItem('twobeone_user_id', confirmData.user.id);
             await supabase.auth.setSession({ access_token: confirmData.access_token, refresh_token: confirmData.refresh_token });
-            toast.success('Welcome back!');
+            toast.success(tr("Welcome back!"));
             onAuthSuccess(confirmData.access_token, confirmData.user);
             return;
           }
@@ -200,7 +205,7 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
       }
       if (data?.session?.access_token && data.user) {
         if (data.user.id) localStorage.setItem('twobeone_user_id', data.user.id);
-        toast.success('Welcome back!');
+        toast.success(tr("Welcome back!"));
         onAuthSuccess(data.session.access_token, data.user);
       }
     } catch (err: any) {
@@ -231,7 +236,7 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
       });
       if (error) throw error;
       setForgotSent(true);
-      toast.success('Reset link sent! Check your inbox.');
+      toast.success(tr("Reset link sent! Check your inbox."));
     } catch (err: any) {
       setError(err.message || 'Failed to send reset link.');
     } finally {
@@ -249,7 +254,9 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
     borderRadius: 'var(--radius-lg)',
     border: '1.5px solid var(--border)',
     background: 'var(--input-background)',
-    fontSize: 'var(--text-callout)',
+    fontSize: 'var(--type-field-size)',
+    fontWeight: 'var(--type-field-weight)',
+    lineHeight: 'var(--type-field-leading)',
     color: 'var(--foreground)',
     fontFamily: 'inherit',
     outline: 'none',
@@ -269,8 +276,9 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
   };
   const labelStyle: React.CSSProperties = {
     display: 'block',
-    fontSize: 'var(--text-caption)',
-    fontWeight: 'var(--font-weight-semibold)',
+    fontSize: 'var(--type-label-size)',
+    lineHeight: 'var(--type-label-leading)',
+    fontWeight: 'var(--type-label-weight)',
     color: 'var(--foreground)',
     marginBottom: 'var(--spacing-2)',
   };
@@ -283,8 +291,9 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
     border: 'none',
     background: 'var(--primary-600)',
     color: 'var(--primary-foreground)',
-    fontSize: 'var(--text-callout)',
-    fontWeight: 'var(--font-weight-semibold)',
+    fontSize: 'var(--type-action-size)',
+    lineHeight: 'var(--type-action-leading)',
+    fontWeight: 'var(--type-action-weight)',
     fontFamily: 'inherit',
     cursor: isLoading ? 'not-allowed' : 'pointer',
     opacity: isLoading ? 0.7 : 1,
@@ -349,21 +358,21 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
           <h1 style={{
             margin: 0,
             fontSize: 'var(--text-title)',
-            fontWeight: 'var(--font-weight-bold)',
+            fontWeight: 800,
             color: 'var(--foreground)',
             letterSpacing: '-0.02em',
             lineHeight: 1.1,
+            overflowWrap: 'anywhere',
           }}>
             TwoBeOne
           </h1>
           <p style={{
             margin: 'var(--spacing-1) 0 0',
-            fontSize: 'var(--text-caption)',
+            fontSize: 'var(--type-supporting-size)',
             color: 'var(--muted-foreground)',
-            fontWeight: 'var(--font-weight-normal)',
+            fontWeight: 'var(--type-supporting-weight)',
           }}>
-            Growing Together in Faith
-          </p>
+            {tr("Growing Together in Faith")}</p>
         </div>
 
         {/* ── Body ── */}
@@ -372,20 +381,7 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
           {/* ─── FORGOT PASSWORD ─────────────────────────────────────── */}
           {authMode === 'forgot' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-5)' }}>
-              <button
-                onClick={() => switchMode('signin')}
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  padding: 0, fontFamily: 'inherit',
-                  fontSize: 'var(--text-caption)',
-                  fontWeight: 'var(--font-weight-medium)',
-                  color: 'var(--muted-foreground)',
-                }}
-              >
-                <ArrowLeft style={{ width: 15, height: 15 }} />
-                Back to Sign In
-              </button>
+              <BackButton onClick={() => switchMode('signin')} label={tr("Back to Sign In")} showLabel className="self-start" />
 
               {forgotSent ? (
                 <div style={{
@@ -403,11 +399,10 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
                   }}>
                     <Mail style={{ width: 26, height: 26, color: 'var(--primary-600)' }} />
                   </div>
-                  <p style={{ margin: '0 0 var(--spacing-2)', fontSize: 'var(--text-body)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--foreground)' }}>
-                    Check your inbox
-                  </p>
-                  <p style={{ margin: 0, fontSize: 'var(--text-caption)', color: 'var(--muted-foreground)', lineHeight: 1.5 }}>
-                    If an account exists for this address, a password reset link was sent to<br />
+                  <p style={{ margin: '0 0 var(--spacing-2)', fontSize: 'var(--type-section-size)', lineHeight: 'var(--type-section-leading)', fontWeight: 'var(--type-section-weight)', color: 'var(--foreground)' }}>
+                    {tr("Check your inbox")}</p>
+                  <p style={{ margin: 0, fontSize: 'var(--type-supporting-size)', color: 'var(--muted-foreground)', lineHeight: 1.5 }}>
+                    {tr("If an account exists for this address, a password reset link was sent to")}<br />
                     <strong style={{ color: 'var(--foreground)' }}>{email}</strong>
                   </p>
                   <button
@@ -415,27 +410,25 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
                     style={{
                       marginTop: 'var(--spacing-4)',
                       background: 'none', border: 'none', cursor: 'pointer',
-                      fontSize: 'var(--text-caption)', color: 'var(--primary-600)',
-                      fontWeight: 'var(--font-weight-medium)', fontFamily: 'inherit',
+                      fontSize: 'var(--type-supporting-size)', color: 'var(--primary-600)',
+                      fontWeight: 'var(--type-action-weight)', fontFamily: 'inherit',
                     }}
                   >
-                    Resend email
-                  </button>
+                    {tr("Resend email")}</button>
                 </div>
               ) : (
                 <form onSubmit={handleForgotPassword} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
                   <div>
-                    <p style={{ margin: '0 0 var(--spacing-4)', fontSize: 'var(--text-caption)', color: 'var(--muted-foreground)', lineHeight: 1.5 }}>
-                      Enter your account email and we'll send you a link to reset your password.
-                    </p>
+                    <p style={{ margin: '0 0 var(--spacing-4)', fontSize: 'var(--type-supporting-size)', color: 'var(--muted-foreground)', lineHeight: 1.5 }}>
+                      {tr("Enter your account email and we'll send you a link to reset your password.")}</p>
                   </div>
                   <div style={fieldGap}>
-                    <label style={labelStyle}>Email address</label>
+                    <label style={labelStyle}>{tr("Email address")}</label>
                     <div style={inputWrap}>
                       <Mail style={iconLeft} />
                       <input
                         type="email"
-                        placeholder="you@example.com"
+                        placeholder={tr("you@example.com")}
                         value={email}
                         onChange={e => setEmail(e.target.value)}
                         required
@@ -446,12 +439,11 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
                     </div>
                   </div>
 
-                  {error && <ErrorBanner message={error} />}
+                  {error && <ErrorBanner message={tr(error)} />}
 
                   <button type="submit" disabled={isLoading} style={primaryBtn}>
-                    {isLoading && <Loader2 style={{ width: 16, height: 16, animation: 'spin 1s linear infinite' }} />}
-                    Send Reset Link
-                  </button>
+                    {isLoading && <LoadingMark size={16} />}
+                    {tr("Send Reset Link")}</button>
                 </form>
               )}
             </div>
@@ -480,8 +472,8 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
                       border: 'none',
                       cursor: 'pointer',
                       fontFamily: 'inherit',
-                      fontSize: 'var(--text-caption)',
-                      fontWeight: authMode === mode ? 'var(--font-weight-semibold)' : 'var(--font-weight-medium)',
+                      fontSize: 'var(--type-supporting-size)',
+                      fontWeight: 'var(--type-action-weight)',
                       color: authMode === mode ? 'var(--foreground)' : 'var(--muted-foreground)',
                       background: authMode === mode ? 'var(--card)' : 'transparent',
                       boxShadow: authMode === mode ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
@@ -497,12 +489,12 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
               {authMode === 'signin' && (
                 <form onSubmit={handleSignIn} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
                   <div style={fieldGap}>
-                    <label style={labelStyle}>Email</label>
+                    <label style={labelStyle}>{tr("Email")}</label>
                     <div style={inputWrap}>
                       <Mail style={iconLeft} />
                       <input
                         type="email"
-                        placeholder="you@example.com"
+                        placeholder={tr("you@example.com")}
                         value={email}
                         onChange={e => setEmail(e.target.value)}
                         required
@@ -515,22 +507,21 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
 
                   <div style={fieldGap}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <label style={labelStyle}>Password</label>
+                      <label style={labelStyle}>{tr("Password")}</label>
                       <button
                         type="button"
                         onClick={() => switchMode('forgot')}
                         style={{
                           background: 'none', border: 'none', cursor: 'pointer',
-                          fontSize: 'var(--text-caption)',
-                          fontWeight: 'var(--font-weight-medium)',
+                          fontSize: 'var(--type-supporting-size)',
+                          fontWeight: 'var(--type-action-weight)',
                           color: 'var(--primary-600)',
                           fontFamily: 'inherit',
                           padding: 0,
                           marginBottom: 'var(--spacing-2)',
                         }}
                       >
-                        Forgot password?
-                      </button>
+                        {tr("Forgot password?")}</button>
                     </div>
                     <div style={inputWrap}>
                       <Lock style={iconLeft} />
@@ -544,7 +535,7 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
                         onFocus={e => { e.target.style.borderColor = 'var(--primary-400)'; e.target.style.boxShadow = '0 0 0 3px color-mix(in srgb, var(--primary-400) 15%, transparent)'; }}
                         onBlur={e => { e.target.style.borderColor = 'var(--border)'; e.target.style.boxShadow = 'none'; }}
                       />
-                      <button type="button" onClick={() => setShowPassword(v => !v)} style={iconRight}>
+                      <button type="button" onClick={() => setShowPassword(v => !v)} style={iconRight} aria-label={tr(showPassword ? 'Hide password' : 'Show password')}>
                         {showPassword
                           ? <EyeOff style={{ width: 16, height: 16 }} />
                           : <Eye style={{ width: 16, height: 16 }} />}
@@ -552,22 +543,20 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
                     </div>
                   </div>
 
-                  {error && <ErrorBanner message={error} />}
+                  {error && <ErrorBanner message={tr(error)} />}
 
                   <button type="submit" disabled={isLoading} style={primaryBtn}>
-                    {isLoading && <Loader2 style={{ width: 16, height: 16, animation: 'spin 1s linear infinite' }} />}
-                    Sign In
-                  </button>
+                    {isLoading && <LoadingMark size={16} />}
+                    {tr("Sign In")}</button>
 
-                  <p style={{ margin: 0, textAlign: 'center', fontSize: 'var(--text-caption)', color: 'var(--muted-foreground)' }}>
-                    Don't have an account?{' '}
+                  <p style={{ margin: 0, textAlign: 'center', fontSize: 'var(--type-supporting-size)', color: 'var(--muted-foreground)' }}>
+                    {tr("Don't have an account?")}{' '}
                     <button
                       type="button"
                       onClick={() => switchMode('signup')}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit', fontSize: 'inherit', fontWeight: 'var(--font-weight-semibold)', color: 'var(--primary-600)' }}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit', fontSize: 'inherit', fontWeight: 'var(--type-label-weight)', color: 'var(--primary-600)' }}
                     >
-                      Sign up
-                    </button>
+                      {tr("Sign up")}</button>
                   </p>
                 </form>
               )}
@@ -576,12 +565,12 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
               {authMode === 'signup' && (
                 <form onSubmit={handleSignUp} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-4)' }}>
                   <div style={fieldGap}>
-                    <label style={labelStyle}>Your name</label>
+                    <label style={labelStyle}>{tr("Your name")}</label>
                     <div style={inputWrap}>
                       <UserIcon style={iconLeft} />
                       <input
                         type="text"
-                        placeholder="John Doe"
+                        placeholder={tr("John Doe")}
                         value={name}
                         onChange={e => setName(e.target.value)}
                         required
@@ -593,12 +582,12 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
                   </div>
 
                   <div style={fieldGap}>
-                    <label style={labelStyle}>Email</label>
+                    <label style={labelStyle}>{tr("Email")}</label>
                     <div style={inputWrap}>
                       <Mail style={iconLeft} />
                       <input
                         type="email"
-                        placeholder="you@example.com"
+                        placeholder={tr("you@example.com")}
                         value={email}
                         onChange={e => setEmail(e.target.value)}
                         required
@@ -610,12 +599,12 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
                   </div>
 
                   <div style={fieldGap}>
-                    <label style={labelStyle}>Password</label>
+                    <label style={labelStyle}>{tr("Password")}</label>
                     <div style={inputWrap}>
                       <Lock style={iconLeft} />
                       <input
                         type={showPassword ? 'text' : 'password'}
-                        placeholder="Min. 6 characters"
+                        placeholder={tr("Min. 6 characters")}
                         value={password}
                         onChange={e => setPassword(e.target.value)}
                         required
@@ -624,7 +613,7 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
                         onFocus={e => { e.target.style.borderColor = 'var(--primary-400)'; e.target.style.boxShadow = '0 0 0 3px color-mix(in srgb, var(--primary-400) 15%, transparent)'; }}
                         onBlur={e => { e.target.style.borderColor = 'var(--border)'; e.target.style.boxShadow = 'none'; }}
                       />
-                      <button type="button" onClick={() => setShowPassword(v => !v)} style={iconRight}>
+                      <button type="button" onClick={() => setShowPassword(v => !v)} style={iconRight} aria-label={tr(showPassword ? 'Hide password' : 'Show password')}>
                         {showPassword
                           ? <EyeOff style={{ width: 16, height: 16 }} />
                           : <Eye style={{ width: 16, height: 16 }} />}
@@ -640,9 +629,8 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
                       border: '1.5px solid var(--primary-200)',
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--spacing-2)' }}>
-                        <span style={{ fontSize: 'var(--text-caption)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--primary-700)' }}>
-                          Your Invite Code
-                        </span>
+                        <span style={{ fontSize: 'var(--type-supporting-size)', fontWeight: 'var(--type-label-weight)', color: 'var(--primary-700)' }}>
+                          {tr("Your Invite Code")}</span>
                         <CheckCircle2 style={{ width: 16, height: 16, color: 'var(--primary-600)' }} />
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
@@ -658,6 +646,7 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
                         <button
                           type="button"
                           onClick={copyInviteCode}
+                          aria-label={tr('Copy invite code')}
                           style={{
                             padding: 'var(--spacing-2)', borderRadius: 'var(--radius-md)',
                             border: '1px solid var(--primary-300)', background: 'var(--card)',
@@ -667,33 +656,28 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
                           <Copy style={{ width: 16, height: 16 }} />
                         </button>
                       </div>
-                      <p style={{ margin: 'var(--spacing-2) 0 0', fontSize: 'var(--text-label)', color: 'var(--muted-foreground)' }}>
-                        Share with your partner to connect accounts later
-                      </p>
+                      <p style={{ margin: 'var(--spacing-2) 0 0', fontSize: 'var(--type-caption-size)', color: 'var(--muted-foreground)' }}>
+                        {tr("Share with your partner to connect accounts later")}</p>
                     </div>
                   )}
 
-                  {error && <ErrorBanner message={error} />}
+                  {error && <ErrorBanner message={tr(error)} />}
 
-                  <p style={{ margin: 0, fontSize: 'var(--text-label)', lineHeight: 1.5, color: 'var(--muted-foreground)' }}>
-                    Registered accounts receive Shabbat Shalom, one Saturday email with encouragement,
-                    relationship guidance, and TwoBeOne updates. Every email includes an unsubscribe link.
-                  </p>
+                  <p style={{ margin: 0, fontSize: 'var(--type-caption-size)', lineHeight: 1.5, color: 'var(--muted-foreground)' }}>
+                    {tr("Registered accounts receive Shabbat Shalom, one Saturday email with encouragement, relationship guidance, and TwoBeOne updates. Every email includes an unsubscribe link.")}</p>
 
                   <button type="submit" disabled={isLoading} style={primaryBtn}>
-                    {isLoading && <Loader2 style={{ width: 16, height: 16, animation: 'spin 1s linear infinite' }} />}
-                    Create Account
-                  </button>
+                    {isLoading && <LoadingMark size={16} />}
+                    {tr("Create Account")}</button>
 
-                  <p style={{ margin: 0, textAlign: 'center', fontSize: 'var(--text-caption)', color: 'var(--muted-foreground)' }}>
-                    Already have an account?{' '}
+                  <p style={{ margin: 0, textAlign: 'center', fontSize: 'var(--type-supporting-size)', color: 'var(--muted-foreground)' }}>
+                    {tr("Already have an account?")}{' '}
                     <button
                       type="button"
                       onClick={() => switchMode('signin')}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit', fontSize: 'inherit', fontWeight: 'var(--font-weight-semibold)', color: 'var(--primary-600)' }}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit', fontSize: 'inherit', fontWeight: 'var(--type-label-weight)', color: 'var(--primary-600)' }}
                     >
-                      Sign in
-                    </button>
+                      {tr("Sign in")}</button>
                   </p>
                 </form>
               )}
@@ -717,10 +701,10 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
             overflow: 'hidden', display: 'flex', flexDirection: 'column',
           }}>
             <div style={{ padding: 'var(--spacing-6)', borderBottom: '1px solid var(--border)' }}>
-              <h2 style={{ margin: 0, fontSize: 'var(--text-heading)', fontWeight: 'var(--font-weight-bold)', color: 'var(--foreground)' }}>
+              <h2 style={{ margin: 0, fontSize: 'var(--type-dialog-size)', lineHeight: 'var(--type-dialog-leading)', fontWeight: 'var(--type-dialog-weight)', color: 'var(--foreground)' }}>
                 {t.legal.agreementRequired}
               </h2>
-              <p style={{ margin: 'var(--spacing-1) 0 0', fontSize: 'var(--text-caption)', color: 'var(--muted-foreground)' }}>
+              <p style={{ margin: 'var(--spacing-1) 0 0', fontSize: 'var(--type-supporting-size)', color: 'var(--muted-foreground)' }}>
                 {t.legal.agreementDescription}
               </p>
             </div>
@@ -741,14 +725,13 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
                   border: '1.5px solid var(--border)',
                   background: 'transparent',
                   color: 'var(--foreground)',
-                  fontSize: 'var(--text-caption)',
-                  fontWeight: 'var(--font-weight-medium)',
+                  fontSize: 'var(--type-supporting-size)',
+                  fontWeight: 'var(--type-action-weight)',
                   fontFamily: 'inherit',
                   cursor: 'pointer',
                 }}
               >
-                Cancel
-              </button>
+                {tr("Cancel")}</button>
             </div>
           </div>
         </div>
@@ -769,7 +752,7 @@ function ErrorBanner({ message }: { message: string }) {
       borderRadius: 'var(--radius-md)',
       background: 'color-mix(in srgb, var(--destructive) 8%, transparent)',
       border: '1px solid color-mix(in srgb, var(--destructive) 25%, transparent)',
-      fontSize: 'var(--text-caption)',
+      fontSize: 'var(--type-supporting-size)',
       color: 'var(--primary-700)',
       lineHeight: 1.5,
     }}>

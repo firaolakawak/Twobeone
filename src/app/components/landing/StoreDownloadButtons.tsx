@@ -1,3 +1,5 @@
+import { useUiCopy } from "../../utils/uiTranslation";
+import { publicLandingMessages } from "../../locales/publicLanding";
 import "../../styles/store-download-buttons.css";
 
 const storeEnvironment = (
@@ -55,19 +57,20 @@ export function StoreDownloadButtons({
 }: {
   onInstallIOS: () => void;
 }) {
+  const tr = useUiCopy(publicLandingMessages);
   return (
     <div className="sdb-downloads">
-      <div className="sdb-badges" role="group" aria-label="Download TwoBeOne">
+      <div className="sdb-badges" role="group" aria-label={tr("Download TwoBeOne")}>
         <a
           className="sdb-badge"
           href={googlePlayUrl}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="Download TwoBeOne on Google Play"
+          aria-label={tr("Download TwoBeOne on Google Play")}
         >
           <GooglePlayIcon />
           <span>
-            <small>GET IT ON</small>
+            <small>{tr("GET IT ON")}</small>
             <strong>Google Play</strong>
           </span>
         </a>
@@ -77,11 +80,11 @@ export function StoreDownloadButtons({
             href={appStoreUrl}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Download TwoBeOne on the App Store"
+            aria-label={tr("Download TwoBeOne on the App Store")}
           >
             <AppleIcon />
             <span>
-              <small>Download on the</small>
+              <small>{tr("Download on the")}</small>
               <strong>App Store</strong>
             </span>
           </a>
@@ -90,11 +93,11 @@ export function StoreDownloadButtons({
             className="sdb-badge"
             type="button"
             onClick={onInstallIOS}
-            aria-label="Install TwoBeOne on iPhone or iPad: open installation guide"
+            aria-label={tr("Install TwoBeOne on iPhone or iPad: open installation guide")}
           >
             <AppleIcon />
             <span>
-              <small>INSTALL ON YOUR</small>
+              <small>{tr("INSTALL ON YOUR")}</small>
               <strong>iPhone &amp; iPad</strong>
             </span>
           </button>
@@ -102,8 +105,7 @@ export function StoreDownloadButtons({
       </div>
       {!appStoreUrl && (
         <p className="sdb-install-note">
-          iPhone &amp; iPad: add to your Home Screen from Safari.
-        </p>
+          {tr("iPhone & iPad: add to your Home Screen from Safari.")}</p>
       )}
     </div>
   );

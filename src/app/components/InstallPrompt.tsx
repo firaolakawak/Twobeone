@@ -1,3 +1,5 @@
+import { useUiCopy } from '../utils/uiTranslation';
+import { systemMessages } from '../locales/system';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useState, useEffect } from 'react';
 import { Button } from './ui/button';
@@ -12,6 +14,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function InstallPrompt() {
+  const tr = useUiCopy(systemMessages);
   const { t } = useLanguage();
   const [appShell] = useState(isAppShellEnvironment);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
@@ -119,8 +122,8 @@ export function InstallPrompt() {
                   <Heart className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground dark:text-white">{t.install.title}</h3>
-                  <p className="text-sm text-muted-foreground dark:text-muted-foreground">{t.install.subtitle}</p>
+                  <h3 className="tbo-card-title text-foreground dark:text-white">{t.install.title}</h3>
+                  <p className="tbo-supporting text-muted-foreground dark:text-muted-foreground">{t.install.subtitle}</p>
                 </div>
               </div>
               <Button variant="ghost" size="icon" onClick={handleDismiss} className="shrink-0">
@@ -129,38 +132,35 @@ export function InstallPrompt() {
             </div>
 
             <div className="space-y-4">
-              <p className="text-sm text-muted-foreground ">
-                For the best experience, install TwoBeOne on your iPhone:
-              </p>
+              <p className="tbo-supporting text-muted-foreground">
+                 {tr("For the best experience, install TwoBeOne on your iPhone:")} </p>
 
               <div className="space-y-3 bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-900/20 rounded-lg p-4">
                 <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary-500 text-white flex items-center justify-center text-xs font-bold">
+                  <div className="tbo-caption flex-shrink-0 w-6 h-6 rounded-full bg-primary-500 text-white flex items-center justify-center">
                     1
                   </div>
-                  <p className="text-sm text-foreground ">
-                    Tap the <span className="font-semibold">Share</span> button in Safari (bottom bar)
-                  </p>
+                  <p className="tbo-supporting text-foreground">
+                     {tr("Tap the")} <span className="tbo-label">{tr("Share")}</span>  {tr("button in Safari (bottom bar)")} </p>
                 </div>
                 <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary-500 text-white flex items-center justify-center text-xs font-bold">
+                  <div className="tbo-caption flex-shrink-0 w-6 h-6 rounded-full bg-primary-500 text-white flex items-center justify-center">
                     2
                   </div>
-                  <p className="text-sm text-foreground ">
-                    Scroll down and tap <span className="font-semibold">"Add to Home Screen"</span>
+                  <p className="tbo-supporting text-foreground">
+                     {tr("Scroll down and tap")} <span className="tbo-label">{tr("\"Add to Home Screen\"")}</span>
                   </p>
                 </div>
                 <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary-500 text-white flex items-center justify-center text-xs font-bold">
+                  <div className="tbo-caption flex-shrink-0 w-6 h-6 rounded-full bg-primary-500 text-white flex items-center justify-center">
                     3
                   </div>
-                  <p className="text-sm text-foreground ">
-                    Tap <span className="font-semibold">"Add"</span> in the top right corner
-                  </p>
+                  <p className="tbo-supporting text-foreground">
+                     {tr("Tap")} <span className="tbo-label">{tr("\"Add\"")}</span>  {tr("in the top right corner")} </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 text-xs text-muted-foreground dark:text-muted-foreground">
+              <div className="tbo-caption flex items-center gap-2 text-muted-foreground dark:text-muted-foreground">
                 <Smartphone className="w-4 h-4" />
                 <span>{t.install.benefit1Desc}</span>
               </div>
@@ -172,14 +172,12 @@ export function InstallPrompt() {
                 onClick={handleDismiss}
                 className="flex-1"
               >
-                Maybe Later
-              </Button>
+                 {tr("Maybe Later")} </Button>
               <Button
                 onClick={handleDismiss}
                 className="flex-1 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white"
               >
-                Got It
-              </Button>
+                 {tr("Got It")} </Button>
             </div>
           </CardContent>
         </Card>
@@ -199,8 +197,8 @@ export function InstallPrompt() {
                   <Heart className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground dark:text-white">{t.install.title}</h3>
-                  <p className="text-sm text-muted-foreground dark:text-muted-foreground">Install on your device</p>
+                  <h3 className="tbo-card-title text-foreground dark:text-white">{t.install.title}</h3>
+                  <p className="tbo-supporting text-muted-foreground dark:text-muted-foreground">{tr("Install on your device")}</p>
                 </div>
               </div>
               <Button variant="ghost" size="icon" onClick={handleDismiss} className="shrink-0">
@@ -209,9 +207,8 @@ export function InstallPrompt() {
             </div>
 
             <div className="space-y-4">
-              <p className="text-sm text-muted-foreground ">
-                {t.install.title} to your device for quick access and a better experience:
-              </p>
+              <p className="tbo-supporting text-muted-foreground">
+                {t.install.title}  {tr("to your device for quick access and a better experience:")} </p>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex items-center gap-2 bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-900/20 rounded-lg p-3">
@@ -219,8 +216,8 @@ export function InstallPrompt() {
                     <Download className="w-4 h-4 text-primary-600" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-foreground dark:text-white">Fast Access</p>
-                    <p className="text-xs text-muted-foreground dark:text-muted-foreground">One tap</p>
+                    <p className="tbo-caption text-foreground dark:text-white">{tr("Fast Access")}</p>
+                    <p className="tbo-caption text-muted-foreground dark:text-muted-foreground">{tr("One tap")}</p>
                   </div>
                 </div>
 
@@ -229,22 +226,19 @@ export function InstallPrompt() {
                     <Smartphone className="w-4 h-4 text-primary-600" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-foreground dark:text-white">Full Screen</p>
-                    <p className="text-xs text-muted-foreground dark:text-muted-foreground">App-like</p>
+                    <p className="tbo-caption text-foreground dark:text-white">{tr("Full Screen")}</p>
+                    <p className="tbo-caption text-muted-foreground dark:text-muted-foreground">{tr("App-like")}</p>
                   </div>
                 </div>
               </div>
 
               <div className="bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-900/20 rounded-lg p-4">
-                <p className="text-xs text-muted-foreground  mb-2">
-                  ✨ Works offline
-                </p>
-                <p className="text-xs text-muted-foreground  mb-2">
-                  🔔 Get notifications
-                </p>
-                <p className="text-xs text-muted-foreground ">
-                  💜 Access from home screen
-                </p>
+                <p className="tbo-caption text-muted-foreground mb-2">
+                   {tr("✨ Works offline")} </p>
+                <p className="tbo-caption text-muted-foreground mb-2">
+                   {tr("🔔 Get notifications")} </p>
+                <p className="tbo-caption text-muted-foreground">
+                   {tr("💜 Access from home screen")} </p>
               </div>
             </div>
 
@@ -254,15 +248,13 @@ export function InstallPrompt() {
                 onClick={handleDismiss}
                 className="flex-1"
               >
-                Not Now
-              </Button>
+                 {tr("Not Now")} </Button>
               <Button
                 onClick={handleInstallClick}
                 className="flex-1 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white"
               >
                 <Download className="w-4 h-4 mr-2" />
-                Install
-              </Button>
+                 {tr("Install")} </Button>
             </div>
           </CardContent>
         </Card>
@@ -275,6 +267,7 @@ export function InstallPrompt() {
 
 // Compact Install Banner (shown in settings or header)
 export function InstallBanner() {
+  const tr = useUiCopy(systemMessages);
   const { t } = useLanguage();
   const [appShell] = useState(isAppShellEnvironment);
   const [isInstalled, setIsInstalled] = useState(false);
@@ -291,24 +284,24 @@ export function InstallBanner() {
 
   return (
     <>
-      <div className="bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-lg p-4">
-        <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shrink-0">
-            <Download className="w-5 h-5 text-white" />
+      <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+        <div className="flex min-w-0 flex-wrap items-start gap-3">
+          <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0">
+            <Download className="w-5 h-5 text-primary-foreground" />
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-medium text-foreground dark:text-white mb-1">{t.install.title}</p>
-            <p className="text-sm text-muted-foreground dark:text-muted-foreground mb-3">
+          <div className="min-w-0 basis-40 grow break-words">
+            <p className="tbo-label text-foreground mb-1">{t.install.title}</p>
+            <p className="tbo-supporting text-muted-foreground dark:text-muted-foreground mb-3">
               {deviceType === 'ios' 
-                ? 'Add to home screen for quick access'
-                : 'Install for a better experience'}
+                ? tr("Add to home screen for quick access")
+                : tr("Install for a better experience")}
             </p>
             <Button
               onClick={() => window.dispatchEvent(new Event('twobeone:open-install'))}
               size="sm"
-              className="bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white"
+              className="h-auto min-h-9 max-w-full whitespace-normal break-words px-3 py-2 bg-primary hover:bg-primary/90 text-primary-foreground"
             >
-              {deviceType === 'ios' ? 'Show Me How' : 'Install App'}
+              {deviceType === 'ios' ? tr("Show Me How") : tr("Install App")}
             </Button>
           </div>
         </div>

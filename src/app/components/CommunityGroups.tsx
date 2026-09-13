@@ -1,12 +1,18 @@
+import { formatUiTime, formatUiDateTime } from '../utils/uiDateTime';
+import { BrandLoader, LoadingMark } from './BrandLoader';
+import { useCurrentLanguage } from '../utils/languageStore';
+import { useUiCopy, UI_LOCALES } from '../utils/uiTranslation';
+import { communityMessages } from '../locales/community';
 import { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Button } from './ui/button';
+import { BackButton } from './BackButton';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from './ui/dialog';
 import { Label } from './ui/label';
 import { ScrollArea } from './ui/scroll-area';
 import {
@@ -31,8 +37,7 @@ import {
   Globe2,
   LockKeyhole,
   Heart,
-  X,
-  ArrowLeft
+  X
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
@@ -96,6 +101,8 @@ interface LiveSession {
 }
 
 export function CommunityGroups() {
+  const tr = useUiCopy(communityMessages);
+  const locale = UI_LOCALES[useCurrentLanguage()];
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState('discover');
   const [groups, setGroups] = useState<Group[]>([]);
@@ -215,7 +222,7 @@ export function CommunityGroups() {
             ? current
             : [createdGroup, ...current]);
         }
-        toast.success('Group created successfully!');
+        toast.success(tr("Group created successfully!"));
         setIsCreateDialogOpen(false);
         await Promise.all([loadGroups(), loadMyGroups()]);
       } else {
@@ -223,7 +230,7 @@ export function CommunityGroups() {
       }
     } catch (error) {
       console.error('Failed to create group:', error);
-      toast.error('Failed to create group');
+      toast.error(tr("Failed to create group"));
     } finally {
       setIsLoading(false);
     }
@@ -243,16 +250,16 @@ export function CommunityGroups() {
       );
 
       if (response.ok) {
-        toast.success('Joined group successfully!');
+        toast.success(tr("Joined group successfully!"));
         loadGroups();
         loadMyGroups();
       } else {
         const error = await response.json();
-        toast.error(error.error || 'Failed to join group');
+        toast.error(error.error || tr("Failed to join group"));
       }
     } catch (error) {
       console.error('Failed to join group:', error);
-      toast.error('Failed to join group');
+      toast.error(tr("Failed to join group"));
     }
   };
 
@@ -270,16 +277,16 @@ export function CommunityGroups() {
       );
 
       if (response.ok) {
-        toast.success('Left group successfully');
+        toast.success(tr("Left group successfully"));
         setSelectedGroup(null);
         loadGroups();
         loadMyGroups();
       } else {
-        toast.error('Failed to leave group');
+        toast.error(tr("Failed to leave group"));
       }
     } catch (error) {
       console.error('Failed to leave group:', error);
-      toast.error('Failed to leave group');
+      toast.error(tr("Failed to leave group"));
     }
   };
 
@@ -311,22 +318,20 @@ export function CommunityGroups() {
         <div className="relative">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-xs font-semibold tracking-wide text-rose-700 shadow-sm ring-1 ring-rose-100">
+              <div className="tbo-eyebrow mb-4 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-rose-700 shadow-sm ring-1 ring-rose-100">
                 <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" aria-hidden="true" />
-                Growing in faith together
-              </div>
-              <h1 className="text-3xl font-bold tracking-[-0.035em] text-slate-950 sm:text-4xl">{t.community.title}</h1>
-              <p className="mt-2 max-w-lg text-[15px] leading-7 text-slate-600">Find belonging, share encouragement, and build meaningful connections with other couples.</p>
+                 {tr("Growing in faith together")} </div>
+              <h1 className="tbo-page-title text-slate-950 min-w-0 break-words">{t.community.title}</h1>
+              <p className="tbo-body mt-2 max-w-lg text-slate-600">{tr("Find belonging, share encouragement, and build meaningful connections with other couples.")}</p>
             </div>
-            <Button type="button" onClick={() => setIsCreateDialogOpen(true)} aria-label="Create New Group" className="h-11 rounded-full bg-rose-600 px-5 font-bold text-white shadow-lg shadow-rose-200 hover:bg-rose-700">
+            <Button type="button" onClick={() => setIsCreateDialogOpen(true)} aria-label={tr("Create New Group")} className="h-11 rounded-full bg-rose-600 px-5 text-white shadow-lg shadow-rose-200 hover:bg-rose-700">
               <Plus className="h-4 w-4" aria-hidden="true" />
-              Create Group
-            </Button>
+               {tr("Create Group")} </Button>
           </div>
           <div className="mt-7 grid grid-cols-3 gap-3 border-t border-rose-100/80 pt-5">
-            <div><p className="text-xl font-bold text-slate-900">{groups.length}</p><p className="mt-0.5 text-xs font-medium text-slate-500">Communities</p></div>
-            <div className="border-l border-rose-100 pl-3"><p className="text-xl font-bold text-slate-900">{myGroups.length}</p><p className="mt-0.5 text-xs font-medium text-slate-500">Joined</p></div>
-            <div className="border-l border-rose-100 pl-3"><p className="text-xl font-bold text-slate-900">{liveSessions.length}</p><p className="mt-0.5 text-xs font-medium text-slate-500">Live now</p></div>
+            <div><p className="text-xl font-bold text-slate-900">{groups.length}</p><p className="tbo-caption mt-0.5 text-slate-500">{tr("Communities")}</p></div>
+            <div className="border-l border-rose-100 pl-3"><p className="text-xl font-bold text-slate-900">{myGroups.length}</p><p className="tbo-caption mt-0.5 text-slate-500">{tr("Joined")}</p></div>
+            <div className="border-l border-rose-100 pl-3"><p className="text-xl font-bold text-slate-900">{liveSessions.length}</p><p className="tbo-caption mt-0.5 text-slate-500">{tr("Live now")}</p></div>
           </div>
         </div>
       </header>
@@ -341,9 +346,9 @@ export function CommunityGroups() {
                 <div className="absolute -right-1 -top-1 h-3 w-3 animate-ping rounded-full bg-red-500" />
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-red-800">Live conversations happening now</h3>
+                <h3 className="tbo-card-title text-red-800 min-w-0 break-words">{tr("Live conversations happening now")}</h3>
                 <p className="text-sm text-red-700">
-                  {liveSessions.length} {liveSessions.length === 1 ? 'group is' : 'groups are'} streaming live
+                  {tr("{count} groups are streaming live", { count: liveSessions.length })}
                 </p>
               </div>
               <Button
@@ -352,8 +357,7 @@ export function CommunityGroups() {
                 className="rounded-full bg-red-600 px-4 hover:bg-red-700"
                 onClick={() => setActiveTab('live')}
               >
-                Watch Live
-              </Button>
+                 {tr("Watch Live")} </Button>
             </div>
           </CardContent>
         </Card>
@@ -362,10 +366,9 @@ export function CommunityGroups() {
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogContent className="gap-0 overflow-hidden rounded-[1.75rem] border-rose-100 p-0 sm:max-w-xl">
           <DialogHeader className="border-b border-rose-100 bg-gradient-to-br from-rose-50 via-white to-amber-50 px-6 py-6 pr-12 text-left">
-            <DialogTitle className="text-2xl font-bold text-slate-900">Create Community Group</DialogTitle>
-            <DialogDescription className="leading-6 text-slate-600">
-              Start a new community group to connect with other couples
-            </DialogDescription>
+            <DialogTitle className="text-slate-900">{tr("Create Community Group")}</DialogTitle>
+            <DialogDescription className="text-slate-600">
+               {tr("Start a new community group to connect with other couples")} </DialogDescription>
           </DialogHeader>
           <CreateGroupForm onSubmit={createGroup} isLoading={isLoading} />
         </DialogContent>
@@ -373,10 +376,10 @@ export function CommunityGroups() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="gap-6">
-        <TabsList className="grid h-14 w-full grid-cols-3 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-[inset_0_1px_2px_rgba(15,23,42,0.04),0_10px_30px_-24px_rgba(15,23,42,0.45)]" aria-label="Community sections">
-          <TabsTrigger value="discover" className="h-full gap-2 rounded-[0.9rem] text-xs font-semibold text-slate-500 transition-all hover:text-slate-800 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-rose-100 sm:text-sm"><Search className="h-4 w-4" aria-hidden="true" /><span className="hidden sm:inline">Discover</span><span className="sm:hidden">Explore</span></TabsTrigger>
-          <TabsTrigger value="my-groups" className="h-full gap-2 rounded-[0.9rem] text-xs font-semibold text-slate-500 transition-all hover:text-slate-800 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-rose-100 sm:text-sm"><Users className="h-4 w-4" aria-hidden="true" /><span className="hidden sm:inline">{t.community.myGroups}</span><span className="sm:hidden">Joined</span></TabsTrigger>
-          <TabsTrigger value="live" className="h-full gap-2 rounded-[0.9rem] text-xs font-semibold text-slate-500 transition-all hover:text-slate-800 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-rose-100 sm:text-sm"><Radio className="h-4 w-4" aria-hidden="true" />Live</TabsTrigger>
+        <TabsList className="grid h-auto min-h-14 w-full grid-cols-3 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-[inset_0_1px_2px_rgba(15,23,42,0.04),0_10px_30px_-24px_rgba(15,23,42,0.45)]" aria-label={tr("Community sections")}>
+          <TabsTrigger value="discover" className="h-full gap-2 rounded-[0.9rem] text-slate-500 transition-all hover:text-slate-800 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-rose-100 min-w-0 min-h-11 h-auto flex-wrap whitespace-normal [overflow-wrap:anywhere] [&>span]:min-w-0"><Search className="h-4 w-4" aria-hidden="true" /><span className="hidden sm:inline">{tr("Discover")}</span><span className="sm:hidden">{tr("Explore")}</span></TabsTrigger>
+          <TabsTrigger value="my-groups" className="h-full gap-2 rounded-[0.9rem] text-slate-500 transition-all hover:text-slate-800 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-rose-100 min-w-0 min-h-11 h-auto flex-wrap whitespace-normal [overflow-wrap:anywhere] [&>span]:min-w-0"><Users className="h-4 w-4" aria-hidden="true" /><span className="hidden sm:inline">{t.community.myGroups}</span><span className="sm:hidden">{tr("Joined")}</span></TabsTrigger>
+          <TabsTrigger value="live" className="h-full gap-2 rounded-[0.9rem] text-slate-500 transition-all hover:text-slate-800 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-rose-100 min-w-0 min-h-11 h-auto flex-wrap whitespace-normal [overflow-wrap:anywhere] [&>span]:min-w-0"><Radio className="h-4 w-4" aria-hidden="true" />{tr("Live")}</TabsTrigger>
         </TabsList>
 
         {/* Discover Tab */}
@@ -386,26 +389,26 @@ export function CommunityGroups() {
             <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
             <Input
               type="search"
-              placeholder="Search groups..."
+              placeholder={tr("Search groups...")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(event) => { if (event.key === 'Escape') setSearchQuery(''); }}
               className="h-12 rounded-2xl border-slate-200 bg-white pl-11 pr-11 shadow-[0_8px_25px_-22px_rgba(15,23,42,0.55)] placeholder:text-slate-400 focus-visible:border-rose-300 focus-visible:ring-4 focus-visible:ring-rose-100"
-              aria-label="Search community groups"
+              aria-label={tr("Search community groups")}
             />
-            {searchQuery && <button type="button" onClick={() => setSearchQuery('')} className="absolute right-2.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700" aria-label="Clear community search"><X className="h-4 w-4" aria-hidden="true" /></button>}
+            {searchQuery && <button type="button" onClick={() => setSearchQuery('')} className="absolute right-2.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700" aria-label={tr("Clear community search")}><X className="h-4 w-4" aria-hidden="true" /></button>}
           </div>
 
-          <div className="flex items-end justify-between gap-4 px-1">
+          <div className="flex flex-wrap items-end justify-between gap-3 px-1 [&>div]:min-w-0 [&>div]:flex-1">
             <div>
-              <h2 className="text-xl font-bold tracking-tight text-slate-950">Discover communities</h2>
-              <p className="mt-1 text-sm text-slate-500">Find a group where you can grow together.</p>
+              <h2 className="tbo-section-title text-slate-950 min-w-0 break-words">{tr("Discover communities")}</h2>
+              <p className="tbo-supporting mt-1 text-slate-500">{tr("Find a group where you can grow together.")}</p>
             </div>
-            <span className="shrink-0 text-sm font-medium text-slate-500">{filteredGroups.length} {filteredGroups.length === 1 ? 'group' : 'groups'}</span>
+            <span className="tbo-label shrink-0 text-slate-500">{filteredGroups.length} {filteredGroups.length === 1 ? tr("group") : tr("groups")}</span>
           </div>
 
           {/* Groups Grid */}
-          <div className="grid gap-5">
+          <div className="grid min-w-0 gap-5">
             {filteredGroups.map((group) => (
               <CommunityGroupCard
                 key={group.id}
@@ -417,13 +420,13 @@ export function CommunityGroups() {
             ))}
 
             {filteredGroups.length === 0 && (
-              <Card className="rounded-[2rem] border-rose-100 bg-gradient-to-br from-white to-rose-50/60 p-12 text-center shadow-sm">
+              <Card className="rounded-[2rem] border-rose-100 bg-gradient-to-br from-white to-rose-50/60 min-w-0 p-5 sm:p-12 text-center shadow-sm">
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 text-rose-600"><Users className="h-7 w-7" /></div>
-                <h3 className="mb-2 text-xl font-bold text-slate-900">No Groups Found</h3>
-                <p className="mb-4 text-slate-500">
-                  {searchQuery ? 'Try a different search term' : 'Be the first to create a community group!'}
+                <h3 className="tbo-card-title mb-2 text-slate-900 min-w-0 break-words">{tr("No Groups Found")}</h3>
+                <p className="tbo-body mb-4 text-slate-500">
+                  {searchQuery ? tr("Try a different search term") : tr("Be the first to create a community group!")}
                 </p>
-                {searchQuery && <Button type="button" variant="ghost" onClick={() => setSearchQuery('')} className="rounded-full text-rose-700 hover:bg-rose-100">Clear search</Button>}
+                {searchQuery && <Button type="button" variant="ghost" onClick={() => setSearchQuery('')} className="rounded-full text-rose-700 hover:bg-rose-100">{tr("Clear search")}</Button>}
               </Card>
             )}
           </div>
@@ -431,26 +434,25 @@ export function CommunityGroups() {
 
         {/* My Groups Tab */}
         <TabsContent value="my-groups" className="space-y-6">
-          <div className="flex items-end justify-between gap-4 px-1">
+          <div className="flex flex-wrap items-end justify-between gap-3 px-1 [&>div]:min-w-0 [&>div]:flex-1">
             <div>
-              <h2 className="text-xl font-bold tracking-tight text-slate-950">My communities</h2>
-              <p className="mt-1 text-sm text-slate-500">Continue connecting with your groups.</p>
+              <h2 className="tbo-section-title text-slate-950 min-w-0 break-words">{tr("My communities")}</h2>
+              <p className="tbo-supporting mt-1 text-slate-500">{tr("Continue connecting with your groups.")}</p>
             </div>
-            <span className="shrink-0 text-sm font-medium text-slate-500">{myGroups.length} {myGroups.length === 1 ? 'group' : 'groups'}</span>
+            <span className="tbo-label shrink-0 text-slate-500">{myGroups.length} {myGroups.length === 1 ? tr("group") : tr("groups")}</span>
           </div>
-          <div className="grid gap-5">
+          <div className="grid min-w-0 gap-5">
             {myGroups.map((group) => (
               <CommunityGroupCard key={group.id} group={group} member onView={() => setSelectedGroup(group)} />
             ))}
 
             {myGroups.length === 0 && (
-              <Card className="rounded-[2rem] border-rose-100 bg-gradient-to-br from-white to-rose-50/60 p-12 text-center shadow-sm">
+              <Card className="rounded-[2rem] border-rose-100 bg-gradient-to-br from-white to-rose-50/60 min-w-0 p-5 sm:p-12 text-center shadow-sm">
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 text-rose-600"><Users className="h-7 w-7" /></div>
-                <h3 className="mb-2 text-xl font-bold text-slate-900">No Groups Yet</h3>
-                <p className="mb-4 text-slate-500">Join or create a group to get started!</p>
+                <h3 className="tbo-card-title mb-2 text-slate-900 min-w-0 break-words">{tr("No Groups Yet")}</h3>
+                <p className="tbo-body mb-4 text-slate-500">{tr("Join or create a group to get started!")}</p>
                 <Button onClick={() => setActiveTab('discover')} className="rounded-full bg-rose-600 hover:bg-rose-700">
-                  Discover Groups
-                </Button>
+                   {tr("Discover Groups")} </Button>
               </Card>
             )}
           </div>
@@ -459,19 +461,19 @@ export function CommunityGroups() {
         {/* Live Tab */}
         <TabsContent value="live" className="space-y-6">
           <div className="px-1">
-            <h2 className="text-xl font-bold tracking-tight text-slate-950">Live now</h2>
-            <p className="mt-1 text-sm text-slate-500">Join real-time conversations from your communities.</p>
+            <h2 className="tbo-section-title text-slate-950 min-w-0 break-words">{tr("Live now")}</h2>
+            <p className="tbo-supporting mt-1 text-slate-500">{tr("Join real-time conversations from your communities.")}</p>
           </div>
-          <div className="grid gap-5">
+          <div className="grid min-w-0 gap-5">
             {liveSessions.map((session) => (
               <LiveSessionCard key={session.id} session={session} />
             ))}
 
             {liveSessions.length === 0 && (
-              <Card className="rounded-[2rem] border-rose-100 bg-gradient-to-br from-white to-rose-50/60 p-12 text-center shadow-sm">
+              <Card className="rounded-[2rem] border-rose-100 bg-gradient-to-br from-white to-rose-50/60 min-w-0 p-5 sm:p-12 text-center shadow-sm">
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 text-rose-600"><Video className="h-7 w-7" /></div>
-                <h3 className="mb-2 text-xl font-bold text-slate-900">No Live Sessions</h3>
-                <p className="text-slate-500">Check back later for live streams from your groups!</p>
+                <h3 className="tbo-card-title mb-2 text-slate-900 min-w-0 break-words">{tr("No Live Sessions")}</h3>
+                <p className="tbo-body text-slate-500">{tr("Check back later for live streams from your groups!")}</p>
               </Card>
             )}
           </div>
@@ -489,6 +491,8 @@ interface CommunityGroupCardProps {
 }
 
 function CommunityGroupCard({ group, member, onView, onJoin }: CommunityGroupCardProps) {
+  const tr = useUiCopy(communityMessages);
+  const locale = UI_LOCALES[useCurrentLanguage()];
   return (
     <Card className="group overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-[0_12px_36px_-28px_rgba(15,23,42,0.45)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-rose-200 hover:shadow-[0_18px_42px_-26px_rgba(190,24,93,0.3)] focus-within:border-rose-300 focus-within:ring-4 focus-within:ring-rose-100/70">
       <CardContent className="p-5 sm:p-6">
@@ -503,21 +507,21 @@ function CommunityGroupCard({ group, member, onView, onJoin }: CommunityGroupCar
             </div>
 
             <div className="min-w-0 flex-1">
-              <h3 className="truncate text-lg font-bold leading-tight tracking-tight text-slate-950 sm:text-xl">
+              <h3 className="tbo-card-title text-slate-950 min-w-0 break-words">
                 {group.name}
               </h3>
-              <p className="mt-1.5 line-clamp-2 text-sm leading-6 text-slate-600">
-                {group.description || 'A welcoming space for couples to connect and grow together.'}
+              <p className="tbo-supporting mt-1.5 line-clamp-2 text-slate-600">
+                {group.description || tr("A welcoming space for couples to connect and grow together.")}
               </p>
-              <div className="mt-3 flex flex-wrap items-center gap-2.5 text-sm text-slate-500">
-                <span className="inline-flex items-center gap-1.5 font-medium">
+              <div className="tbo-supporting mt-3 flex flex-wrap items-center gap-2.5 text-slate-500">
+                <span className="tbo-supporting inline-flex items-center gap-1.5">
                   <Users className="h-4 w-4 text-slate-400" aria-hidden="true" />
-                  {group.memberCount} {group.memberCount === 1 ? 'member' : 'members'}
+                  {group.memberCount} {group.memberCount === 1 ? tr("member") : tr("members")}
                 </span>
                 <span className="h-4 w-px bg-slate-200" aria-hidden="true" />
-                <Badge variant="secondary" className="h-6 gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 text-xs font-semibold text-slate-600 shadow-none">
+                <Badge variant="secondary" className="h-6 gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 text-slate-600 shadow-none">
                   {group.isPublic ? <Globe2 className="h-3 w-3" aria-hidden="true" /> : <LockKeyhole className="h-3 w-3" aria-hidden="true" />}
-                  {group.isPublic ? 'Public' : 'Private'}
+                  {group.isPublic ? tr("Public") : tr("Private")}
                 </Badge>
               </div>
             </div>
@@ -529,21 +533,20 @@ function CommunityGroupCard({ group, member, onView, onJoin }: CommunityGroupCar
                 type="button"
                 variant="ghost"
                 onClick={onView}
-                className="h-10 w-full justify-center rounded-full px-4 font-semibold text-rose-700 transition-all duration-200 hover:bg-rose-50 hover:text-rose-800 sm:w-auto"
+                className="min-h-10 w-full justify-center rounded-full px-4 text-rose-700 transition-all duration-200 hover:bg-rose-50 hover:text-rose-800 sm:w-auto h-auto whitespace-normal py-2"
                 aria-label={`View ${group.name}`}
               >
-                View Group <ArrowRight className="ml-1 h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true" />
+                 {tr("View Group")} <ArrowRight className="ml-1 h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true" />
               </Button>
             ) : (
               <Button
                 type="button"
                 onClick={onJoin}
-                className="h-10 w-full rounded-full bg-rose-600 px-4 font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-rose-700 hover:shadow-md sm:w-auto"
+                className="min-h-10 w-full rounded-full bg-rose-600 px-4 text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-rose-700 hover:shadow-md sm:w-auto h-auto whitespace-normal py-2"
                 aria-label={`Join ${group.name}`}
               >
                 <UserPlus className="mr-1.5 h-4 w-4" aria-hidden="true" />
-                Join Group
-              </Button>
+                 {tr("Join Group")} </Button>
             )}
           </div>
         </div>
@@ -554,6 +557,8 @@ function CommunityGroupCard({ group, member, onView, onJoin }: CommunityGroupCar
 
 // Create Group Form Component
 function CreateGroupForm({ onSubmit, isLoading }: { onSubmit: (data: any) => Promise<void>; isLoading: boolean }) {
+  const tr = useUiCopy(communityMessages);
+  const locale = UI_LOCALES[useCurrentLanguage()];
   const { t } = useLanguage();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -561,7 +566,7 @@ function CreateGroupForm({ onSubmit, isLoading }: { onSubmit: (data: any) => Pro
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      toast.error('Please enter a group name');
+      toast.error(tr("Please enter a group name"));
       return;
     }
     void onSubmit({ name: name.trim(), description: description.trim() });
@@ -570,10 +575,10 @@ function CreateGroupForm({ onSubmit, isLoading }: { onSubmit: (data: any) => Pro
   return (
     <form onSubmit={handleSubmit} className="space-y-5 p-6">
       <div className="space-y-2">
-        <Label htmlFor="name">Group Name</Label>
+        <Label htmlFor="name">{tr("Group Name")}</Label>
         <Input
           id="name"
-          placeholder="e.g., Young Couples Fellowship"
+          placeholder={tr("e.g., Young Couples Fellowship")}
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
@@ -581,18 +586,19 @@ function CreateGroupForm({ onSubmit, isLoading }: { onSubmit: (data: any) => Pro
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
+        <Label htmlFor="description">{tr("Description")}</Label>
         <Textarea
           id="description"
-          placeholder="What is this group about?"
+          placeholder={tr("What is this group about?")}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={4}
           className="rounded-xl border-slate-200 focus-visible:ring-rose-400"
         />
       </div>
-      <Button type="submit" className="h-11 w-full rounded-full bg-rose-600 font-bold text-white shadow-sm hover:bg-rose-700" disabled={isLoading}>
-        {isLoading ? t.common.saving : t.community.createGroup}
+      <Button type="submit" className="min-h-11 w-full rounded-full bg-rose-600 text-white shadow-sm hover:bg-rose-700 h-auto whitespace-normal py-2" disabled={isLoading}>
+        {isLoading && <LoadingMark />}
+        {isLoading ? tr("Saving...") : t.community.createGroup}
       </Button>
     </form>
   );
@@ -605,6 +611,8 @@ function GroupDetails({ group, onBack, isMember, onLeave }: {
   isMember: boolean;
   onLeave: () => void;
 }) {
+  const tr = useUiCopy(communityMessages);
+  const locale = UI_LOCALES[useCurrentLanguage()];
   const [activeTab, setActiveTab] = useState('chat');
 
   return (
@@ -612,44 +620,38 @@ function GroupDetails({ group, onBack, isMember, onLeave }: {
       <header className="relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-rose-50 via-white to-amber-50 px-6 py-7 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)] ring-1 ring-rose-100/80 sm:px-9 sm:py-9">
         <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-rose-200/30 blur-3xl" aria-hidden="true" />
         <div className="relative">
-          <button type="button" onClick={onBack} className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition-colors hover:text-rose-700" aria-label="Back to communities">
-            <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Communities
-          </button>
-          <div className="flex items-start gap-4">
+          <BackButton label={tr("Back to communities")} onClick={onBack} className="mb-5" />
+          <div className="flex flex-wrap items-start gap-4">
             <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-rose-100 to-amber-100 text-rose-600 ring-1 ring-rose-100">
               {group.imageUrl ? <img src={group.imageUrl} alt="" className="h-full w-full object-cover" /> : <Users className="h-7 w-7" />}
             </div>
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0 flex-1 basis-48">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">{group.name}</h1>
-                <Badge className="border-0 bg-white/80 text-rose-700 shadow-sm hover:bg-white">{group.memberCount} members</Badge>
+                <h1 className="tbo-page-title text-slate-950 min-w-0 break-words">{group.name}</h1>
+                <Badge className="max-w-full whitespace-normal border-0 bg-white/80 text-rose-700 shadow-sm hover:bg-white">{group.memberCount}  {tr("members")}</Badge>
               </div>
-              <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600">{group.description || 'A welcoming space for couples to connect and grow together.'}</p>
+              <p className="tbo-body mt-2 max-w-xl text-slate-600">{group.description || tr("A welcoming space for couples to connect and grow together.")}</p>
             </div>
           </div>
           {isMember && (
             <Button variant="outline" size="sm" onClick={onLeave} className="mt-5 rounded-full border-rose-200 bg-white/70 text-rose-700 hover:bg-rose-50 hover:text-rose-800">
-              <LogOut className="h-4 w-4" /> Leave group
-            </Button>
+              <LogOut className="h-4 w-4" />  {tr("Leave group")} </Button>
           )}
         </div>
       </header>
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="gap-6">
-        <TabsList className="grid h-14 w-full grid-cols-3 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-inner">
-          <TabsTrigger value="chat" className="h-full rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
+        <TabsList className="grid h-auto min-h-14 w-full grid-cols-3 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-inner">
+          <TabsTrigger value="chat" className="h-full rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm min-w-0 whitespace-normal">
             <MessageCircle className="mr-2 h-4 w-4" />
-            Chat
-          </TabsTrigger>
-          <TabsTrigger value="events" className="h-full rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
+             {tr("Chat")} </TabsTrigger>
+          <TabsTrigger value="events" className="h-full rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm min-w-0 whitespace-normal">
             <Calendar className="mr-2 h-4 w-4" />
-            Events
-          </TabsTrigger>
-          <TabsTrigger value="live" className="h-full rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
+             {tr("Events")} </TabsTrigger>
+          <TabsTrigger value="live" className="h-full rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm min-w-0 whitespace-normal">
             <Video className="mr-2 h-4 w-4" />
-            Go Live
-          </TabsTrigger>
+             {tr("Go Live")} </TabsTrigger>
         </TabsList>
 
         <TabsContent value="chat">
@@ -670,6 +672,8 @@ function GroupDetails({ group, onBack, isMember, onLeave }: {
 
 // Group Chat Component
 function GroupChat({ groupId }: { groupId: string }) {
+  const tr = useUiCopy(communityMessages);
+  const locale = UI_LOCALES[useCurrentLanguage()];
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -728,11 +732,11 @@ function GroupChat({ groupId }: { groupId: string }) {
         setNewMessage('');
         loadMessages();
       } else {
-        toast.error('Failed to send message');
+        toast.error(tr("Failed to send message"));
       }
     } catch (error) {
       console.error('Failed to send message:', error);
-      toast.error('Failed to send message');
+      toast.error(tr("Failed to send message"));
     } finally {
       setIsLoading(false);
     }
@@ -746,14 +750,14 @@ function GroupChat({ groupId }: { groupId: string }) {
           <div className="space-y-3">
             {messages.map((msg) => (
               <div key={msg.id} className="space-y-1">
-                <div className="flex items-baseline gap-2">
-                  <span className="font-semibold text-sm">{msg.userName}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(msg.createdAt).toLocaleTimeString()}
+                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                  <span className="tbo-label">{msg.userName}</span>
+                  <span className="tbo-caption text-muted-foreground">
+                    {formatUiTime(new Date(msg.createdAt), locale)}
                   </span>
                 </div>
                 <div className="bg-muted rounded-lg p-3">
-                  <p className="text-sm">{msg.message}</p>
+                  <p className="tbo-body break-words">{msg.message}</p>
                 </div>
               </div>
             ))}
@@ -761,7 +765,7 @@ function GroupChat({ groupId }: { groupId: string }) {
             {messages.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 <MessageCircle className="w-12 h-12 mx-auto mb-2 text-muted-foreground" />
-                <p>No messages yet. Start the conversation!</p>
+                <p className="tbo-body">{tr("No messages yet. Start the conversation!")}</p>
               </div>
             )}
           </div>
@@ -770,7 +774,7 @@ function GroupChat({ groupId }: { groupId: string }) {
         {/* Input */}
         <div className="flex gap-2">
           <Input
-            placeholder="Type your message..."
+            placeholder={tr("Type your message...")}
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
@@ -786,6 +790,8 @@ function GroupChat({ groupId }: { groupId: string }) {
 
 // Group Events Component (continuing in next message due to length...)
 function GroupEvents({ groupId }: { groupId: string }) {
+  const tr = useUiCopy(communityMessages);
+  const locale = UI_LOCALES[useCurrentLanguage()];
   const [events, setEvents] = useState<Event[]>([]);
   const [rsvps, setRsvps] = useState<Record<string, RSVP[]>>({});
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -864,15 +870,15 @@ function GroupEvents({ groupId }: { groupId: string }) {
       );
 
       if (response.ok) {
-        toast.success('Event created successfully!');
+        toast.success(tr("Event created successfully!"));
         setIsCreateDialogOpen(false);
         loadEvents();
       } else {
-        toast.error('Failed to create event');
+        toast.error(tr("Failed to create event"));
       }
     } catch (error) {
       console.error('Failed to create event:', error);
-      toast.error('Failed to create event');
+      toast.error(tr("Failed to create event"));
     } finally {
       setIsLoading(false);
     }
@@ -894,14 +900,14 @@ function GroupEvents({ groupId }: { groupId: string }) {
       );
 
       if (response.ok) {
-        toast.success('RSVP saved!');
+        toast.success(tr("RSVP saved!"));
         loadRSVPs(eventId);
       } else {
-        toast.error('Failed to RSVP');
+        toast.error(tr("Failed to RSVP"));
       }
     } catch (error) {
       console.error('Failed to RSVP:', error);
-      toast.error('Failed to RSVP');
+      toast.error(tr("Failed to RSVP"));
     }
   };
 
@@ -924,24 +930,22 @@ END:VCALENDAR`;
     a.download = `${event.title}.ics`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success('Event added to calendar!');
+    toast.success(tr("Event added to calendar!"));
   };
 
   return (
     <div className="space-y-4">
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogTrigger asChild>
-          <Button className="w-full">
+          <Button className="w-full h-auto min-h-9 whitespace-normal py-2">
             <Plus className="w-4 h-4 mr-2" />
-            Create Event
-          </Button>
+             {tr("Create Event")} </Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create Group Event</DialogTitle>
+            <DialogTitle>{tr("Create Group Event")}</DialogTitle>
             <DialogDescription>
-              Add an event to your group to bring the community together!
-            </DialogDescription>
+               {tr("Add an event to your group to bring the community together!")} </DialogDescription>
           </DialogHeader>
           <CreateEventForm onSubmit={createEvent} isLoading={isLoading} />
         </DialogContent>
@@ -956,14 +960,14 @@ END:VCALENDAR`;
             <Card key={event.id}>
               <CardContent className="p-4 space-y-3">
                 <div>
-                  <h3 className="font-semibold text-lg">{event.title}</h3>
-                  <p className="text-sm text-muted-foreground">{event.description}</p>
+                  <h3 className="tbo-card-title min-w-0 break-words">{event.title}</h3>
+                  <p className="tbo-body text-muted-foreground">{event.description}</p>
                 </div>
 
-                <div className="space-y-2 text-sm">
+                <div className="tbo-supporting space-y-2">
                   <div className="flex items-center gap-2 text-foreground">
                     <Clock className="w-4 h-4" />
-                    {new Date(event.date).toLocaleString()}
+                    {formatUiDateTime(new Date(event.date), locale)}
                   </div>
                   {event.location && (
                     <div className="flex items-center gap-2 text-foreground">
@@ -973,49 +977,44 @@ END:VCALENDAR`;
                   )}
                   <div className="flex items-center gap-2 text-foreground">
                     <Users className="w-4 h-4" />
-                    {goingCount} going
-                  </div>
+                    {goingCount}  {tr("going")} </div>
                 </div>
 
                 <div className="flex gap-2">
                   <Button
                     size="sm"
                     variant="default"
-                    onClick={() => rsvpToEvent(event.id, 'going')}
-                    className="flex-1"
+                    onClick={() => rsvpToEvent(event.id, tr("going"))}
+                    className="flex-1 h-auto min-h-9 whitespace-normal py-2"
                   >
                     <CheckCircle className="w-4 h-4 mr-1" />
-                    Going
-                  </Button>
+                     {tr("Going")} </Button>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => rsvpToEvent(event.id, 'maybe')}
-                    className="flex-1"
+                    className="flex-1 h-auto min-h-9 whitespace-normal py-2"
                   >
                     <HelpCircle className="w-4 h-4 mr-1" />
-                    Maybe
-                  </Button>
+                     {tr("Maybe")} </Button>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => rsvpToEvent(event.id, 'not-going')}
-                    className="flex-1"
+                    className="flex-1 h-auto min-h-9 whitespace-normal py-2"
                   >
                     <XCircle className="w-4 h-4 mr-1" />
-                    Can't Go
-                  </Button>
+                     {tr("Can't Go")} </Button>
                 </div>
 
                 <Button
                   size="sm"
                   variant="ghost"
                   onClick={() => addToCalendar(event)}
-                  className="w-full"
+                  className="w-full h-auto min-h-9 whitespace-normal py-2"
                 >
                   <Calendar className="w-4 h-4 mr-2" />
-                  Add to Calendar
-                </Button>
+                   {tr("Add to Calendar")} </Button>
               </CardContent>
             </Card>
           );
@@ -1024,8 +1023,8 @@ END:VCALENDAR`;
         {events.length === 0 && (
           <Card className="p-12 text-center">
             <Calendar className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">No Events Yet</h3>
-            <p className="text-muted-foreground">Create an event to bring the community together!</p>
+            <h3 className="tbo-card-title mb-2 min-w-0 break-words">{tr("No Events Yet")}</h3>
+            <p className="tbo-body text-muted-foreground">{tr("Create an event to bring the community together!")}</p>
           </Card>
         )}
       </div>
@@ -1034,6 +1033,8 @@ END:VCALENDAR`;
 }
 
 function CreateEventForm({ onSubmit, isLoading }: { onSubmit: (data: any) => void; isLoading: boolean }) {
+  const tr = useUiCopy(communityMessages);
+  const locale = UI_LOCALES[useCurrentLanguage()];
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
@@ -1042,7 +1043,7 @@ function CreateEventForm({ onSubmit, isLoading }: { onSubmit: (data: any) => voi
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !date) {
-      toast.error('Please fill in required fields');
+      toast.error(tr("Please fill in required fields"));
       return;
     }
     onSubmit({ title, description, date, location });
@@ -1051,27 +1052,27 @@ function CreateEventForm({ onSubmit, isLoading }: { onSubmit: (data: any) => voi
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="title">Event Title</Label>
+        <Label htmlFor="title">{tr("Event Title")}</Label>
         <Input
           id="title"
-          placeholder="e.g., Bible Study Night"
+          placeholder={tr("e.g., Bible Study Night")}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
+        <Label htmlFor="description">{tr("Description")}</Label>
         <Textarea
           id="description"
-          placeholder="What's this event about?"
+          placeholder={tr("What's this event about?")}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={3}
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="date">Date & Time</Label>
+        <Label htmlFor="date">{tr("Date & Time")}</Label>
         <Input
           id="date"
           type="datetime-local"
@@ -1081,16 +1082,17 @@ function CreateEventForm({ onSubmit, isLoading }: { onSubmit: (data: any) => voi
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="location">Location</Label>
+        <Label htmlFor="location">{tr("Location")}</Label>
         <Input
           id="location"
-          placeholder="e.g., Community Center"
+          placeholder={tr("e.g., Community Center")}
           value={location}
           onChange={(e) => setLocation(e.target.value)}
         />
       </div>
-      <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? 'Creating...' : 'Create Event'}
+      <Button type="submit" className="w-full h-auto min-h-9 whitespace-normal py-2" disabled={isLoading}>
+        {isLoading && <LoadingMark />}
+        {isLoading ? tr("Creating...") : tr("Create Event")}
       </Button>
     </form>
   );
@@ -1098,6 +1100,8 @@ function CreateEventForm({ onSubmit, isLoading }: { onSubmit: (data: any) => voi
 
 // Go Live Component
 function GoLive({ groupId }: { groupId: string }) {
+  const tr = useUiCopy(communityMessages);
+  const locale = UI_LOCALES[useCurrentLanguage()];
   const [isLive, setIsLive] = useState(false);
   const [liveSession, setLiveSession] = useState<LiveSession | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -1127,7 +1131,7 @@ function GoLive({ groupId }: { groupId: string }) {
       // Explicitly play the video to ensure it starts
       videoRef.current.play().catch(err => {
         console.error('Error playing video:', err);
-        toast.error('Failed to start video preview. Please try again.');
+        toast.error(tr("Failed to start video preview. Please try again."));
       });
     }
   }, [videoStream]);
@@ -1169,7 +1173,7 @@ function GoLive({ groupId }: { groupId: string }) {
     try {
       // Check if mediaDevices is supported
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        toast.error('Camera is not supported in this browser. Please use Chrome, Firefox, or Safari.');
+        toast.error(tr("Camera is not supported in this browser. Please use Chrome, Firefox, or Safari."));
         return false;
       }
 
@@ -1206,15 +1210,15 @@ function GoLive({ groupId }: { groupId: string }) {
         console.log('Camera permission denied - showing help dialog');
         setShowPermissionDialog(true);
         toast.error(
-          '📹 Camera permission required! Please click on the camera icon in your browser\'s address bar and allow access.',
+          tr("📹 Camera permission required! Please click on the camera icon in your browser's address bar and allow access."),
           { duration: 8000 }
         );
       } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
-        toast.error('No camera found. Please connect a camera and try again.');
+        toast.error(tr("No camera found. Please connect a camera and try again."));
       } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
-        toast.error('Camera is already in use by another application. Please close other apps using the camera.');
+        toast.error(tr("Camera is already in use by another application. Please close other apps using the camera."));
       } else if (error.name === 'OverconstrainedError') {
-        toast.error('Camera does not support the requested settings. Trying with basic settings...');
+        toast.error(tr("Camera does not support the requested settings. Trying with basic settings..."));
         // Try again with basic settings
         try {
           const basicStream = await navigator.mediaDevices.getUserMedia({
@@ -1226,13 +1230,13 @@ function GoLive({ groupId }: { groupId: string }) {
           return true;
         } catch (retryError) {
           console.error('Failed with basic settings:', retryError);
-          toast.error('Failed to access camera with any settings.');
+          toast.error(tr("Failed to access camera with any settings."));
           return false;
         }
       } else if (error.name === 'SecurityError') {
-        toast.error('Camera access blocked due to security settings. Please use HTTPS or localhost.');
+        toast.error(tr("Camera access blocked due to security settings. Please use HTTPS or localhost."));
       } else {
-        toast.error(`Camera error: ${error.message || 'Unknown error'}. Please check your camera permissions in browser settings.`);
+        toast.error(`Camera error: ${error.message || tr("Unknown error")}. Please check your camera permissions in browser settings.`);
       }
       
       return false;
@@ -1279,11 +1283,11 @@ function GoLive({ groupId }: { groupId: string }) {
         if (videoStream) {
           try {
             console.log('📡 Initializing WebRTC broadcaster...');
-            toast.info('Setting up video streaming...');
+            toast.info(tr("Setting up video streaming..."));
             const broadcaster = await createBroadcaster(newSession.id, videoStream, token);
             setWebrtcBroadcaster(broadcaster);
             console.log('✅ WebRTC broadcaster initialized!');
-            toast.success('🔴 You are now live with video streaming!');
+            toast.success(tr("🔴 You are now live with video streaming!"));
           } catch (webrtcError) {
             console.error('WebRTC setup failed:', webrtcError);
             const errorMsg = webrtcError instanceof Error ? webrtcError.message : 'Unknown error';
@@ -1292,15 +1296,15 @@ function GoLive({ groupId }: { groupId: string }) {
           }
         } else {
           console.warn('⚠️ No video stream available for WebRTC broadcaster');
-          toast.warning('Live session started but camera not available');
+          toast.warning(tr("Live session started but camera not available"));
         }
       } else {
-        toast.error('Failed to start live session');
+        toast.error(tr("Failed to start live session"));
         stopCamera(); // Stop camera if live session failed
       }
     } catch (error) {
       console.error('Failed to start live:', error);
-      toast.error('Failed to start live session');
+      toast.error(tr("Failed to start live session"));
       stopCamera(); // Stop camera if error occurred
     } finally {
       setIsLoading(false);
@@ -1309,7 +1313,7 @@ function GoLive({ groupId }: { groupId: string }) {
 
   const endLive = async () => {
     if (!liveSession) {
-      toast.error('No active live session found');
+      toast.error(tr("No active live session found"));
       return;
     }
 
@@ -1339,7 +1343,7 @@ function GoLive({ groupId }: { groupId: string }) {
         setIsLive(false);
         setLiveSession(null);
         stopCamera(); // Stop camera when ending live
-        toast.success('Live session ended');
+        toast.success(tr("Live session ended"));
       } else {
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
         console.error('Failed to end live session:', response.status, errorData);
@@ -1347,7 +1351,7 @@ function GoLive({ groupId }: { groupId: string }) {
       }
     } catch (error) {
       console.error('Failed to end live:', error);
-      toast.error('Failed to end live session. Please check your connection.');
+      toast.error(tr("Failed to end live session. Please check your connection."));
     } finally {
       setIsLoading(false);
     }
@@ -1365,8 +1369,8 @@ function GoLive({ groupId }: { groupId: string }) {
               <div className="absolute inset-0 w-4 h-4 bg-error-500 rounded-full animate-ping" />
             </div>
             <div>
-              <h3 className="font-semibold text-lg">You're Live!</h3>
-              <p className="text-sm text-muted-foreground">{liveSession.title}</p>
+              <h3 className="tbo-card-title min-w-0 break-words">{tr("You're Live!")}</h3>
+              <p className="tbo-supporting text-muted-foreground">{liveSession.title}</p>
             </div>
           </div>
 
@@ -1374,10 +1378,10 @@ function GoLive({ groupId }: { groupId: string }) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Eye className="w-5 h-5 text-error-500" />
-                <span className="font-semibold">{liveSession.viewerCount} viewers</span>
+                <span className="font-semibold">{liveSession.viewerCount}  {tr("viewers")}</span>
               </div>
-              <span className="text-sm text-muted-foreground">
-                Started {new Date(liveSession.startedAt).toLocaleTimeString()}
+              <span className="tbo-supporting text-muted-foreground">
+                 {tr("Started")} {formatUiTime(new Date(liveSession.startedAt), locale)}
               </span>
             </div>
           </div>
@@ -1393,11 +1397,10 @@ function GoLive({ groupId }: { groupId: string }) {
                   muted
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute top-4 left-4 bg-error-500 text-white px-3 py-1 rounded-full flex items-center gap-2 text-sm font-semibold">
+                <div className="tbo-label absolute top-4 left-4 bg-error-500 text-white px-3 py-1 rounded-full flex items-center gap-2">
                   <div className="w-2 h-2 bg-card rounded-full animate-pulse" />
-                  LIVE
-                </div>
-                <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-lg flex items-center gap-2 text-sm">
+                   {tr("LIVE")} </div>
+                <div className="tbo-supporting absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-lg flex items-center gap-2">
                   <Eye className="w-4 h-4" />
                   {liveSession.viewerCount}
                 </div>
@@ -1406,7 +1409,7 @@ function GoLive({ groupId }: { groupId: string }) {
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center text-white space-y-3">
                   <Video className="w-16 h-16 mx-auto opacity-50" />
-                  <p className="text-sm opacity-75">Starting camera...</p>
+                  <p className="tbo-supporting opacity-75">{tr("Starting camera...")}</p>
                   <Button 
                     variant="outline" 
                     size="sm"
@@ -1418,8 +1421,7 @@ function GoLive({ groupId }: { groupId: string }) {
                     className="bg-card text-black hover:bg-neutral-200"
                   >
                     <Video className="w-4 h-4 mr-2" />
-                    Retry Camera
-                  </Button>
+                     {tr("Retry Camera")} </Button>
                 </div>
               </div>
             )}
@@ -1429,10 +1431,9 @@ function GoLive({ groupId }: { groupId: string }) {
             variant="destructive"
             onClick={endLive}
             disabled={isLoading}
-            className="w-full"
+            className="w-full h-auto min-h-9 whitespace-normal py-2"
           >
-            End Live Session
-          </Button>
+             {tr("End Live Session")} </Button>
         </CardContent>
       </Card>
     );
@@ -1446,11 +1447,9 @@ function GoLive({ groupId }: { groupId: string }) {
             <Video className="w-8 h-8 text-error-500" />
           </div>
           <div>
-            <h3 className="font-semibold text-lg mb-2">Go Live with Your Community</h3>
-            <p className="text-sm text-muted-foreground">
-              Start a live session to connect with group members in real-time.
-              They'll receive a notification when you go live!
-            </p>
+            <h3 className="tbo-card-title mb-2 min-w-0 break-words">{tr("Go Live with Your Community")}</h3>
+            <p className="tbo-supporting text-muted-foreground">
+               {tr("Start a live session to connect with group members in real-time. They'll receive a notification when you go live!")} </p>
           </div>
         </div>
 
@@ -1460,37 +1459,35 @@ function GoLive({ groupId }: { groupId: string }) {
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Bell className="w-6 h-6 text-warning-700" />
-                Camera Permission Was Denied
-              </DialogTitle>
+                 {tr("Camera Permission Was Denied")} </DialogTitle>
               <DialogDescription>
-                Follow these steps to enable camera access
-              </DialogDescription>
+                 {tr("Follow these steps to enable camera access")} </DialogDescription>
             </DialogHeader>
             
             <div className="space-y-4">
               <Card className="bg-warning-50 border-warning-500/30">
                 <CardContent className="p-4">
-                  <h4 className="font-semibold text-warning-700 mb-3">📹 How to Allow Camera Access:</h4>
-                  <ol className="space-y-2 text-sm text-warning-700 list-decimal list-inside">
-                    <li>Look for a <strong>camera icon (🎥)</strong> or <strong>lock icon</strong> in your browser's address bar (top-left of screen)</li>
-                    <li>Click on it to open the site permissions menu</li>
-                    <li>Find "Camera" and "Microphone" permissions</li>
-                    <li>Change them from "Block" to <strong>"Allow"</strong></li>
-                    <li>Reload this page (press F5 or Cmd+R)</li>
-                    <li>Try "Go Live Now" again</li>
+                  <h4 className="tbo-card-title text-warning-700 mb-3 min-w-0 break-words">{tr("📹 How to Allow Camera Access:")}</h4>
+                  <ol className="tbo-supporting space-y-2 text-warning-700 list-decimal list-inside">
+                    <li>{tr("Look for a")} <strong>{tr("camera icon (🎥)")}</strong>  {tr("or")} <strong>{tr("lock icon")}</strong>  {tr("in your browser's address bar (top-left of screen)")}</li>
+                    <li>{tr("Click on it to open the site permissions menu")}</li>
+                    <li>{tr("Find \"Camera\" and \"Microphone\" permissions")}</li>
+                    <li>{tr("Change them from \"Block\" to")} <strong>{tr("\"Allow\"")}</strong></li>
+                    <li>{tr("Reload this page (press F5 or Cmd+R)")}</li>
+                    <li>{tr("Try \"Go Live Now\" again")}</li>
                   </ol>
                 </CardContent>
               </Card>
 
               <Card className="bg-sky-50 border-sky-200">
                 <CardContent className="p-3">
-                  <p className="text-xs text-sky-700 mb-2">
-                    <strong>Alternative Method - Browser Settings:</strong>
+                  <p className="tbo-supporting text-sky-700 mb-2">
+                    <strong>{tr("Alternative Method - Browser Settings:")}</strong>
                   </p>
-                  <ul className="text-xs text-sky-700 space-y-1 list-disc list-inside">
-                    <li><strong>Chrome/Edge:</strong> Settings → Privacy & Security → Site Settings → Camera</li>
-                    <li><strong>Firefox:</strong> Settings → Privacy & Security → Permissions → Camera</li>
-                    <li><strong>Safari:</strong> Preferences → Websites → Camera</li>
+                  <ul className="tbo-supporting text-sky-700 space-y-1 list-disc list-inside">
+                    <li><strong>Chrome/Edge:</strong>  {tr("Settings → Privacy & Security → Site Settings → Camera")}</li>
+                    <li><strong>Firefox:</strong>  {tr("Settings → Privacy & Security → Permissions → Camera")}</li>
+                    <li><strong>Safari:</strong>  {tr("Preferences → Websites → Camera")}</li>
                   </ul>
                 </CardContent>
               </Card>
@@ -1499,19 +1496,17 @@ function GoLive({ groupId }: { groupId: string }) {
                 <Button
                   variant="outline"
                   onClick={() => setShowPermissionDialog(false)}
-                  className="flex-1"
+                  className="flex-1 h-auto min-h-9 whitespace-normal py-2"
                 >
-                  Close
-                </Button>
+                   {tr("Close")} </Button>
                 <Button
                   onClick={() => {
                     setShowPermissionDialog(false);
                     window.location.reload();
                   }}
-                  className="flex-1 bg-warning-500 hover:bg-warning-700 text-white"
+                  className="flex-1 bg-warning-500 hover:bg-warning-700 text-white h-auto min-h-9 whitespace-normal py-2"
                 >
-                  Reload Page
-                </Button>
+                   {tr("Reload Page")} </Button>
               </div>
             </div>
           </DialogContent>
@@ -1524,6 +1519,8 @@ function GoLive({ groupId }: { groupId: string }) {
 }
 
 function StartLiveForm({ onSubmit, isLoading }: { onSubmit: (title: string, description: string) => void; isLoading: boolean }) {
+  const tr = useUiCopy(communityMessages);
+  const locale = UI_LOCALES[useCurrentLanguage()];
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
@@ -1535,19 +1532,19 @@ function StartLiveForm({ onSubmit, isLoading }: { onSubmit: (title: string, desc
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="live-title">Session Title (Optional)</Label>
+        <Label htmlFor="live-title">{tr("Session Title (Optional)")}</Label>
         <Input
           id="live-title"
-          placeholder="e.g., Evening Prayer & Worship"
+          placeholder={tr("e.g., Evening Prayer & Worship")}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="live-description">Description (Optional)</Label>
+        <Label htmlFor="live-description">{tr("Description (Optional)")}</Label>
         <Textarea
           id="live-description"
-          placeholder="What will you talk about?"
+          placeholder={tr("What will you talk about?")}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={2}
@@ -1555,11 +1552,12 @@ function StartLiveForm({ onSubmit, isLoading }: { onSubmit: (title: string, desc
       </div>
       <Button
         type="submit"
-        className="w-full bg-gradient-to-r from-error-500 to-primary-600 hover:from-error-700 hover:to-primary-700"
+        className="w-full bg-gradient-to-r from-error-500 to-primary-600 hover:from-error-700 hover:to-primary-700 h-auto min-h-9 whitespace-normal py-2"
         disabled={isLoading}
       >
         <Radio className="w-4 h-4 mr-2" />
-        {isLoading ? 'Starting...' : 'Go Live Now'}
+        {isLoading && <LoadingMark />}
+        {isLoading ? tr("Starting...") : tr("Go Live Now")}
       </Button>
     </form>
   );
@@ -1567,6 +1565,8 @@ function StartLiveForm({ onSubmit, isLoading }: { onSubmit: (title: string, desc
 
 // Live Session Card
 function LiveSessionCard({ session }: { session: LiveSession }) {
+  const tr = useUiCopy(communityMessages);
+  const locale = UI_LOCALES[useCurrentLanguage()];
   const [hasJoined, setHasJoined] = useState(false);
   const [showViewer, setShowViewer] = useState(false);
 
@@ -1591,7 +1591,7 @@ function LiveSessionCard({ session }: { session: LiveSession }) {
       if (response.ok) {
         setHasJoined(true);
         setShowViewer(true);
-        toast.success('Joined live session!');
+        toast.success(tr("Joined live session!"));
       }
     } catch (error) {
       console.error('Failed to join live:', error);
@@ -1611,32 +1611,31 @@ function LiveSessionCard({ session }: { session: LiveSession }) {
             <div className="absolute inset-0 w-3 h-3 bg-error-500 rounded-full animate-ping" />
           </div>
           <div className="flex-1">
-            <h3 className="font-semibold">{session.title}</h3>
-            <p className="text-sm text-muted-foreground">{session.userName} • {session.groupName}</p>
+            <h3 className="tbo-card-title min-w-0 break-words">{session.title}</h3>
+            <p className="tbo-supporting text-muted-foreground">{session.userName} • {session.groupName}</p>
             {session.description && (
-              <p className="text-sm text-muted-foreground mt-1">{session.description}</p>
+              <p className="tbo-supporting text-muted-foreground mt-1">{session.description}</p>
             )}
           </div>
         </div>
 
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+        <div className="tbo-supporting flex items-center gap-4 text-muted-foreground">
           <div className="flex items-center gap-1">
             <Eye className="w-4 h-4" />
-            {session.viewerCount} watching
-          </div>
+            {session.viewerCount}  {tr("watching")} </div>
           <div className="flex items-center gap-1">
             <Clock className="w-4 h-4" />
-            Started {new Date(session.startedAt).toLocaleTimeString()}
+             {tr("Started")} {formatUiTime(new Date(session.startedAt), locale)}
           </div>
         </div>
 
         <Button
           onClick={joinLive}
-          className="w-full bg-error-500 hover:bg-error-700"
+          className="w-full bg-error-500 hover:bg-error-700 h-auto min-h-9 whitespace-normal py-2"
           disabled={hasJoined}
         >
           <Video className="w-4 h-4 mr-2" />
-          {hasJoined ? 'Watching...' : 'Watch Live'}
+          {hasJoined ? tr("Watching...") : tr("Watch Live")}
         </Button>
       </CardContent>
     </Card>
@@ -1645,6 +1644,8 @@ function LiveSessionCard({ session }: { session: LiveSession }) {
 
 // Live Stream Viewer Component
 function LiveStreamViewer({ session, onClose }: { session: LiveSession; onClose: () => void }) {
+  const tr = useUiCopy(communityMessages);
+  const locale = UI_LOCALES[useCurrentLanguage()];
   const [viewerCount, setViewerCount] = useState(session.viewerCount);
   const [isLoading, setIsLoading] = useState(true);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
@@ -1675,13 +1676,13 @@ function LiveStreamViewer({ session, onClose }: { session: LiveSession; onClose:
           } else {
             // Session ended or not active
             console.log('📴 Live session has ended');
-            toast.info('Live session has ended');
+            toast.info(tr("Live session has ended"));
             onClose();
           }
         } else if (response.status === 404) {
           // Session not found
           console.log('📴 Live session not found');
-          toast.info('Live session has ended');
+          toast.info(tr("Live session has ended"));
           onClose();
         }
       } catch (error) {
@@ -1715,7 +1716,7 @@ function LiveStreamViewer({ session, onClose }: { session: LiveSession; onClose:
       const viewerId = `viewer-${Date.now()}`;
       
       console.log('📡 Initializing WebRTC viewer...');
-      toast.info('Connecting to live stream...', { duration: 3000 });
+      toast.info(tr("Connecting to live stream..."), { duration: 3000 });
       
       const viewer = await createViewer(session.id, viewerId, token, (stream) => {
         console.log('📹 Received remote stream!', {
@@ -1726,7 +1727,7 @@ function LiveStreamViewer({ session, onClose }: { session: LiveSession; onClose:
         setRemoteStream(stream);
         setHasVideo(stream.getVideoTracks().length > 0);
         setIsLoading(false);
-        toast.success('Connected to live stream!');
+        toast.success(tr("Connected to live stream!"));
       });
       
       setWebrtcViewer(viewer);
@@ -1736,7 +1737,7 @@ function LiveStreamViewer({ session, onClose }: { session: LiveSession; onClose:
       setTimeout(() => {
         if (!remoteStream) {
           console.log('⚠️ No video stream received after 30 seconds');
-          toast.warning('Waiting for broadcaster to start camera...', { duration: 5000 });
+          toast.warning(tr("Waiting for broadcaster to start camera..."), { duration: 5000 });
           setIsLoading(false);
         }
       }, 30000);
@@ -1748,10 +1749,10 @@ function LiveStreamViewer({ session, onClose }: { session: LiveSession; onClose:
       if (errorMessage.includes('setting up their camera')) {
         toast.error(errorMessage, { duration: 5000 });
       } else if (errorMessage.includes('Live session has ended')) {
-        toast.error('This live session has ended.');
+        toast.error(tr("This live session has ended."));
         onClose();
       } else {
-        toast.error('Could not connect to live stream. Please try again.', { duration: 4000 });
+        toast.error(tr("Could not connect to live stream. Please try again."), { duration: 4000 });
       }
       
       setIsLoading(false);
@@ -1773,8 +1774,8 @@ function LiveStreamViewer({ session, onClose }: { session: LiveSession; onClose:
               <div className="absolute inset-0 w-4 h-4 bg-error-500 rounded-full animate-ping" />
             </div>
             <div>
-              <h3 className="font-semibold text-lg">🔴 LIVE: {session.title}</h3>
-              <p className="text-sm text-muted-foreground">{session.userName}</p>
+              <h3 className="tbo-card-title min-w-0 break-words">{tr("🔴 LIVE:")} {session.title}</h3>
+              <p className="tbo-supporting text-muted-foreground">{session.userName}</p>
             </div>
           </div>
           <Button variant="ghost" size="icon" onClick={onClose}>
@@ -1787,14 +1788,13 @@ function LiveStreamViewer({ session, onClose }: { session: LiveSession; onClose:
           {isLoading ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-neutral-900 text-white">
               <div className="relative mb-4">
-                <Video className="w-16 h-16 opacity-50 animate-pulse" />
+                <LoadingMark size={64} />
               </div>
-              <p className="text-sm opacity-75">Connecting to {session.userName}'s stream...</p>
-              <p className="text-xs opacity-50 mt-2">Waiting for broadcaster to start WebRTC...</p>
-              <div className="mt-4 flex items-center gap-2 text-xs opacity-40">
+              <p className="tbo-supporting opacity-75">{tr("Connecting to {name}’s stream...", { name: session.userName })}</p>
+              <p className="tbo-caption opacity-50 mt-2">{tr("Waiting for broadcaster to start WebRTC...")}</p>
+              <div className="tbo-caption mt-4 flex items-center gap-2 opacity-40">
                 <div className="w-2 h-2 bg-sky-400 rounded-full animate-pulse" />
-                This may take up to 15 seconds
-              </div>
+                 {tr("This may take up to 15 seconds")} </div>
             </div>
           ) : hasVideo && remoteStream ? (
             <>
@@ -1806,21 +1806,19 @@ function LiveStreamViewer({ session, onClose }: { session: LiveSession; onClose:
                 className="w-full h-full object-cover"
               />
               
-              <div className="absolute top-4 left-4 bg-error-500 text-white px-3 py-1 rounded-full flex items-center gap-2 text-sm font-semibold shadow-lg">
+              <div className="tbo-label absolute top-4 left-4 bg-error-500 text-white px-3 py-1 rounded-full flex items-center gap-2 shadow-lg">
                 <div className="w-2 h-2 bg-card rounded-full animate-pulse" />
-                LIVE
-              </div>
-              <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm shadow-lg">
+                 {tr("LIVE")} </div>
+              <div className="tbo-supporting absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg flex items-center gap-2 shadow-lg">
                 <Eye className="w-4 h-4" />
                 {viewerCount}
               </div>
-              <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-sm text-white px-2 py-1 rounded text-xs">
-                Started {new Date(session.startedAt).toLocaleTimeString()}
+              <div className="tbo-caption absolute bottom-4 left-4 bg-black/70 backdrop-blur-sm text-white px-2 py-1 rounded">
+                 {tr("Started")} {formatUiTime(new Date(session.startedAt), locale)}
               </div>
-              <div className="absolute top-4 right-4 bg-success-500/80 backdrop-blur-sm text-white px-2 py-1 rounded text-xs flex items-center gap-1">
+              <div className="tbo-caption absolute top-4 right-4 bg-success-500/80 backdrop-blur-sm text-white px-2 py-1 rounded flex items-center gap-1">
                 <div className="w-2 h-2 bg-card rounded-full animate-pulse" />
-                WebRTC Connected
-              </div>
+                 {tr("WebRTC Connected")} </div>
             </>
           ) : (
             <>
@@ -1836,35 +1834,34 @@ function LiveStreamViewer({ session, onClose }: { session: LiveSession; onClose:
                     </div>
                   </div>
                   <div className="text-center space-y-3 bg-black/30 backdrop-blur-sm rounded-lg p-6 border border-white/10">
-                    <p className="text-2xl font-semibold">{session.userName} is Live</p>
-                    <p className="text-sm opacity-90 max-w-md">
-                      {session.description || 'Streaming live to the community'}
+                    <p className="tbo-section-title">{tr("{name} is Live", { name: session.userName })}</p>
+                    <p className="tbo-supporting opacity-90 max-w-md">
+                      {session.description || tr("Streaming live to the community")}
                     </p>
-                    <div className="flex items-center justify-center gap-3 text-sm pt-2">
+                    <div className="tbo-supporting flex items-center justify-center gap-3 pt-2">
                       <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full">
                         <Eye className="w-4 h-4" />
-                        <span className="font-semibold">{viewerCount} watching</span>
+                        <span className="font-semibold">{viewerCount}  {tr("watching")}</span>
                       </div>
                       <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full">
                         <Clock className="w-4 h-4" />
-                        <span>Live now</span>
+                        <span>{tr("Live now")}</span>
                       </div>
                     </div>
-                    <p className="text-xs opacity-75 mt-3">⚠️ Video stream not available</p>
+                    <p className="tbo-supporting opacity-75 mt-3">{tr("⚠️ Video stream not available")}</p>
                   </div>
                 </div>
               </div>
               
-              <div className="absolute top-4 left-4 bg-error-500 text-white px-3 py-1 rounded-full flex items-center gap-2 text-sm font-semibold shadow-lg">
+              <div className="tbo-label absolute top-4 left-4 bg-error-500 text-white px-3 py-1 rounded-full flex items-center gap-2 shadow-lg">
                 <div className="w-2 h-2 bg-card rounded-full animate-pulse" />
-                LIVE
-              </div>
-              <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm shadow-lg">
+                 {tr("LIVE")} </div>
+              <div className="tbo-supporting absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg flex items-center gap-2 shadow-lg">
                 <Eye className="w-4 h-4" />
                 {viewerCount}
               </div>
-              <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-sm text-white px-2 py-1 rounded text-xs">
-                Started {new Date(session.startedAt).toLocaleTimeString()}
+              <div className="tbo-caption absolute bottom-4 left-4 bg-black/70 backdrop-blur-sm text-white px-2 py-1 rounded">
+                 {tr("Started")} {formatUiTime(new Date(session.startedAt), locale)}
               </div>
             </>
           )}
@@ -1876,17 +1873,16 @@ function LiveStreamViewer({ session, onClose }: { session: LiveSession; onClose:
             <div className="flex-1">
               {hasVideo ? (
                 <>
-                  <p className="text-sm text-success-700 font-semibold">✅ WebRTC Video Connected!</p>
-                  <p className="text-xs text-success-700 mt-1">
-                    You're viewing {session.userName}'s live camera feed via peer-to-peer WebRTC connection.
+                  <p className="tbo-label text-success-700">{tr("✅ WebRTC Video Connected!")}</p>
+                  <p className="tbo-caption text-success-700 mt-1">
+                    {tr("You are viewing {name}’s live camera feed.", { name: session.userName })}
                   </p>
                 </>
               ) : (
                 <>
-                  <p className="text-sm text-sky-700 font-semibold">📹 WebRTC Status</p>
-                  <p className="text-xs text-sky-700 mt-1">
-                    Attempting to establish WebRTC connection... If video doesn't appear, the broadcaster may need to enable their camera or there may be network restrictions.
-                  </p>
+                  <p className="tbo-label text-sky-700">{tr("📹 WebRTC Status")}</p>
+                  <p className="tbo-caption text-sky-700 mt-1">
+                     {tr("Attempting to establish WebRTC connection... If video doesn't appear, the broadcaster may need to enable their camera or there may be network restrictions.")} </p>
                 </>
               )}
             </div>
@@ -1897,17 +1893,15 @@ function LiveStreamViewer({ session, onClose }: { session: LiveSession; onClose:
           <Button
             variant="outline"
             onClick={onClose}
-            className="flex-1"
+            className="flex-1 h-auto min-h-9 whitespace-normal py-2"
           >
-            Leave Stream
-          </Button>
+             {tr("Leave Stream")} </Button>
           <Button
-            className="flex-1 bg-gradient-to-r from-primary-600 to-sky-600"
-            onClick={() => toast.info('Live chat coming soon!')}
+            className="flex-1 bg-gradient-to-r from-primary-600 to-sky-600 h-auto min-h-9 whitespace-normal py-2"
+            onClick={() => toast.info(tr("Live chat coming soon!"))}
           >
             <MessageCircle className="w-4 h-4 mr-2" />
-            Chat
-          </Button>
+             {tr("Chat")} </Button>
         </div>
       </CardContent>
     </Card>

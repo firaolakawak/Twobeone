@@ -1,3 +1,6 @@
+import { useUiCopy } from '../utils/uiTranslation';
+import { LoadingMark } from './BrandLoader';
+import { profileUiMessages } from '../locales/profileUi';
 import { useState, useEffect, type ReactNode } from "react";
 import {
   Avatar,
@@ -18,7 +21,6 @@ import { Label } from "./ui/label";
 import {
   MapPin,
   Navigation,
-  Loader2,
   Settings,
   Check,
   X,
@@ -76,6 +78,7 @@ export function DistanceConnector({
   summaryContent,
   partnerMood,
 }: DistanceConnectorProps) {
+  const tr = useUiCopy(profileUiMessages);
   const { t } = useLanguage();
   const [userLocation, setUserLocation] =
     useState<UserLocation | null>(null);
@@ -214,7 +217,7 @@ export function DistanceConnector({
 
       if (!location) {
         toast.error(
-          "Unable to get your location. Please check permissions.",
+          tr("Unable to get your location. Please check permissions."),
         );
         setIsLoading(false);
         return;
@@ -236,13 +239,13 @@ export function DistanceConnector({
       );
 
       if (!response.ok)
-        throw new Error("Failed to save location");
+        throw new Error(tr("Failed to save location"));
 
       const locationText = location.city
         ? `${location.city}${location.country ? ", " + location.country : ""}`
-        : "your location";
+        : tr("your location");
 
-      toast.success(`📍 Location updated to ${locationText}`);
+      toast.success(tr('📍 Location updated to {location}', { location: locationText }));
       await loadLocations();
       setShowSettings(false);
     } catch (error) {
@@ -250,7 +253,7 @@ export function DistanceConnector({
         "[DistanceConnector] Error enabling live location:",
         error,
       );
-      toast.error("Failed to enable live location");
+      toast.error(tr("Failed to enable live location"));
     } finally {
       setIsLoading(false);
     }
@@ -258,7 +261,7 @@ export function DistanceConnector({
 
   const handleSetManualLocation = async () => {
     if (!manualCity.trim()) {
-      toast.error("Please enter a city name");
+      toast.error(tr("Please enter a city name"));
       return;
     }
 
@@ -268,7 +271,7 @@ export function DistanceConnector({
 
       if (!location) {
         toast.error(
-          "City not found. Please try a different name.",
+          tr("City not found. Please try a different name."),
         );
         setIsSubmitting(false);
         return;
@@ -290,13 +293,13 @@ export function DistanceConnector({
       );
 
       if (!response.ok)
-        throw new Error("Failed to save location");
+        throw new Error(tr("Failed to save location"));
 
       const locationText = location.city
         ? `${location.city}${location.country ? ", " + location.country : ""}`
         : manualCity;
 
-      toast.success(`📍 Location set to ${locationText}`);
+      toast.success(tr('📍 Location set to {location}', { location: locationText }));
       await loadLocations();
       setShowSettings(false);
       setManualCity("");
@@ -305,7 +308,7 @@ export function DistanceConnector({
         "[DistanceConnector] Error setting manual location:",
         error,
       );
-      toast.error("Failed to set location");
+      toast.error(tr("Failed to set location"));
     } finally {
       setIsSubmitting(false);
     }
@@ -325,9 +328,9 @@ export function DistanceConnector({
       );
 
       if (!response.ok)
-        throw new Error("Failed to remove location");
+        throw new Error(tr("Failed to remove location"));
 
-      toast.success("Location removed");
+      toast.success(tr("Location removed"));
       await loadLocations();
       setShowSettings(false);
     } catch (error) {
@@ -335,7 +338,7 @@ export function DistanceConnector({
         "[DistanceConnector] Error removing location:",
         error,
       );
-      toast.error("Failed to remove location");
+      toast.error(tr("Failed to remove location"));
     } finally {
       setIsLoading(false);
     }
@@ -389,16 +392,16 @@ export function DistanceConnector({
           </div>
 
           {summaryContent ? summaryContent(distance) : embeddedDistanceLabel && (
-            <p className="mt-5 text-sm text-muted-foreground">{embeddedDistanceLabel}</p>
+            <p className="tbo-supporting mt-5 text-muted-foreground">{embeddedDistanceLabel}</p>
           )}
 
           {(!userLocation?.location || distance === null) && <div className="mt-3 flex items-center">
             {!userLocation?.location ? (
-              <Button size="sm" variant="outline" onClick={() => setShowSettings(true)} className="h-8 rounded-xl px-4 text-xs font-semibold">
+              <Button size="sm" variant="outline" onClick={() => setShowSettings(true)} className="h-auto min-h-9 whitespace-normal rounded-xl px-4 py-2">
                 <MapPin className="mr-1.5 h-3.5 w-3.5 text-rose-500" /> {t.dashboard.shareLocation}
               </Button>
             ) : distance === null ? (
-              <span className="text-[10px] italic text-muted-foreground">{t.dashboard.waitingForPartnerLocation}</span>
+              <span className="tbo-caption italic text-muted-foreground">{t.dashboard.waitingForPartnerLocation}</span>
             ) : null}
           </div>}
         </div>
@@ -483,7 +486,7 @@ export function DistanceConnector({
                       }}
                     >
                       <Heart className="w-3 h-3" style={{ fill: 'var(--primary-500)', color: 'var(--primary-500)' }} />
-                      <span className="text-xs font-bold" style={{ color: 'var(--foreground)', letterSpacing: '-0.01em' }}>
+                      <span className="tbo-caption" style={{ color: 'var(--foreground)' }}>
                         {formatDistance(distance)}
                       </span>
                     </motion.div>
@@ -547,33 +550,35 @@ export function DistanceConnector({
 
             {/* Names / status footer */}
             <div className="grid grid-cols-3 items-center text-center px-1 pt-1">
-              <p className="text-left text-xs font-semibold truncate" style={{ color: 'var(--foreground)' }}>
-                {userLocation?.location?.city || <span style={{ color: 'var(--muted-foreground)', fontStyle: 'italic' }}>Not set</span>}
+              <p className="tbo-label text-left break-words" style={{ color: 'var(--foreground)' }}>
+                {userLocation?.location?.city || <span style={{ color: 'var(--muted-foreground)', fontStyle: 'italic' }}>{tr("Not set")}</span>}
               </p>
               <div className="flex justify-center">
                 {distance !== null ? (
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full"
+                  <span className="tbo-caption px-2.5 py-0.5 rounded-full"
                     style={{ background: 'var(--primary-50)', color: 'var(--primary-600)', border: '1px solid var(--primary-200)' }}>
-                    {getDistanceDescription(distance) || 'Connected'}
+                    {getDistanceDescription(distance) || tr("Connected")}
                   </span>
                 ) : (
-                  <span className="text-[10px]" style={{ color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
-                    Awaiting location
+                  <span className="tbo-caption" style={{ color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
+
+                    {tr("Awaiting location")}
                   </span>
                 )}
               </div>
-              <p className="text-right text-xs font-semibold truncate" style={{ color: 'var(--foreground)' }}>
-                {partnerLocation?.location?.city || <span style={{ color: 'var(--muted-foreground)', fontStyle: 'italic' }}>Not set</span>}
+              <p className="tbo-label text-right break-words" style={{ color: 'var(--foreground)' }}>
+                {partnerLocation?.location?.city || <span style={{ color: 'var(--muted-foreground)', fontStyle: 'italic' }}>{tr("Not set")}</span>}
               </p>
             </div>
 
             {!userLocation?.location && (
               <div className="text-center">
                 <Button size="sm" variant="outline" onClick={() => setShowSettings(true)}
-                  className="text-xs font-semibold h-8 px-4 rounded-xl"
+                  className="h-auto min-h-9 whitespace-normal px-4 py-2 rounded-xl"
                   style={{ borderColor: 'var(--border)', color: 'var(--foreground)' }}>
                   <MapPin className="w-3.5 h-3.5 mr-1.5" style={{ color: 'var(--primary-500)' }} />
-                  Share Your Location
+
+                  {tr("Share Your Location")}
                 </Button>
               </div>
             )}
@@ -587,15 +592,16 @@ export function DistanceConnector({
         open={showSettings}
         onOpenChange={setShowSettings}
       >
-        <DialogContent className="max-w-md rounded-2xl p-5 border-none shadow-2xl bg-white">
+        <DialogContent className="w-[calc(100%-2rem)] max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl p-5 border-none shadow-2xl bg-white">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-base font-bold text-slate-950">
+            <DialogTitle className="flex items-center gap-2 text-slate-950">
               <MapPin className="w-5 h-5 text-rose-500" />
-              Location Settings
+
+              {tr("Location Settings")}
             </DialogTitle>
-            <DialogDescription className="text-xs text-slate-500">
-              Share your location region with your partner to
-              calculate distances.
+            <DialogDescription className="text-slate-500">
+
+              {tr("Share your location region with your partner to calculate distances.")}
             </DialogDescription>
           </DialogHeader>
 
@@ -605,20 +611,21 @@ export function DistanceConnector({
                 <div className="p-2 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0 h-8 w-8">
                   <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
                 </div>
-                <div>
-                  <h4 className="text-xs font-bold text-slate-900">
-                    Active Location Baseline
+                <div className="min-w-0 break-words">
+                  <h4 className="tbo-label text-slate-900">
+
+                    {tr("Active Location Baseline")}
                   </h4>
-                  <p className="text-sm font-semibold text-slate-950 mt-0.5">
+                  <p className="tbo-body text-slate-950 mt-0.5">
                     {userLocation.location.city}
                     {userLocation.location.country
                       ? `, ${userLocation.location.country}`
                       : ""}
                   </p>
-                  <span className="inline-block text-[10px] bg-white border border-emerald-200 text-emerald-700 font-bold px-1.5 py-0.5 rounded mt-1.5">
+                  <span className="tbo-caption inline-block bg-white border border-emerald-200 text-emerald-700 px-1.5 py-0.5 rounded mt-1.5">
                     {userLocation.locationType === "live"
-                      ? "📍 GPS LIVE Mode"
-                      : "📌 Manual Entry"}
+                      ? tr("📍 GPS LIVE Mode")
+                      : tr("📌 Manual Entry")}
                   </span>
                 </div>
               </div>
@@ -626,22 +633,24 @@ export function DistanceConnector({
 
             {/* GPS Link Option */}
             <div className="space-y-1.5">
-              <h4 className="font-bold text-xs text-slate-900 flex items-center gap-1.5">
+              <h4 className="tbo-label text-slate-900 flex items-center gap-1.5">
                 <Navigation className="w-3.5 h-3.5 text-purple-600" />
-                Automatic Device GPS
+
+                {tr("Automatic Device GPS")}
               </h4>
               <Button
-                className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs h-9 rounded-xl shadow-sm"
+                className="w-full bg-slate-900 hover:bg-slate-800 text-white h-auto min-h-9 whitespace-normal py-2 rounded-xl shadow-sm"
                 onClick={handleEnableLiveLocation}
                 disabled={isLoading}
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Acquiring satellite data...
+                    <LoadingMark className="mr-2" />
+
+                    {tr("Acquiring satellite data...")}
                   </>
                 ) : (
-                  "Sync Live Location"
+                  tr("Sync Live Location")
                 )}
               </Button>
             </div>
@@ -650,26 +659,27 @@ export function DistanceConnector({
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-slate-100" />
               </div>
-              <div className="relative flex justify-center text-[10px] font-bold text-slate-400 uppercase">
-                <span className="bg-white px-2">Or</span>
+              <div className="tbo-caption relative flex justify-center text-slate-400">
+                <span className="bg-white px-2">{tr("Or")}</span>
               </div>
             </div>
 
             {/* Manual Entry Column */}
             <div className="space-y-2">
-              <h4 className="font-bold text-xs text-slate-900 flex items-center gap-1.5">
+              <h4 className="tbo-label text-slate-900 flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5 text-sky-600" />
-                Manual City Input
+
+                {tr("Manual City Input")}
               </h4>
               <div className="flex gap-2">
                 <Input
                   id="manual-city"
-                  placeholder="e.g., Abu Dhabi, UAE"
+                  placeholder={tr("e.g., Abu Dhabi, UAE")}
                   value={manualCity}
                   onChange={(e) =>
                     setManualCity(e.target.value)
                   }
-                  className="h-9 text-xs border-slate-200 focus:border-purple-500 rounded-xl"
+                  className="h-9 border-slate-200 focus:border-purple-500 rounded-xl"
                   onKeyDown={(e) => {
                     if (e.key === "Enter")
                       handleSetManualLocation();
@@ -679,9 +689,10 @@ export function DistanceConnector({
                   variant="outline"
                   onClick={handleSetManualLocation}
                   disabled={isSubmitting || !manualCity.trim()}
-                  className="h-9 text-xs font-bold px-4 border-slate-200 rounded-xl whitespace-nowrap"
+                  className="h-auto min-h-9 px-4 py-2 border-slate-200 rounded-xl whitespace-normal"
                 >
-                  {isSubmitting ? "Searching..." : "Set"}
+                  {isSubmitting && <LoadingMark />}
+                  {isSubmitting ? tr("Searching...") : tr("Set")}
                 </Button>
               </div>
             </div>
@@ -690,17 +701,18 @@ export function DistanceConnector({
             {userLocation?.location && (
               <Button
                 variant="ghost"
-                className="w-full text-xs font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 h-9 rounded-xl border border-transparent hover:border-rose-100"
+                className="w-full text-rose-600 hover:text-rose-700 hover:bg-rose-50 h-auto min-h-9 whitespace-normal py-2 rounded-xl border border-transparent hover:border-rose-100"
                 onClick={handleRemoveLocation}
                 disabled={isLoading}
               >
-                Clear Location History
+
+                {tr("Clear Location History")}
               </Button>
             )}
 
-            <p className="text-[10px] text-slate-400 text-center font-medium pt-1">
-              🔒 Private: Location records are shared only
-              within your connected partnership.
+            <p className="tbo-caption text-slate-400 text-center pt-1">
+
+              {tr("🔒 Private: Location records are shared only within your connected partnership.")}
             </p>
           </div>
         </DialogContent>

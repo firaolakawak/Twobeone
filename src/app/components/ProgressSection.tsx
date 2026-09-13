@@ -1,3 +1,5 @@
+import { useUiCopy } from '../utils/uiTranslation';
+import { coupleUiMessages } from '../locales/coupleUi';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Progress } from './ui/progress';
@@ -9,6 +11,7 @@ interface ProgressSectionProps {
 }
 
 export function ProgressSection({ progress }: ProgressSectionProps) {
+  const tr = useUiCopy(coupleUiMessages);
   const { t } = useLanguage();
   const goals = {
     completedDays: 30,
@@ -24,28 +27,28 @@ export function ProgressSection({ progress }: ProgressSectionProps) {
   const stats = [
     {
       icon: Calendar,
-      label: 'Days Active',
+      label: tr("Days Active"),
       current: progress.completedDays,
       goal: goals.completedDays,
       color: 'text-sky-600'
     },
     {
       icon: BookOpen,
-      label: 'Journal Entries',
+      label: tr("Journal Entries"),
       current: progress.journalEntries,
       goal: goals.journalEntries,
       color: 'text-primary-600'
     },
     {
       icon: HandHeart,
-      label: 'Prayers',
+      label: tr("Prayers"),
       current: progress.prayerRequests,
       goal: goals.prayerRequests,
       color: 'text-primary-600'
     },
     {
       icon: MessageCircle,
-      label: 'Questions Answered',
+      label: tr("Questions Answered"),
       current: progress.questionsAnswered,
       goal: goals.questionsAnswered,
       color: 'text-success-700'
@@ -56,23 +59,23 @@ export function ProgressSection({ progress }: ProgressSectionProps) {
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <TrendingUp className="w-6 h-6 text-success-500" />
-        <h2 className="text-2xl">Your Progress</h2>
+        <h2 className="tbo-page-title">{tr("Your Progress")}</h2>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         {stats.map((stat) => {
           const Icon = stat.icon;
           const progressValue = calculateProgress(stat.current, stat.goal);
-          
+
           return (
             <Card key={stat.label}>
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-base flex items-center gap-2">
+                  <CardTitle className="tbo-card-title flex items-center gap-2">
                     <Icon className={`w-4 h-4 ${stat.color}`} />
                     {stat.label}
                   </CardTitle>
-                  <CardDescription className="text-base">
+                  <CardDescription className="tbo-supporting">
                     {stat.current} / {stat.goal}
                   </CardDescription>
                 </div>
@@ -87,16 +90,16 @@ export function ProgressSection({ progress }: ProgressSectionProps) {
 
       <Card className="bg-gradient-to-br from-sky-50 to-primary-50 border-sky-200">
         <CardHeader>
-          <CardTitle className="text-lg">Keep Growing Together</CardTitle>
-          <CardDescription>
-            Consistency is key to building a strong spiritual foundation
+          <CardTitle className="tbo-card-title">{tr("Keep Growing Together")}</CardTitle>
+          <CardDescription className="tbo-supporting">
+
+            {tr("Consistency is key to building a strong spiritual foundation")}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">
-            You're making great progress! Continue to engage daily with devotionals, 
-            share your thoughts in the journal, pray together, and answer questions 
-            to deepen your understanding of each other.
+          <p className="tbo-supporting text-muted-foreground">
+
+            {tr("You're making great progress! Continue to engage daily with devotionals, share your thoughts in the journal, pray together, and answer questions to deepen your understanding of each other.")}
           </p>
         </CardContent>
       </Card>

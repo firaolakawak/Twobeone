@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { Globe, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useLanguage } from '../contexts/LanguageContext';
+import { getCurrentLanguage, setCurrentLanguage, useCurrentLanguage } from '../utils/languageStore';
 import { getTranslations, languages, Language } from '../utils/i18n';
 import { toast } from 'sonner';
-import { projectId } from '../utils/supabase/info';
+import { saveLanguagePreference } from '../utils/languagePreference';
+import { translateUi } from '../utils/uiTranslation';
+import { LoadingMark } from './BrandLoader';
 
 interface LanguageSelectorProps {
   variant?: 'dropdown' | 'dialog';
@@ -17,8 +19,11 @@ export function LanguageSelector({
   accessToken,
   userId,
 }: LanguageSelectorProps) {
-  const { language, setLanguage, t } = useLanguage();
+  const language = useCurrentLanguage();
+  const setLanguage = setCurrentLanguage;
+  const t = getTranslations(language);
   const [open, setOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   // Close on outside click
@@ -46,16 +51,14 @@ export function LanguageSelector({
     toast.success(`${getTranslations(code).language.changedTo} ${langName}`);
 
     if (accessToken && userId) {
+      setSaving(true);
       try {
-        await fetch(
-          `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/profile`,
-          {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ language: code }),
-          }
-        );
-      } catch { /* non-fatal */ }
+        await saveLanguagePreference({ language: code, accessToken, userId });
+      } catch {
+        toast.error(translateUi(getCurrentLanguage(), undefined, 'Language changed on this device. Account sync failed; please try again.'));
+      } finally {
+        setSaving(false);
+      }
     }
   };
 
@@ -65,9 +68,12 @@ export function LanguageSelector({
     <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
       {/* Borderless icon button */}
       <button
+        type="button"
+        disabled={saving}
         onClick={() => setOpen(v => !v)}
         className="app-icon-button"
-        aria-label={t.language.select}
+        aria-label={saving ? translateUi(language, undefined, 'Saving...') : t.language.select}
+        aria-busy={saving}
         aria-expanded={open}
         aria-haspopup="menu"
         style={{
@@ -86,10 +92,10 @@ export function LanguageSelector({
         onMouseEnter={e => { if (!open) (e.currentTarget as HTMLButtonElement).style.background = 'var(--neutral-100)'; }}
         onMouseLeave={e => { if (!open) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
       >
-        <Globe
+        {saving ? <LoadingMark size={24} /> : <Globe
           strokeWidth={2.1}
           style={{ width: 'var(--icon-md)', height: 'var(--icon-md)', color: 'var(--neutral-700)' }}
-        />
+        />}
       </button>
 
       {/* Floating menu — no hard border, soft shadow only */}
@@ -119,6 +125,7 @@ export function LanguageSelector({
               const isActive = language === lang.code;
               return (
                 <button
+                  type="button"
                   key={lang.code}
                   role="menuitem"
                   onClick={() => handleSelect(lang.code)}
@@ -139,23 +146,18 @@ export function LanguageSelector({
                   onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = 'var(--neutral-100)'; }}
                   onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
                     <span style={{ fontSize: 20, lineHeight: 1 }}>{lang.flag}</span>
                     <div>
-                      <p style={{
-                        fontSize: 'var(--text-caption)',
-                        fontWeight: isActive ? 'var(--font-weight-semibold)' : 'var(--font-weight-medium)',
+                      <p className="tbo-label" lang={lang.code} style={{
                         color: isActive ? 'var(--primary-700)' : 'var(--foreground)',
-                        lineHeight: 1.3,
                         margin: 0,
                       }}>
                         {lang.nativeName}
                       </p>
-                      <p style={{
-                        fontSize: 'var(--text-label)',
+                      <p className="tbo-caption" style={{
                         color: 'var(--muted-foreground)',
                         margin: 0,
-                        lineHeight: 1.2,
                       }}>
                         {lang.name}
                       </p>

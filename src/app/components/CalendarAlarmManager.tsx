@@ -1,3 +1,7 @@
+import { createUiDateTimeFormat } from '../utils/uiDateTime';
+import { useCurrentLanguage } from '../utils/languageStore';
+import { useUiCopy, UI_LOCALES } from '../utils/uiTranslation';
+import { systemMessages } from '../locales/system';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AlarmClock, CalendarDays, Volume2, X } from 'lucide-react';
 import { projectId } from '../utils/supabase/info';
@@ -59,6 +63,8 @@ export function findDueCalendarAlarm(items: CoupleCalendarItem[], now = new Date
 }
 
 export function CalendarAlarmManager({ accessToken, onOpenCalendar }: CalendarAlarmManagerProps) {
+  const tr = useUiCopy(systemMessages);
+  const locale = UI_LOCALES[useCurrentLanguage()];
   const [items, setItems] = useState<CoupleCalendarItem[]>([]);
   const [now, setNow] = useState(() => new Date());
   const [dismissedVersion, setDismissedVersion] = useState(0);
@@ -136,23 +142,23 @@ export function CalendarAlarmManager({ accessToken, onOpenCalendar }: CalendarAl
     window.localStorage.setItem(dueAlarm.storageKey, 'dismissed');
     setDismissedVersion(version => version + 1);
   };
-  const eventTime = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(dueAlarm.occurrence);
+  const eventTime = createUiDateTimeFormat(locale, { hour: 'numeric', minute: '2-digit' }).format(dueAlarm.occurrence);
 
   return (
     <div className="fixed inset-0 z-[100] grid place-items-center bg-slate-950/65 p-4 backdrop-blur-sm" role="alertdialog" aria-modal="true" aria-labelledby="calendar-alarm-title" aria-describedby="calendar-alarm-description">
       <div className="w-full max-w-md overflow-hidden rounded-[2rem] border border-amber-200 bg-white shadow-2xl">
         <div className="relative bg-gradient-to-br from-amber-400 via-orange-500 to-rose-600 px-6 py-8 text-center text-white">
-          <button type="button" onClick={dismiss} className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-white/20 hover:bg-white/30" aria-label="Dismiss alarm"><X className="h-5 w-5" /></button>
+          <button type="button" onClick={dismiss} className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-white/20 hover:bg-white/30" aria-label={tr("Dismiss alarm")}><X className="h-5 w-5" /></button>
           <span className="mx-auto grid h-20 w-20 animate-pulse place-items-center rounded-full bg-white/20 ring-4 ring-white/20"><AlarmClock className="h-11 w-11" /></span>
-          <p className="mt-5 flex items-center justify-center gap-2 text-xs font-black uppercase tracking-[.18em]"><Volume2 className="h-4 w-4" />One-hour alarm</p>
-          <h2 id="calendar-alarm-title" className="mt-2 text-2xl font-black">{dueAlarm.item.title}</h2>
+          <p className="tbo-eyebrow mt-5 flex items-center justify-center gap-2 uppercase"><Volume2 className="h-4 w-4" />{tr("One-hour alarm")}</p>
+          <h2 id="calendar-alarm-title" className="tbo-dialog-title mt-2">{dueAlarm.item.title}</h2>
         </div>
         <div className="space-y-5 p-6 text-center">
-          <p id="calendar-alarm-description" className="text-base leading-7 text-slate-700">This {dueAlarm.item.type} begins at <strong>{eventTime}</strong>—in one hour.</p>
-          {dueAlarm.item.location && <p className="rounded-xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600">{dueAlarm.item.location}</p>}
+          <p id="calendar-alarm-description" className="tbo-body text-slate-700">{tr("Starts at {time}, in one hour.", { time: eventTime })}</p>
+          {dueAlarm.item.location && <p className="tbo-label rounded-xl bg-slate-50 px-4 py-3 text-slate-600">{dueAlarm.item.location}</p>}
           <div className="grid grid-cols-2 gap-3">
-            <Button type="button" variant="outline" onClick={dismiss} className="h-12 rounded-xl">Dismiss</Button>
-            <Button type="button" onClick={() => { dismiss(); onOpenCalendar(); }} className="h-12 rounded-xl bg-rose-600 text-white hover:bg-rose-700"><CalendarDays className="h-4 w-4" />Open calendar</Button>
+            <Button type="button" variant="outline" onClick={dismiss} className="h-12 rounded-xl">{tr("Dismiss")}</Button>
+            <Button type="button" onClick={() => { dismiss(); onOpenCalendar(); }} className="h-12 rounded-xl bg-rose-600 text-white hover:bg-rose-700"><CalendarDays className="h-4 w-4" />{tr("Open calendar")}</Button>
           </div>
         </div>
       </div>

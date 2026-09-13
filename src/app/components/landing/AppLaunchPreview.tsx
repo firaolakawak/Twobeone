@@ -1,3 +1,7 @@
+import { createUiDateTimeFormat } from '../../utils/uiDateTime';
+import { useCurrentLanguage } from '../../utils/languageStore';
+import { useUiCopy, UI_LOCALES } from '../../utils/uiTranslation';
+import { publicPreviewMessages } from '../../locales/publicPreview';
 import { useEffect, useState } from "react";
 import {
   ArrowRight,
@@ -60,35 +64,32 @@ function AppBrand() {
 }
 
 function PrayerContent({ onGetStarted }: { onGetStarted?: () => void }) {
+  const tr = useUiCopy(publicPreviewMessages);
   return (
     <>
       <div className="alp-prayer-feature">
         <span className="alp-prayer-symbol">
           <Heart size={25} strokeWidth={1.4} />
         </span>
-        <span className="alp-card-label">A MOMENT OF FAITH</span>
+        <span className="alp-card-label">{tr("A MOMENT OF FAITH")}</span>
         <h4>
-          Two hearts.
-          <br />
-          One prayer.
+          {tr("Two hearts. One prayer.")}
         </h4>
         <p>
-          Bring your hopes, your thanks,
-          <br />
-          and your everyday to God.
+          {tr("Bring your hopes, your thanks, and your everyday to God.")}
         </p>
       </div>
       <div className="alp-list-heading">
-        <strong>Our prayers</strong>
-        <span>2 shared</span>
+        <strong>{tr("Our prayers")}</strong>
+        <span>{tr("2 shared")}</span>
       </div>
       <div className="alp-prayer-item">
         <span className="alp-item-icon">
           <Leaf size={15} />
         </span>
         <div>
-          <strong>Peace in this new season</strong>
-          <span>We’re praying together</span>
+          <strong>{tr("Peace in this new season")}</strong>
+          <span>{tr("We’re praying together")}</span>
         </div>
         <CheckCheck size={15} />
       </div>
@@ -97,8 +98,8 @@ function PrayerContent({ onGetStarted }: { onGetStarted?: () => void }) {
           <Heart size={15} />
         </span>
         <div>
-          <strong>Grateful for us</strong>
-          <span>The little things are big things</span>
+          <strong>{tr("Grateful for us")}</strong>
+          <span>{tr("The little things are big things")}</span>
         </div>
         <Check size={14} />
       </div>
@@ -108,12 +109,10 @@ function PrayerContent({ onGetStarted }: { onGetStarted?: () => void }) {
           className="alp-primary-action"
           onClick={onGetStarted}
         >
-          <Plus size={14} /> Add a prayer
-        </button>
+          <Plus size={14} />  {tr("Add a prayer")} </button>
       ) : (
         <div className="alp-companion-note">
-          <CheckCheck size={13} /> A shared space for your faith
-        </div>
+          <CheckCheck size={13} />  {tr("A shared space for your faith")} </div>
       )}
     </>
   );
@@ -124,6 +123,8 @@ export function AppLaunchPreview({
 }: {
   onGetStarted: () => void;
 }) {
+  const tr = useUiCopy(publicPreviewMessages);
+  const locale = UI_LOCALES[useCurrentLanguage()];
   const [preview, setPreview] = useState<Preview>("devotional");
   const [screenshots, setScreenshots] = useState<LandingScreenshot[]>([]);
   const [failedImages, setFailedImages] = useState<string[]>([]);
@@ -170,7 +171,7 @@ export function AppLaunchPreview({
   const screenshot =
     availableScreenshots.find((entry) => entry.type === preview) ??
     availableScreenshots[previewIndex % availableScreenshots.length];
-  const previewLabel = PREVIEWS[previewIndex].label;
+  const previewLabel = tr(PREVIEWS[previewIndex].label);
 
   return (
     <div className="alp-stage">
@@ -182,8 +183,8 @@ export function AppLaunchPreview({
         <div className="alp-companion-content">
           <AppBrand />
           <div className="alp-companion-heading">
-            <span>FAITH, SHARED</span>
-            <h3>Our prayer space</h3>
+            <span>{tr("FAITH, SHARED")}</span>
+            <h3>{tr("Our prayer space")}</h3>
           </div>
           <PrayerContent />
         </div>
@@ -195,13 +196,13 @@ export function AppLaunchPreview({
         <div className="alp-home-indicator" />
       </div>
 
-      <div className="alp-phone" aria-label={`${previewLabel} app preview`}>
+      <div className="alp-phone" aria-label={tr("{preview} app preview", { preview: previewLabel })}>
         {screenshot ? (
           <img
             key={screenshot.url}
             className="alp-uploaded-screen"
             src={screenshot.url}
-            alt={`TwoBeOne ${previewLabel.toLowerCase()} screen`}
+            alt={tr("TwoBeOne {preview} screen", { preview: previewLabel })}
             onError={() =>
               setFailedImages((current) => [...current, screenshot.url])
             }
@@ -213,29 +214,23 @@ export function AppLaunchPreview({
               <div className="alp-app-header">
                 <AppBrand />
                 <span className="alp-connected">
-                  <span /> Connected
-                </span>
+                  <span />  {tr("Connected")} </span>
               </div>
               <div className="alp-greeting">
                 <div>
-                  <p>Good morning, Jamie &amp; Alex</p>
+                  <p>{tr("Good morning, {names}", { names: "Jamie & Alex" })}</p>
                   <h3>
                     {preview === "devotional" ? (
                       <>
-                        Your space,
-                        <br />
-                        together.
+                        {tr("Your space, together.")}
                       </>
                     ) : preview === "prayer" ? (
                       <>
-                        A little prayer.
-                        <br />A deeper connection.
+                        {tr("A little prayer. A deeper connection.")}
                       </>
                     ) : (
                       <>
-                        Make time
-                        <br />
-                        for each other.
+                        {tr("Make time for each other.")}
                       </>
                     )}
                   </h3>
@@ -253,20 +248,18 @@ export function AppLaunchPreview({
                 <>
                   <div className="alp-devotional-card">
                     <div className="alp-card-topline">
-                      <span className="alp-card-label">TODAY’S DEVOTIONAL</span>
+                      <span className="alp-card-label">{tr("TODAY’S DEVOTIONAL")}</span>
                       <BookOpen size={19} strokeWidth={1.4} />
                     </div>
                     <h4>
-                      Love in the
-                      <br />
-                      little things
+                      {tr("Love in the little things")}
                     </h4>
-                    <p>Small acts. A stronger love.</p>
+                    <p>{tr("Small acts. A stronger love.")}</p>
                     <div className="alp-card-bottomline">
                       <button type="button" onClick={onGetStarted}>
-                        Read together <ArrowRight size={13} />
+                         {tr("Read together")} <ArrowRight size={13} />
                       </button>
-                      <span>5 min read</span>
+                      <span>{tr("5 min read")}</span>
                     </div>
                     <Leaf
                       className="alp-card-leaf"
@@ -280,33 +273,32 @@ export function AppLaunchPreview({
                       <span className="alp-quick-icon">
                         <Heart size={17} strokeWidth={1.6} />
                       </span>
-                      <strong>Pray together</strong>
+                      <strong>{tr("Pray together")}</strong>
                       <span>
-                        Keep faith close <ChevronRight size={11} />
+                         {tr("Keep faith close")} <ChevronRight size={11} />
                       </span>
                     </button>
                     <button type="button" onClick={() => setPreview("sync")}>
                       <span className="alp-quick-icon alp-quick-icon-sage">
                         <MessageCircle size={17} strokeWidth={1.6} />
                       </span>
-                      <strong>Daily check-in</strong>
+                      <strong>{tr("Daily check-in")}</strong>
                       <span>
-                        How’s your heart? <ChevronRight size={11} />
+                         {tr("How’s your heart?")} <ChevronRight size={11} />
                       </span>
                     </button>
                   </div>
                   <div className="alp-rhythm-card">
                     <div className="alp-rhythm-heading">
                       <span>
-                        <Sun size={13} /> Your shared rhythm
-                      </span>
-                      <strong>5 of 7 days</strong>
+                        <Sun size={13} />  {tr("Your shared rhythm")} </span>
+                      <strong>{tr("5 of 7 days")}</strong>
                     </div>
                     <div
                       className="alp-week"
-                      aria-label="Demo: five days of shared activity this week"
+                      aria-label={tr("Demo: five days of shared activity this week")}
                     >
-                      {["M", "T", "W", "T", "F", "S", "S"].map((day, index) => (
+                      {Array.from({ length: 7 }, (_, index) => createUiDateTimeFormat(locale, { weekday: "long", timeZone: "UTC" }).format(new Date(Date.UTC(2026, 0, 5 + index)))).map((day, index) => (
                         <div key={index}>
                           <span
                             className={
@@ -319,7 +311,7 @@ export function AppLaunchPreview({
                               <span />
                             )}
                           </span>
-                          <small>{day}</small>
+                          <small aria-label={day}>{Array.from(day)[0]}</small>
                         </div>
                       ))}
                     </div>
@@ -336,58 +328,52 @@ export function AppLaunchPreview({
               {preview === "sync" && (
                 <>
                   <div className="alp-checkin-card">
-                    <span className="alp-card-label">YOUR DAILY CHECK-IN</span>
+                    <span className="alp-card-label">{tr("YOUR DAILY CHECK-IN")}</span>
                     <h4>
-                      How is your
-                      <br />
-                      heart today?
+                      {tr("How is your heart today?")}
                     </h4>
-                    <p>There’s room for every feeling here.</p>
+                    <p>{tr("There’s room for every feeling here.")}</p>
                     <div className="alp-feeling-options" aria-hidden="true">
                       <span>
                         <Sun size={21} />
-                        <small>Grateful</small>
+                        <small>{tr("Grateful")}</small>
                       </span>
                       <span>
                         <Leaf size={21} />
-                        <small>Peaceful</small>
+                        <small>{tr("Peaceful")}</small>
                       </span>
                       <span>
                         <Heart size={21} />
-                        <small>Hopeful</small>
+                        <small>{tr("Hopeful")}</small>
                       </span>
                     </div>
                     <button type="button" onClick={onGetStarted}>
-                      Share how you feel <ArrowRight size={13} />
+                       {tr("Share how you feel")} <ArrowRight size={13} />
                     </button>
                   </div>
                   <div className="alp-conversation-card">
                     <span className="alp-card-label">
-                      <MessageCircle size={12} /> A QUESTION FOR YOU TWO
-                    </span>
+                      <MessageCircle size={12} />  {tr("A QUESTION FOR YOU TWO")} </span>
                     <p>
-                      What made you feel
-                      <br />
-                      loved this week?
+                      {tr("What made you feel loved this week?")}
                     </p>
                     <button type="button" onClick={onGetStarted}>
-                      Start a conversation <ArrowRight size={12} />
+                       {tr("Start a conversation")} <ArrowRight size={12} />
                     </button>
                   </div>
                   <div className="alp-together-note">
-                    <Leaf size={14} /> Little moments. A meaningful story.
-                  </div>
+                    <Leaf size={14} />  {tr("Little moments. A meaningful story.")} </div>
                 </>
               )}
             </div>
-            <div className="alp-phone-nav" aria-label="App preview navigation">
+            <div className="alp-phone-nav" aria-label={tr("App preview navigation")}>
               <button
                 type="button"
                 aria-pressed={preview === "devotional"}
                 onClick={() => setPreview("devotional")}
               >
                 <Home size={18} />
-                <span>Today</span>
+                <span>{tr("Today")}</span>
               </button>
               <button
                 type="button"
@@ -395,7 +381,7 @@ export function AppLaunchPreview({
                 onClick={() => setPreview("prayer")}
               >
                 <Heart size={18} />
-                <span>Prayer</span>
+                <span>{tr("Prayer")}</span>
               </button>
               <button
                 type="button"
@@ -403,7 +389,7 @@ export function AppLaunchPreview({
                 onClick={() => setPreview("sync")}
               >
                 <Sparkles size={18} />
-                <span>Together</span>
+                <span>{tr("Together")}</span>
               </button>
             </div>
             <div className="alp-home-indicator" aria-hidden="true" />
@@ -415,7 +401,7 @@ export function AppLaunchPreview({
         <div
           className="alp-preview-tabs"
           role="group"
-          aria-label="Explore the app preview"
+          aria-label={tr("Explore the app preview")}
         >
           {PREVIEWS.map(({ id, label, icon: Icon }) => (
             <button
@@ -425,13 +411,12 @@ export function AppLaunchPreview({
               onClick={() => setPreview(id)}
             >
               <Icon size={14} strokeWidth={1.7} />
-              {label}
+              {tr(label)}
             </button>
           ))}
         </div>
         <span className="alp-preview-caption">
-          INTERACTIVE DEMO <span aria-hidden="true">·</span> A PEEK AT LIFE
-          TOGETHER
+          {tr("INTERACTIVE DEMO")} <span aria-hidden="true">·</span> {tr("A PEEK AT LIFE TOGETHER")}
         </span>
       </div>
     </div>

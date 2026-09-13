@@ -1,3 +1,6 @@
+import { useUiCopy } from '../utils/uiTranslation';
+import { BrandLoader } from './BrandLoader';
+import { coupleUiMessages } from '../locales/coupleUi';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
@@ -148,6 +151,7 @@ export function CoupleDashboard({
   onOpenDevotional,
   onStartQuestion,
 }: CoupleDashboardProps) {
+  const tr = useUiCopy(coupleUiMessages);
   const { t, language } = useLanguage();
   const calendarCopy = coupleCalendarCopy[language];
 
@@ -156,7 +160,7 @@ export function CoupleDashboard({
   const [dailyVerse, setDailyVerse] = useState<BibleVerse | null>(null);
   const [isLoadingVerse, setIsLoadingVerse] = useState(true);
   const [isBibleReaderOpen, setIsBibleReaderOpen] = useState(false);
-  const [verseLanguage, setVerseLanguage] = useState<'en' | 'am'>(() => language === 'en' ? 'en' : 'am');
+  const [verseLanguage, setVerseLanguage] = useState<'en' | 'am'>(() => language === 'am' ? 'am' : 'en');
   const { userMood, partnerMood, loaded: moodsLoaded, saveMood } = useDailyMoods(partner ? profile?.id : undefined, partner?.id);
   const [totalQuestionsCount, setTotalQuestionsCount] = useState(0);
   const [spotlightQuestions, setSpotlightQuestions] = useState<DashboardQuestion[]>([]);
@@ -165,11 +169,11 @@ export function CoupleDashboard({
 
   // Keep verse language in sync with the app language switcher
   useEffect(() => {
-    setVerseLanguage(language === 'en' ? 'en' : 'am');
+    setVerseLanguage(language === 'am' ? 'am' : 'en');
   }, [language]);
 
   const relationshipStart = profile?.relationshipStart || coupleData.relationshipStartDate || profile?.createdAt;
-  
+
   const unreadCount = notifications.filter(n => !n.read).length;
 
   // Fetch total questions count once on mount — uses lightweight /questions/count endpoint
@@ -288,7 +292,7 @@ export function CoupleDashboard({
         // Spread across 2 years so consecutive years don't repeat identically
         const seed = (now.getFullYear() * 1000 + dayOfYear) % verses.length;
         const selectedVerse = verses[seed];
-        
+
         const response = await fetch(`https://bible-api.com/${selectedVerse}?translation=kjv`);
         if (!response.ok) throw new Error('Failed to fetch verse');
         const data = await response.json();
@@ -399,14 +403,14 @@ export function CoupleDashboard({
   const sharedJournalEntries = journalEntries.filter(e => e.isShared).length;
   const totalPrayers = prayers.length;
   const answeredPrayers = prayers.filter(p => p.isAnswered).length;
-  
+
   // Count actual unique questions answered from responses
   // Each response has a questionId, count unique base question IDs (before :prompt: suffix)
   const uniqueQuestions = new Set(
     responses.user.map(r => r.questionId.split(':prompt:')[0])
   );
   const questionsAnswered = uniqueQuestions.size;
-  
+
   // Debug logging
   console.log('[CoupleDashboard] Question stats:', {
     responsesUserLength: responses.user.length,
@@ -416,7 +420,7 @@ export function CoupleDashboard({
     totalQuestionsCount,
     sampleResponse: responses.user[0]
   });
-  
+
   const devotionalStreakValue = devotionalStreak || 0;
 
   const spotlight = useMemo(() => {
@@ -430,15 +434,15 @@ export function CoupleDashboard({
           ? !devotional.language || devotional.language === 'en'
           : devotional.language === language,
       );
-      const devotional = choose(languageDevotionals.length ? languageDevotionals : devotionals);
+      const devotional = choose(languageDevotionals);
       return {
         kind: 'devotion' as const,
         itemId: devotional?.id,
         category: undefined,
-        eyebrow: 'A quiet moment',
-        title: devotional?.title || 'A devotion for the two of you',
-        description: devotional?.reflection || devotional?.body || devotional?.verse || devotional?.verseText || 'Pause together, reflect on Scripture, and carry one truth into your day.',
-        actionLabel: 'Read devotion',
+        eyebrow: tr("A quiet moment"),
+        title: devotional?.title || tr("A devotion for the two of you"),
+        description: devotional?.reflection || devotional?.body || devotional?.verse || devotional?.verseText || tr("Pause together, reflect on Scripture, and carry one truth into your day."),
+        actionLabel: tr("Read devotion"),
         icon: BookOpen,
         iconClass: 'bg-amber-100 text-amber-700',
         surfaceClass: 'from-amber-50 via-white to-orange-50/80 border-amber-100',
@@ -452,10 +456,10 @@ export function CoupleDashboard({
         kind: 'question' as const,
         itemId: question?.id,
         category: question?.category && QA_CATEGORY_IDS.has(question.category) ? question.category : undefined,
-        eyebrow: 'Talk about this',
-        title: question?.title || question?.question || question?.prompts?.[0]?.text || 'What would help you feel more loved this week?',
-        description: 'Take a few honest minutes to answer separately, then discover where your hearts meet.',
-        actionLabel: 'Start Q&A',
+        eyebrow: tr("Talk about this"),
+        title: question?.title || question?.question || question?.prompts?.[0]?.text || tr("What would help you feel more loved this week?"),
+        description: tr("Take a few honest minutes to answer separately, then discover where your hearts meet."),
+        actionLabel: tr("Start Q&A"),
         icon: MessageCircleHeart,
         iconClass: 'bg-primary-100 text-primary-700',
         surfaceClass: 'from-primary-50 via-white to-rose-50/80 border-primary-100',
@@ -468,16 +472,16 @@ export function CoupleDashboard({
       kind: 'journal' as const,
       itemId: entry?.id,
       category: undefined,
-      eyebrow: entry ? 'From your story' : 'Make space for your story',
-      title: entry?.title || (entry ? 'A journal memory worth revisiting' : 'Capture a moment you want to remember'),
-      description: entry?.content || 'Write down what is happening in your relationship today—small moments become a shared story.',
-      actionLabel: entry ? 'Read journal' : 'Open journal',
+      eyebrow: entry ? tr("From your story") : tr("Make space for your story"),
+      title: entry?.title || (entry ? tr("A journal memory worth revisiting") : tr("Capture a moment you want to remember")),
+      description: entry?.content || tr("Write down what is happening in your relationship today—small moments become a shared story."),
+      actionLabel: entry ? tr("Read journal") : tr("Open journal"),
       icon: PenLine,
       iconClass: 'bg-sky-100 text-sky-700',
       surfaceClass: 'from-sky-50 via-white to-cyan-50/80 border-sky-100',
       accentClass: 'text-sky-800',
     };
-  }, [devotionals, journalEntries, language, spotlightKind, spotlightQuestions, spotlightShuffle]);
+  }, [devotionals, journalEntries, language, spotlightKind, spotlightQuestions, spotlightShuffle, tr]);
 
   const openSpotlight = () => {
     if (spotlight.kind === 'devotion') {
@@ -580,10 +584,11 @@ export function CoupleDashboard({
             </>
           ) : (
             <div className="mt-5 text-center">
-              <p className="mb-3 text-sm text-muted-foreground">{t.dashboard.connectWithPartner} to begin your journey together</p>
-              <Button size="sm" variant="outline" onClick={() => onNavigate?.('profile')} className="bg-card/80 backdrop-blur-sm">
+              <p className="tbo-supporting mb-3 text-muted-foreground">{t.dashboard.connectWithPartner}</p>
+              <Button size="sm" variant="outline" onClick={() => onNavigate?.('profile')} className="tbo-action bg-card/80 backdrop-blur-sm">
                 <Users className="mr-2 h-4 w-4" />
-                Add Partner
+
+                {tr("Add Partner")}
               </Button>
             </div>
           )}
@@ -600,19 +605,19 @@ export function CoupleDashboard({
                 <SpotlightIcon className="h-5 w-5" aria-hidden="true" />
               </span>
               <div>
-                <p className={`text-[11px] font-bold uppercase tracking-[0.16em] ${spotlight.accentClass}`}>For you today</p>
-                <p className="mt-0.5 text-xs font-medium text-muted-foreground">{spotlight.eyebrow}</p>
+                <p className={`tbo-eyebrow ${spotlight.accentClass}`}>{tr("For you today")}</p>
+                <p className="tbo-caption mt-0.5 text-muted-foreground">{spotlight.eyebrow}</p>
               </div>
             </div>
-            <button type="button" onClick={shuffleSpotlight} aria-label="Show another suggestion" title="Show another" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/90 bg-white/70 text-muted-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:bg-white hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 active:scale-95">
+            <button type="button" onClick={shuffleSpotlight} aria-label={tr("Show another suggestion")} title={tr("Show another")} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/90 bg-white/70 text-muted-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:bg-white hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 active:scale-95">
               <RefreshCw className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
 
-          <h2 id="home-spotlight-title" className="mt-5 text-xl font-bold leading-snug tracking-tight text-foreground sm:text-2xl">{spotlight.title}</h2>
-          <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{spotlight.description}</p>
+          <h2 id="home-spotlight-title" className="tbo-section-title mt-5 text-foreground">{spotlight.title}</h2>
+          <p className="tbo-supporting mt-2 line-clamp-3 text-muted-foreground">{spotlight.description}</p>
 
-          <button type="button" onClick={openSpotlight} className="group mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl bg-foreground px-5 text-sm font-semibold text-background shadow-[0_10px_24px_rgba(30,25,28,0.16)] transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(30,25,28,0.20)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 active:scale-[0.985] motion-reduce:transform-none sm:w-auto">
+          <button type="button" onClick={openSpotlight} className="tbo-action group mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl bg-foreground px-5 text-background shadow-[0_10px_24px_rgba(30,25,28,0.16)] transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(30,25,28,0.20)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 active:scale-[0.985] motion-reduce:transform-none sm:w-auto">
             {spotlight.actionLabel}
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
           </button>
@@ -631,9 +636,9 @@ export function CoupleDashboard({
             <Calendar className="h-6 w-6" aria-hidden="true" />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-[11px] font-black uppercase tracking-[.14em] text-rose-600">{calendarCopy.eyebrow}</span>
-            <span className="mt-1 block text-lg font-black text-slate-950">{calendarCopy.calendarCta}</span>
-            <span className="mt-0.5 block text-sm text-slate-500">{calendarCopy.calendarCtaHint}</span>
+            <span className="tbo-eyebrow block text-rose-600">{calendarCopy.eyebrow}</span>
+            <span className="tbo-card-title mt-1 block text-slate-950">{calendarCopy.calendarCta}</span>
+            <span className="tbo-supporting mt-0.5 block text-slate-500">{calendarCopy.calendarCtaHint}</span>
           </span>
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-slate-950 text-white transition-transform group-hover:translate-x-0.5">
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -645,9 +650,9 @@ export function CoupleDashboard({
       <div className="grid grid-cols-2 gap-3">
         {[
           {
-            label: 'Devotionals Read',
+            label: tr("Devotionals Read"),
             value: devotionalCompletedCount,
-            sub: `${devotionalStreakValue} day${devotionalStreakValue === 1 ? '' : 's'} streak`,
+            sub: tr('{count} day streak', { count: devotionalStreakValue }),
             icon: Calendar,
             onClick: () => onNavigate?.('devotions'),
             surface: 'border-rose-100 bg-gradient-to-br from-white to-rose-50/70',
@@ -656,7 +661,7 @@ export function CoupleDashboard({
           {
             label: t.dashboard.journalEntries,
             value: sharedJournalEntries,
-            sub: 'shared',
+            sub: t.dashboard.shared,
             icon: BookHeart,
             onClick: () => onNavigate?.('journal'),
             surface: 'border-sky-100 bg-gradient-to-br from-white to-sky-50/70',
@@ -665,7 +670,7 @@ export function CoupleDashboard({
           {
             label: t.dashboard.prayers,
             value: `${answeredPrayers}/${totalPrayers}`,
-            sub: 'answered',
+            sub: t.dashboard.answered,
             icon: HandHeart,
             onClick: () => onNavigate?.('prayer'),
             surface: 'border-violet-100 bg-gradient-to-br from-white to-violet-50/70',
@@ -674,7 +679,7 @@ export function CoupleDashboard({
           {
             label: t.dashboard.questions,
             value: `${questionsAnswered}/${totalQuestionsCount}`,
-            sub: 'answered',
+            sub: t.dashboard.answered,
             icon: MessageCircleHeart,
             onClick: () => onScreenNavigate?.('category-selection'),
             surface: 'border-emerald-100 bg-gradient-to-br from-white to-emerald-50/70',
@@ -686,11 +691,11 @@ export function CoupleDashboard({
             onClick={onClick}
             className={`group rounded-[1.5rem] border p-4 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${surface}`}
           >
-            <div className="flex items-start justify-between">
-              <div className="space-y-0.5">
-                <p className={`text-[10px] font-black uppercase tracking-[.08em] ${labelClass}`}>{label}</p>
-                <p className="mt-2 text-2xl font-black leading-none tracking-tight text-slate-950 sm:text-3xl">{value}</p>
-                <p className="mt-1 text-[10px] font-semibold text-slate-400">{sub}</p>
+            <div className="flex min-w-0 items-start justify-between gap-2">
+              <div className="min-w-0 flex-1 break-words space-y-0.5">
+                <p className={`tbo-eyebrow ${labelClass}`}>{label}</p>
+                <p className="mt-2 text-2xl font-bold leading-none tracking-tight text-slate-950 sm:text-3xl">{value}</p>
+                <p className="tbo-caption mt-1 text-slate-400">{sub}</p>
               </div>
               <div className={`grid h-10 w-10 shrink-0 place-items-center rounded-2xl transition-transform group-hover:scale-105 ${iconClass}`}>
                 <Icon className="h-4.5 w-4.5" />
@@ -707,20 +712,15 @@ export function CoupleDashboard({
         onClick={() => setIsBibleReaderOpen(true)}
       >
         <CardHeader className="p-5 pb-3">
-          <CardTitle className="flex items-center gap-3 text-base font-black text-slate-950">
+          <CardTitle className="tbo-card-title flex items-center gap-3 text-slate-950">
             <span className="grid h-10 w-10 place-items-center rounded-2xl bg-amber-100 text-amber-700"><BookOpen className="h-5 w-5" /></span>
-            Daily Verse
+
+            {tr("Daily Verse")}
           </CardTitle>
         </CardHeader>
         <CardContent className="px-5 pb-5">
           {isLoadingVerse ? (
-            <div className="text-center py-4">
-              <div className="animate-pulse space-y-2">
-                <div className="h-4 bg-warning-50 rounded w-3/4 mx-auto"></div>
-                <div className="h-4 bg-warning-50 rounded w-full"></div>
-                <div className="h-4 bg-warning-50 rounded w-2/3 mx-auto"></div>
-              </div>
-            </div>
+            <BrandLoader className="py-4" />
           ) : dailyVerse ? (
             <div className="space-y-3">
               {/* Language toggle — borderless floating pill */}
@@ -736,15 +736,14 @@ export function CoupleDashboard({
                 }}
               >
                 {(['en', 'am'] as const).map(lang => (
-                  <button
+                  <button className="tbo-action"
                     key={lang}
                     onClick={() => setVerseLanguage(lang)}
                     style={{
                       background: verseLanguage === lang ? 'var(--card)' : 'transparent',
                       color: verseLanguage === lang ? 'var(--foreground)' : 'var(--muted-foreground)',
                       borderRadius: 'var(--radius-full)',
-                      fontSize: 'var(--text-caption-small)',
-                      fontWeight: verseLanguage === lang ? 'var(--font-weight-semibold)' : 'var(--font-weight-normal)',
+
                       padding: '4px 12px',
                       border: 'none',
                       cursor: 'pointer',
@@ -758,6 +757,7 @@ export function CoupleDashboard({
                 ))}
               </div>
 
+              {language === 'om' && <p className="tbo-caption text-muted-foreground">{tr('This reading is not available in the selected language yet.')}</p>}
               {verseLanguage === 'am' && dailyVerse.amharicText ? (
                 <>
                   <blockquote lang="am" className="rounded-2xl border border-white bg-white/80 p-4 text-sm leading-8 text-slate-700">
@@ -770,7 +770,7 @@ export function CoupleDashboard({
                 </>
               ) : (
                 <>
-                  <blockquote className="rounded-2xl border border-white bg-white/80 p-4 text-sm italic leading-7 text-slate-700">
+                  <blockquote lang="en" className="rounded-2xl border border-white bg-white/80 p-4 text-sm italic leading-7 text-slate-700">
                     "{dailyVerse.text}"
                   </blockquote>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -783,14 +783,15 @@ export function CoupleDashboard({
               <Button
                 variant="outline"
                 size="sm"
-                className="h-11 w-full rounded-xl border-amber-200 bg-white/80 font-bold text-amber-800 hover:bg-white"
+                className="tbo-action h-11 w-full rounded-xl border-amber-200 bg-white/80 text-amber-800 hover:bg-white"
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsBibleReaderOpen(true);
                 }}
               >
                 <BookOpen className="w-4 h-4 mr-2" />
-                Read Full Chapter
+
+                {tr("Read Full Chapter")}
               </Button>
             </div>
           ) : (
@@ -822,7 +823,7 @@ export function CoupleDashboard({
               );
 
               if (!response.ok) {
-                throw new Error('Failed to save highlight');
+                throw new Error(tr("Failed to save highlight"));
               }
             } catch (error) {
               console.error('Error saving highlight:', error);
@@ -844,7 +845,7 @@ export function CoupleDashboard({
               );
 
               if (!response.ok) {
-                throw new Error('Failed to share verse');
+                throw new Error(tr("Failed to share verse"));
               }
             } catch (error) {
               console.error('Error sharing verse:', error);
@@ -858,11 +859,11 @@ export function CoupleDashboard({
       {partner && (
         <Card className="cursor-pointer overflow-hidden rounded-[1.75rem] border-violet-100 bg-gradient-to-br from-white via-white to-violet-50/45 transition-all hover:-translate-y-0.5" onClick={() => onNavigate?.('devotions')}>
           <CardHeader className="p-5 pb-3">
-            <CardTitle className="flex items-center gap-3 text-base font-black text-slate-950">
+            <CardTitle className="tbo-card-title flex items-center gap-3 text-slate-950">
               <span className="grid h-10 w-10 place-items-center rounded-2xl bg-violet-100 text-violet-600"><TrendingUp className="h-5 w-5" /></span>
               {t.dashboard.yourJourneyTogether}
             </CardTitle>
-            <CardDescription>{t.dashboard.buildingFoundation}</CardDescription>
+            <CardDescription className="tbo-supporting">{t.dashboard.buildingFoundation}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2 px-5 pb-5">
             {/* Devotionals Progress */}
@@ -874,9 +875,9 @@ export function CoupleDashboard({
               }}
             >
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Daily Devotionals</span>
+                <span className="text-muted-foreground">{tr("Daily Devotionals")}</span>
                 <span className="font-medium">
-                  {devotionalCompletedCount} read · {devotionalStreakValue} {devotionalStreakValue === 1 ? 'day' : 'days'} streak
+                  {devotionalCompletedCount} {tr('read ·')} {tr('{count} day streak', { count: devotionalStreakValue })}
                 </span>
               </div>
               <Progress value={Math.min((devotionalStreakValue / 30) * 100, 100)} className="h-2" />
@@ -891,7 +892,7 @@ export function CoupleDashboard({
               }}
             >
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Know Each Other Questions</span>
+                <span className="text-muted-foreground">{tr("Know Each Other Questions")}</span>
                 <span className="font-medium">{questionsAnswered}/{totalQuestionsCount}</span>
               </div>
               <Progress value={(questionsAnswered / totalQuestionsCount) * 100} className="h-2" />
@@ -906,7 +907,7 @@ export function CoupleDashboard({
               }}
             >
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Shared Journal Entries</span>
+                <span className="text-muted-foreground">{tr("Shared Journal Entries")}</span>
                 <span className="font-medium">{sharedJournalEntries}/50</span>
               </div>
               <Progress value={Math.min((sharedJournalEntries / 50) * 100, 100)} className="h-2" />
@@ -937,10 +938,10 @@ export function CoupleDashboard({
             <span className="absolute right-2 top-2 grid h-6 w-6 place-items-center rounded-full bg-amber-500 text-white shadow"><Hammer className="h-3.5 w-3.5" /></span>
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-black uppercase tracking-[.16em] text-amber-700">365-day character journey</p>
-            <h3 className="mt-1 text-base font-black leading-tight text-stone-950">Build the House That Honors God</h3>
-            <p className="mt-1 text-xs leading-5 text-stone-600">Choose your dream home, design its rooms, and place one character-building block each day.</p>
-            <span className="mt-3 inline-flex items-center text-xs font-black text-rose-700">Open house builder <ArrowRight className="ml-1 h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /></span>
+            <p className="tbo-eyebrow text-amber-700">{tr("365-day character journey")}</p>
+            <h3 className="tbo-card-title mt-1 text-stone-950">{tr("Build the House That Honors God")}</h3>
+            <p className="tbo-caption mt-1 text-stone-600">{tr("Choose your dream home, design its rooms, and place one character-building block each day.")}</p>
+            <span className="tbo-caption mt-3 inline-flex items-center text-rose-700">{tr("Open house builder")} <ArrowRight className="ml-1 h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /></span>
           </div>
         </CardContent>
       </Card>
@@ -957,25 +958,26 @@ export function CoupleDashboard({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span className="grid h-10 w-10 place-items-center rounded-2xl bg-rose-100 text-rose-600"><Brain className="h-5 w-5" /></span>
-              <CardTitle className="text-base font-black text-slate-950">Scripture Memory</CardTitle>
+              <CardTitle className="tbo-card-title text-slate-950">{tr("Scripture Memory")}</CardTitle>
             </div>
             <Sparkles className="w-4 h-4 text-warning-500" />
           </div>
-          <CardDescription>Memorize God's Word together</CardDescription>
+          <CardDescription className="tbo-supporting">{tr("Memorize God's Word together")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3 px-5 pb-5">
           <div className="rounded-2xl border border-white bg-white/85 p-4">
-            <p className="text-xs text-muted-foreground dark:text-muted-foreground mb-2">Featured Verse</p>
-            <p className="text-sm mb-2">"Love is patient and kind..."</p>
-            <p className="text-xs text-primary-600">1 Corinthians 13:4</p>
+            <p className="tbo-caption text-muted-foreground dark:text-muted-foreground mb-2">{tr("Featured Verse")}</p>
+            <p lang="en" className="tbo-supporting mb-2">"Love is patient and kind..."</p>
+            <p lang="en" className="tbo-caption text-primary-600">1 Corinthians 13:4</p>
           </div>
           <Button 
             variant="outline" 
-            className="h-11 w-full rounded-xl border-rose-200 bg-white/80 font-bold text-rose-700 hover:bg-white"
+            className="tbo-action h-11 w-full rounded-xl border-rose-200 bg-white/80 text-rose-700 hover:bg-white"
             onClick={() => onScreenNavigate?.('scripture-memory')}
           >
             <Brain className="w-4 h-4 mr-2" />
-            Start Learning
+
+            {tr("Start Learning")}
           </Button>
         </CardContent>
       </Card>

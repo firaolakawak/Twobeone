@@ -1,0 +1,68 @@
+/* Shared return control. See docs/twobeone-navigation-language.md. */
+.tbo-back-button {
+  --back-button-accent: var(--primary-600);
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  width: 2.75rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: .625rem;
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  background: var(--card);
+  color: var(--back-button-accent);
+  box-shadow: none;
+  cursor: pointer;
+  vertical-align: middle;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.tbo-back-button > svg {
+  flex: 0 0 auto;
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke-width: 2;
+}
+
+.dark .tbo-back-button {
+  --back-button-accent: var(--primary-300);
+}
+
+.tbo-back-button[data-labelled="true"] {
+  width: auto;
+  min-width: min-content;
+  max-width: 100%;
+  padding-inline: 1rem;
+}
+
+.tbo-back-button > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.tbo-back-button:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--back-button-accent) 35%, var(--border));
+  background: color-mix(in srgb, var(--back-button-accent) 8%, var(--card));
+}
+
+.tbo-back-button:active:not(:disabled) {
+  background: color-mix(in srgb, var(--back-button-accent) 14%, var(--card));
+}
+
+.tbo-back-button:focus-visible {
+  outline: 2px solid var(--back-button-accent);
+  outline-offset: 3px;
+}
+
+.tbo-back-button:disabled {
+  cursor: not-allowed;
+  opacity: .5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tbo-back-button { transition: none; }
+}
