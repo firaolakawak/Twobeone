@@ -49,6 +49,7 @@ import { moods as moodsApi, questions as questionsApi } from '../utils/api';
 import { fetchAmharicChapter, getAmharicBookName } from '../utils/amharicBibleApi';
 import { ChampionsCard } from './ChampionsCard';
 import { coupleCalendarCopy } from '../data/couple-calendar';
+import '../styles/dashboard-stats.css';
 
 export interface CoupleDashboardProps {
   profile?: User & {
@@ -647,63 +648,70 @@ export function CoupleDashboard({
       </button>
 
       {/* Quick Stats Grid */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="dashboard-stats">
+      <div className="dashboard-stats__grid">
         {[
           {
+            id: 'devotionals',
             label: tr("Devotionals Read"),
             value: devotionalCompletedCount,
             sub: tr('{count} day streak', { count: devotionalStreakValue }),
             icon: Calendar,
             onClick: () => onNavigate?.('devotions'),
-            surface: 'border-rose-100 bg-gradient-to-br from-white to-rose-50/70',
-            iconClass: 'bg-rose-100 text-rose-600', barClass: 'from-rose-400 to-pink-500', labelClass: 'text-rose-700',
+            completed: devotionalStreakValue,
+            total: 30,
           },
           {
+            id: 'journal',
             label: t.dashboard.journalEntries,
             value: sharedJournalEntries,
             sub: t.dashboard.shared,
             icon: BookHeart,
             onClick: () => onNavigate?.('journal'),
-            surface: 'border-sky-100 bg-gradient-to-br from-white to-sky-50/70',
-            iconClass: 'bg-sky-100 text-sky-600', barClass: 'from-sky-400 to-cyan-500', labelClass: 'text-sky-700',
+            completed: sharedJournalEntries,
+            total: 50,
           },
           {
+            id: 'prayer',
             label: t.dashboard.prayers,
             value: `${answeredPrayers}/${totalPrayers}`,
             sub: t.dashboard.answered,
             icon: HandHeart,
             onClick: () => onNavigate?.('prayer'),
-            surface: 'border-violet-100 bg-gradient-to-br from-white to-violet-50/70',
-            iconClass: 'bg-violet-100 text-violet-600', barClass: 'from-violet-400 to-purple-500', labelClass: 'text-violet-700',
+            completed: answeredPrayers,
+            total: totalPrayers,
           },
           {
+            id: 'questions',
             label: t.dashboard.questions,
             value: `${questionsAnswered}/${totalQuestionsCount}`,
             sub: t.dashboard.answered,
             icon: MessageCircleHeart,
             onClick: () => onScreenNavigate?.('category-selection'),
-            surface: 'border-emerald-100 bg-gradient-to-br from-white to-emerald-50/70',
-            iconClass: 'bg-emerald-100 text-emerald-600', barClass: 'from-emerald-400 to-green-500', labelClass: 'text-emerald-700',
+            completed: questionsAnswered,
+            total: totalQuestionsCount,
           },
-        ].map(({ label, value, sub, icon: Icon, onClick, surface, iconClass, barClass, labelClass }) => (
+        ].map(({ id, label, value, sub, icon: Icon, onClick, completed, total }) => (
           <button
-            key={label}
+            key={id}
+            type="button"
+            data-stat={id}
             onClick={onClick}
-            className={`group rounded-[1.5rem] border p-4 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${surface}`}
+            className="dashboard-stat"
           >
-            <div className="flex min-w-0 items-start justify-between gap-2">
-              <div className="min-w-0 flex-1 break-words space-y-0.5">
-                <p className={`tbo-eyebrow ${labelClass}`}>{label}</p>
-                <p className="mt-2 text-2xl font-bold leading-none tracking-tight text-slate-950 sm:text-3xl">{value}</p>
-                <p className="tbo-caption mt-1 text-slate-400">{sub}</p>
-              </div>
-              <div className={`grid h-10 w-10 shrink-0 place-items-center rounded-2xl transition-transform group-hover:scale-105 ${iconClass}`}>
-                <Icon className="h-4.5 w-4.5" />
-              </div>
-            </div>
-            <div className="mt-4 h-1 overflow-hidden rounded-full bg-white/90"><div className={`h-full w-2/3 rounded-full bg-gradient-to-r ${barClass}`} /></div>
+            <Icon className="dashboard-stat__icon" strokeWidth={1.25} aria-hidden="true" />
+            <span className="dashboard-stat__value">{value}</span>
+            <span className="dashboard-stat__name tbo-card-title">{label}</span>
+            <span className="dashboard-stat__status tbo-supporting">{sub}</span>
+            <span className="dashboard-stat__track" aria-hidden="true">
+              <span
+                className="dashboard-stat__fill"
+                style={{ width: `${total > 0 ? Math.min(100, Math.max(0, completed / total * 100)) : 0}%` }}
+              />
+            </span>
           </button>
         ))}
+      </div>
       </div>
 
       {/* Daily Bible Verse */}

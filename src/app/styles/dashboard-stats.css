@@ -1,0 +1,121 @@
+.dashboard-stats {
+  container-type: inline-size;
+}
+
+.dashboard-stats__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.dashboard-stat {
+  container-type: inline-size;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  padding: clamp(.875rem, 3cqi, 1.5rem);
+  border: 0;
+  border-radius: 1.25rem;
+  background: #c92f49;
+  color: #fff;
+  text-align: start;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.dashboard-stat[data-stat='devotionals'] {
+  background: linear-gradient(125deg, #d4374e, #c22643);
+}
+
+.dashboard-stat[data-stat='journal'] {
+  background: linear-gradient(115deg, #be481d, #ce2941);
+}
+
+.dashboard-stat[data-stat='prayer'] {
+  background: linear-gradient(115deg, #090918, #4031c9);
+}
+
+.dashboard-stat[data-stat='questions'] {
+  background: linear-gradient(115deg, #337e38, #087c89);
+}
+
+.dashboard-stat:focus-visible {
+  outline: 3px solid var(--foreground);
+  outline-offset: 4px;
+}
+
+.dashboard-stat__icon {
+  position: absolute;
+  z-index: -1;
+  top: .875rem;
+  right: .875rem;
+  width: clamp(2.75rem, 32cqi, 5.5rem);
+  height: auto;
+  opacity: .28;
+  pointer-events: none;
+}
+
+/* A deliberate display role for the four dashboard metrics. */
+.dashboard-stat__value {
+  display: block;
+  max-width: 100%;
+  margin-block: .5rem 1.5rem;
+  font-size: clamp(2rem, 24cqi, 4rem);
+  font-weight: 700;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.dashboard-stat__name,
+.dashboard-stat__status {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.dashboard-stat__status {
+  margin-block: .25rem 1.25rem;
+}
+
+.dashboard-stat__track {
+  display: block;
+  width: 72%;
+  height: .75rem;
+  min-height: .75rem;
+  margin-top: auto;
+  padding: 2px;
+  border: 1.5px solid #fff;
+  border-radius: 999px;
+}
+
+.dashboard-stat__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #fff;
+}
+
+/* Keep two columns on phones; allow a single column for enlarged text. */
+@container (max-width: 16.5rem) {
+  .dashboard-stats__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dashboard-stat {
+    transition: transform .18s ease;
+  }
+
+  .dashboard-stat:hover {
+    transform: translateY(-2px);
+  }
+
+  .dashboard-stat:active {
+    transform: scale(.98);
+  }
+}
