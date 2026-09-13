@@ -47,6 +47,8 @@
   min-width: 0;
 }
 .journey-spotlight {
+  position: relative;
+  isolation: isolate;
   margin-top: var(--tbo-space-6);
   box-shadow: 0 6px 20px #11182704;
 }
@@ -55,6 +57,8 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--tbo-space-2);
+  min-height: 64px;
+  padding-inline-end: 90px;
 }
 .journey-spotlight-label {
   display: flex;
@@ -96,10 +100,6 @@
   justify-content: space-between;
   gap: var(--tbo-space-2);
   margin-top: var(--tbo-space-4);
-  flex-wrap: wrap;
-}
-.journey-daily-footer > .card-emblem {
-  margin-inline-start: auto;
 }
 .journey-primary {
   display: inline-flex;
@@ -202,7 +202,7 @@
 .journey-plan {
   display: flex;
   align-items: center;
-  gap: var(--tbo-space-2);
+  gap: var(--tbo-space-4);
   margin-top: var(--tbo-space-4);
   padding: var(--tbo-space-4);
   background: var(--card);
@@ -268,22 +268,14 @@
   background: transparent;
   border-top: 1px solid var(--border);
 }
-.journey-rhythm-intro {
-  display: flex;
-  align-items: center;
-  gap: var(--tbo-space-4);
+.journey-rhythm > p {
   margin-top: var(--tbo-space-2);
-}
-.journey-rhythm-intro > p {
-  flex: 1;
-  min-width: 0;
-  overflow-wrap: anywhere;
   font-size: var(--tbo-body-m-size);
   line-height: var(--tbo-body-m-line);
   color: var(--muted-foreground);
   font-weight: var(--tbo-weight-regular);
 }
-.journey-rhythm-intro > p strong {
+.journey-rhythm > p strong {
   color: var(--foreground);
   font-weight: 500;
 }
@@ -294,28 +286,45 @@
   margin-top: var(--tbo-space-4);
 }
 .journey-metrics button {
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: var(--tbo-space-2);
+  padding: 40px var(--tbo-space-2) 12px;
   border: 1px solid var(--border);
   border-radius: 12px;
-  background: var(--card);
+  background: var(--metric-surface, var(--card));
   text-align: left;
   min-width: 0;
   min-height: 44px;
 }
+.journey-metrics button[data-metric="devotions"] {
+  --metric-surface: #f5f1fa;
+  --metric-hover: #ece5f5;
+}
+.journey-metrics button[data-metric="prayers"] {
+  --metric-surface: #fff1f2;
+  --metric-hover: #ffe4e6;
+}
+.journey-metrics button[data-metric="journals"] {
+  --metric-surface: #fff4e8;
+  --metric-hover: #ffead5;
+}
 .journey-metrics strong {
+  min-width: 0;
+  max-width: 100%;
   overflow-wrap: anywhere;
   display: block;
-  font-size: var(--tbo-h1-size);
-  font-weight: var(--tbo-weight-medium);
+  font-size: 40px;
+  font-weight: var(--tbo-weight-bold);
   color: var(--primary);
-  line-height: var(--tbo-h1-line);
+  line-height: 48px;
   font-variant-numeric: tabular-nums;
 }
-.journey-metrics span {
+.journey-metrics button > span:not(.card-artwork) {
   min-width: 0;
+  max-width: 100%;
   overflow-wrap: anywhere;
   font-weight: var(--tbo-weight-medium);
   font-size: var(--journey-meta-size);
@@ -323,6 +332,20 @@
   line-height: var(--tbo-caption-line);
   display: block;
   margin-top: var(--tbo-space-1);
+}
+.journey-metrics button > .card-artwork {
+  position: absolute;
+  z-index: -1;
+  width: 76px;
+  height: 52px;
+  /* Keep every painted edge above the count without narrowing its text area. */
+  clip-path: inset(0 0 16px 0);
+}
+.journey-metrics .card-artwork__scene {
+  top: -18px;
+  right: -8px;
+  transform: scale(0.52) rotate(-14deg);
+  transform-origin: top right;
 }
 .journey-progress-detail {
   margin-top: var(--tbo-space-4);
@@ -367,8 +390,7 @@
   line-height: var(--tbo-h2-line);
   gap: var(--tbo-space-2);
 }
-.journey-explore > summary > span:first-child {
-  flex: 1;
+.journey-explore > summary > span {
   min-width: 0;
   overflow-wrap: anywhere;
 }
@@ -408,7 +430,10 @@
   min-width: 0;
   font-weight: var(--tbo-weight-medium);
 }
-.journey-metrics button:hover,
+.journey-metrics button:hover {
+  background: var(--metric-hover, var(--primary-50));
+  border-color: var(--primary-300);
+}
 .journey-progress-detail button:hover,
 .journey-tools button:hover {
   background: var(--primary-50);
@@ -428,6 +453,8 @@
   padding: 0 var(--tbo-space-4) var(--tbo-space-4);
 }
 .journey-verse {
+  position: relative;
+  isolation: isolate;
   margin-top: var(--journey-section-gap);
   padding: var(--tbo-space-4);
   text-align: center;
@@ -438,18 +465,21 @@
 .journey-verse-heading {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--tbo-space-4);
-  margin-bottom: var(--tbo-space-4);
+  min-height: 64px;
+  margin: 0 0 var(--tbo-space-4);
+  padding-inline-end: 90px;
   text-align: left;
-}
-.journey-verse-heading h2 {
-  min-width: 0;
   overflow-wrap: anywhere;
   font-size: var(--tbo-body-s-size);
   line-height: var(--tbo-body-s-line);
   font-weight: var(--tbo-weight-bold);
   color: var(--foreground);
+}
+
+/* Illustrations are reserved for daily activity, scripture, and three progress cards. */
+.journey-spotlight > .card-artwork,
+.journey-verse > .card-artwork {
+  z-index: -1;
 }
 .journey-verse blockquote {
   font-size: var(--tbo-body-l-size);

@@ -1,13 +1,5 @@
 import { memo, useEffect, useState } from "react";
-import {
-  ArrowRight,
-  Calendar,
-  Heart,
-  HeartHandshake,
-  Sparkles,
-  Users,
-  X,
-} from "lucide-react";
+import { ArrowRight, Calendar, Heart, Sparkles, Users, X } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
 import { dashboardJourneyCopy } from "../data/dashboard-journey";
 import { loveJourneyCopy } from "../data/love-journey";
@@ -28,7 +20,6 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { DistanceConnector } from "./DistanceConnector";
-import { CardEmblem } from "./CardEmblem";
 import "./love-journey.css";
 
 interface JourneyPerson {
@@ -112,11 +103,6 @@ export const JourneyCounter = memo(function JourneyCounter({
           </span>
         </div>
       </div>
-      <CardEmblem
-        icon={HeartHandshake}
-        size="compact"
-        className="love-journey__emblem"
-      />
     </div>
   );
 });

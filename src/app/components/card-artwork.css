@@ -1,0 +1,218 @@
+/* Cropped paper compositions: color belongs to the artwork, not the page. */
+.card-artwork {
+  position: absolute;
+  inset: 0 0 auto auto;
+  display: block;
+  width: 164px;
+  height: 112px;
+  overflow: hidden;
+  border-start-end-radius: inherit;
+  pointer-events: none;
+  user-select: none;
+}
+.card-artwork__wash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 95% 5%,
+    var(--primary-100),
+    transparent 72%
+  );
+  opacity: 0.72;
+}
+.card-artwork__scene {
+  position: absolute;
+  top: -19px;
+  right: -18px;
+  width: 112px;
+  height: 104px;
+  transform: rotate(-14deg);
+}
+.card-artwork__paper {
+  position: absolute;
+  inset: 0;
+  border-radius: 28px 8px 20px 24px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  box-shadow:
+    -3px 6px 0 var(--primary-100),
+    -6px 11px 12px #6e68700b;
+}
+.card-artwork__paper::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 22px;
+  height: 100%;
+  border-radius: 28px 0 0 24px;
+  background: linear-gradient(100deg, var(--card), transparent);
+}
+.card-artwork__envelope,
+.card-artwork__notebook,
+.card-artwork__prayer,
+.card-artwork__book {
+  position: absolute;
+  top: 36px;
+  left: 21px;
+  width: 60px;
+  height: 45px;
+  transform: rotate(9deg);
+}
+.card-artwork i,
+.card-artwork b {
+  display: block;
+  position: absolute;
+}
+.card-artwork svg {
+  position: absolute;
+  color: var(--primary);
+}
+.card-artwork__prayer {
+  top: 29px;
+  left: 28px;
+  width: 47px;
+  height: 55px;
+  border: 1px solid var(--primary-200);
+  border-radius: 4px 12px 4px 4px;
+  background: var(--accent);
+  box-shadow: 3px 4px 0 var(--border);
+}
+.card-artwork__prayer::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 12px;
+  height: 12px;
+  border-radius: 0 10px 0 3px;
+  background: var(--background);
+  border: 1px solid var(--primary-200);
+}
+.card-artwork__prayer > svg {
+  top: 16px;
+  left: 7px;
+}
+.card-artwork__envelope {
+  top: 39px;
+  height: 39px;
+  border-radius: 4px 4px 6px 6px;
+  background: var(--primary-100);
+  box-shadow: 0 3px 0 var(--border);
+}
+.card-artwork__letter {
+  inset: -11px 7px 6px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--background);
+  transform: rotate(-7deg);
+}
+.card-artwork__letter::before {
+  content: "";
+  position: absolute;
+  inset: 9px 8px;
+  background: repeating-linear-gradient(
+    transparent 0 5px,
+    var(--border) 5px 6px
+  );
+}
+.card-artwork__envelope-front {
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    var(--accent) 48%,
+    var(--primary-100) 49%
+  );
+  clip-path: polygon(0 0, 50% 48%, 100% 0, 100% 100%, 0 100%);
+}
+.card-artwork__seal {
+  left: 23px;
+  top: 19px;
+  fill: var(--primary);
+  color: var(--primary);
+}
+.card-artwork__notebook {
+  top: 29px;
+  left: 29px;
+  width: 43px;
+  height: 55px;
+  border: 1px solid var(--primary-200);
+  border-left: 6px solid var(--primary-200);
+  border-radius: 3px 7px 7px 3px;
+  background: var(--accent);
+  box-shadow:
+    2px 3px 0 var(--border),
+    4px 5px 0 var(--card);
+}
+.card-artwork__ruling {
+  inset: 14px 7px 12px;
+  background: repeating-linear-gradient(
+    transparent 0 6px,
+    var(--primary-200) 6px 7px
+  );
+}
+.card-artwork__bookmark {
+  top: -1px;
+  right: 6px;
+  width: 7px;
+  height: 19px;
+  background: var(--primary);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 77%, 0 100%);
+}
+.card-artwork__notebook > svg {
+  right: -17px;
+  bottom: -3px;
+  transform: rotate(-20deg);
+}
+.card-artwork__book {
+  top: 37px;
+  width: 62px;
+  height: 43px;
+  border-radius: 3px 3px 7px 7px;
+  background: var(--primary-200);
+  box-shadow: 1px 3px 0 var(--border);
+}
+.card-artwork__book > i {
+  top: -5px;
+  width: 29px;
+  height: 43px;
+  border: 1px solid var(--border);
+  background: linear-gradient(90deg, var(--background) 75%, var(--card));
+}
+.card-artwork__book > i:first-child {
+  left: 2px;
+  border-radius: 3px 10px 0 3px;
+  transform: skewY(7deg);
+}
+.card-artwork__book > i:nth-child(2) {
+  right: 2px;
+  border-radius: 10px 3px 3px 0;
+  transform: skewY(-7deg);
+}
+.card-artwork__book > i::after {
+  content: "";
+  position: absolute;
+  inset: 11px 5px 8px;
+  background: repeating-linear-gradient(
+    transparent 0 5px,
+    var(--border) 5px 6px
+  );
+}
+.card-artwork__book > .card-artwork__bookmark {
+  right: 13px;
+  top: -4px;
+}
+@media (max-width: 360px) {
+  .card-artwork {
+    width: 136px;
+  }
+  .card-artwork__scene {
+    right: -26px;
+  }
+}
+@media (forced-colors: active) {
+  .card-artwork {
+    display: none;
+  }
+}

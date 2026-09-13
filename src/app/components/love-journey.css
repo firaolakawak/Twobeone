@@ -91,7 +91,6 @@
   align-items: center;
   gap: var(--tbo-space-2);
   margin-top: var(--tbo-space-6);
-  container: love-journey-counter / inline-size;
 }
 .love-journey__elapsed-mark {
   width: 40px;
@@ -104,18 +103,7 @@
   border-radius: 50%;
 }
 .love-journey__elapsed-content {
-  flex: 1;
   min-width: 0;
-}
-.love-journey__emblem {
-  flex-shrink: 0;
-  margin-left: auto;
-}
-/* Reserve decoration for spare space so translated day labels stay readable. */
-@container love-journey-counter (max-width: 18.5rem) {
-  .love-journey__emblem {
-    display: none;
-  }
 }
 .love-journey__elapsed-primary {
   margin: 0;

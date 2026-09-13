@@ -11,16 +11,11 @@ import {
   Brain,
   ChevronDown,
   Hammer,
-  BookHeart,
-  NotebookPen,
-  CalendarHeart,
-  Compass,
-  Sprout,
 } from "lucide-react";
-import { CardEmblem } from "./CardEmblem";
 import { ComprehensiveBibleReader } from "./ComprehensiveBibleReader";
 import { PushNotificationSetup } from "./PushNotificationSetup";
 import { LoveJourneyHeader } from "./LoveJourneyHeader";
+import { CardArtwork } from "./CardArtwork";
 import { MoodCheckInDialog } from "./MoodCheckInDialog";
 import { useDailyMoodCheckIn } from "../hooks/useDailyMoodCheckIn";
 import { moodCheckInCopy } from "../data/mood-check-in";
@@ -947,19 +942,12 @@ export function CoupleDashboard({
         data-spotlight-kind={spotlight.kind}
         aria-labelledby="home-spotlight-title"
       >
+        <CardArtwork variant={spotlight.kind} />
         <div className="journey-spotlight-top">
           <span className="journey-spotlight-label">
             <SpotlightIcon size={16} aria-hidden="true" />
             {copy.forToday} · {activityLabel}
           </span>
-          <button
-            type="button"
-            onClick={shuffleSpotlight}
-            className="journey-icon-button journey-shuffle"
-            aria-label={copy.shuffle}
-          >
-            <Shuffle size={14} aria-hidden="true" />
-          </button>
         </div>
         <h2 id="home-spotlight-title">{spotlight.title}</h2>
         <p>{spotlight.description}</p>
@@ -972,15 +960,14 @@ export function CoupleDashboard({
             {spotlight.actionLabel}
             <ArrowRight size={15} aria-hidden="true" />
           </button>
-          <CardEmblem
-            icon={
-              spotlight.kind === "devotion"
-                ? BookHeart
-                : spotlight.kind === "journal"
-                  ? NotebookPen
-                  : MessageCircleHeart
-            }
-          />
+          <button
+            type="button"
+            onClick={shuffleSpotlight}
+            className="journey-icon-button journey-shuffle"
+            aria-label={copy.shuffle}
+          >
+            <Shuffle size={14} aria-hidden="true" />
+          </button>
         </div>
       </section>
 
@@ -1040,7 +1027,6 @@ export function CoupleDashboard({
                 })}
               </small>
             </span>
-            <CardEmblem icon={CalendarHeart} size="compact" />
             <ArrowRight size={16} aria-hidden="true" />
           </button>
         ) : (
@@ -1056,7 +1042,6 @@ export function CoupleDashboard({
               <strong>{calendarCopy.calendarCta}</strong>
               <small>{calendarCopy.calendarCtaHint}</small>
             </span>
-            <CardEmblem icon={CalendarHeart} size="compact" />
             <ArrowRight size={16} aria-hidden="true" />
           </button>
         )}
@@ -1077,27 +1062,39 @@ export function CoupleDashboard({
             {copy.viewProgress}
           </button>
         </div>
-        <div className="journey-rhythm-intro">
-          <p>
-            <strong>
-              {devotionalStreakValue} {copy.streak}.
-            </strong>{" "}
-            {copy.rhythmHint}
-          </p>
-          <CardEmblem icon={Sprout} size="compact" />
-        </div>
+        <p>
+          <strong>
+            {devotionalStreakValue} {copy.streak}.
+          </strong>{" "}
+          {copy.rhythmHint}
+        </p>
         <div className="journey-metrics">
-          <button type="button" onClick={() => onNavigate?.("devotions")}>
+          <button
+            type="button"
+            data-metric="devotions"
+            onClick={() => onNavigate?.("devotions")}
+          >
+            <CardArtwork variant="devotion" />
             <strong>{devotionalCompletedCount}</strong>
             <span>{copy.read}</span>
           </button>
-          <button type="button" onClick={() => onNavigate?.("prayer")}>
+          <button
+            type="button"
+            data-metric="prayers"
+            onClick={() => onNavigate?.("prayer")}
+          >
+            <CardArtwork variant="prayer" />
             <strong>
-              {answeredPrayers} / {totalPrayers}
+              {answeredPrayers}/{totalPrayers}
             </strong>
             <span>{copy.answeredPrayers}</span>
           </button>
-          <button type="button" onClick={() => onNavigate?.("journal")}>
+          <button
+            type="button"
+            data-metric="journals"
+            onClick={() => onNavigate?.("journal")}
+          >
+            <CardArtwork variant="journal" />
             <strong>{sharedJournalEntries}</strong>
             <span>{copy.sharedJournals}</span>
           </button>
@@ -1133,7 +1130,6 @@ export function CoupleDashboard({
           <span>
             <strong>{copy.explore}</strong>
           </span>
-          <CardEmblem icon={Compass} size="compact" />
           <ChevronDown size={18} aria-hidden="true" />
         </summary>
         <div className="journey-tools">
@@ -1191,10 +1187,10 @@ export function CoupleDashboard({
         className="journey-card journey-verse"
         aria-labelledby="journey-verse-title"
       >
-        <div className="journey-verse-heading">
-          <h2 id="journey-verse-title">{t.dashboard.dailyVerse}</h2>
-          <CardEmblem icon={BookHeart} size="compact" />
-        </div>
+        <CardArtwork variant="devotion" />
+        <h2 id="journey-verse-title" className="journey-verse-heading">
+          {t.dashboard.dailyVerse}
+        </h2>
         {isLoadingVerse ? (
           <p className="journey-verse-reference" role="status">
             {t.common.loading}
