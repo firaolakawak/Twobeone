@@ -1,7 +1,7 @@
 import { memo, useEffect, useId, useState, type CSSProperties } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { dashboardGrowthMessages } from '../locales/dashboardGrowth';
-import { RELATIONSHIP_STAGE_START_DAYS, getElapsedRelationshipTime, getRelationshipStageProgress } from '../utils/relationshipJourney';
+import { getElapsedRelationshipTime, getRelationshipStageProgress } from '../utils/relationshipJourney';
 import { useUiCopy } from '../utils/uiTranslation';
 import '../styles/dashboard-growth.css';
 
@@ -128,11 +128,6 @@ export const DashboardGrowthCard = memo(function DashboardGrowthCard({ startDate
                 {index < 2 ? <GrowthPlantIcon variant={index === 0 ? 'seed' : 'growth'} /> : <span>{milestone.emoji}</span>}
               </span>
               <span className="tbo-caption dashboard-growth-milestone-name">{stageNames[index]}</span>
-              <span className="tbo-caption dashboard-growth-milestone-range">
-                ({RELATIONSHIP_STAGE_START_DAYS[index + 1] === undefined
-                  ? tr('{start}+ days', { start: RELATIONSHIP_STAGE_START_DAYS[index] })
-                  : tr('{start}–{end} days', { start: RELATIONSHIP_STAGE_START_DAYS[index], end: RELATIONSHIP_STAGE_START_DAYS[index + 1] - 1 })})
-              </span>
             </li>
           ))}
         </ol>

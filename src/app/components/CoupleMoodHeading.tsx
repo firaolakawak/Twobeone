@@ -1,5 +1,8 @@
 import type { ReactNode } from 'react';
+import { Heart } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { coupleTimelineUiMessages } from '../locales/coupleTimelineUi';
+import { useUiCopy } from '../utils/uiTranslation';
 import { getTodaysMood, MOOD_EMOJI, type DailyMoodEntry } from '../utils/dailyMood';
 
 interface CoupleMoodHeadingProps {
@@ -9,13 +12,28 @@ interface CoupleMoodHeadingProps {
   partnerMood: DailyMoodEntry | null;
 }
 
-export function CoupleNameHeading({ userName, partnerName, partnerMood }: { userName: string; partnerName: string; partnerMood?: ReactNode }) {
+interface CoupleNameHeadingProps { userName: string; partnerName: string; partnerMood?: ReactNode }
+
+export function CoupleHeroHeading(props: CoupleNameHeadingProps) {
+  const tr = useUiCopy(coupleTimelineUiMessages);
+  return (
+    <div className="couple-hero-name-group">
+      <span className="tbo-caption couple-hero-journey-badge">
+        {tr('Our Journey')}
+        <Heart aria-hidden="true" />
+      </span>
+      <CoupleNameHeading {...props} />
+    </div>
+  );
+}
+
+export function CoupleNameHeading({ userName, partnerName, partnerMood }: CoupleNameHeadingProps) {
   const { t } = useLanguage();
   const userFirstName = userName.trim().split(/\s+/)[0] || t.mood.you;
   const partnerFirstName = partnerName.trim().split(/\s+/)[0] || t.mood.partner;
 
   return (
-    <h2 className="min-w-0 break-words text-[28px] font-bold leading-tight tracking-tight text-foreground sm:text-[32px]" data-couple-name>
+    <h2 className="tbo-page-title min-w-0 break-words text-foreground" data-couple-name>
       <span>{userFirstName}</span> &amp;{' '}
       <span className="inline-block">
         <span>{partnerFirstName}</span>

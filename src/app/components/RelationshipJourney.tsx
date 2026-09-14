@@ -1,5 +1,5 @@
-import { memo, useEffect, useState } from 'react';
-import { Globe, Heart } from 'lucide-react';
+import { memo, useEffect, useId, useState } from 'react';
+import { Clock, Globe, Heart } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import '../styles/relationship-journey.css';
 import {
@@ -37,33 +37,47 @@ export const RelationshipSummary = memo(function RelationshipSummary({
   distanceKm?: number | null;
 }) {
   const { t } = useLanguage();
+  const heartGradient = useId();
   const now = useCurrentTime(1_000);
   const time = getElapsedRelationshipTime(startDate, now);
   const hasDistance = typeof distanceKm === 'number' && Number.isFinite(distanceKm) && distanceKm >= 0;
   const clock = [time.hours, time.minutes, time.seconds].map(value => String(value).padStart(2, '0')).join(':');
 
   return (
-    <div className="mt-3 text-left" data-relationship-summary>
-      <div className="flex items-start gap-2">
-        <Heart className="relationship-heartbeat mt-0.5 h-8 w-8 shrink-0 fill-rose-500 text-rose-500" aria-hidden="true" />
-        <div className="min-w-0">
-          <p className="flex items-center gap-2 text-foreground" data-relationship-counter>
-            <span className="text-[40px] font-bold leading-none tracking-tight tabular-nums sm:text-[44px]">{time.days}</span>{' '}
-            <span className="flex min-w-0 flex-col">
-              <sup className="static text-xs font-normal leading-4 text-muted-foreground">{t.dashboard.daysTogether}</sup>
-              <span className="text-sm font-bold leading-4 tabular-nums text-rose-600 dark:text-rose-400" data-relationship-clock>{clock}</span>
-            </span>
-          </p>
-          {hasDistance && (
-            <div className="flex items-center gap-1.5 text-xs leading-4 text-muted-foreground">
-              <Globe className="h-3.5 w-3.5 shrink-0 text-rose-600 dark:text-rose-400" aria-hidden="true" />
-              <span>{distanceKm < 10 ? distanceKm.toFixed(1) : Math.round(distanceKm)} km {t.dashboard.distanceApart}</span>
-            </div>
-          )}
-          <p className="text-sm font-bold leading-5 text-foreground">
-            {t.dashboard.growingTogetherInFaith}
+    <div className="relationship-summary" data-relationship-summary>
+      <div className="relationship-summary-panel">
+        <div className="relationship-summary-count-group">
+          <Heart className="relationship-heartbeat relationship-summary-heart" fill={`url(#${heartGradient})`} strokeWidth={1.25} aria-hidden="true">
+            <defs>
+              <linearGradient id={heartGradient} x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stopColor="#ffe0f6" />
+                <stop offset=".35" stopColor="#ff8ed9" />
+                <stop offset="1" stopColor="#f43b9e" />
+              </linearGradient>
+            </defs>
+          </Heart>
+          <p className="relationship-summary-counter" data-relationship-counter>
+            <span className="relationship-summary-days">{time.days}</span>{' '}
+            <span className="tbo-caption relationship-summary-label">{t.dashboard.daysTogether}</span>
           </p>
         </div>
+        <span className="relationship-summary-panel-divider" aria-hidden="true" />
+        <div className="relationship-summary-clock-group">
+          <Clock className="relationship-summary-clock-icon" aria-hidden="true" />
+          <span className="relationship-summary-clock" data-relationship-clock>{clock}</span>
+        </div>
+      </div>
+      <div className="relationship-summary-context">
+        {hasDistance && (
+          <>
+            <div className="tbo-caption relationship-summary-distance">
+              <Globe aria-hidden="true" />
+              <span>{distanceKm < 10 ? distanceKm.toFixed(1) : Math.round(distanceKm)} km {t.dashboard.distanceApart}</span>
+            </div>
+            <span className="relationship-summary-context-divider" aria-hidden="true" />
+          </>
+        )}
+        <p className="relationship-summary-tagline">{t.dashboard.growingTogetherInFaith}</p>
       </div>
     </div>
   );

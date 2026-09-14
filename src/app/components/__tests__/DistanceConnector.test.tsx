@@ -116,9 +116,13 @@ describe('embedded distance connector', () => {
     expect(screen.queryByText(/km apart/)).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: /share.*location/i })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Location settings' }));
+    const settingsButton = screen.getByRole('button', { name: 'Location settings' });
+    fireEvent.click(settingsButton);
     expect(await screen.findByRole('dialog', { name: 'Location Settings' })).toBeInTheDocument();
     expect(screen.getByPlaceholderText('e.g., Abu Dhabi, UAE')).toBeInTheDocument();
+    fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    await waitFor(() => expect(settingsButton).toHaveFocus());
   });
 
   it('trims surrounding whitespace and handles a single-name partner', async () => {

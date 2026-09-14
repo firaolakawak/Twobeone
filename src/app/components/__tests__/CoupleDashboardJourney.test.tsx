@@ -101,7 +101,7 @@ describe('couple dashboard journey', () => {
     vi.unstubAllGlobals();
   });
 
-  it('shows paired first names and the partner mood above the journey without hero mood controls', async () => {
+  it('shows the reference hero with paired names, presence, and the live relationship summary', async () => {
     const onScreenNavigate = vi.fn();
     const journey = await renderDashboard(onScreenNavigate);
 
@@ -121,10 +121,8 @@ describe('couple dashboard journey', () => {
     expect(journey.getByRole('img', { name: 'Firaol Akawak: online' })).toHaveAttribute('data-online', 'true');
     expect(journey.getByRole('img', { name: 'Keti Abira: online' })).toHaveAttribute('data-online', 'true');
 
-    const partnerMood = journey.getByRole('img', { name: 'Keti Abira: Good · Today' });
-    expect(partnerMood).toHaveTextContent('😊');
-    expect(heading).toContainElement(partnerMood);
-    expect(heading).toHaveTextContent(/^Firaol & Keti\s*😊$/);
+    expect(heading).toHaveTextContent(/^Firaol & Keti$/);
+    expect(journey.queryByRole('img', { name: /^Keti Abira:.*Today$/ })).not.toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'Growth Stage' })).toBeVisible();
     expect(journey.queryByRole('region', { name: 'Growth Stage' })).not.toBeInTheDocument();
     expect(journey.queryByText(nextMilestoneTitle)).not.toBeInTheDocument();

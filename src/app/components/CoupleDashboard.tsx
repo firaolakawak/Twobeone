@@ -23,7 +23,7 @@ import { LearningModulesCard } from './LearningModulesCard';
 import { PushNotificationSetup } from './PushNotificationSetup';
 import { DistanceConnector } from './DistanceConnector';
 import { DailyMoodCheckIn } from './DailyMoodCheckIn';
-import { CoupleNameHeading, PartnerMoodEmoji } from './CoupleMoodHeading';
+import { CoupleHeroHeading } from './CoupleMoodHeading';
 import { RelationshipSummary } from './RelationshipJourney';
 import { DashboardFeatureSection } from './DashboardFeatureSection';
 import { CoupleAvatarStack } from './CoupleAvatarStack';
@@ -36,6 +36,7 @@ import { moods as moodsApi, questions as questionsApi } from '../utils/api';
 import { fetchAmharicChapter, getAmharicBookName } from '../utils/amharicBibleApi';
 import { ChampionsCard } from './ChampionsCard';
 import '../styles/dashboard-glass.css';
+import heroLandscape from '../../assets/couple-garden-reference.webp';
 
 export interface CoupleDashboardProps {
   profile?: User & {
@@ -148,7 +149,7 @@ export function CoupleDashboard({
   const [isBibleReaderOpen, setIsBibleReaderOpen] = useState(false);
   const [readerReference, setReaderReference] = useState<string>();
   const [verseLanguage, setVerseLanguage] = useState<'en' | 'am'>(() => language === 'am' ? 'am' : 'en');
-  const { userMood, partnerMood, loaded: moodsLoaded, saveMood } = useDailyMoods(partner ? profile?.id : undefined, partner?.id);
+  const { userMood, loaded: moodsLoaded, saveMood } = useDailyMoods(partner ? profile?.id : undefined, partner?.id);
   const [totalQuestionsCount, setTotalQuestionsCount] = useState(0);
   const [spotlightQuestions, setSpotlightQuestions] = useState<DashboardQuestion[]>([]);
   const [spotlightKind, setSpotlightKind] = useState<HomeSpotlightKind>(() => pickRandomHomeSpotlight());
@@ -482,14 +483,11 @@ export function CoupleDashboard({
   return (
     <div className="couple-dashboard">
       {/* Couple profile and shared journey */}
-      <Card className="tbo-glass couple-glass-hero relative overflow-hidden pt-4" data-couple-journey>
-        {coupleData.couplePicture && (
-          <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            <img src={coupleData.couplePicture} alt="" className="h-full w-full object-cover opacity-10 blur-sm" />
-          </div>
-        )}
-
-        <CardContent className="couple-hero-content relative px-4 pb-5 pt-6 sm:px-6 sm:pb-6">
+      <Card className="tbo-glass couple-glass-hero relative overflow-hidden" data-couple-journey>
+        <div className="couple-hero-backdrop" aria-hidden="true">
+          <img src={heroLandscape} alt="" />
+        </div>
+        <CardContent className="couple-hero-content relative">
           {partner && profile?.id && accessToken ? (
             <DistanceConnector
               embedded
@@ -502,16 +500,14 @@ export function CoupleDashboard({
               accessToken={accessToken}
               userOnline={userOnline}
               partnerOnline={partnerOnline}
-              partnerMood={<PartnerMoodEmoji partnerName={partner.name || t.mood.partner} partnerId={partner.id} partnerMood={partnerMood} />}
               summaryContent={(distanceKm) => <RelationshipSummary startDate={relationshipStart} distanceKm={distanceKm} />}
             />
           ) : (
-            <>
-              <div className="couple-hero-intro flex items-center justify-between gap-4 sm:gap-6">
-                <CoupleNameHeading
+            <div className="couple-hero-layout">
+              <div className="couple-hero-intro">
+                <CoupleHeroHeading
                   userName={profile?.name || t.mood.you}
                   partnerName={partner?.name || t.mood.partner}
-                  partnerMood={partner && <PartnerMoodEmoji partnerName={partner.name || t.mood.partner} partnerId={partner.id} partnerMood={partnerMood} />}
                 />
                 <CoupleAvatarStack
                   userName={profile?.name || t.mood.you}
@@ -523,7 +519,7 @@ export function CoupleDashboard({
                 />
               </div>
               {partner && <RelationshipSummary startDate={relationshipStart} />}
-            </>
+            </div>
           )}
 
           {partner ? (

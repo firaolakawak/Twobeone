@@ -33,6 +33,11 @@
   --type-eyebrow-size: .75rem;
   --type-eyebrow-weight: 600;
   --type-eyebrow-leading: 1.4;
+  /* Display clock in the user's reference couple hero. */
+  --type-journey-days-size: 1.75rem;
+  --type-journey-clock-size: clamp(.875rem, 6.25cqi, 1.625rem);
+  --type-journey-clock-weight: 700;
+  --type-journey-clock-leading: 1.1;
 }
 
 @media (min-width: 40rem) {

@@ -1,6 +1,6 @@
 /* TwoBeOne glass materials. Typography and page returns retain their own language. */
 :root {
-  --glass-canvas: #f2edf9;
+  --glass-canvas: #f4eefb;
   --glass-solid: #faf7ff;
   --glass-foreground: #292044;
   --glass-muted: #655877;
@@ -17,7 +17,7 @@
   --glass-radius: 1.75rem;
   --glass-orb: linear-gradient(145deg, #f4d6ff, #a16be8 60%, #763bd1);
   --glass-primary-paint: linear-gradient(125deg, #773fc5, #652bac 58%, #ad347e);
-  --glass-ambient: radial-gradient(ellipse at 6% 0%, rgb(180 153 243 / .48), transparent 48rem), radial-gradient(ellipse at 95% 24%, rgb(252 183 218 / .4), transparent 44rem), radial-gradient(ellipse at 20% 72%, rgb(185 205 252 / .38), transparent 42rem);
+  --glass-ambient: radial-gradient(ellipse at 6% 0%, rgb(188 169 248 / .32), transparent 42rem), radial-gradient(ellipse at 95% 24%, rgb(255 205 231 / .28), transparent 38rem), radial-gradient(ellipse at 20% 72%, rgb(198 210 251 / .26), transparent 40rem);
 }
 
 .dark {

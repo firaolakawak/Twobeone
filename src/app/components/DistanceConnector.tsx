@@ -1,7 +1,7 @@
 import { useUiCopy } from '../utils/uiTranslation';
 import { LoadingMark } from './BrandLoader';
 import { profileUiMessages } from '../locales/profileUi';
-import { useState, useEffect, type ReactNode } from "react";
+import { useState, useEffect, useRef, type MouseEvent, type ReactNode } from "react";
 import {
   Avatar,
   AvatarImage,
@@ -40,7 +40,7 @@ import { projectId } from "../utils/supabase/info";
 import { createClient } from "../utils/supabase/client";
 import { useLanguage } from "../contexts/LanguageContext";
 import { CoupleAvatarStack, PresenceDot } from "./CoupleAvatarStack";
-import { CoupleNameHeading } from "./CoupleMoodHeading";
+import { CoupleHeroHeading } from "./CoupleMoodHeading";
 
 interface DistanceConnectorProps {
   userId: string;
@@ -87,6 +87,11 @@ export function DistanceConnector({
   const [distance, setDistance] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const settingsOpener = useRef<HTMLButtonElement | null>(null);
+  const openSettings = (event: MouseEvent<HTMLButtonElement>) => {
+    settingsOpener.current = event.currentTarget;
+    setShowSettings(true);
+  };
   const [manualCity, setManualCity] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [detectedUserOnline, setDetectedUserOnline] = useState(
@@ -368,19 +373,19 @@ export function DistanceConnector({
       `}</style>
 
       {embedded ? (
-        <div className="relative">
+        <div className="couple-hero-layout relative">
           <button
             type="button"
-            onClick={() => setShowSettings(true)}
+            onClick={openSettings}
             aria-label={t.dashboard.locationSettings}
             title={t.dashboard.locationSettings}
-            className="absolute -right-2 -top-4 z-30 flex h-11 w-11 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
+            className="couple-hero-settings absolute z-30 flex h-11 w-11 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
           >
-            <Settings className="h-4 w-4" />
+            <Settings className="h-5 w-5" />
           </button>
 
-          <div className="couple-hero-intro flex items-center justify-between gap-4 sm:gap-6">
-            <CoupleNameHeading userName={userName} partnerName={partnerName} partnerMood={partnerMood} />
+          <div className="couple-hero-intro">
+            <CoupleHeroHeading userName={userName} partnerName={partnerName} partnerMood={partnerMood} />
             <CoupleAvatarStack
               userName={userName}
               userAvatar={userAvatar}
@@ -395,9 +400,9 @@ export function DistanceConnector({
             <p className="tbo-supporting mt-5 text-muted-foreground">{embeddedDistanceLabel}</p>
           )}
 
-          {(!userLocation?.location || distance === null) && <div className="mt-3 flex items-center">
+          {(!userLocation?.location || distance === null) && <div className="couple-hero-location-prompt mt-3 flex items-center">
             {!userLocation?.location ? (
-              <Button size="sm" variant="outline" onClick={() => setShowSettings(true)} className="h-auto min-h-9 whitespace-normal rounded-xl px-4 py-2">
+              <Button size="sm" variant="glass" onClick={openSettings} className="h-auto min-h-9 whitespace-normal rounded-xl px-4 py-2">
                 <MapPin className="mr-1.5 h-3.5 w-3.5 text-rose-500" /> {t.dashboard.shareLocation}
               </Button>
             ) : distance === null ? (
@@ -438,7 +443,7 @@ export function DistanceConnector({
         <div className="relative z-10 p-5">
           {/* Settings button — ghost, no border */}
           <button
-            onClick={() => setShowSettings(true)}
+            onClick={openSettings}
             className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-xl transition-colors"
             style={{ color: 'var(--muted-foreground)', background: 'transparent' }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--neutral-100)')}
@@ -573,7 +578,7 @@ export function DistanceConnector({
 
             {!userLocation?.location && (
               <div className="text-center">
-                <Button size="sm" variant="outline" onClick={() => setShowSettings(true)}
+                <Button size="sm" variant="outline" onClick={openSettings}
                   className="h-auto min-h-9 whitespace-normal px-4 py-2 rounded-xl"
                   style={{ borderColor: 'var(--border)', color: 'var(--foreground)' }}>
                   <MapPin className="w-3.5 h-3.5 mr-1.5" style={{ color: 'var(--primary-500)' }} />
@@ -592,7 +597,15 @@ export function DistanceConnector({
         open={showSettings}
         onOpenChange={setShowSettings}
       >
-        <DialogContent className="w-[calc(100%-2rem)] max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl p-5 border-none shadow-2xl bg-white">
+        <DialogContent
+          className="w-[calc(100%-2rem)] max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl p-5 border-none shadow-2xl bg-white"
+          onCloseAutoFocus={(event) => {
+            if (settingsOpener.current?.isConnected) {
+              event.preventDefault();
+              settingsOpener.current.focus();
+            }
+          }}
+        >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-slate-950">
               <MapPin className="w-5 h-5 text-rose-500" />

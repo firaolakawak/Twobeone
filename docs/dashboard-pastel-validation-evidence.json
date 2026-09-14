@@ -1,0 +1,6909 @@
+{
+  "scope": "Pastel reference refinement: visible fixed garden backdrop, luminous portrait cluster beside the inset, white heading, glossy day/clock panel, pale growth and feature cards. Original stage names remain; date-range captions and mood emojis beside names remain absent.",
+  "checkedAt": "2026-09-14T17:28:07.563Z",
+  "browser": "Edg/153.0.4234.32",
+  "fixture": "Actual CoupleDashboard, LanguageProvider, shared header controls and BottomNavigation with local populated data: 103 days, manual distance and initials fallback avatars. The generated fixed garden asset loaded at 1200?800. External calls were mocked or blocked.",
+  "finalPreview": {
+    "width": 676,
+    "rootTextScale": 1.25,
+    "rootSize": "20px",
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "note": "This is CSS root text scaling, not an assertion of native browser zoom equivalence. Fixed header and bottom navigation are hidden only during artifact capture."
+  },
+  "referenceTargets": {
+    "scope": "576/676/840px; English; both themes; 100% and 125% root text. Final 676px/125% captures were refreshed after the focus and action-color fixes.",
+    "count": 12,
+    "pageOverflow": 0,
+    "functionalOverflow": 0,
+    "offscreenText": 0,
+    "textBelow12px": 0,
+    "visibleMoodEmoji": 0,
+    "visibleStageDateCaptions": 0,
+    "unloadedImages": 0,
+    "layouts": [
+      {
+        "width": 576,
+        "rootTextScale": 1,
+        "language": "en",
+        "theme": "light",
+        "longNames": false,
+        "rootSize": "16px",
+        "pageWidth": 576,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 576,
+          "height": 314.78125,
+          "top": 65,
+          "right": 576,
+          "bottom": 379.78125,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 12,
+          "y": 403.78125,
+          "width": 552,
+          "height": 497.1875,
+          "top": 403.78125,
+          "right": 564,
+          "bottom": 900.96875,
+          "left": 12
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 24,
+              "y": 135.390625,
+              "width": 319.6875,
+              "height": 33.59375,
+              "top": 135.390625,
+              "right": 343.6875,
+              "bottom": 168.984375,
+              "left": 24
+            },
+            "size": "28px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 367.6875,
+              "y": 113,
+              "width": 184.3125,
+              "height": 169.5625,
+              "top": 113,
+              "right": 552,
+              "bottom": 282.5625,
+              "left": 367.6875
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 24,
+              "y": 184.984375,
+              "width": 319.6875,
+              "height": 146.796875,
+              "top": 184.984375,
+              "right": 343.6875,
+              "bottom": 331.78125,
+              "left": 24
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 91,
+              "y": 201.984375,
+              "width": 77.8125,
+              "height": 60.796875,
+              "top": 201.984375,
+              "right": 168.8125,
+              "bottom": 262.78125,
+              "left": 91
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 232.8125,
+              "y": 221.390625,
+              "width": 75.796875,
+              "height": 21.96875,
+              "top": 221.390625,
+              "right": 308.609375,
+              "bottom": 243.359375,
+              "left": 232.8125
+            },
+            "size": "19.9805px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 1
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 1
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 1
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 1
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 576,
+        "rootTextScale": 1.25,
+        "language": "en",
+        "theme": "light",
+        "longNames": false,
+        "rootSize": "20px",
+        "pageWidth": 576,
+        "heroBounds": {
+          "x": 0,
+          "y": 81,
+          "width": 576,
+          "height": 433,
+          "top": 81,
+          "right": 576,
+          "bottom": 514,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 15,
+          "y": 544,
+          "width": 546,
+          "height": 713,
+          "top": 544,
+          "right": 561,
+          "bottom": 1257,
+          "left": 15
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 30,
+              "y": 188.75,
+              "width": 197.109375,
+              "height": 42,
+              "top": 188.75,
+              "right": 227.109375,
+              "bottom": 230.75,
+              "left": 30
+            },
+            "size": "35px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 396,
+              "y": 121,
+              "width": 150,
+              "height": 130,
+              "top": 121,
+              "right": 546,
+              "bottom": 251,
+              "left": 396
+            },
+            "size": "20px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 30,
+              "y": 276,
+              "width": 516,
+              "height": 178,
+              "top": 276,
+              "right": 546,
+              "bottom": 454,
+              "left": 30
+            },
+            "size": "20px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 113.5,
+              "y": 297,
+              "width": 97.265625,
+              "height": 76,
+              "top": 297,
+              "right": 210.765625,
+              "bottom": 373,
+              "left": 113.5
+            },
+            "size": "20px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 361.40625,
+              "y": 317.265625,
+              "width": 122.34375,
+              "height": 35.46875,
+              "top": 317.265625,
+              "right": 483.75,
+              "bottom": 352.734375,
+              "left": 361.40625
+            },
+            "size": "32.25px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 1
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 2
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 2
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 2
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 676,
+        "rootTextScale": 1,
+        "language": "en",
+        "theme": "light",
+        "longNames": false,
+        "rootSize": "16px",
+        "pageWidth": 676,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 676,
+          "height": 319.578125,
+          "top": 65,
+          "right": 676,
+          "bottom": 384.578125,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 12,
+          "y": 408.578125,
+          "width": 652,
+          "height": 497.1875,
+          "top": 408.578125,
+          "right": 664,
+          "bottom": 905.765625,
+          "left": 12
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 24,
+              "y": 135.390625,
+              "width": 387.6875,
+              "height": 38.390625,
+              "top": 135.390625,
+              "right": 411.6875,
+              "bottom": 173.78125,
+              "left": 24
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 435.6875,
+              "y": 113,
+              "width": 216.3125,
+              "height": 199,
+              "top": 113,
+              "right": 652,
+              "bottom": 312,
+              "left": 435.6875
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 24,
+              "y": 189.78125,
+              "width": 387.6875,
+              "height": 146.796875,
+              "top": 189.78125,
+              "right": 411.6875,
+              "bottom": 336.578125,
+              "left": 24
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 91,
+              "y": 206.78125,
+              "width": 77.8125,
+              "height": 64.796875,
+              "top": 206.78125,
+              "right": 168.8125,
+              "bottom": 271.578125,
+              "left": 91
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 273.984375,
+              "y": 225.84375,
+              "width": 91.921875,
+              "height": 26.65625,
+              "top": 225.84375,
+              "right": 365.90625,
+              "bottom": 252.5,
+              "left": 273.984375
+            },
+            "size": "24.2305px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 1
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 1
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 1
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 1
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 676,
+        "rootTextScale": 1.25,
+        "language": "en",
+        "theme": "light",
+        "longNames": false,
+        "rootSize": "20px",
+        "pageWidth": 676,
+        "heroBounds": {
+          "x": 0,
+          "y": 81,
+          "width": 676,
+          "height": 403.5,
+          "top": 81,
+          "right": 676,
+          "bottom": 484.5,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 15,
+          "y": 514.5,
+          "width": 646,
+          "height": 620.5,
+          "top": 514.5,
+          "right": 661,
+          "bottom": 1135,
+          "left": 15
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 30,
+              "y": 168.5,
+              "width": 369.6875,
+              "height": 48,
+              "top": 168.5,
+              "right": 399.6875,
+              "bottom": 216.5,
+              "left": 30
+            },
+            "size": "40px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 429.6875,
+              "y": 141,
+              "width": 216.3125,
+              "height": 199,
+              "top": 141,
+              "right": 646,
+              "bottom": 340,
+              "left": 429.6875
+            },
+            "size": "20px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 30,
+              "y": 236.5,
+              "width": 369.6875,
+              "height": 188,
+              "top": 236.5,
+              "right": 399.6875,
+              "bottom": 424.5,
+              "left": 30
+            },
+            "size": "20px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 113.5,
+              "y": 257.5,
+              "width": 97.265625,
+              "height": 81,
+              "top": 257.5,
+              "right": 210.765625,
+              "bottom": 338.5,
+              "left": 113.5
+            },
+            "size": "20px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 274.3125,
+              "y": 285.296875,
+              "width": 87.625,
+              "height": 25.40625,
+              "top": 285.296875,
+              "right": 361.9375,
+              "bottom": 310.703125,
+              "left": 274.3125
+            },
+            "size": "23.1055px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 1
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 1
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 1
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 1
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 840,
+        "rootTextScale": 1,
+        "language": "en",
+        "theme": "light",
+        "longNames": false,
+        "rootSize": "16px",
+        "pageWidth": 840,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 840,
+          "height": 319.578125,
+          "top": 65,
+          "right": 840,
+          "bottom": 384.578125,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 92,
+          "y": 408.578125,
+          "width": 656,
+          "height": 497.1875,
+          "top": 408.578125,
+          "right": 748,
+          "bottom": 905.765625,
+          "left": 92
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 100,
+              "y": 135.390625,
+              "width": 392,
+              "height": 38.390625,
+              "top": 135.390625,
+              "right": 492,
+              "bottom": 173.78125,
+              "left": 100
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 516,
+              "y": 113,
+              "width": 224,
+              "height": 206.078125,
+              "top": 113,
+              "right": 740,
+              "bottom": 319.078125,
+              "left": 516
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 100,
+              "y": 189.78125,
+              "width": 392,
+              "height": 146.796875,
+              "top": 189.78125,
+              "right": 492,
+              "bottom": 336.578125,
+              "left": 100
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 167,
+              "y": 206.78125,
+              "width": 77.8125,
+              "height": 64.796875,
+              "top": 206.78125,
+              "right": 244.8125,
+              "bottom": 271.578125,
+              "left": 167
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 352.59375,
+              "y": 225.703125,
+              "width": 92.9375,
+              "height": 26.9375,
+              "top": 225.703125,
+              "right": 445.53125,
+              "bottom": 252.640625,
+              "left": 352.59375
+            },
+            "size": "24.5px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 1
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 1
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 1
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 1
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 840,
+        "rootTextScale": 1.25,
+        "language": "en",
+        "theme": "light",
+        "longNames": false,
+        "rootSize": "20px",
+        "pageWidth": 840,
+        "heroBounds": {
+          "x": 0,
+          "y": 81,
+          "width": 840,
+          "height": 398.5,
+          "top": 81,
+          "right": 840,
+          "bottom": 479.5,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 15,
+          "y": 509.5,
+          "width": 810,
+          "height": 620.5,
+          "top": 509.5,
+          "right": 825,
+          "bottom": 1130,
+          "left": 15
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 30,
+              "y": 168.5,
+              "width": 481.203125,
+              "height": 48,
+              "top": 168.5,
+              "right": 511.203125,
+              "bottom": 216.5,
+              "left": 30
+            },
+            "size": "40px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 541.203125,
+              "y": 141,
+              "width": 268.796875,
+              "height": 247.28125,
+              "top": 141,
+              "right": 810,
+              "bottom": 388.28125,
+              "left": 541.203125
+            },
+            "size": "20px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 30,
+              "y": 236.5,
+              "width": 481.203125,
+              "height": 183,
+              "top": 236.5,
+              "right": 511.203125,
+              "bottom": 419.5,
+              "left": 30
+            },
+            "size": "20px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 113.5,
+              "y": 257.5,
+              "width": 97.265625,
+              "height": 81,
+              "top": 257.5,
+              "right": 210.765625,
+              "bottom": 338.5,
+              "left": 113.5
+            },
+            "size": "20px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 340.3125,
+              "y": 281.453125,
+              "width": 114.0625,
+              "height": 33.078125,
+              "top": 281.453125,
+              "right": 454.375,
+              "bottom": 314.53125,
+              "left": 340.3125
+            },
+            "size": "30.0752px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 1
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 1
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 1
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 1
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 576,
+        "rootTextScale": 1,
+        "language": "en",
+        "theme": "dark",
+        "longNames": false,
+        "rootSize": "16px",
+        "pageWidth": 576,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 576,
+          "height": 314.78125,
+          "top": 65,
+          "right": 576,
+          "bottom": 379.78125,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 12,
+          "y": 403.78125,
+          "width": 552,
+          "height": 497.1875,
+          "top": 403.78125,
+          "right": 564,
+          "bottom": 900.96875,
+          "left": 12
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 24,
+              "y": 135.390625,
+              "width": 319.6875,
+              "height": 33.59375,
+              "top": 135.390625,
+              "right": 343.6875,
+              "bottom": 168.984375,
+              "left": 24
+            },
+            "size": "28px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 367.6875,
+              "y": 113,
+              "width": 184.3125,
+              "height": 169.5625,
+              "top": 113,
+              "right": 552,
+              "bottom": 282.5625,
+              "left": 367.6875
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 24,
+              "y": 184.984375,
+              "width": 319.6875,
+              "height": 146.796875,
+              "top": 184.984375,
+              "right": 343.6875,
+              "bottom": 331.78125,
+              "left": 24
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 91,
+              "y": 201.984375,
+              "width": 77.8125,
+              "height": 60.796875,
+              "top": 201.984375,
+              "right": 168.8125,
+              "bottom": 262.78125,
+              "left": 91
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 232.8125,
+              "y": 221.390625,
+              "width": 75.796875,
+              "height": 21.96875,
+              "top": 221.390625,
+              "right": 308.609375,
+              "bottom": 243.359375,
+              "left": 232.8125
+            },
+            "size": "19.9805px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 1
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 1
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 1
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 1
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 576,
+        "rootTextScale": 1.25,
+        "language": "en",
+        "theme": "dark",
+        "longNames": false,
+        "rootSize": "20px",
+        "pageWidth": 576,
+        "heroBounds": {
+          "x": 0,
+          "y": 81,
+          "width": 576,
+          "height": 433,
+          "top": 81,
+          "right": 576,
+          "bottom": 514,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 15,
+          "y": 544,
+          "width": 546,
+          "height": 713,
+          "top": 544,
+          "right": 561,
+          "bottom": 1257,
+          "left": 15
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 30,
+              "y": 188.75,
+              "width": 197.109375,
+              "height": 42,
+              "top": 188.75,
+              "right": 227.109375,
+              "bottom": 230.75,
+              "left": 30
+            },
+            "size": "35px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 396,
+              "y": 121,
+              "width": 150,
+              "height": 130,
+              "top": 121,
+              "right": 546,
+              "bottom": 251,
+              "left": 396
+            },
+            "size": "20px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 30,
+              "y": 276,
+              "width": 516,
+              "height": 178,
+              "top": 276,
+              "right": 546,
+              "bottom": 454,
+              "left": 30
+            },
+            "size": "20px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 113.5,
+              "y": 297,
+              "width": 97.265625,
+              "height": 76,
+              "top": 297,
+              "right": 210.765625,
+              "bottom": 373,
+              "left": 113.5
+            },
+            "size": "20px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 361.40625,
+              "y": 317.265625,
+              "width": 122.34375,
+              "height": 35.46875,
+              "top": 317.265625,
+              "right": 483.75,
+              "bottom": 352.734375,
+              "left": 361.40625
+            },
+            "size": "32.25px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 1
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 2
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 2
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 2
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 676,
+        "rootTextScale": 1,
+        "language": "en",
+        "theme": "dark",
+        "longNames": false,
+        "rootSize": "16px",
+        "pageWidth": 676,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 676,
+          "height": 319.578125,
+          "top": 65,
+          "right": 676,
+          "bottom": 384.578125,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 12,
+          "y": 408.578125,
+          "width": 652,
+          "height": 497.1875,
+          "top": 408.578125,
+          "right": 664,
+          "bottom": 905.765625,
+          "left": 12
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 24,
+              "y": 135.390625,
+              "width": 387.6875,
+              "height": 38.390625,
+              "top": 135.390625,
+              "right": 411.6875,
+              "bottom": 173.78125,
+              "left": 24
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 435.6875,
+              "y": 113,
+              "width": 216.3125,
+              "height": 199,
+              "top": 113,
+              "right": 652,
+              "bottom": 312,
+              "left": 435.6875
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 24,
+              "y": 189.78125,
+              "width": 387.6875,
+              "height": 146.796875,
+              "top": 189.78125,
+              "right": 411.6875,
+              "bottom": 336.578125,
+              "left": 24
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 91,
+              "y": 206.78125,
+              "width": 77.8125,
+              "height": 64.796875,
+              "top": 206.78125,
+              "right": 168.8125,
+              "bottom": 271.578125,
+              "left": 91
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 273.984375,
+              "y": 225.84375,
+              "width": 91.921875,
+              "height": 26.65625,
+              "top": 225.84375,
+              "right": 365.90625,
+              "bottom": 252.5,
+              "left": 273.984375
+            },
+            "size": "24.2305px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 1
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 1
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 1
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 1
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 676,
+        "rootTextScale": 1.25,
+        "language": "en",
+        "theme": "dark",
+        "longNames": false,
+        "rootSize": "20px",
+        "pageWidth": 676,
+        "heroBounds": {
+          "x": 0,
+          "y": 81,
+          "width": 676,
+          "height": 403.5,
+          "top": 81,
+          "right": 676,
+          "bottom": 484.5,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 15,
+          "y": 514.5,
+          "width": 646,
+          "height": 620.5,
+          "top": 514.5,
+          "right": 661,
+          "bottom": 1135,
+          "left": 15
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 30,
+              "y": 168.5,
+              "width": 369.6875,
+              "height": 48,
+              "top": 168.5,
+              "right": 399.6875,
+              "bottom": 216.5,
+              "left": 30
+            },
+            "size": "40px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 429.6875,
+              "y": 141,
+              "width": 216.3125,
+              "height": 199,
+              "top": 141,
+              "right": 646,
+              "bottom": 340,
+              "left": 429.6875
+            },
+            "size": "20px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 30,
+              "y": 236.5,
+              "width": 369.6875,
+              "height": 188,
+              "top": 236.5,
+              "right": 399.6875,
+              "bottom": 424.5,
+              "left": 30
+            },
+            "size": "20px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 113.5,
+              "y": 257.5,
+              "width": 97.265625,
+              "height": 81,
+              "top": 257.5,
+              "right": 210.765625,
+              "bottom": 338.5,
+              "left": 113.5
+            },
+            "size": "20px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 274.3125,
+              "y": 285.296875,
+              "width": 87.625,
+              "height": 25.40625,
+              "top": 285.296875,
+              "right": 361.9375,
+              "bottom": 310.703125,
+              "left": 274.3125
+            },
+            "size": "23.1055px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 1
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 1
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 1
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 1
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 840,
+        "rootTextScale": 1,
+        "language": "en",
+        "theme": "dark",
+        "longNames": false,
+        "rootSize": "16px",
+        "pageWidth": 840,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 840,
+          "height": 319.578125,
+          "top": 65,
+          "right": 840,
+          "bottom": 384.578125,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 92,
+          "y": 408.578125,
+          "width": 656,
+          "height": 497.1875,
+          "top": 408.578125,
+          "right": 748,
+          "bottom": 905.765625,
+          "left": 92
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 100,
+              "y": 135.390625,
+              "width": 392,
+              "height": 38.390625,
+              "top": 135.390625,
+              "right": 492,
+              "bottom": 173.78125,
+              "left": 100
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 516,
+              "y": 113,
+              "width": 224,
+              "height": 206.078125,
+              "top": 113,
+              "right": 740,
+              "bottom": 319.078125,
+              "left": 516
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 100,
+              "y": 189.78125,
+              "width": 392,
+              "height": 146.796875,
+              "top": 189.78125,
+              "right": 492,
+              "bottom": 336.578125,
+              "left": 100
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 167,
+              "y": 206.78125,
+              "width": 77.8125,
+              "height": 64.796875,
+              "top": 206.78125,
+              "right": 244.8125,
+              "bottom": 271.578125,
+              "left": 167
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 352.59375,
+              "y": 225.703125,
+              "width": 92.9375,
+              "height": 26.9375,
+              "top": 225.703125,
+              "right": 445.53125,
+              "bottom": 252.640625,
+              "left": 352.59375
+            },
+            "size": "24.5px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 1
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 1
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 1
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 1
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 840,
+        "rootTextScale": 1.25,
+        "language": "en",
+        "theme": "dark",
+        "longNames": false,
+        "rootSize": "20px",
+        "pageWidth": 840,
+        "heroBounds": {
+          "x": 0,
+          "y": 81,
+          "width": 840,
+          "height": 398.5,
+          "top": 81,
+          "right": 840,
+          "bottom": 479.5,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 15,
+          "y": 509.5,
+          "width": 810,
+          "height": 620.5,
+          "top": 509.5,
+          "right": 825,
+          "bottom": 1130,
+          "left": 15
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 30,
+              "y": 168.5,
+              "width": 481.203125,
+              "height": 48,
+              "top": 168.5,
+              "right": 511.203125,
+              "bottom": 216.5,
+              "left": 30
+            },
+            "size": "40px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 541.203125,
+              "y": 141,
+              "width": 268.796875,
+              "height": 247.28125,
+              "top": 141,
+              "right": 810,
+              "bottom": 388.28125,
+              "left": 541.203125
+            },
+            "size": "20px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 30,
+              "y": 236.5,
+              "width": 481.203125,
+              "height": 183,
+              "top": 236.5,
+              "right": 511.203125,
+              "bottom": 419.5,
+              "left": 30
+            },
+            "size": "20px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 113.5,
+              "y": 257.5,
+              "width": 97.265625,
+              "height": 81,
+              "top": 257.5,
+              "right": 210.765625,
+              "bottom": 338.5,
+              "left": 113.5
+            },
+            "size": "20px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 340.3125,
+              "y": 281.453125,
+              "width": 114.0625,
+              "height": 33.078125,
+              "top": 281.453125,
+              "right": 454.375,
+              "bottom": 314.53125,
+              "left": 340.3125
+            },
+            "size": "30.0752px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 1
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 1
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 1
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 1
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      }
+    ]
+  },
+  "narrowMatrix": {
+    "scope": "320/390px; English, Amharic and Afaan Oromo; both themes; 100% and 200% root text. Enlarged cases include long names. Geometry was checked after final wide-layout changes and before the subsequent color/focus-only fixes.",
+    "count": 24,
+    "pageOverflow": 0,
+    "functionalOverflow": 0,
+    "offscreenText": 0,
+    "textBelow12px": 0,
+    "visibleMoodEmoji": 0,
+    "visibleStageDateCaptions": 0,
+    "unloadedImages": 0,
+    "layouts": [
+      {
+        "width": 320,
+        "rootTextScale": 1,
+        "language": "en",
+        "theme": "light",
+        "longNames": false,
+        "rootSize": "16px",
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 320,
+          "height": 378.765625,
+          "top": 65,
+          "right": 320,
+          "bottom": 443.765625,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 12,
+          "y": 467.765625,
+          "width": 296,
+          "height": 818.78125,
+          "top": 467.765625,
+          "right": 308,
+          "bottom": 1286.546875,
+          "left": 12
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 24,
+              "y": 135.390625,
+              "width": 136,
+              "height": 67.1875,
+              "top": 135.390625,
+              "right": 160,
+              "bottom": 202.578125,
+              "left": 24
+            },
+            "size": "28px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 176,
+              "y": 97.78125,
+              "width": 120,
+              "height": 104,
+              "top": 97.78125,
+              "right": 296,
+              "bottom": 201.78125,
+              "left": 176
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 24,
+              "y": 222.578125,
+              "width": 272,
+              "height": 173.1875,
+              "top": 222.578125,
+              "right": 296,
+              "bottom": 395.765625,
+              "left": 24
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 91,
+              "y": 239.578125,
+              "width": 68.328125,
+              "height": 77.59375,
+              "top": 239.578125,
+              "right": 159.328125,
+              "bottom": 317.171875,
+              "left": 91
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 206.34375,
+              "y": 269.03125,
+              "width": 64.484375,
+              "height": 18.6875,
+              "top": 269.03125,
+              "right": 270.828125,
+              "bottom": 287.71875,
+              "left": 206.34375
+            },
+            "size": "17px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 1
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 1
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 1
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 1
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 320,
+        "rootTextScale": 2,
+        "language": "en",
+        "theme": "light",
+        "longNames": true,
+        "rootSize": "32px",
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 320,
+          "height": 1525.6875,
+          "top": 155,
+          "right": 320,
+          "bottom": 1680.6875,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 24,
+          "y": 1728.6875,
+          "width": 272,
+          "height": 2921.0625,
+          "top": 1728.6875,
+          "right": 296,
+          "bottom": 4649.75,
+          "left": 24
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 32,
+              "y": 549.78125,
+              "width": 256,
+              "height": 403.125,
+              "top": 549.78125,
+              "right": 288,
+              "bottom": 952.90625,
+              "left": 32
+            },
+            "size": "56px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 48,
+              "y": 219,
+              "width": 240,
+              "height": 208,
+              "top": 219,
+              "right": 288,
+              "bottom": 427,
+              "left": 48
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 32,
+              "y": 992.90625,
+              "width": 256,
+              "height": 591.78125,
+              "top": 992.90625,
+              "right": 288,
+              "bottom": 1584.6875,
+              "left": 32
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 65,
+              "y": 1129.90625,
+              "width": 190,
+              "height": 121.59375,
+              "top": 1129.90625,
+              "right": 255,
+              "bottom": 1251.5,
+              "left": 65
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 109,
+              "y": 1301.09375,
+              "width": 106.21875,
+              "height": 30.796875,
+              "top": 1301.09375,
+              "right": 215.21875,
+              "bottom": 1331.890625,
+              "left": 109
+            },
+            "size": "28px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 1
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 1
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 1
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 1
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 390,
+        "rootTextScale": 1,
+        "language": "en",
+        "theme": "light",
+        "longNames": false,
+        "rootSize": "16px",
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 390,
+          "height": 350.796875,
+          "top": 65,
+          "right": 390,
+          "bottom": 415.796875,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 12,
+          "y": 439.796875,
+          "width": 366,
+          "height": 557.5625,
+          "top": 439.796875,
+          "right": 378,
+          "bottom": 997.359375,
+          "left": 12
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 24,
+              "y": 151.390625,
+              "width": 157.703125,
+              "height": 33.59375,
+              "top": 151.390625,
+              "right": 181.703125,
+              "bottom": 184.984375,
+              "left": 24
+            },
+            "size": "28px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 246,
+              "y": 97,
+              "width": 120,
+              "height": 104,
+              "top": 97,
+              "right": 366,
+              "bottom": 201,
+              "left": 246
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 24,
+              "y": 221,
+              "width": 342,
+              "height": 146.796875,
+              "top": 221,
+              "right": 366,
+              "bottom": 367.796875,
+              "left": 24
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 91,
+              "y": 238,
+              "width": 77.8125,
+              "height": 60.796875,
+              "top": 238,
+              "right": 168.8125,
+              "bottom": 298.796875,
+              "left": 91
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 246.3125,
+              "y": 256.640625,
+              "width": 81.0625,
+              "height": 23.5,
+              "top": 256.640625,
+              "right": 327.375,
+              "bottom": 280.140625,
+              "left": 246.3125
+            },
+            "size": "21.375px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 2
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 2
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 2
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 2
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 390,
+        "rootTextScale": 2,
+        "language": "en",
+        "theme": "light",
+        "longNames": true,
+        "rootSize": "32px",
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 390,
+          "height": 1327.3125,
+          "top": 155,
+          "right": 390,
+          "bottom": 1482.3125,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 24,
+          "y": 1530.3125,
+          "width": 342,
+          "height": 2704.71875,
+          "top": 1530.3125,
+          "right": 366,
+          "bottom": 4235.03125,
+          "left": 24
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 32,
+              "y": 549.78125,
+              "width": 326,
+              "height": 335.9375,
+              "top": 549.78125,
+              "right": 358,
+              "bottom": 885.71875,
+              "left": 32
+            },
+            "size": "56px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 118,
+              "y": 219,
+              "width": 240,
+              "height": 208,
+              "top": 219,
+              "right": 358,
+              "bottom": 427,
+              "left": 118
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 32,
+              "y": 925.71875,
+              "width": 326,
+              "height": 460.59375,
+              "top": 925.71875,
+              "right": 358,
+              "bottom": 1386.3125,
+              "left": 32
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 165,
+              "y": 958.71875,
+              "width": 155.625,
+              "height": 121.59375,
+              "top": 958.71875,
+              "right": 320.625,
+              "bottom": 1080.3125,
+              "left": 165
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 109,
+              "y": 1129.90625,
+              "width": 106.21875,
+              "height": 30.796875,
+              "top": 1129.90625,
+              "right": 215.21875,
+              "bottom": 1160.703125,
+              "left": 109
+            },
+            "size": "28px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 1
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 1
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 1
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 1
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 320,
+        "rootTextScale": 1,
+        "language": "am",
+        "theme": "light",
+        "longNames": false,
+        "rootSize": "16px",
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 320,
+          "height": 385.96875,
+          "top": 65,
+          "right": 320,
+          "bottom": 450.96875,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 12,
+          "y": 474.96875,
+          "width": 296,
+          "height": 850.75,
+          "top": 474.96875,
+          "right": 308,
+          "bottom": 1325.71875,
+          "left": 12
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 24,
+              "y": 135.390625,
+              "width": 136,
+              "height": 67.1875,
+              "top": 135.390625,
+              "right": 160,
+              "bottom": 202.578125,
+              "left": 24
+            },
+            "size": "28px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 176,
+              "y": 97.78125,
+              "width": 120,
+              "height": 104,
+              "top": 97.78125,
+              "right": 296,
+              "bottom": 201.78125,
+              "left": 176
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 24,
+              "y": 222.578125,
+              "width": 272,
+              "height": 180.390625,
+              "top": 222.578125,
+              "right": 296,
+              "bottom": 402.96875,
+              "left": 24
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 91,
+              "y": 239.578125,
+              "width": 68.328125,
+              "height": 94.390625,
+              "top": 239.578125,
+              "right": 159.328125,
+              "bottom": 333.96875,
+              "left": 91
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 206.34375,
+              "y": 277.421875,
+              "width": 64.484375,
+              "height": 18.6875,
+              "top": 277.421875,
+              "right": 270.828125,
+              "bottom": 296.109375,
+              "left": 206.34375
+            },
+            "size": "17px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "ዘር",
+            "current": null
+          },
+          {
+            "text": "እድገት",
+            "current": "step"
+          },
+          {
+            "text": "አንድነት",
+            "current": null
+          },
+          {
+            "text": "ቁርጠኝነት",
+            "current": null
+          },
+          {
+            "text": "ቃል ኪዳን",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "መጽሐፍ ቅዱስ ጥናት",
+            "lines": 2
+          },
+          {
+            "text": "የጥንዶች ማስታወሻ",
+            "lines": 2
+          },
+          {
+            "text": "የጸሎት ክትትል",
+            "lines": 1
+          },
+          {
+            "text": "ቀጠሮዎች እና ዕቅዶች",
+            "lines": 2
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 320,
+        "rootTextScale": 2,
+        "language": "am",
+        "theme": "light",
+        "longNames": true,
+        "rootSize": "32px",
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 320,
+          "height": 1532.09375,
+          "top": 155,
+          "right": 320,
+          "bottom": 1687.09375,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 24,
+          "y": 1735.09375,
+          "width": 272,
+          "height": 2977.375,
+          "top": 1735.09375,
+          "right": 296,
+          "bottom": 4712.46875,
+          "left": 24
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 32,
+              "y": 549.78125,
+              "width": 256,
+              "height": 403.125,
+              "top": 549.78125,
+              "right": 288,
+              "bottom": 952.90625,
+              "left": 32
+            },
+            "size": "56px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 48,
+              "y": 219,
+              "width": 240,
+              "height": 208,
+              "top": 219,
+              "right": 288,
+              "bottom": 427,
+              "left": 48
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 32,
+              "y": 992.90625,
+              "width": 256,
+              "height": 598.1875,
+              "top": 992.90625,
+              "right": 288,
+              "bottom": 1591.09375,
+              "left": 32
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 65,
+              "y": 1129.90625,
+              "width": 190,
+              "height": 155.1875,
+              "top": 1129.90625,
+              "right": 255,
+              "bottom": 1285.09375,
+              "left": 65
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 109,
+              "y": 1334.6875,
+              "width": 106.21875,
+              "height": 30.796875,
+              "top": 1334.6875,
+              "right": 215.21875,
+              "bottom": 1365.484375,
+              "left": 109
+            },
+            "size": "28px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "ዘር",
+            "current": null
+          },
+          {
+            "text": "እድገት",
+            "current": "step"
+          },
+          {
+            "text": "አንድነት",
+            "current": null
+          },
+          {
+            "text": "ቁርጠኝነት",
+            "current": null
+          },
+          {
+            "text": "ቃል ኪዳን",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "መጽሐፍ ቅዱስ ጥናት",
+            "lines": 2
+          },
+          {
+            "text": "የጥንዶች ማስታወሻ",
+            "lines": 2
+          },
+          {
+            "text": "የጸሎት ክትትል",
+            "lines": 1
+          },
+          {
+            "text": "ቀጠሮዎች እና ዕቅዶች",
+            "lines": 2
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 390,
+        "rootTextScale": 1,
+        "language": "am",
+        "theme": "light",
+        "longNames": false,
+        "rootSize": "16px",
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 390,
+          "height": 350.796875,
+          "top": 65,
+          "right": 390,
+          "bottom": 415.796875,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 12,
+          "y": 439.796875,
+          "width": 366,
+          "height": 560.359375,
+          "top": 439.796875,
+          "right": 378,
+          "bottom": 1000.15625,
+          "left": 12
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 24,
+              "y": 151.390625,
+              "width": 164.96875,
+              "height": 33.59375,
+              "top": 151.390625,
+              "right": 188.96875,
+              "bottom": 184.984375,
+              "left": 24
+            },
+            "size": "28px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 246,
+              "y": 97,
+              "width": 120,
+              "height": 104,
+              "top": 97,
+              "right": 366,
+              "bottom": 201,
+              "left": 246
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 24,
+              "y": 221,
+              "width": 342,
+              "height": 146.796875,
+              "top": 221,
+              "right": 366,
+              "bottom": 367.796875,
+              "left": 24
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 91,
+              "y": 238,
+              "width": 105.265625,
+              "height": 60.796875,
+              "top": 238,
+              "right": 196.265625,
+              "bottom": 298.796875,
+              "left": 91
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 246.3125,
+              "y": 256.640625,
+              "width": 81.0625,
+              "height": 23.5,
+              "top": 256.640625,
+              "right": 327.375,
+              "bottom": 280.140625,
+              "left": 246.3125
+            },
+            "size": "21.375px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "ዘር",
+            "current": null
+          },
+          {
+            "text": "እድገት",
+            "current": "step"
+          },
+          {
+            "text": "አንድነት",
+            "current": null
+          },
+          {
+            "text": "ቁርጠኝነት",
+            "current": null
+          },
+          {
+            "text": "ቃል ኪዳን",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "መጽሐፍ ቅዱስ ጥናት",
+            "lines": 3
+          },
+          {
+            "text": "የጥንዶች ማስታወሻ",
+            "lines": 2
+          },
+          {
+            "text": "የጸሎት ክትትል",
+            "lines": 2
+          },
+          {
+            "text": "ቀጠሮዎች እና ዕቅዶች",
+            "lines": 2
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 390,
+        "rootTextScale": 2,
+        "language": "am",
+        "theme": "light",
+        "longNames": true,
+        "rootSize": "32px",
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 390,
+          "height": 1320.90625,
+          "top": 155,
+          "right": 390,
+          "bottom": 1475.90625,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 24,
+          "y": 1523.90625,
+          "width": 342,
+          "height": 2689.90625,
+          "top": 1523.90625,
+          "right": 366,
+          "bottom": 4213.8125,
+          "left": 24
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 32,
+              "y": 549.78125,
+              "width": 326,
+              "height": 335.9375,
+              "top": 549.78125,
+              "right": 358,
+              "bottom": 885.71875,
+              "left": 32
+            },
+            "size": "56px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 118,
+              "y": 219,
+              "width": 240,
+              "height": 208,
+              "top": 219,
+              "right": 358,
+              "bottom": 427,
+              "left": 118
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 32,
+              "y": 925.71875,
+              "width": 326,
+              "height": 454.1875,
+              "top": 925.71875,
+              "right": 358,
+              "bottom": 1379.90625,
+              "left": 32
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 165,
+              "y": 958.71875,
+              "width": 160,
+              "height": 155.1875,
+              "top": 958.71875,
+              "right": 325,
+              "bottom": 1113.90625,
+              "left": 165
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 109,
+              "y": 1163.5,
+              "width": 106.21875,
+              "height": 30.796875,
+              "top": 1163.5,
+              "right": 215.21875,
+              "bottom": 1194.296875,
+              "left": 109
+            },
+            "size": "28px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "ዘር",
+            "current": null
+          },
+          {
+            "text": "እድገት",
+            "current": "step"
+          },
+          {
+            "text": "አንድነት",
+            "current": null
+          },
+          {
+            "text": "ቁርጠኝነት",
+            "current": null
+          },
+          {
+            "text": "ቃል ኪዳን",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "መጽሐፍ ቅዱስ ጥናት",
+            "lines": 1
+          },
+          {
+            "text": "የጥንዶች ማስታወሻ",
+            "lines": 1
+          },
+          {
+            "text": "የጸሎት ክትትል",
+            "lines": 1
+          },
+          {
+            "text": "ቀጠሮዎች እና ዕቅዶች",
+            "lines": 1
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 320,
+        "rootTextScale": 1,
+        "language": "om",
+        "theme": "light",
+        "longNames": false,
+        "rootSize": "16px",
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 320,
+          "height": 378.765625,
+          "top": 65,
+          "right": 320,
+          "bottom": 443.765625,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 12,
+          "y": 467.765625,
+          "width": 296,
+          "height": 919.53125,
+          "top": 467.765625,
+          "right": 308,
+          "bottom": 1387.296875,
+          "left": 12
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 24,
+              "y": 135.390625,
+              "width": 136,
+              "height": 67.1875,
+              "top": 135.390625,
+              "right": 160,
+              "bottom": 202.578125,
+              "left": 24
+            },
+            "size": "28px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 176,
+              "y": 97.78125,
+              "width": 120,
+              "height": 104,
+              "top": 97.78125,
+              "right": 296,
+              "bottom": 201.78125,
+              "left": 176
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 24,
+              "y": 222.578125,
+              "width": 272,
+              "height": 173.1875,
+              "top": 222.578125,
+              "right": 296,
+              "bottom": 395.765625,
+              "left": 24
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 91,
+              "y": 239.578125,
+              "width": 68.328125,
+              "height": 77.59375,
+              "top": 239.578125,
+              "right": 159.328125,
+              "bottom": 317.171875,
+              "left": 91
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 206.34375,
+              "y": 269.03125,
+              "width": 64.484375,
+              "height": 18.6875,
+              "top": 269.03125,
+              "right": 270.828125,
+              "bottom": 287.71875,
+              "left": 206.34375
+            },
+            "size": "17px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Sanyii",
+            "current": null
+          },
+          {
+            "text": "Guddina",
+            "current": "step"
+          },
+          {
+            "text": "Tokkummaa",
+            "current": null
+          },
+          {
+            "text": "Kutannoo",
+            "current": null
+          },
+          {
+            "text": "Kakuu",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Qoʼannoo Kitaaba Qulqulluu",
+            "lines": 2
+          },
+          {
+            "text": "Yaadannoo Hiriyootaa",
+            "lines": 2
+          },
+          {
+            "text": "Hordoffii Kadhannaa",
+            "lines": 2
+          },
+          {
+            "text": "Beellamaa fi Karoora",
+            "lines": 2
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 320,
+        "rootTextScale": 2,
+        "language": "om",
+        "theme": "light",
+        "longNames": true,
+        "rootSize": "32px",
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 320,
+          "height": 1525.6875,
+          "top": 155,
+          "right": 320,
+          "bottom": 1680.6875,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 24,
+          "y": 1728.6875,
+          "width": 272,
+          "height": 3365.65625,
+          "top": 1728.6875,
+          "right": 296,
+          "bottom": 5094.34375,
+          "left": 24
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 32,
+              "y": 549.78125,
+              "width": 256,
+              "height": 403.125,
+              "top": 549.78125,
+              "right": 288,
+              "bottom": 952.90625,
+              "left": 32
+            },
+            "size": "56px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 48,
+              "y": 219,
+              "width": 240,
+              "height": 208,
+              "top": 219,
+              "right": 288,
+              "bottom": 427,
+              "left": 48
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 32,
+              "y": 992.90625,
+              "width": 256,
+              "height": 591.78125,
+              "top": 992.90625,
+              "right": 288,
+              "bottom": 1584.6875,
+              "left": 32
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 65,
+              "y": 1129.90625,
+              "width": 190,
+              "height": 121.59375,
+              "top": 1129.90625,
+              "right": 255,
+              "bottom": 1251.5,
+              "left": 65
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 109,
+              "y": 1301.09375,
+              "width": 106.21875,
+              "height": 30.796875,
+              "top": 1301.09375,
+              "right": 215.21875,
+              "bottom": 1331.890625,
+              "left": 109
+            },
+            "size": "28px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Sanyii",
+            "current": null
+          },
+          {
+            "text": "Guddina",
+            "current": "step"
+          },
+          {
+            "text": "Tokkummaa",
+            "current": null
+          },
+          {
+            "text": "Kutannoo",
+            "current": null
+          },
+          {
+            "text": "Kakuu",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Qoʼannoo Kitaaba Qulqulluu",
+            "lines": 3
+          },
+          {
+            "text": "Yaadannoo Hiriyootaa",
+            "lines": 2
+          },
+          {
+            "text": "Hordoffii Kadhannaa",
+            "lines": 2
+          },
+          {
+            "text": "Beellamaa fi Karoora",
+            "lines": 2
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 390,
+        "rootTextScale": 1,
+        "language": "om",
+        "theme": "light",
+        "longNames": false,
+        "rootSize": "16px",
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 390,
+          "height": 350.796875,
+          "top": 65,
+          "right": 390,
+          "bottom": 415.796875,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 12,
+          "y": 439.796875,
+          "width": 366,
+          "height": 636.75,
+          "top": 439.796875,
+          "right": 378,
+          "bottom": 1076.546875,
+          "left": 12
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 24,
+              "y": 151.390625,
+              "width": 157.703125,
+              "height": 33.59375,
+              "top": 151.390625,
+              "right": 181.703125,
+              "bottom": 184.984375,
+              "left": 24
+            },
+            "size": "28px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 246,
+              "y": 97,
+              "width": 120,
+              "height": 104,
+              "top": 97,
+              "right": 366,
+              "bottom": 201,
+              "left": 246
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 24,
+              "y": 221,
+              "width": 342,
+              "height": 146.796875,
+              "top": 221,
+              "right": 366,
+              "bottom": 367.796875,
+              "left": 24
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 91,
+              "y": 238,
+              "width": 77.203125,
+              "height": 60.796875,
+              "top": 238,
+              "right": 168.203125,
+              "bottom": 298.796875,
+              "left": 91
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 246.3125,
+              "y": 256.640625,
+              "width": 81.0625,
+              "height": 23.5,
+              "top": 256.640625,
+              "right": 327.375,
+              "bottom": 280.140625,
+              "left": 246.3125
+            },
+            "size": "21.375px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Sanyii",
+            "current": null
+          },
+          {
+            "text": "Guddina",
+            "current": "step"
+          },
+          {
+            "text": "Tokkummaa",
+            "current": null
+          },
+          {
+            "text": "Kutannoo",
+            "current": null
+          },
+          {
+            "text": "Kakuu",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Qoʼannoo Kitaaba Qulqulluu",
+            "lines": 3
+          },
+          {
+            "text": "Yaadannoo Hiriyootaa",
+            "lines": 3
+          },
+          {
+            "text": "Hordoffii Kadhannaa",
+            "lines": 3
+          },
+          {
+            "text": "Beellamaa fi Karoora",
+            "lines": 2
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 390,
+        "rootTextScale": 2,
+        "language": "om",
+        "theme": "light",
+        "longNames": true,
+        "rootSize": "32px",
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 390,
+          "height": 1327.3125,
+          "top": 155,
+          "right": 390,
+          "bottom": 1482.3125,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 24,
+          "y": 1530.3125,
+          "width": 342,
+          "height": 2911.84375,
+          "top": 1530.3125,
+          "right": 366,
+          "bottom": 4442.15625,
+          "left": 24
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 32,
+              "y": 549.78125,
+              "width": 326,
+              "height": 335.9375,
+              "top": 549.78125,
+              "right": 358,
+              "bottom": 885.71875,
+              "left": 32
+            },
+            "size": "56px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 118,
+              "y": 219,
+              "width": 240,
+              "height": 208,
+              "top": 219,
+              "right": 358,
+              "bottom": 427,
+              "left": 118
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 32,
+              "y": 925.71875,
+              "width": 326,
+              "height": 460.59375,
+              "top": 925.71875,
+              "right": 358,
+              "bottom": 1386.3125,
+              "left": 32
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 165,
+              "y": 958.71875,
+              "width": 154.390625,
+              "height": 121.59375,
+              "top": 958.71875,
+              "right": 319.390625,
+              "bottom": 1080.3125,
+              "left": 165
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 109,
+              "y": 1129.90625,
+              "width": 106.21875,
+              "height": 30.796875,
+              "top": 1129.90625,
+              "right": 215.21875,
+              "bottom": 1160.703125,
+              "left": 109
+            },
+            "size": "28px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Sanyii",
+            "current": null
+          },
+          {
+            "text": "Guddina",
+            "current": "step"
+          },
+          {
+            "text": "Tokkummaa",
+            "current": null
+          },
+          {
+            "text": "Kutannoo",
+            "current": null
+          },
+          {
+            "text": "Kakuu",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Qoʼannoo Kitaaba Qulqulluu",
+            "lines": 2
+          },
+          {
+            "text": "Yaadannoo Hiriyootaa",
+            "lines": 1
+          },
+          {
+            "text": "Hordoffii Kadhannaa",
+            "lines": 1
+          },
+          {
+            "text": "Beellamaa fi Karoora",
+            "lines": 1
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 320,
+        "rootTextScale": 1,
+        "language": "en",
+        "theme": "dark",
+        "longNames": false,
+        "rootSize": "16px",
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 320,
+          "height": 378.765625,
+          "top": 65,
+          "right": 320,
+          "bottom": 443.765625,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 12,
+          "y": 467.765625,
+          "width": 296,
+          "height": 818.78125,
+          "top": 467.765625,
+          "right": 308,
+          "bottom": 1286.546875,
+          "left": 12
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 24,
+              "y": 135.390625,
+              "width": 136,
+              "height": 67.1875,
+              "top": 135.390625,
+              "right": 160,
+              "bottom": 202.578125,
+              "left": 24
+            },
+            "size": "28px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 176,
+              "y": 97.78125,
+              "width": 120,
+              "height": 104,
+              "top": 97.78125,
+              "right": 296,
+              "bottom": 201.78125,
+              "left": 176
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 24,
+              "y": 222.578125,
+              "width": 272,
+              "height": 173.1875,
+              "top": 222.578125,
+              "right": 296,
+              "bottom": 395.765625,
+              "left": 24
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 91,
+              "y": 239.578125,
+              "width": 68.328125,
+              "height": 77.59375,
+              "top": 239.578125,
+              "right": 159.328125,
+              "bottom": 317.171875,
+              "left": 91
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 206.34375,
+              "y": 269.03125,
+              "width": 64.484375,
+              "height": 18.6875,
+              "top": 269.03125,
+              "right": 270.828125,
+              "bottom": 287.71875,
+              "left": 206.34375
+            },
+            "size": "17px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 1
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 1
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 1
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 1
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 320,
+        "rootTextScale": 2,
+        "language": "en",
+        "theme": "dark",
+        "longNames": true,
+        "rootSize": "32px",
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 320,
+          "height": 1525.6875,
+          "top": 155,
+          "right": 320,
+          "bottom": 1680.6875,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 24,
+          "y": 1728.6875,
+          "width": 272,
+          "height": 2921.0625,
+          "top": 1728.6875,
+          "right": 296,
+          "bottom": 4649.75,
+          "left": 24
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 32,
+              "y": 549.78125,
+              "width": 256,
+              "height": 403.125,
+              "top": 549.78125,
+              "right": 288,
+              "bottom": 952.90625,
+              "left": 32
+            },
+            "size": "56px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 48,
+              "y": 219,
+              "width": 240,
+              "height": 208,
+              "top": 219,
+              "right": 288,
+              "bottom": 427,
+              "left": 48
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 32,
+              "y": 992.90625,
+              "width": 256,
+              "height": 591.78125,
+              "top": 992.90625,
+              "right": 288,
+              "bottom": 1584.6875,
+              "left": 32
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 65,
+              "y": 1129.90625,
+              "width": 190,
+              "height": 121.59375,
+              "top": 1129.90625,
+              "right": 255,
+              "bottom": 1251.5,
+              "left": 65
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 109,
+              "y": 1301.09375,
+              "width": 106.21875,
+              "height": 30.796875,
+              "top": 1301.09375,
+              "right": 215.21875,
+              "bottom": 1331.890625,
+              "left": 109
+            },
+            "size": "28px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 1
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 1
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 1
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 1
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 390,
+        "rootTextScale": 1,
+        "language": "en",
+        "theme": "dark",
+        "longNames": false,
+        "rootSize": "16px",
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 390,
+          "height": 350.796875,
+          "top": 65,
+          "right": 390,
+          "bottom": 415.796875,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 12,
+          "y": 439.796875,
+          "width": 366,
+          "height": 557.5625,
+          "top": 439.796875,
+          "right": 378,
+          "bottom": 997.359375,
+          "left": 12
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 24,
+              "y": 151.390625,
+              "width": 157.703125,
+              "height": 33.59375,
+              "top": 151.390625,
+              "right": 181.703125,
+              "bottom": 184.984375,
+              "left": 24
+            },
+            "size": "28px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 246,
+              "y": 97,
+              "width": 120,
+              "height": 104,
+              "top": 97,
+              "right": 366,
+              "bottom": 201,
+              "left": 246
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 24,
+              "y": 221,
+              "width": 342,
+              "height": 146.796875,
+              "top": 221,
+              "right": 366,
+              "bottom": 367.796875,
+              "left": 24
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 91,
+              "y": 238,
+              "width": 77.8125,
+              "height": 60.796875,
+              "top": 238,
+              "right": 168.8125,
+              "bottom": 298.796875,
+              "left": 91
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 246.3125,
+              "y": 256.640625,
+              "width": 81.0625,
+              "height": 23.5,
+              "top": 256.640625,
+              "right": 327.375,
+              "bottom": 280.140625,
+              "left": 246.3125
+            },
+            "size": "21.375px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 2
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 2
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 2
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 2
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 390,
+        "rootTextScale": 2,
+        "language": "en",
+        "theme": "dark",
+        "longNames": true,
+        "rootSize": "32px",
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 390,
+          "height": 1327.3125,
+          "top": 155,
+          "right": 390,
+          "bottom": 1482.3125,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 24,
+          "y": 1530.3125,
+          "width": 342,
+          "height": 2704.71875,
+          "top": 1530.3125,
+          "right": 366,
+          "bottom": 4235.03125,
+          "left": 24
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 32,
+              "y": 549.78125,
+              "width": 326,
+              "height": 335.9375,
+              "top": 549.78125,
+              "right": 358,
+              "bottom": 885.71875,
+              "left": 32
+            },
+            "size": "56px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 118,
+              "y": 219,
+              "width": 240,
+              "height": 208,
+              "top": 219,
+              "right": 358,
+              "bottom": 427,
+              "left": 118
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 32,
+              "y": 925.71875,
+              "width": 326,
+              "height": 460.59375,
+              "top": 925.71875,
+              "right": 358,
+              "bottom": 1386.3125,
+              "left": 32
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 165,
+              "y": 958.71875,
+              "width": 155.625,
+              "height": 121.59375,
+              "top": 958.71875,
+              "right": 320.625,
+              "bottom": 1080.3125,
+              "left": 165
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 109,
+              "y": 1129.90625,
+              "width": 106.21875,
+              "height": 30.796875,
+              "top": 1129.90625,
+              "right": 215.21875,
+              "bottom": 1160.703125,
+              "left": 109
+            },
+            "size": "28px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 1
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 1
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 1
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 1
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 320,
+        "rootTextScale": 1,
+        "language": "am",
+        "theme": "dark",
+        "longNames": false,
+        "rootSize": "16px",
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 320,
+          "height": 385.96875,
+          "top": 65,
+          "right": 320,
+          "bottom": 450.96875,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 12,
+          "y": 474.96875,
+          "width": 296,
+          "height": 850.75,
+          "top": 474.96875,
+          "right": 308,
+          "bottom": 1325.71875,
+          "left": 12
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 24,
+              "y": 135.390625,
+              "width": 136,
+              "height": 67.1875,
+              "top": 135.390625,
+              "right": 160,
+              "bottom": 202.578125,
+              "left": 24
+            },
+            "size": "28px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 176,
+              "y": 97.78125,
+              "width": 120,
+              "height": 104,
+              "top": 97.78125,
+              "right": 296,
+              "bottom": 201.78125,
+              "left": 176
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 24,
+              "y": 222.578125,
+              "width": 272,
+              "height": 180.390625,
+              "top": 222.578125,
+              "right": 296,
+              "bottom": 402.96875,
+              "left": 24
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 91,
+              "y": 239.578125,
+              "width": 68.328125,
+              "height": 94.390625,
+              "top": 239.578125,
+              "right": 159.328125,
+              "bottom": 333.96875,
+              "left": 91
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 206.34375,
+              "y": 277.421875,
+              "width": 64.484375,
+              "height": 18.6875,
+              "top": 277.421875,
+              "right": 270.828125,
+              "bottom": 296.109375,
+              "left": 206.34375
+            },
+            "size": "17px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "ዘር",
+            "current": null
+          },
+          {
+            "text": "እድገት",
+            "current": "step"
+          },
+          {
+            "text": "አንድነት",
+            "current": null
+          },
+          {
+            "text": "ቁርጠኝነት",
+            "current": null
+          },
+          {
+            "text": "ቃል ኪዳን",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "መጽሐፍ ቅዱስ ጥናት",
+            "lines": 2
+          },
+          {
+            "text": "የጥንዶች ማስታወሻ",
+            "lines": 2
+          },
+          {
+            "text": "የጸሎት ክትትል",
+            "lines": 1
+          },
+          {
+            "text": "ቀጠሮዎች እና ዕቅዶች",
+            "lines": 2
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 320,
+        "rootTextScale": 2,
+        "language": "am",
+        "theme": "dark",
+        "longNames": true,
+        "rootSize": "32px",
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 320,
+          "height": 1532.09375,
+          "top": 155,
+          "right": 320,
+          "bottom": 1687.09375,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 24,
+          "y": 1735.09375,
+          "width": 272,
+          "height": 2977.375,
+          "top": 1735.09375,
+          "right": 296,
+          "bottom": 4712.46875,
+          "left": 24
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 32,
+              "y": 549.78125,
+              "width": 256,
+              "height": 403.125,
+              "top": 549.78125,
+              "right": 288,
+              "bottom": 952.90625,
+              "left": 32
+            },
+            "size": "56px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 48,
+              "y": 219,
+              "width": 240,
+              "height": 208,
+              "top": 219,
+              "right": 288,
+              "bottom": 427,
+              "left": 48
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 32,
+              "y": 992.90625,
+              "width": 256,
+              "height": 598.1875,
+              "top": 992.90625,
+              "right": 288,
+              "bottom": 1591.09375,
+              "left": 32
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 65,
+              "y": 1129.90625,
+              "width": 190,
+              "height": 155.1875,
+              "top": 1129.90625,
+              "right": 255,
+              "bottom": 1285.09375,
+              "left": 65
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 109,
+              "y": 1334.6875,
+              "width": 106.21875,
+              "height": 30.796875,
+              "top": 1334.6875,
+              "right": 215.21875,
+              "bottom": 1365.484375,
+              "left": 109
+            },
+            "size": "28px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "ዘር",
+            "current": null
+          },
+          {
+            "text": "እድገት",
+            "current": "step"
+          },
+          {
+            "text": "አንድነት",
+            "current": null
+          },
+          {
+            "text": "ቁርጠኝነት",
+            "current": null
+          },
+          {
+            "text": "ቃል ኪዳን",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "መጽሐፍ ቅዱስ ጥናት",
+            "lines": 2
+          },
+          {
+            "text": "የጥንዶች ማስታወሻ",
+            "lines": 2
+          },
+          {
+            "text": "የጸሎት ክትትል",
+            "lines": 1
+          },
+          {
+            "text": "ቀጠሮዎች እና ዕቅዶች",
+            "lines": 2
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 390,
+        "rootTextScale": 1,
+        "language": "am",
+        "theme": "dark",
+        "longNames": false,
+        "rootSize": "16px",
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 390,
+          "height": 350.796875,
+          "top": 65,
+          "right": 390,
+          "bottom": 415.796875,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 12,
+          "y": 439.796875,
+          "width": 366,
+          "height": 560.359375,
+          "top": 439.796875,
+          "right": 378,
+          "bottom": 1000.15625,
+          "left": 12
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 24,
+              "y": 151.390625,
+              "width": 164.96875,
+              "height": 33.59375,
+              "top": 151.390625,
+              "right": 188.96875,
+              "bottom": 184.984375,
+              "left": 24
+            },
+            "size": "28px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 246,
+              "y": 97,
+              "width": 120,
+              "height": 104,
+              "top": 97,
+              "right": 366,
+              "bottom": 201,
+              "left": 246
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 24,
+              "y": 221,
+              "width": 342,
+              "height": 146.796875,
+              "top": 221,
+              "right": 366,
+              "bottom": 367.796875,
+              "left": 24
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 91,
+              "y": 238,
+              "width": 105.265625,
+              "height": 60.796875,
+              "top": 238,
+              "right": 196.265625,
+              "bottom": 298.796875,
+              "left": 91
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 246.3125,
+              "y": 256.640625,
+              "width": 81.0625,
+              "height": 23.5,
+              "top": 256.640625,
+              "right": 327.375,
+              "bottom": 280.140625,
+              "left": 246.3125
+            },
+            "size": "21.375px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "ዘር",
+            "current": null
+          },
+          {
+            "text": "እድገት",
+            "current": "step"
+          },
+          {
+            "text": "አንድነት",
+            "current": null
+          },
+          {
+            "text": "ቁርጠኝነት",
+            "current": null
+          },
+          {
+            "text": "ቃል ኪዳን",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "መጽሐፍ ቅዱስ ጥናት",
+            "lines": 3
+          },
+          {
+            "text": "የጥንዶች ማስታወሻ",
+            "lines": 2
+          },
+          {
+            "text": "የጸሎት ክትትል",
+            "lines": 2
+          },
+          {
+            "text": "ቀጠሮዎች እና ዕቅዶች",
+            "lines": 2
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 390,
+        "rootTextScale": 2,
+        "language": "am",
+        "theme": "dark",
+        "longNames": true,
+        "rootSize": "32px",
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 390,
+          "height": 1320.90625,
+          "top": 155,
+          "right": 390,
+          "bottom": 1475.90625,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 24,
+          "y": 1523.90625,
+          "width": 342,
+          "height": 2689.90625,
+          "top": 1523.90625,
+          "right": 366,
+          "bottom": 4213.8125,
+          "left": 24
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 32,
+              "y": 549.78125,
+              "width": 326,
+              "height": 335.9375,
+              "top": 549.78125,
+              "right": 358,
+              "bottom": 885.71875,
+              "left": 32
+            },
+            "size": "56px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 118,
+              "y": 219,
+              "width": 240,
+              "height": 208,
+              "top": 219,
+              "right": 358,
+              "bottom": 427,
+              "left": 118
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 32,
+              "y": 925.71875,
+              "width": 326,
+              "height": 454.1875,
+              "top": 925.71875,
+              "right": 358,
+              "bottom": 1379.90625,
+              "left": 32
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 165,
+              "y": 958.71875,
+              "width": 160,
+              "height": 155.1875,
+              "top": 958.71875,
+              "right": 325,
+              "bottom": 1113.90625,
+              "left": 165
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 109,
+              "y": 1163.5,
+              "width": 106.21875,
+              "height": 30.796875,
+              "top": 1163.5,
+              "right": 215.21875,
+              "bottom": 1194.296875,
+              "left": 109
+            },
+            "size": "28px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "ዘር",
+            "current": null
+          },
+          {
+            "text": "እድገት",
+            "current": "step"
+          },
+          {
+            "text": "አንድነት",
+            "current": null
+          },
+          {
+            "text": "ቁርጠኝነት",
+            "current": null
+          },
+          {
+            "text": "ቃል ኪዳን",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "መጽሐፍ ቅዱስ ጥናት",
+            "lines": 1
+          },
+          {
+            "text": "የጥንዶች ማስታወሻ",
+            "lines": 1
+          },
+          {
+            "text": "የጸሎት ክትትል",
+            "lines": 1
+          },
+          {
+            "text": "ቀጠሮዎች እና ዕቅዶች",
+            "lines": 1
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 320,
+        "rootTextScale": 1,
+        "language": "om",
+        "theme": "dark",
+        "longNames": false,
+        "rootSize": "16px",
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 320,
+          "height": 378.765625,
+          "top": 65,
+          "right": 320,
+          "bottom": 443.765625,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 12,
+          "y": 467.765625,
+          "width": 296,
+          "height": 919.53125,
+          "top": 467.765625,
+          "right": 308,
+          "bottom": 1387.296875,
+          "left": 12
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 24,
+              "y": 135.390625,
+              "width": 136,
+              "height": 67.1875,
+              "top": 135.390625,
+              "right": 160,
+              "bottom": 202.578125,
+              "left": 24
+            },
+            "size": "28px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 176,
+              "y": 97.78125,
+              "width": 120,
+              "height": 104,
+              "top": 97.78125,
+              "right": 296,
+              "bottom": 201.78125,
+              "left": 176
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 24,
+              "y": 222.578125,
+              "width": 272,
+              "height": 173.1875,
+              "top": 222.578125,
+              "right": 296,
+              "bottom": 395.765625,
+              "left": 24
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 91,
+              "y": 239.578125,
+              "width": 68.328125,
+              "height": 77.59375,
+              "top": 239.578125,
+              "right": 159.328125,
+              "bottom": 317.171875,
+              "left": 91
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 206.34375,
+              "y": 269.03125,
+              "width": 64.484375,
+              "height": 18.6875,
+              "top": 269.03125,
+              "right": 270.828125,
+              "bottom": 287.71875,
+              "left": 206.34375
+            },
+            "size": "17px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Sanyii",
+            "current": null
+          },
+          {
+            "text": "Guddina",
+            "current": "step"
+          },
+          {
+            "text": "Tokkummaa",
+            "current": null
+          },
+          {
+            "text": "Kutannoo",
+            "current": null
+          },
+          {
+            "text": "Kakuu",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Qoʼannoo Kitaaba Qulqulluu",
+            "lines": 2
+          },
+          {
+            "text": "Yaadannoo Hiriyootaa",
+            "lines": 2
+          },
+          {
+            "text": "Hordoffii Kadhannaa",
+            "lines": 2
+          },
+          {
+            "text": "Beellamaa fi Karoora",
+            "lines": 2
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 320,
+        "rootTextScale": 2,
+        "language": "om",
+        "theme": "dark",
+        "longNames": true,
+        "rootSize": "32px",
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 320,
+          "height": 1525.6875,
+          "top": 155,
+          "right": 320,
+          "bottom": 1680.6875,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 24,
+          "y": 1728.6875,
+          "width": 272,
+          "height": 3365.65625,
+          "top": 1728.6875,
+          "right": 296,
+          "bottom": 5094.34375,
+          "left": 24
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 32,
+              "y": 549.78125,
+              "width": 256,
+              "height": 403.125,
+              "top": 549.78125,
+              "right": 288,
+              "bottom": 952.90625,
+              "left": 32
+            },
+            "size": "56px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 48,
+              "y": 219,
+              "width": 240,
+              "height": 208,
+              "top": 219,
+              "right": 288,
+              "bottom": 427,
+              "left": 48
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 32,
+              "y": 992.90625,
+              "width": 256,
+              "height": 591.78125,
+              "top": 992.90625,
+              "right": 288,
+              "bottom": 1584.6875,
+              "left": 32
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 65,
+              "y": 1129.90625,
+              "width": 190,
+              "height": 121.59375,
+              "top": 1129.90625,
+              "right": 255,
+              "bottom": 1251.5,
+              "left": 65
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 109,
+              "y": 1301.09375,
+              "width": 106.21875,
+              "height": 30.796875,
+              "top": 1301.09375,
+              "right": 215.21875,
+              "bottom": 1331.890625,
+              "left": 109
+            },
+            "size": "28px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Sanyii",
+            "current": null
+          },
+          {
+            "text": "Guddina",
+            "current": "step"
+          },
+          {
+            "text": "Tokkummaa",
+            "current": null
+          },
+          {
+            "text": "Kutannoo",
+            "current": null
+          },
+          {
+            "text": "Kakuu",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Qoʼannoo Kitaaba Qulqulluu",
+            "lines": 3
+          },
+          {
+            "text": "Yaadannoo Hiriyootaa",
+            "lines": 2
+          },
+          {
+            "text": "Hordoffii Kadhannaa",
+            "lines": 2
+          },
+          {
+            "text": "Beellamaa fi Karoora",
+            "lines": 2
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 390,
+        "rootTextScale": 1,
+        "language": "om",
+        "theme": "dark",
+        "longNames": false,
+        "rootSize": "16px",
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 390,
+          "height": 350.796875,
+          "top": 65,
+          "right": 390,
+          "bottom": 415.796875,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 12,
+          "y": 439.796875,
+          "width": 366,
+          "height": 636.75,
+          "top": 439.796875,
+          "right": 378,
+          "bottom": 1076.546875,
+          "left": 12
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 24,
+              "y": 151.390625,
+              "width": 157.703125,
+              "height": 33.59375,
+              "top": 151.390625,
+              "right": 181.703125,
+              "bottom": 184.984375,
+              "left": 24
+            },
+            "size": "28px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 246,
+              "y": 97,
+              "width": 120,
+              "height": 104,
+              "top": 97,
+              "right": 366,
+              "bottom": 201,
+              "left": 246
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 24,
+              "y": 221,
+              "width": 342,
+              "height": 146.796875,
+              "top": 221,
+              "right": 366,
+              "bottom": 367.796875,
+              "left": 24
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 91,
+              "y": 238,
+              "width": 77.203125,
+              "height": 60.796875,
+              "top": 238,
+              "right": 168.203125,
+              "bottom": 298.796875,
+              "left": 91
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 246.3125,
+              "y": 256.640625,
+              "width": 81.0625,
+              "height": 23.5,
+              "top": 256.640625,
+              "right": 327.375,
+              "bottom": 280.140625,
+              "left": 246.3125
+            },
+            "size": "21.375px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Sanyii",
+            "current": null
+          },
+          {
+            "text": "Guddina",
+            "current": "step"
+          },
+          {
+            "text": "Tokkummaa",
+            "current": null
+          },
+          {
+            "text": "Kutannoo",
+            "current": null
+          },
+          {
+            "text": "Kakuu",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Qoʼannoo Kitaaba Qulqulluu",
+            "lines": 3
+          },
+          {
+            "text": "Yaadannoo Hiriyootaa",
+            "lines": 3
+          },
+          {
+            "text": "Hordoffii Kadhannaa",
+            "lines": 3
+          },
+          {
+            "text": "Beellamaa fi Karoora",
+            "lines": 2
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 390,
+        "rootTextScale": 2,
+        "language": "om",
+        "theme": "dark",
+        "longNames": true,
+        "rootSize": "32px",
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 390,
+          "height": 1327.3125,
+          "top": 155,
+          "right": 390,
+          "bottom": 1482.3125,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 24,
+          "y": 1530.3125,
+          "width": 342,
+          "height": 2911.84375,
+          "top": 1530.3125,
+          "right": 366,
+          "bottom": 4442.15625,
+          "left": 24
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 32,
+              "y": 549.78125,
+              "width": 326,
+              "height": 335.9375,
+              "top": 549.78125,
+              "right": 358,
+              "bottom": 885.71875,
+              "left": 32
+            },
+            "size": "56px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 118,
+              "y": 219,
+              "width": 240,
+              "height": 208,
+              "top": 219,
+              "right": 358,
+              "bottom": 427,
+              "left": 118
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 32,
+              "y": 925.71875,
+              "width": 326,
+              "height": 460.59375,
+              "top": 925.71875,
+              "right": 358,
+              "bottom": 1386.3125,
+              "left": 32
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 165,
+              "y": 958.71875,
+              "width": 154.390625,
+              "height": 121.59375,
+              "top": 958.71875,
+              "right": 319.390625,
+              "bottom": 1080.3125,
+              "left": 165
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 109,
+              "y": 1129.90625,
+              "width": 106.21875,
+              "height": 30.796875,
+              "top": 1129.90625,
+              "right": 215.21875,
+              "bottom": 1160.703125,
+              "left": 109
+            },
+            "size": "28px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Sanyii",
+            "current": null
+          },
+          {
+            "text": "Guddina",
+            "current": "step"
+          },
+          {
+            "text": "Tokkummaa",
+            "current": null
+          },
+          {
+            "text": "Kutannoo",
+            "current": null
+          },
+          {
+            "text": "Kakuu",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Qoʼannoo Kitaaba Qulqulluu",
+            "lines": 2
+          },
+          {
+            "text": "Yaadannoo Hiriyootaa",
+            "lines": 1
+          },
+          {
+            "text": "Hordoffii Kadhannaa",
+            "lines": 1
+          },
+          {
+            "text": "Beellamaa fi Karoora",
+            "lines": 1
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      }
+    ]
+  },
+  "alternateStates": {
+    "scope": "Missing location and unpaired at 390px English in both themes; both states at 320px Amharic with 200% text and long names. Final colors were checked separately after the action contrast fix.",
+    "count": 6,
+    "pageOverflow": 0,
+    "functionalOverflow": 0,
+    "offscreenText": 0,
+    "textBelow12px": 0,
+    "visibleMoodEmoji": 0,
+    "visibleStageDateCaptions": 0,
+    "unloadedImages": 0,
+    "actions": [
+      {
+        "check": "Share Location opens settings",
+        "theme": "light",
+        "dialog": true
+      },
+      {
+        "check": "Add Partner callback",
+        "theme": "light",
+        "action": {
+          "type": "tab",
+          "value": "profile"
+        }
+      },
+      {
+        "check": "Share Location opens settings",
+        "theme": "dark",
+        "dialog": true
+      },
+      {
+        "check": "Add Partner callback",
+        "theme": "dark",
+        "action": {
+          "type": "tab",
+          "value": "profile"
+        }
+      }
+    ],
+    "layouts": [
+      {
+        "width": 390,
+        "rootTextScale": 1,
+        "language": "en",
+        "theme": "light",
+        "longNames": false,
+        "scenario": "missing-location",
+        "rootSize": "16px",
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 390,
+          "height": 386.796875,
+          "top": 65,
+          "right": 390,
+          "bottom": 451.796875,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 12,
+          "y": 475.796875,
+          "width": 366,
+          "height": 557.5625,
+          "top": 475.796875,
+          "right": 378,
+          "bottom": 1033.359375,
+          "left": 12
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 24,
+              "y": 151.390625,
+              "width": 157.703125,
+              "height": 33.59375,
+              "top": 151.390625,
+              "right": 181.703125,
+              "bottom": 184.984375,
+              "left": 24
+            },
+            "size": "28px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 246,
+              "y": 97,
+              "width": 120,
+              "height": 104,
+              "top": 97,
+              "right": 366,
+              "bottom": 201,
+              "left": 246
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 24,
+              "y": 221,
+              "width": 342,
+              "height": 126.796875,
+              "top": 221,
+              "right": 366,
+              "bottom": 347.796875,
+              "left": 24
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 91,
+              "y": 238,
+              "width": 77.8125,
+              "height": 60.796875,
+              "top": 238,
+              "right": 168.8125,
+              "bottom": 298.796875,
+              "left": 91
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 246.3125,
+              "y": 256.640625,
+              "width": 81.0625,
+              "height": 23.5,
+              "top": 256.640625,
+              "right": 327.375,
+              "bottom": 280.140625,
+              "left": 246.3125
+            },
+            "size": "21.375px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 2
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 2
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 2
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 2
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 390,
+        "rootTextScale": 1,
+        "language": "en",
+        "theme": "light",
+        "longNames": false,
+        "scenario": "unpaired",
+        "rootSize": "16px",
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 390,
+          "height": 302,
+          "top": 65,
+          "right": 390,
+          "bottom": 367,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 12,
+          "y": 391,
+          "width": 366,
+          "height": 339.171875,
+          "top": 391,
+          "right": 378,
+          "bottom": 730.171875,
+          "left": 12
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 24,
+              "y": 151.390625,
+              "width": 201.765625,
+              "height": 33.59375,
+              "top": 151.390625,
+              "right": 225.765625,
+              "bottom": 184.984375,
+              "left": 24
+            },
+            "size": "28px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 246,
+              "y": 97,
+              "width": 120,
+              "height": 104,
+              "top": 97,
+              "right": 366,
+              "bottom": 201,
+              "left": 246
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-summary]"
+          },
+          {
+            "selector": "[data-relationship-counter]"
+          },
+          {
+            "selector": "[data-relationship-clock]"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 2
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 2
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 2
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 2
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 390,
+        "rootTextScale": 1,
+        "language": "en",
+        "theme": "dark",
+        "longNames": false,
+        "scenario": "missing-location",
+        "rootSize": "16px",
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 390,
+          "height": 386.796875,
+          "top": 65,
+          "right": 390,
+          "bottom": 451.796875,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 12,
+          "y": 475.796875,
+          "width": 366,
+          "height": 557.5625,
+          "top": 475.796875,
+          "right": 378,
+          "bottom": 1033.359375,
+          "left": 12
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 24,
+              "y": 151.390625,
+              "width": 157.703125,
+              "height": 33.59375,
+              "top": 151.390625,
+              "right": 181.703125,
+              "bottom": 184.984375,
+              "left": 24
+            },
+            "size": "28px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 246,
+              "y": 97,
+              "width": 120,
+              "height": 104,
+              "top": 97,
+              "right": 366,
+              "bottom": 201,
+              "left": 246
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 24,
+              "y": 221,
+              "width": 342,
+              "height": 126.796875,
+              "top": 221,
+              "right": 366,
+              "bottom": 347.796875,
+              "left": 24
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 91,
+              "y": 238,
+              "width": 77.8125,
+              "height": 60.796875,
+              "top": 238,
+              "right": 168.8125,
+              "bottom": 298.796875,
+              "left": 91
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 246.3125,
+              "y": 256.640625,
+              "width": 81.0625,
+              "height": 23.5,
+              "top": 256.640625,
+              "right": 327.375,
+              "bottom": 280.140625,
+              "left": 246.3125
+            },
+            "size": "21.375px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 2
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 2
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 2
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 2
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 390,
+        "rootTextScale": 1,
+        "language": "en",
+        "theme": "dark",
+        "longNames": false,
+        "scenario": "unpaired",
+        "rootSize": "16px",
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 390,
+          "height": 302,
+          "top": 65,
+          "right": 390,
+          "bottom": 367,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 12,
+          "y": 391,
+          "width": 366,
+          "height": 339.171875,
+          "top": 391,
+          "right": 378,
+          "bottom": 730.171875,
+          "left": 12
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 24,
+              "y": 151.390625,
+              "width": 201.765625,
+              "height": 33.59375,
+              "top": 151.390625,
+              "right": 225.765625,
+              "bottom": 184.984375,
+              "left": 24
+            },
+            "size": "28px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 246,
+              "y": 97,
+              "width": 120,
+              "height": 104,
+              "top": 97,
+              "right": 366,
+              "bottom": 201,
+              "left": 246
+            },
+            "size": "16px"
+          },
+          {
+            "selector": "[data-relationship-summary]"
+          },
+          {
+            "selector": "[data-relationship-counter]"
+          },
+          {
+            "selector": "[data-relationship-clock]"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [],
+        "featureTitleLines": [
+          {
+            "text": "Bible Study",
+            "lines": 2
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 2
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 2
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 2
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 320,
+        "rootTextScale": 2,
+        "language": "am",
+        "theme": "light",
+        "longNames": true,
+        "scenario": "missing-location",
+        "rootSize": "32px",
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 320,
+          "height": 1590.0625,
+          "top": 155,
+          "right": 320,
+          "bottom": 1745.0625,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 24,
+          "y": 1793.0625,
+          "width": 272,
+          "height": 2977.375,
+          "top": 1793.0625,
+          "right": 296,
+          "bottom": 4770.4375,
+          "left": 24
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 32,
+              "y": 549.78125,
+              "width": 256,
+              "height": 403.125,
+              "top": 549.78125,
+              "right": 288,
+              "bottom": 952.90625,
+              "left": 32
+            },
+            "size": "56px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 48,
+              "y": 219,
+              "width": 240,
+              "height": 208,
+              "top": 219,
+              "right": 288,
+              "bottom": 427,
+              "left": 48
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "bounds": {
+              "x": 32,
+              "y": 992.90625,
+              "width": 256,
+              "height": 510.1875,
+              "top": 992.90625,
+              "right": 288,
+              "bottom": 1503.09375,
+              "left": 32
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "bounds": {
+              "x": 65,
+              "y": 1129.90625,
+              "width": 190,
+              "height": 155.1875,
+              "top": 1129.90625,
+              "right": 255,
+              "bottom": 1285.09375,
+              "left": 65
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "bounds": {
+              "x": 109,
+              "y": 1334.6875,
+              "width": 106.21875,
+              "height": 30.796875,
+              "top": 1334.6875,
+              "right": 215.21875,
+              "bottom": 1365.484375,
+              "left": 109
+            },
+            "size": "28px"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "ዘር",
+            "current": null
+          },
+          {
+            "text": "እድገት",
+            "current": "step"
+          },
+          {
+            "text": "አንድነት",
+            "current": null
+          },
+          {
+            "text": "ቁርጠኝነት",
+            "current": null
+          },
+          {
+            "text": "ቃል ኪዳን",
+            "current": null
+          }
+        ],
+        "featureTitleLines": [
+          {
+            "text": "መጽሐፍ ቅዱስ ጥናት",
+            "lines": 2
+          },
+          {
+            "text": "የጥንዶች ማስታወሻ",
+            "lines": 2
+          },
+          {
+            "text": "የጸሎት ክትትል",
+            "lines": 1
+          },
+          {
+            "text": "ቀጠሮዎች እና ዕቅዶች",
+            "lines": 2
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      },
+      {
+        "width": 320,
+        "rootTextScale": 2,
+        "language": "am",
+        "theme": "light",
+        "longNames": true,
+        "scenario": "unpaired",
+        "rootSize": "32px",
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 320,
+          "height": 1029.5,
+          "top": 155,
+          "right": 320,
+          "bottom": 1184.5,
+          "left": 0
+        },
+        "referenceGroupBounds": {
+          "x": 24,
+          "y": 1232.5,
+          "width": 272,
+          "height": 1866.625,
+          "top": 1232.5,
+          "right": 296,
+          "bottom": 3099.125,
+          "left": 24
+        },
+        "heroParts": [
+          {
+            "selector": "[data-couple-name]",
+            "bounds": {
+              "x": 32,
+              "y": 549.78125,
+              "width": 256,
+              "height": 268.75,
+              "top": 549.78125,
+              "right": 288,
+              "bottom": 818.53125,
+              "left": 32
+            },
+            "size": "56px"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "bounds": {
+              "x": 48,
+              "y": 219,
+              "width": 240,
+              "height": 208,
+              "top": 219,
+              "right": 288,
+              "bottom": 427,
+              "left": 48
+            },
+            "size": "32px"
+          },
+          {
+            "selector": "[data-relationship-summary]"
+          },
+          {
+            "selector": "[data-relationship-counter]"
+          },
+          {
+            "selector": "[data-relationship-clock]"
+          }
+        ],
+        "backdropImages": [
+          {
+            "src": "http://127.0.0.1:5173/src/assets/couple-garden-reference.webp",
+            "loaded": true,
+            "naturalWidth": 1200,
+            "naturalHeight": 800
+          }
+        ],
+        "stageNames": [],
+        "featureTitleLines": [
+          {
+            "text": "መጽሐፍ ቅዱስ ጥናት",
+            "lines": 2
+          },
+          {
+            "text": "የጥንዶች ማስታወሻ",
+            "lines": 2
+          },
+          {
+            "text": "የጸሎት ክትትል",
+            "lines": 1
+          },
+          {
+            "text": "ቀጠሮዎች እና ዕቅዶች",
+            "lines": 2
+          }
+        ],
+        "checks": {
+          "count": 1,
+          "pageOverflow": 0,
+          "functionalOverflow": 0,
+          "offscreenText": 0,
+          "textBelow12px": 0,
+          "visibleMoodEmoji": 0,
+          "visibleStageDateCaptions": 0,
+          "unloadedImages": 0
+        }
+      }
+    ]
+  },
+  "tileTitleFit": {
+    "scope": "Additional 540/570px English normal-text check of the middle tiles before the final hero layout revision; middle geometry remained unchanged.",
+    "cases": [
+      {
+        "width": 540,
+        "titles": [
+          {
+            "text": "Bible Study",
+            "lines": 1
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 1
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 1
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 1
+          }
+        ]
+      },
+      {
+        "width": 570,
+        "titles": [
+          {
+            "text": "Bible Study",
+            "lines": 1
+          },
+          {
+            "text": "Couple Journal",
+            "lines": 1
+          },
+          {
+            "text": "Prayer Tracker",
+            "lines": 1
+          },
+          {
+            "text": "Dates & Plans",
+            "lines": 1
+          }
+        ]
+      }
+    ]
+  },
+  "finalSettingsChecks": [
+    {
+      "check": "final settings keyboard focus",
+      "focused": true,
+      "focusVisible": true,
+      "outline": "solid",
+      "width": "3px",
+      "color": "rgb(109, 53, 189)",
+      "offset": "3px",
+      "iconColor": "rgb(99, 65, 152)",
+      "background": "rgba(243, 232, 255, 0.76)"
+    },
+    {
+      "check": "settings language and unsaved input",
+      "lang": "am",
+      "title": "የቦታ ቅንብሮች",
+      "input": "Unsaved fixture city"
+    },
+    {
+      "check": "settings closes and focus returns",
+      "restored": true,
+      "active": "የአካባቢ ቅንብሮች",
+      "dialogClosed": true
+    }
+  ],
+  "finalActionColors": [
+    {
+      "check": "final missing-state action colors",
+      "theme": "light",
+      "unpaired": true,
+      "buttons": [
+        {
+          "text": "Add Partner",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(91, 99, 154)",
+          "size": "14px",
+          "contrastRatio": 5.68
+        }
+      ]
+    },
+    {
+      "check": "final missing-state action colors",
+      "theme": "light",
+      "missingLocation": true,
+      "buttons": [
+        {
+          "text": "Share your location",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(91, 99, 154)",
+          "size": "14px",
+          "contrastRatio": 5.68
+        }
+      ]
+    },
+    {
+      "check": "final missing-state action colors",
+      "theme": "dark",
+      "unpaired": true,
+      "buttons": [
+        {
+          "text": "Add Partner",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(37, 32, 57)",
+          "size": "14px",
+          "contrastRatio": 15.62
+        }
+      ]
+    },
+    {
+      "check": "final missing-state action colors",
+      "theme": "dark",
+      "missingLocation": true,
+      "buttons": [
+        {
+          "text": "Share your location",
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(37, 32, 57)",
+          "size": "14px",
+          "contrastRatio": 15.62
+        }
+      ]
+    }
+  ],
+  "accessibilityMedia": [
+    {
+      "check": "prefers-reduced-transparency",
+      "theme": "light",
+      "queryActive": true,
+      "hero": {
+        "class": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border tbo-glass couple-glass-hero relative overflow-hidden",
+        "background": "rgb(86, 97, 146)",
+        "paint": "none",
+        "backdrop": "none",
+        "color": "rgb(255, 255, 255)",
+        "transition": "0s",
+        "animation": "none"
+      },
+      "panel": {
+        "class": "relationship-summary-panel",
+        "background": "rgb(86, 97, 146)",
+        "paint": "none",
+        "backdrop": "none",
+        "color": "rgb(255, 255, 255)",
+        "transition": "0s",
+        "animation": "none"
+      }
+    },
+    {
+      "check": "forced-colors",
+      "theme": "light",
+      "queryActive": true,
+      "hero": {
+        "class": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border tbo-glass couple-glass-hero relative overflow-hidden",
+        "background": "rgba(255, 255, 255, 0)",
+        "paint": "none",
+        "backdrop": "none",
+        "color": "rgb(0, 0, 0)",
+        "transition": "0s",
+        "animation": "none"
+      },
+      "panel": {
+        "class": "relationship-summary-panel",
+        "background": "rgb(255, 255, 255)",
+        "paint": "none",
+        "backdrop": "none",
+        "color": "rgb(0, 0, 0)",
+        "transition": "0s",
+        "animation": "none"
+      }
+    },
+    {
+      "check": "prefers-reduced-motion",
+      "theme": "light",
+      "queryActive": true,
+      "hero": {
+        "class": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border tbo-glass couple-glass-hero relative overflow-hidden",
+        "background": "rgba(0, 0, 0, 0)",
+        "paint": "none",
+        "backdrop": "none",
+        "color": "rgb(255, 255, 255)",
+        "transition": "0s",
+        "animation": "none"
+      },
+      "panel": {
+        "class": "relationship-summary-panel",
+        "background": "rgba(0, 0, 0, 0)",
+        "paint": "linear-gradient(115deg, rgba(61, 70, 129, 0.64), rgba(101, 97, 155, 0.56))",
+        "backdrop": "blur(14px)",
+        "color": "rgb(255, 255, 255)",
+        "transition": "0s",
+        "animation": "none"
+      },
+      "allSelectedAnimationsStopped": true
+    },
+    {
+      "check": "prefers-reduced-transparency",
+      "theme": "dark",
+      "queryActive": true,
+      "hero": {
+        "class": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border tbo-glass couple-glass-hero relative overflow-hidden",
+        "background": "rgb(50, 41, 67)",
+        "paint": "none",
+        "backdrop": "none",
+        "color": "rgb(255, 255, 255)",
+        "transition": "0s",
+        "animation": "none"
+      },
+      "panel": {
+        "class": "relationship-summary-panel",
+        "background": "rgb(50, 41, 67)",
+        "paint": "none",
+        "backdrop": "none",
+        "color": "rgb(255, 255, 255)",
+        "transition": "0s",
+        "animation": "none"
+      }
+    },
+    {
+      "check": "forced-colors",
+      "theme": "dark",
+      "queryActive": true,
+      "hero": {
+        "class": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border tbo-glass couple-glass-hero relative overflow-hidden",
+        "background": "rgba(255, 255, 255, 0)",
+        "paint": "none",
+        "backdrop": "none",
+        "color": "rgb(0, 0, 0)",
+        "transition": "0s",
+        "animation": "none"
+      },
+      "panel": {
+        "class": "relationship-summary-panel",
+        "background": "rgb(255, 255, 255)",
+        "paint": "none",
+        "backdrop": "none",
+        "color": "rgb(0, 0, 0)",
+        "transition": "0s",
+        "animation": "none"
+      }
+    },
+    {
+      "check": "prefers-reduced-motion",
+      "theme": "dark",
+      "queryActive": true,
+      "hero": {
+        "class": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border tbo-glass couple-glass-hero relative overflow-hidden",
+        "background": "rgba(0, 0, 0, 0)",
+        "paint": "none",
+        "backdrop": "none",
+        "color": "rgb(255, 255, 255)",
+        "transition": "0s",
+        "animation": "none"
+      },
+      "panel": {
+        "class": "relationship-summary-panel",
+        "background": "rgba(20, 17, 45, 0.48)",
+        "paint": "none",
+        "backdrop": "blur(14px)",
+        "color": "rgb(255, 255, 255)",
+        "transition": "0s",
+        "animation": "none"
+      },
+      "allSelectedAnimationsStopped": true
+    }
+  ],
+  "visualObservations": [
+    "The garden and flowers are visible and the hero fades into the pastel page instead of ending with a hard card edge.",
+    "At the approved 676px/125% composition, the larger portrait cluster spans the heading and counter on the right and the hero left edge sits close to the growth card edge.",
+    "All four English tile titles are one line at 676px/125%. At 576px/125%, three titles wrap cleanly.",
+    "The reduced-transparency hero and counter panel compute opaque fills with no backdrop filter in both themes. Forced colors provides system foreground and panel colors. Reduced motion stops selected animations.",
+    "Settings focus outline and light action-label contrast issues were resolved and rechecked."
+  ],
+  "runtimeErrors": [],
+  "externalRequests": [],
+  "limitations": [
+    "Visual comparison establishes closer composition and material treatment, not pixel identity with the supplied image.",
+    "The active Growth orb decorative ring exceeds its own clientWidth; this is excluded from functional overflow totals.",
+    "Only Vite development HMR WebSocket warnings occurred; no application runtime errors.",
+    "Actual uploaded portraits, native mobile rendering, native browser zoom, live API content and native-speaker translation review were not exercised. The fixture intentionally uses initials."
+  ],
+  "artifacts": {
+    "glass-dashboard-reference.png": "docs/glass-dashboard-reference.png",
+    "glass-dashboard-reference-dark.png": "docs/glass-dashboard-reference-dark.png",
+    "couple-hero-reference.png": "docs/couple-hero-reference.png",
+    "couple-hero-reference-dark.png": "docs/couple-hero-reference-dark.png"
+  },
+  "temporaryReports": {
+    "preview": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pastel-reference\\preview-report.json",
+    "targetdark": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pastel-reference\\targetdark-report.json",
+    "matrix": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pastel-reference\\matrix-report.json",
+    "states": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pastel-reference\\states-report.json",
+    "interaction": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pastel-reference\\interaction-report.json",
+    "focus": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pastel-reference\\focus-report.json",
+    "contrast": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pastel-reference\\contrast-report.json",
+    "final": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pastel-reference\\final-report.json",
+    "tilefit": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pastel-reference\\tilefit-report.json"
+  }
+}

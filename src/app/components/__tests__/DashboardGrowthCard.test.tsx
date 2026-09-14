@@ -33,7 +33,7 @@ describe('dashboard growth milestones', () => {
     expect(screen.getByText('77 days left')).toBeVisible();
     expect(currentMilestone()).toHaveLength(1);
     expect(currentMilestone()[0]).toHaveTextContent('Growth');
-    expect(currentMilestone()[0]).toHaveTextContent('(90–179 days)');
+    expect(within(milestoneList).queryByText(/days/)).not.toBeInTheDocument();
     for (const name of ['Seed', 'Growth', 'Unity', 'Commitment', 'Covenant']) {
       expect(within(milestoneList).getByText(name)).toBeVisible();
     }
@@ -62,7 +62,7 @@ describe('dashboard growth milestones', () => {
     render(<DashboardGrowthCard startDate={ago(400 * DAY)} />, { wrapper: LanguageProvider });
     expect(screen.getByRole('progressbar', { name: 'Covenant Stage' })).toHaveAttribute('aria-valuetext', '100% complete');
     expect(screen.getByText('Covenant').closest('li')).toHaveAttribute('aria-current', 'step');
-    expect(screen.getByText('(360+ days)')).toBeVisible();
+    expect(screen.queryByText(/\(360\+ days\)/)).not.toBeInTheDocument();
     expect(screen.queryByText(/days left/)).not.toBeInTheDocument();
   });
 });

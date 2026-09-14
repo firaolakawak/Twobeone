@@ -1,0 +1,1827 @@
+{
+  "scope": "Couple hero reference layout and removal of stage date-range captions; subsequent to the middle-section verification.",
+  "browser": "Edg/153.0.4234.32",
+  "checkedAt": "2026-09-14T17:01:05.457Z",
+  "fixture": "Actual CoupleDashboard, LanguageProvider, shared header controls and BottomNavigation mounted with local populated data:103 days, manual distance and initials fallback avatars. External requests were mocked or blocked.",
+  "target": {
+    "scope": "676px reference,390px phone,1280px desktop;English;light/dark;normal text. Refreshed after final red clock color correction.",
+    "count": 6,
+    "pageOverflow": 0,
+    "functionalOverflow": 0,
+    "outside": 0,
+    "smallText": 0,
+    "visibleMoodEmoji": 0,
+    "visibleDateCaptions": 0,
+    "runtimeErrors": [],
+    "externalRequests": 0,
+    "layouts": [
+      {
+        "width": 676,
+        "theme": "light",
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 676,
+          "height": 307,
+          "top": 65,
+          "right": 676,
+          "bottom": 372,
+          "left": 0
+        },
+        "parts": [
+          {
+            "selector": "[data-couple-name]",
+            "tag": "H2",
+            "class": "tbo-page-title min-w-0 break-words text-foreground",
+            "text": "Firaol & Keti",
+            "clientWidth": 180,
+            "scrollWidth": 180,
+            "bounds": {
+              "x": 50,
+              "y": 153.796875,
+              "width": 180.234375,
+              "height": 38.390625,
+              "top": 153.796875,
+              "right": 230.234375,
+              "bottom": 192.1875,
+              "left": 50
+            },
+            "size": "32px",
+            "weight": "700",
+            "color": "rgb(41, 32, 68)"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "tag": "DIV",
+            "class": "relative ml-auto h-24 w-28 shrink-0 sm:h-32 sm:w-40",
+            "text": "FA\nKA",
+            "clientWidth": 140,
+            "scrollWidth": 140,
+            "bounds": {
+              "x": 486,
+              "y": 113,
+              "width": 140,
+              "height": 120,
+              "top": 113,
+              "right": 626,
+              "bottom": 233,
+              "left": 486
+            },
+            "size": "16px",
+            "weight": "400",
+            "color": "rgb(41, 32, 68)"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "tag": "DIV",
+            "class": "relationship-summary text-left",
+            "text": "103\nDays Together\n16:10:00\n\n2386 km apart\n\nGrowing together in faith",
+            "clientWidth": 576,
+            "scrollWidth": 576,
+            "bounds": {
+              "x": 50,
+              "y": 253,
+              "width": 576,
+              "height": 86,
+              "top": 253,
+              "right": 626,
+              "bottom": 339,
+              "left": 50
+            },
+            "size": "16px",
+            "weight": "400",
+            "color": "rgb(41, 32, 68)"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "tag": "P",
+            "class": "relationship-summary-counter text-foreground",
+            "text": "103\nDays Together\n16:10:00",
+            "clientWidth": 526,
+            "scrollWidth": 526,
+            "bounds": {
+              "x": 100,
+              "y": 253,
+              "width": 526,
+              "height": 44,
+              "top": 253,
+              "right": 626,
+              "bottom": 297,
+              "left": 100
+            },
+            "size": "16px",
+            "weight": "400",
+            "color": "rgb(41, 32, 68)"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "tag": "SPAN",
+            "class": "relationship-summary-clock",
+            "text": "16:10:00",
+            "clientWidth": 76,
+            "scrollWidth": 76,
+            "bounds": {
+              "x": 182.640625,
+              "y": 275,
+              "width": 75.5,
+              "height": 16,
+              "top": 275,
+              "right": 258.140625,
+              "bottom": 291,
+              "left": 182.640625
+            },
+            "size": "14px",
+            "weight": "700",
+            "color": "rgb(201, 0, 64)"
+          }
+        ],
+        "settings": [
+          {
+            "label": "Location settings",
+            "tag": "BUTTON",
+            "class": "couple-hero-settings absolute z-30 flex h-11 w-11 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500",
+            "text": "",
+            "clientWidth": 44,
+            "scrollWidth": 44,
+            "bounds": {
+              "x": 586,
+              "y": 97,
+              "width": 44,
+              "height": 44,
+              "top": 97,
+              "right": 630,
+              "bottom": 141,
+              "left": 586
+            },
+            "size": "14px",
+            "weight": "600",
+            "color": "rgb(101, 88, 119)"
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "theme": "light",
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 390,
+          "height": 287,
+          "top": 65,
+          "right": 390,
+          "bottom": 352,
+          "left": 0
+        },
+        "parts": [
+          {
+            "selector": "[data-couple-name]",
+            "tag": "H2",
+            "class": "tbo-page-title min-w-0 break-words text-foreground",
+            "text": "Firaol & Keti",
+            "clientWidth": 158,
+            "scrollWidth": 158,
+            "bounds": {
+              "x": 24,
+              "y": 148.203125,
+              "width": 157.703125,
+              "height": 33.59375,
+              "top": 148.203125,
+              "right": 181.703125,
+              "bottom": 181.796875,
+              "left": 24
+            },
+            "size": "28px",
+            "weight": "700",
+            "color": "rgb(41, 32, 68)"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "tag": "DIV",
+            "class": "relative ml-auto h-24 w-28 shrink-0 sm:h-32 sm:w-40",
+            "text": "FA\nKA",
+            "clientWidth": 120,
+            "scrollWidth": 120,
+            "bounds": {
+              "x": 246,
+              "y": 113,
+              "width": 120,
+              "height": 104,
+              "top": 113,
+              "right": 366,
+              "bottom": 217,
+              "left": 246
+            },
+            "size": "16px",
+            "weight": "400",
+            "color": "rgb(41, 32, 68)"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "tag": "DIV",
+            "class": "relationship-summary text-left",
+            "text": "103\nDays Together\n16:10:01\n\n2386 km apart\n\nGrowing together in faith",
+            "clientWidth": 342,
+            "scrollWidth": 342,
+            "bounds": {
+              "x": 24,
+              "y": 237,
+              "width": 342,
+              "height": 82,
+              "top": 237,
+              "right": 366,
+              "bottom": 319,
+              "left": 24
+            },
+            "size": "16px",
+            "weight": "400",
+            "color": "rgb(41, 32, 68)"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "tag": "P",
+            "class": "relationship-summary-counter text-foreground",
+            "text": "103\nDays Together\n16:10:01",
+            "clientWidth": 292,
+            "scrollWidth": 292,
+            "bounds": {
+              "x": 74,
+              "y": 237,
+              "width": 292,
+              "height": 40,
+              "top": 237,
+              "right": 366,
+              "bottom": 277,
+              "left": 74
+            },
+            "size": "16px",
+            "weight": "400",
+            "color": "rgb(41, 32, 68)"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "tag": "SPAN",
+            "class": "relationship-summary-clock",
+            "text": "16:10:01",
+            "clientWidth": 76,
+            "scrollWidth": 76,
+            "bounds": {
+              "x": 150.03125,
+              "y": 257,
+              "width": 75.5,
+              "height": 16,
+              "top": 257,
+              "right": 225.53125,
+              "bottom": 273,
+              "left": 150.03125
+            },
+            "size": "14px",
+            "weight": "700",
+            "color": "rgb(201, 0, 64)"
+          }
+        ],
+        "settings": [
+          {
+            "label": "Location settings",
+            "tag": "BUTTON",
+            "class": "couple-hero-settings absolute z-30 flex h-11 w-11 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500",
+            "text": "",
+            "clientWidth": 44,
+            "scrollWidth": 44,
+            "bounds": {
+              "x": 326,
+              "y": 97,
+              "width": 44,
+              "height": 44,
+              "top": 97,
+              "right": 370,
+              "bottom": 141,
+              "left": 326
+            },
+            "size": "14px",
+            "weight": "600",
+            "color": "rgb(101, 88, 119)"
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ]
+      },
+      {
+        "width": 1280,
+        "theme": "light",
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 1280,
+          "height": 307,
+          "top": 65,
+          "right": 1280,
+          "bottom": 372,
+          "left": 0
+        },
+        "parts": [
+          {
+            "selector": "[data-couple-name]",
+            "tag": "H2",
+            "class": "tbo-page-title min-w-0 break-words text-foreground",
+            "text": "Firaol & Keti",
+            "clientWidth": 180,
+            "scrollWidth": 180,
+            "bounds": {
+              "x": 352,
+              "y": 153.796875,
+              "width": 180.234375,
+              "height": 38.390625,
+              "top": 153.796875,
+              "right": 532.234375,
+              "bottom": 192.1875,
+              "left": 352
+            },
+            "size": "32px",
+            "weight": "700",
+            "color": "rgb(41, 32, 68)"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "tag": "DIV",
+            "class": "relative ml-auto h-24 w-28 shrink-0 sm:h-32 sm:w-40",
+            "text": "FA\nKA",
+            "clientWidth": 140,
+            "scrollWidth": 140,
+            "bounds": {
+              "x": 788,
+              "y": 113,
+              "width": 140,
+              "height": 120,
+              "top": 113,
+              "right": 928,
+              "bottom": 233,
+              "left": 788
+            },
+            "size": "16px",
+            "weight": "400",
+            "color": "rgb(41, 32, 68)"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "tag": "DIV",
+            "class": "relationship-summary text-left",
+            "text": "103\nDays Together\n16:10:01\n\n2386 km apart\n\nGrowing together in faith",
+            "clientWidth": 576,
+            "scrollWidth": 576,
+            "bounds": {
+              "x": 352,
+              "y": 253,
+              "width": 576,
+              "height": 86,
+              "top": 253,
+              "right": 928,
+              "bottom": 339,
+              "left": 352
+            },
+            "size": "16px",
+            "weight": "400",
+            "color": "rgb(41, 32, 68)"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "tag": "P",
+            "class": "relationship-summary-counter text-foreground",
+            "text": "103\nDays Together\n16:10:01",
+            "clientWidth": 526,
+            "scrollWidth": 526,
+            "bounds": {
+              "x": 402,
+              "y": 253,
+              "width": 526,
+              "height": 44,
+              "top": 253,
+              "right": 928,
+              "bottom": 297,
+              "left": 402
+            },
+            "size": "16px",
+            "weight": "400",
+            "color": "rgb(41, 32, 68)"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "tag": "SPAN",
+            "class": "relationship-summary-clock",
+            "text": "16:10:01",
+            "clientWidth": 76,
+            "scrollWidth": 76,
+            "bounds": {
+              "x": 484.640625,
+              "y": 275,
+              "width": 75.5,
+              "height": 16,
+              "top": 275,
+              "right": 560.140625,
+              "bottom": 291,
+              "left": 484.640625
+            },
+            "size": "14px",
+            "weight": "700",
+            "color": "rgb(201, 0, 64)"
+          }
+        ],
+        "settings": [
+          {
+            "label": "Location settings",
+            "tag": "BUTTON",
+            "class": "couple-hero-settings absolute z-30 flex h-11 w-11 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500",
+            "text": "",
+            "clientWidth": 44,
+            "scrollWidth": 44,
+            "bounds": {
+              "x": 888,
+              "y": 97,
+              "width": 44,
+              "height": 44,
+              "top": 97,
+              "right": 932,
+              "bottom": 141,
+              "left": 888
+            },
+            "size": "14px",
+            "weight": "600",
+            "color": "rgb(101, 88, 119)"
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ]
+      },
+      {
+        "width": 676,
+        "theme": "dark",
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 676,
+          "height": 307,
+          "top": 65,
+          "right": 676,
+          "bottom": 372,
+          "left": 0
+        },
+        "parts": [
+          {
+            "selector": "[data-couple-name]",
+            "tag": "H2",
+            "class": "tbo-page-title min-w-0 break-words text-foreground",
+            "text": "Firaol & Keti",
+            "clientWidth": 180,
+            "scrollWidth": 180,
+            "bounds": {
+              "x": 50,
+              "y": 153.796875,
+              "width": 180.234375,
+              "height": 38.390625,
+              "top": 153.796875,
+              "right": 230.234375,
+              "bottom": 192.1875,
+              "left": 50
+            },
+            "size": "32px",
+            "weight": "700",
+            "color": "rgb(245, 239, 255)"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "tag": "DIV",
+            "class": "relative ml-auto h-24 w-28 shrink-0 sm:h-32 sm:w-40",
+            "text": "FA\nKA",
+            "clientWidth": 140,
+            "scrollWidth": 140,
+            "bounds": {
+              "x": 486,
+              "y": 113,
+              "width": 140,
+              "height": 120,
+              "top": 113,
+              "right": 626,
+              "bottom": 233,
+              "left": 486
+            },
+            "size": "16px",
+            "weight": "400",
+            "color": "rgb(245, 239, 255)"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "tag": "DIV",
+            "class": "relationship-summary text-left",
+            "text": "103\nDays Together\n16:10:02\n\n2386 km apart\n\nGrowing together in faith",
+            "clientWidth": 576,
+            "scrollWidth": 576,
+            "bounds": {
+              "x": 50,
+              "y": 253,
+              "width": 576,
+              "height": 86,
+              "top": 253,
+              "right": 626,
+              "bottom": 339,
+              "left": 50
+            },
+            "size": "16px",
+            "weight": "400",
+            "color": "rgb(245, 239, 255)"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "tag": "P",
+            "class": "relationship-summary-counter text-foreground",
+            "text": "103\nDays Together\n16:10:02",
+            "clientWidth": 526,
+            "scrollWidth": 526,
+            "bounds": {
+              "x": 100,
+              "y": 253,
+              "width": 526,
+              "height": 44,
+              "top": 253,
+              "right": 626,
+              "bottom": 297,
+              "left": 100
+            },
+            "size": "16px",
+            "weight": "400",
+            "color": "rgb(245, 239, 255)"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "tag": "SPAN",
+            "class": "relationship-summary-clock",
+            "text": "16:10:02",
+            "clientWidth": 76,
+            "scrollWidth": 76,
+            "bounds": {
+              "x": 182.640625,
+              "y": 275,
+              "width": 75.5,
+              "height": 16,
+              "top": 275,
+              "right": 258.140625,
+              "bottom": 291,
+              "left": 182.640625
+            },
+            "size": "14px",
+            "weight": "700",
+            "color": "rgb(255, 142, 179)"
+          }
+        ],
+        "settings": [
+          {
+            "label": "Location settings",
+            "tag": "BUTTON",
+            "class": "couple-hero-settings absolute z-30 flex h-11 w-11 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500",
+            "text": "",
+            "clientWidth": 44,
+            "scrollWidth": 44,
+            "bounds": {
+              "x": 586,
+              "y": 97,
+              "width": 44,
+              "height": 44,
+              "top": 97,
+              "right": 630,
+              "bottom": 141,
+              "left": 586
+            },
+            "size": "14px",
+            "weight": "600",
+            "color": "rgb(197, 184, 214)"
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "theme": "dark",
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 390,
+          "height": 287,
+          "top": 65,
+          "right": 390,
+          "bottom": 352,
+          "left": 0
+        },
+        "parts": [
+          {
+            "selector": "[data-couple-name]",
+            "tag": "H2",
+            "class": "tbo-page-title min-w-0 break-words text-foreground",
+            "text": "Firaol & Keti",
+            "clientWidth": 158,
+            "scrollWidth": 158,
+            "bounds": {
+              "x": 24,
+              "y": 148.203125,
+              "width": 157.703125,
+              "height": 33.59375,
+              "top": 148.203125,
+              "right": 181.703125,
+              "bottom": 181.796875,
+              "left": 24
+            },
+            "size": "28px",
+            "weight": "700",
+            "color": "rgb(245, 239, 255)"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "tag": "DIV",
+            "class": "relative ml-auto h-24 w-28 shrink-0 sm:h-32 sm:w-40",
+            "text": "FA\nKA",
+            "clientWidth": 120,
+            "scrollWidth": 120,
+            "bounds": {
+              "x": 246,
+              "y": 113,
+              "width": 120,
+              "height": 104,
+              "top": 113,
+              "right": 366,
+              "bottom": 217,
+              "left": 246
+            },
+            "size": "16px",
+            "weight": "400",
+            "color": "rgb(245, 239, 255)"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "tag": "DIV",
+            "class": "relationship-summary text-left",
+            "text": "103\nDays Together\n16:10:02\n\n2386 km apart\n\nGrowing together in faith",
+            "clientWidth": 342,
+            "scrollWidth": 342,
+            "bounds": {
+              "x": 24,
+              "y": 237,
+              "width": 342,
+              "height": 82,
+              "top": 237,
+              "right": 366,
+              "bottom": 319,
+              "left": 24
+            },
+            "size": "16px",
+            "weight": "400",
+            "color": "rgb(245, 239, 255)"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "tag": "P",
+            "class": "relationship-summary-counter text-foreground",
+            "text": "103\nDays Together\n16:10:02",
+            "clientWidth": 292,
+            "scrollWidth": 292,
+            "bounds": {
+              "x": 74,
+              "y": 237,
+              "width": 292,
+              "height": 40,
+              "top": 237,
+              "right": 366,
+              "bottom": 277,
+              "left": 74
+            },
+            "size": "16px",
+            "weight": "400",
+            "color": "rgb(245, 239, 255)"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "tag": "SPAN",
+            "class": "relationship-summary-clock",
+            "text": "16:10:02",
+            "clientWidth": 76,
+            "scrollWidth": 76,
+            "bounds": {
+              "x": 150.03125,
+              "y": 257,
+              "width": 75.5,
+              "height": 16,
+              "top": 257,
+              "right": 225.53125,
+              "bottom": 273,
+              "left": 150.03125
+            },
+            "size": "14px",
+            "weight": "700",
+            "color": "rgb(255, 142, 179)"
+          }
+        ],
+        "settings": [
+          {
+            "label": "Location settings",
+            "tag": "BUTTON",
+            "class": "couple-hero-settings absolute z-30 flex h-11 w-11 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500",
+            "text": "",
+            "clientWidth": 44,
+            "scrollWidth": 44,
+            "bounds": {
+              "x": 326,
+              "y": 97,
+              "width": 44,
+              "height": 44,
+              "top": 97,
+              "right": 370,
+              "bottom": 141,
+              "left": 326
+            },
+            "size": "14px",
+            "weight": "600",
+            "color": "rgb(197, 184, 214)"
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ]
+      },
+      {
+        "width": 1280,
+        "theme": "dark",
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 1280,
+          "height": 307,
+          "top": 65,
+          "right": 1280,
+          "bottom": 372,
+          "left": 0
+        },
+        "parts": [
+          {
+            "selector": "[data-couple-name]",
+            "tag": "H2",
+            "class": "tbo-page-title min-w-0 break-words text-foreground",
+            "text": "Firaol & Keti",
+            "clientWidth": 180,
+            "scrollWidth": 180,
+            "bounds": {
+              "x": 352,
+              "y": 153.796875,
+              "width": 180.234375,
+              "height": 38.390625,
+              "top": 153.796875,
+              "right": 532.234375,
+              "bottom": 192.1875,
+              "left": 352
+            },
+            "size": "32px",
+            "weight": "700",
+            "color": "rgb(245, 239, 255)"
+          },
+          {
+            "selector": "[data-couple-avatars]",
+            "tag": "DIV",
+            "class": "relative ml-auto h-24 w-28 shrink-0 sm:h-32 sm:w-40",
+            "text": "FA\nKA",
+            "clientWidth": 140,
+            "scrollWidth": 140,
+            "bounds": {
+              "x": 788,
+              "y": 113,
+              "width": 140,
+              "height": 120,
+              "top": 113,
+              "right": 928,
+              "bottom": 233,
+              "left": 788
+            },
+            "size": "16px",
+            "weight": "400",
+            "color": "rgb(245, 239, 255)"
+          },
+          {
+            "selector": "[data-relationship-summary]",
+            "tag": "DIV",
+            "class": "relationship-summary text-left",
+            "text": "103\nDays Together\n16:10:03\n\n2386 km apart\n\nGrowing together in faith",
+            "clientWidth": 576,
+            "scrollWidth": 576,
+            "bounds": {
+              "x": 352,
+              "y": 253,
+              "width": 576,
+              "height": 86,
+              "top": 253,
+              "right": 928,
+              "bottom": 339,
+              "left": 352
+            },
+            "size": "16px",
+            "weight": "400",
+            "color": "rgb(245, 239, 255)"
+          },
+          {
+            "selector": "[data-relationship-counter]",
+            "tag": "P",
+            "class": "relationship-summary-counter text-foreground",
+            "text": "103\nDays Together\n16:10:03",
+            "clientWidth": 526,
+            "scrollWidth": 526,
+            "bounds": {
+              "x": 402,
+              "y": 253,
+              "width": 526,
+              "height": 44,
+              "top": 253,
+              "right": 928,
+              "bottom": 297,
+              "left": 402
+            },
+            "size": "16px",
+            "weight": "400",
+            "color": "rgb(245, 239, 255)"
+          },
+          {
+            "selector": "[data-relationship-clock]",
+            "tag": "SPAN",
+            "class": "relationship-summary-clock",
+            "text": "16:10:03",
+            "clientWidth": 76,
+            "scrollWidth": 76,
+            "bounds": {
+              "x": 484.640625,
+              "y": 275,
+              "width": 75.5,
+              "height": 16,
+              "top": 275,
+              "right": 560.140625,
+              "bottom": 291,
+              "left": 484.640625
+            },
+            "size": "14px",
+            "weight": "700",
+            "color": "rgb(255, 142, 179)"
+          }
+        ],
+        "settings": [
+          {
+            "label": "Location settings",
+            "tag": "BUTTON",
+            "class": "couple-hero-settings absolute z-30 flex h-11 w-11 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500",
+            "text": "",
+            "clientWidth": 44,
+            "scrollWidth": 44,
+            "bounds": {
+              "x": 888,
+              "y": 97,
+              "width": 44,
+              "height": 44,
+              "top": 97,
+              "right": 932,
+              "bottom": 141,
+              "left": 888
+            },
+            "size": "14px",
+            "weight": "600",
+            "color": "rgb(197, 184, 214)"
+          }
+        ],
+        "stageNames": [
+          {
+            "text": "Seed",
+            "current": null
+          },
+          {
+            "text": "Growth",
+            "current": "step"
+          },
+          {
+            "text": "Unity",
+            "current": null
+          },
+          {
+            "text": "Commitment",
+            "current": null
+          },
+          {
+            "text": "Covenant",
+            "current": null
+          }
+        ]
+      }
+    ]
+  },
+  "narrowMatrix": {
+    "scope": "320/390px; English, Amharic and Afaan Oromo; light/dark;100%/200% root text. Enlarged cases include long names. Geometry was unchanged by the final clock color adjustment.",
+    "count": 24,
+    "pageOverflow": 0,
+    "functionalOverflow": 0,
+    "outside": 0,
+    "smallText": 0,
+    "visibleMoodEmoji": 0,
+    "visibleDateCaptions": 0,
+    "runtimeErrors": [],
+    "externalRequests": 0,
+    "layouts": [
+      {
+        "width": 320,
+        "theme": "light",
+        "lang": "en",
+        "scale": 1,
+        "long": false,
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 320,
+          "height": 287,
+          "top": 65,
+          "right": 320,
+          "bottom": 352,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 320,
+        "theme": "light",
+        "lang": "en",
+        "scale": 2,
+        "long": true,
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 320,
+          "height": 1220.125,
+          "top": 155,
+          "right": 320,
+          "bottom": 1375.125,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 390,
+        "theme": "light",
+        "lang": "en",
+        "scale": 1,
+        "long": false,
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 390,
+          "height": 287,
+          "top": 65,
+          "right": 390,
+          "bottom": 352,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 390,
+        "theme": "light",
+        "lang": "en",
+        "scale": 2,
+        "long": true,
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 390,
+          "height": 1080.9375,
+          "top": 155,
+          "right": 390,
+          "bottom": 1235.9375,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 320,
+        "theme": "light",
+        "lang": "am",
+        "scale": 1,
+        "long": false,
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 320,
+          "height": 287,
+          "top": 65,
+          "right": 320,
+          "bottom": 352,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 320,
+        "theme": "light",
+        "lang": "am",
+        "scale": 2,
+        "long": true,
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 320,
+          "height": 1252.125,
+          "top": 155,
+          "right": 320,
+          "bottom": 1407.125,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 390,
+        "theme": "light",
+        "lang": "am",
+        "scale": 1,
+        "long": false,
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 390,
+          "height": 287,
+          "top": 65,
+          "right": 390,
+          "bottom": 352,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 390,
+        "theme": "light",
+        "lang": "am",
+        "scale": 2,
+        "long": true,
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 390,
+          "height": 1080.9375,
+          "top": 155,
+          "right": 390,
+          "bottom": 1235.9375,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 320,
+        "theme": "light",
+        "lang": "om",
+        "scale": 1,
+        "long": false,
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 320,
+          "height": 287,
+          "top": 65,
+          "right": 320,
+          "bottom": 352,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 320,
+        "theme": "light",
+        "lang": "om",
+        "scale": 2,
+        "long": true,
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 320,
+          "height": 1260.125,
+          "top": 155,
+          "right": 320,
+          "bottom": 1415.125,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 390,
+        "theme": "light",
+        "lang": "om",
+        "scale": 1,
+        "long": false,
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 390,
+          "height": 287,
+          "top": 65,
+          "right": 390,
+          "bottom": 352,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 390,
+        "theme": "light",
+        "lang": "om",
+        "scale": 2,
+        "long": true,
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 390,
+          "height": 1112.9375,
+          "top": 155,
+          "right": 390,
+          "bottom": 1267.9375,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 320,
+        "theme": "dark",
+        "lang": "en",
+        "scale": 1,
+        "long": false,
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 320,
+          "height": 287,
+          "top": 65,
+          "right": 320,
+          "bottom": 352,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 320,
+        "theme": "dark",
+        "lang": "en",
+        "scale": 2,
+        "long": true,
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 320,
+          "height": 1220.125,
+          "top": 155,
+          "right": 320,
+          "bottom": 1375.125,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 390,
+        "theme": "dark",
+        "lang": "en",
+        "scale": 1,
+        "long": false,
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 390,
+          "height": 287,
+          "top": 65,
+          "right": 390,
+          "bottom": 352,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 390,
+        "theme": "dark",
+        "lang": "en",
+        "scale": 2,
+        "long": true,
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 390,
+          "height": 1080.9375,
+          "top": 155,
+          "right": 390,
+          "bottom": 1235.9375,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 320,
+        "theme": "dark",
+        "lang": "am",
+        "scale": 1,
+        "long": false,
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 320,
+          "height": 287,
+          "top": 65,
+          "right": 320,
+          "bottom": 352,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 320,
+        "theme": "dark",
+        "lang": "am",
+        "scale": 2,
+        "long": true,
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 320,
+          "height": 1252.125,
+          "top": 155,
+          "right": 320,
+          "bottom": 1407.125,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 390,
+        "theme": "dark",
+        "lang": "am",
+        "scale": 1,
+        "long": false,
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 390,
+          "height": 287,
+          "top": 65,
+          "right": 390,
+          "bottom": 352,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 390,
+        "theme": "dark",
+        "lang": "am",
+        "scale": 2,
+        "long": true,
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 390,
+          "height": 1080.9375,
+          "top": 155,
+          "right": 390,
+          "bottom": 1235.9375,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 320,
+        "theme": "dark",
+        "lang": "om",
+        "scale": 1,
+        "long": false,
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 320,
+          "height": 287,
+          "top": 65,
+          "right": 320,
+          "bottom": 352,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 320,
+        "theme": "dark",
+        "lang": "om",
+        "scale": 2,
+        "long": true,
+        "pageWidth": 320,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 320,
+          "height": 1260.125,
+          "top": 155,
+          "right": 320,
+          "bottom": 1415.125,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 390,
+        "theme": "dark",
+        "lang": "om",
+        "scale": 1,
+        "long": false,
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 65,
+          "width": 390,
+          "height": 287,
+          "top": 65,
+          "right": 390,
+          "bottom": 352,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      },
+      {
+        "width": 390,
+        "theme": "dark",
+        "lang": "om",
+        "scale": 2,
+        "long": true,
+        "pageWidth": 390,
+        "heroBounds": {
+          "x": 0,
+          "y": 155,
+          "width": 390,
+          "height": 1112.9375,
+          "top": 155,
+          "right": 390,
+          "bottom": 1267.9375,
+          "left": 0
+        },
+        "moodEmojiCount": 0,
+        "dayRangeCount": 0,
+        "functionalOverflow": [],
+        "outside": [],
+        "smallText": []
+      }
+    ]
+  },
+  "interactionChecks": [
+    {
+      "check": "settings keyboard focus",
+      "focused": true,
+      "outline": "none",
+      "outlineWidth": "1px",
+      "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, oklch(0.645 0.246 16.439) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+      "label": "Location settings"
+    },
+    {
+      "check": "settings language and unsaved input",
+      "lang": "am",
+      "title": "የቦታ ቅንብሮች",
+      "input": "Unsaved fixture city"
+    },
+    {
+      "check": "settings closes and focus returns",
+      "restored": true,
+      "active": "የአካባቢ ቅንብሮች",
+      "dialogClosed": true
+    },
+    {
+      "check": "prefers-reduced-transparency",
+      "theme": "light",
+      "active": true,
+      "surfaces": [
+        {
+          "class": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border tbo-glass couple-glass-hero relative overflow-hidden",
+          "background": "rgb(240, 231, 250)",
+          "paint": "none",
+          "backdrop": "none",
+          "color": "rgb(41, 32, 68)",
+          "transition": "0s",
+          "animation": "none"
+        },
+        {
+          "class": "couple-hero-settings absolute z-30 flex h-11 w-11 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500",
+          "background": "rgba(0, 0, 0, 0)",
+          "paint": "none",
+          "backdrop": "none",
+          "color": "rgb(101, 88, 119)",
+          "transition": "0.15s",
+          "animation": "none"
+        },
+        {
+          "class": {},
+          "background": "rgba(0, 0, 0, 0)",
+          "paint": "none",
+          "backdrop": "none",
+          "color": "rgb(255, 27, 98)",
+          "transition": "0s",
+          "animation": "relationship-heartbeat"
+        }
+      ]
+    },
+    {
+      "check": "forced-colors",
+      "theme": "light",
+      "active": true,
+      "surfaces": [
+        {
+          "class": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border tbo-glass couple-glass-hero relative overflow-hidden",
+          "background": "rgb(255, 255, 255)",
+          "paint": "none",
+          "backdrop": "none",
+          "color": "rgb(0, 0, 0)",
+          "transition": "0s",
+          "animation": "none"
+        },
+        {
+          "class": "couple-hero-settings absolute z-30 flex h-11 w-11 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500",
+          "background": "rgba(255, 255, 255, 0)",
+          "paint": "none",
+          "backdrop": "none",
+          "color": "rgb(0, 0, 0)",
+          "transition": "0.15s",
+          "animation": "none"
+        },
+        {
+          "class": {},
+          "background": "rgba(0, 0, 0, 0)",
+          "paint": "none",
+          "backdrop": "none",
+          "color": "rgb(0, 0, 0)",
+          "transition": "0s",
+          "animation": "relationship-heartbeat"
+        }
+      ]
+    },
+    {
+      "check": "prefers-reduced-motion",
+      "theme": "light",
+      "active": true,
+      "surfaces": [
+        {
+          "class": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border tbo-glass couple-glass-hero relative overflow-hidden",
+          "background": "rgba(0, 0, 0, 0)",
+          "paint": "linear-gradient(135deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 65%), linear-gradient(125deg, rgba(235, 226, 250, 0.94), rgba(247, 236, 252, 0.9) 62%, rgba(242, 230, 249, 0.94))",
+          "backdrop": "blur(20px)",
+          "color": "rgb(41, 32, 68)",
+          "transition": "0s",
+          "animation": "none"
+        },
+        {
+          "class": "couple-hero-settings absolute z-30 flex h-11 w-11 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500",
+          "background": "rgba(0, 0, 0, 0)",
+          "paint": "none",
+          "backdrop": "none",
+          "color": "rgb(101, 88, 119)",
+          "transition": "0.15s",
+          "animation": "none"
+        },
+        {
+          "class": {},
+          "background": "rgba(0, 0, 0, 0)",
+          "paint": "none",
+          "backdrop": "none",
+          "color": "rgb(255, 27, 98)",
+          "transition": "0s",
+          "animation": "none"
+        }
+      ]
+    },
+    {
+      "check": "prefers-reduced-transparency",
+      "theme": "dark",
+      "active": true,
+      "surfaces": [
+        {
+          "class": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border tbo-glass couple-glass-hero relative overflow-hidden",
+          "background": "rgb(45, 34, 63)",
+          "paint": "none",
+          "backdrop": "none",
+          "color": "rgb(245, 239, 255)",
+          "transition": "0s",
+          "animation": "none"
+        },
+        {
+          "class": "couple-hero-settings absolute z-30 flex h-11 w-11 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500",
+          "background": "rgba(0, 0, 0, 0)",
+          "paint": "none",
+          "backdrop": "none",
+          "color": "rgb(197, 184, 214)",
+          "transition": "0.15s",
+          "animation": "none"
+        },
+        {
+          "class": {},
+          "background": "rgba(0, 0, 0, 0)",
+          "paint": "none",
+          "backdrop": "none",
+          "color": "rgb(255, 27, 98)",
+          "transition": "0s",
+          "animation": "relationship-heartbeat"
+        }
+      ]
+    },
+    {
+      "check": "forced-colors",
+      "theme": "dark",
+      "active": true,
+      "surfaces": [
+        {
+          "class": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border tbo-glass couple-glass-hero relative overflow-hidden",
+          "background": "rgb(255, 255, 255)",
+          "paint": "none",
+          "backdrop": "none",
+          "color": "rgb(0, 0, 0)",
+          "transition": "0s",
+          "animation": "none"
+        },
+        {
+          "class": "couple-hero-settings absolute z-30 flex h-11 w-11 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500",
+          "background": "rgba(255, 255, 255, 0)",
+          "paint": "none",
+          "backdrop": "none",
+          "color": "rgb(0, 0, 0)",
+          "transition": "0.15s",
+          "animation": "none"
+        },
+        {
+          "class": {},
+          "background": "rgba(0, 0, 0, 0)",
+          "paint": "none",
+          "backdrop": "none",
+          "color": "rgb(0, 0, 0)",
+          "transition": "0s",
+          "animation": "relationship-heartbeat"
+        }
+      ]
+    },
+    {
+      "check": "prefers-reduced-motion",
+      "theme": "dark",
+      "active": true,
+      "surfaces": [
+        {
+          "class": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border tbo-glass couple-glass-hero relative overflow-hidden",
+          "background": "rgba(0, 0, 0, 0)",
+          "paint": "linear-gradient(135deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 65%), linear-gradient(125deg, rgba(50, 37, 71, 0.95), rgba(47, 33, 62, 0.94) 62%, rgba(55, 35, 67, 0.95))",
+          "backdrop": "blur(20px)",
+          "color": "rgb(245, 239, 255)",
+          "transition": "0s",
+          "animation": "none"
+        },
+        {
+          "class": "couple-hero-settings absolute z-30 flex h-11 w-11 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500",
+          "background": "rgba(0, 0, 0, 0)",
+          "paint": "none",
+          "backdrop": "none",
+          "color": "rgb(197, 184, 214)",
+          "transition": "0.15s",
+          "animation": "none"
+        },
+        {
+          "class": {},
+          "background": "rgba(0, 0, 0, 0)",
+          "paint": "none",
+          "backdrop": "none",
+          "color": "rgb(255, 27, 98)",
+          "transition": "0s",
+          "animation": "none"
+        }
+      ]
+    }
+  ],
+  "knownLimitations": [
+    "The active Growth orb decorative ring exceeds its own clientWidth; excluded from functional overflow checks.",
+    "Only development-server HMR WebSocket warnings occurred; no application runtime errors.",
+    "Screenshots hide fixed header/navigation only for artifact capture.",
+    "Native mobile platforms, uploaded avatar photo quality, live API content, and native-speaker translation review were not exercised."
+  ],
+  "artifacts": {
+    "combinedLight": "docs/glass-dashboard-reference.png",
+    "combinedDark": "docs/glass-dashboard-reference-dark.png",
+    "heroLight": "docs/couple-hero-reference.png",
+    "heroDark": "docs/couple-hero-reference-dark.png",
+    "temporaryReports": "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-glass-qa/hero"
+  },
+  "focusCorrection": {
+    "scope": "Repeated only the location settings keyboard open, language switch, unsaved input and Escape focus-return sequence after the trigger restoration fix.",
+    "report": "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-glass-qa/hero/focus-report.json",
+    "runtimeErrors": [],
+    "externalRequests": 0
+  }
+}
