@@ -1418,10 +1418,9 @@ export default function App() {
           }}
         />
       )}
-      <div className="app-mobile-shell min-h-screen bg-background flex flex-col">
-        {/* SOLID OPAQUE HEADER TRUNK BAR CONTAINER */}
-        <header className="sticky top-0 left-0 right-0 z-50 flex min-h-16 items-center pt-[env(safe-area-inset-top,0px)]" style={{ background: 'var(--card)', borderBottom: '1px solid var(--border)', boxShadow: '0 1px 0 0 var(--border)' }}>
-          <div className="w-full max-w-2xl mx-auto px-4 flex min-h-16 items-center justify-between">
+      <div className="app-mobile-shell tbo-glass-app min-h-screen flex flex-col">
+        <header className="tbo-app-header tbo-glass-raised sticky top-0 left-0 right-0 z-50 flex min-h-16 items-center pt-[env(safe-area-inset-top,0px)]">
+          <div className="w-full max-w-2xl mx-auto px-4 flex flex-wrap gap-2 min-h-16 items-center justify-between">
             {/* Platform Brand Title Identification */}
             <div className="flex items-center gap-2">
               <img
@@ -1433,7 +1432,7 @@ export default function App() {
                 draggable={false}
                 className="-m-1 h-8 w-8 shrink-0 object-contain"
               />
-              <span className="tbo-wordmark text-foreground">
+              <span className="tbo-wordmark">
                 TwoBeOne
               </span>
             </div>
@@ -1442,7 +1441,7 @@ export default function App() {
             <div className="flex items-center gap-2">
               {partner && (
                 <div
-                  className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-1"
+                  className="tbo-header-presence flex items-center gap-1.5 rounded-full border px-2 py-1"
                   role="status"
                   aria-label={`${partnerPreferences?.name || uiTranslations.mood.partner}: ${partnerOnline ? uiTranslations.dashboard.online : uiTranslations.dashboard.offline}`}
                   title={`${partnerPreferences?.name || uiTranslations.mood.partner}: ${partnerOnline ? uiTranslations.dashboard.online : uiTranslations.dashboard.offline}`}
@@ -1451,7 +1450,7 @@ export default function App() {
                     className={`h-2.5 w-2.5 rounded-full ${partnerOnline ? "bg-emerald-500 shadow-[0_0_0_3px_rgba(16,185,129,0.16)]" : "bg-slate-300"}`}
                     aria-hidden="true"
                   />
-                  <span className="hidden text-xs font-semibold text-slate-700 sm:inline">
+                  <span className="tbo-caption hidden sm:inline">
                     {partnerOnline ? uiTranslations.dashboard.online : uiTranslations.dashboard.offline}
                   </span>
                 </div>
@@ -1517,7 +1516,7 @@ export default function App() {
         </header>
 
         {/* Content Flow Layout Window Context */}
-        <div className={`flex-1 w-full pb-28 ${isCoupleDashboard && !loadError ? "pt-0" : "pt-4"}`}>
+        <div className={`flex-1 w-full pb-40 ${isCoupleDashboard && !loadError ? "pt-0" : "pt-4"}`}>
           <div className={isCoupleDashboard ? "w-full" : "max-w-6xl mx-auto px-4"}>
             <Toaster />
             <Suspense fallback={null}>

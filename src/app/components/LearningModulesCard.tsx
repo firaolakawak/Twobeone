@@ -1,6 +1,5 @@
 import { useCurrentLanguage } from '../utils/languageStore';
-import { useUiCopy } from '../utils/uiTranslation';
-import { guidanceMessages } from '../locales/guidance';
+import '../styles/dashboard-support.css';
 import { useState, useEffect } from "react";
 import {
   BookOpen,
@@ -21,32 +20,27 @@ const PREVIEW_MODULES = [
   {
     id: "module-1",
     iconKey: "book",
-    accentColor: "var(--primary-600)",
-    accentBg: "var(--primary-50)",
+    accentColor: "var(--glass-accent)",
   },
   {
     id: "module-2",
     iconKey: "message",
-    accentColor: "var(--secondary-600)",
-    accentBg: "var(--secondary-50)",
+    accentColor: "var(--glass-accent)",
   },
   {
     id: "module-3",
     iconKey: "heart",
-    accentColor: "var(--success-700)",
-    accentBg: "var(--success-50)",
+    accentColor: "var(--glass-rose)",
   },
   {
     id: "module-4",
     iconKey: "dollar",
-    accentColor: "var(--warning-700)",
-    accentBg: "var(--warning-50)",
+    accentColor: "var(--glass-rose)",
   },
   {
     id: "module-5",
     iconKey: "home",
-    accentColor: "var(--neutral-700)",
-    accentBg: "var(--neutral-100)",
+    accentColor: "var(--glass-accent)",
   },
 ];
 
@@ -184,311 +178,86 @@ export function LearningModulesCard({
   ).length;
 
   return (
-    <div
-      style={{
-        background: "linear-gradient(145deg, #ffffff 0%, #fff7f9 58%, #f8f5ff 100%)",
-        borderRadius: "28px",
-        border: "1px solid #ffe4e6",
-        overflow: "hidden",
-      }}
-    >
-      {/* Header Banner */}
-      <div
-        style={{
-          background: "linear-gradient(135deg, #e11d48 0%, #be123c 58%, #9f1239 100%)",
-          padding: "20px",
-          borderBottom: "1px solid rgba(159,18,57,.28)",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "var(--spacing-2)",
-            }}
-          >
-            <div
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: "16px",
-                backgroundColor: "rgba(255,255,255,.16)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <BookOpen
-                style={{ width: 16, height: 16, color: "#ffffff" }}
-              />
-            </div>
-            <div>
-              <h3 className="tbo-card-title"
-                style={{
-
-                  color: "#ffffff",
-                  margin: 0,
-                }}
-              >
-                {vocab.title}
-              </h3>
-              <p className="tbo-caption"
-                style={{
-
-                  color: "rgba(255,255,255,.78)",
-                  margin: 0,
-                }}
-              >
+    <div className="tbo-glass tbo-support-card tbo-learning-card">
+      <div className="tbo-glass-inset tbo-learning-header">
+        <div className="tbo-learning-heading">
+          <div className="tbo-learning-heading-copy">
+            <span className="tbo-glass-orb tbo-learning-header-icon">
+              <BookOpen aria-hidden="true" size={16} />
+            </span>
+            <div className="min-w-0">
+              <h3 className="tbo-card-title tbo-support-title">{vocab.title}</h3>
+              <p className="tbo-caption tbo-support-muted">
                 {vocab.modulesCount(PREVIEW_MODULES.length)}
               </p>
             </div>
           </div>
-          <span className="tbo-caption"
-            style={{
-
-              color: "#ffffff",
-              backgroundColor: "rgba(255,255,255,.16)",
-              borderRadius: "var(--radius-full)",
-              padding: "2px 10px",
-            }}
-          >
+          <span className="tbo-caption tbo-glass-inset tbo-learning-percentage">
             {isLoading ? "–" : `${overallProgress}%`}
           </span>
         </div>
 
-        {/* Progress Bar underlay */}
-        <div
-          style={{
-            marginTop: "var(--spacing-2)",
-            height: 5,
-            borderRadius: "var(--radius-full)",
-            backgroundColor: "rgba(255,255,255,.24)",
-            overflow: "hidden",
-          }}
-        >
-          <div
-            style={{
-              height: "100%",
-              width: `${overallProgress}%`,
-              background: "#ffffff",
-              borderRadius: "var(--radius-full)",
-              transition: "width 0.5s ease",
-            }}
-          />
+        <div className="tbo-support-progress tbo-learning-overall-progress">
+          <div className="tbo-support-progress-fill" style={{ width: `${overallProgress}%` }} />
         </div>
-        <p className="tbo-caption"
-          style={{
-
-            color: "rgba(255,255,255,.78)",
-            margin: "var(--spacing-1) 0 0 0",
-          }}
-        >
-          {vocab.completedCount(
-            completedCount,
-            PREVIEW_MODULES.length,
-          )}
+        <p className="tbo-caption tbo-support-muted mt-1">
+          {vocab.completedCount(completedCount, PREVIEW_MODULES.length)}
         </p>
       </div>
 
-      {/* Module Rows mapping layout array loops */}
-      <div style={{ padding: "10px 12px" }}>
-        {PREVIEW_MODULES.map((m, idx) => {
+      <div className="tbo-learning-rows">
+        {PREVIEW_MODULES.map((m) => {
           const prog = progressMap[m.id] || 0;
           const done = prog === 100;
-
-          // Fallback title safety check if index parameter missing mapping key fields
           const displayTitle =
-            vocab.moduleTitles[
-              m.id as keyof typeof vocab.moduleTitles
-            ] || m.id;
+            vocab.moduleTitles[m.id as keyof typeof vocab.moduleTitles] || m.id;
 
           return (
             <button
+              type="button"
               key={m.id}
+              className="tbo-glass-action tbo-learning-row"
               onClick={onViewAll}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "var(--spacing-3)",
-                width: "100%",
-                padding: "12px",
-                background: "rgba(255,255,255,.72)",
-                border: "1px solid transparent",
-                borderRadius: "16px",
-                margin: "2px 0",
-                cursor: "pointer",
-                textAlign: "left",
-                transition: "background 0.15s ease",
-              }}
-              onMouseEnter={(e) => {
-                (
-                  e.currentTarget as HTMLButtonElement
-                ).style.backgroundColor = "#ffffff";
-              }}
-              onMouseLeave={(e) => {
-                (
-                  e.currentTarget as HTMLButtonElement
-                ).style.backgroundColor = "rgba(255,255,255,.72)";
-              }}
             >
-              {/* Icon badges */}
-              <div
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: "var(--radius-md)",
-                  backgroundColor: done
-                    ? "var(--success-50)"
-                    : m.accentBg,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
+              <span className={`tbo-glass-inset tbo-learning-module-icon${done ? ' tbo-support-complete' : ''}`}>
                 {done ? (
-                  <CheckCircle2
-                    style={{
-                      width: 18,
-                      height: 18,
-                      color: "var(--success-500)",
-                    }}
-                  />
+                  <CheckCircle2 aria-hidden="true" size={18} />
                 ) : (
-                  <SmallIcon
-                    iconKey={m.iconKey}
-                    color={m.accentColor}
-                  />
+                  <SmallIcon iconKey={m.iconKey} color={m.accentColor} />
                 )}
-              </div>
+              </span>
 
-              {/* Title parameters block rows */}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <h4 className="tbo-card-title"
-                  style={{
-
-                    color: "var(--neutral-900)",
-                    margin: 0,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {displayTitle}
-                </h4>
+              <div className="min-w-0 flex-1">
+                <h4 className="tbo-card-title tbo-support-title">{displayTitle}</h4>
                 {prog > 0 && !done && (
-                  <div
-                    style={{
-                      marginTop: 4,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "var(--spacing-2)",
-                    }}
-                  >
-                    <div
-                      style={{
-                        flex: 1,
-                        height: 3,
-                        borderRadius: "var(--radius-full)",
-                        backgroundColor: "var(--neutral-200)",
-                        overflow: "hidden",
-                      }}
-                    >
+                  <div className="tbo-learning-module-progress">
+                    <div className="tbo-support-progress">
                       <div
-                        style={{
-                          height: "100%",
-                          width: `${prog}%`,
-                          backgroundColor: m.accentColor,
-                          borderRadius: "var(--radius-full)",
-                        }}
+                        className="tbo-support-progress-fill"
+                        style={{ width: `${prog}%` }}
                       />
                     </div>
-                    <span className="tbo-caption"
-                      style={{
-
-                        color: m.accentColor,
-
-                        flexShrink: 0,
-                      }}
-                    >
+                    <span className="tbo-caption shrink-0" style={{ color: m.accentColor }}>
                       {prog}%
                     </span>
                   </div>
                 )}
               </div>
 
-              {/* Right State Indicator anchors */}
               {done ? (
-                <span className="tbo-caption"
-                  style={{
-
-                    color: "var(--success-500)",
-
-                    flexShrink: 0,
-                  }}
-                >
-                  {vocab.done}
-                </span>
+                <span className="tbo-caption tbo-support-complete tbo-learning-done">{vocab.done}</span>
               ) : (
-                <ArrowRight
-                  style={{
-                    width: 16,
-                    height: 16,
-                    color: "var(--neutral-400)",
-                    flexShrink: 0,
-                  }}
-                />
+                <ArrowRight aria-hidden="true" className="tbo-support-muted shrink-0" size={16} />
               )}
             </button>
           );
         })}
       </div>
 
-      {/* View All CTA Footer segment block link */}
-      <div
-        style={{
-          padding: "var(--spacing-3) var(--spacing-4)",
-          borderTop: "1px solid #ffe4e6",
-        }}
-      >
-        <button className="tbo-action"
-          onClick={onViewAll}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "var(--spacing-2)",
-            width: "100%",
-            padding: "var(--spacing-3)",
-            borderRadius: "14px",
-            border: `1px solid var(--primary-200, #ffc7d7)`,
-            backgroundColor: "rgba(255,255,255,.82)",
-            color: "var(--primary-600)",
-
-            cursor: "pointer",
-            transition: "all 0.15s ease",
-          }}
-          onMouseEnter={(e) => {
-            (
-              e.currentTarget as HTMLButtonElement
-            ).style.backgroundColor =
-              "#ffffff";
-          }}
-          onMouseLeave={(e) => {
-            (
-              e.currentTarget as HTMLButtonElement
-            ).style.backgroundColor = "rgba(255,255,255,.82)";
-          }}
-        >
-          {vocab.viewAll(PREVIEW_MODULES.length)}
-          <ArrowRight style={{ width: 16, height: 16 }} />
+      <div className="tbo-learning-footer">
+        <button type="button" className="tbo-action tbo-glass-action tbo-learning-view-all" onClick={onViewAll}>
+          <span>{vocab.viewAll(PREVIEW_MODULES.length)}</span>
+          <ArrowRight aria-hidden="true" className="shrink-0" size={16} />
         </button>
       </div>
     </div>

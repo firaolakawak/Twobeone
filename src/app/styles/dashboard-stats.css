@@ -17,33 +17,34 @@
   align-items: flex-start;
   min-width: 0;
   padding: clamp(.875rem, 3cqi, 1.5rem);
-  border: 0;
   border-radius: 1.25rem;
-  background: #c92f49;
-  color: #fff;
+  color: var(--glass-foreground);
   text-align: start;
-  box-shadow: none;
   cursor: pointer;
 }
 
 .dashboard-stat[data-stat='devotionals'] {
-  background: linear-gradient(125deg, #d4374e, #c22643);
+  --stat-accent: var(--glass-accent);
+  --glass-tint: rgb(177 133 238 / .14);
 }
 
 .dashboard-stat[data-stat='journal'] {
-  background: linear-gradient(115deg, #be481d, #ce2941);
+  --stat-accent: var(--glass-rose);
+  --glass-tint: rgb(247 138 195 / .14);
 }
 
 .dashboard-stat[data-stat='prayer'] {
-  background: linear-gradient(115deg, #090918, #4031c9);
+  --stat-accent: var(--glass-accent);
+  --glass-tint: rgb(132 164 244 / .16);
 }
 
 .dashboard-stat[data-stat='questions'] {
-  background: linear-gradient(115deg, #337e38, #087c89);
+  --stat-accent: var(--glass-rose);
+  --glass-tint: rgb(201 159 235 / .16);
 }
 
 .dashboard-stat:focus-visible {
-  outline: 3px solid var(--foreground);
+  outline: 3px solid var(--glass-accent);
   outline-offset: 4px;
 }
 
@@ -54,7 +55,8 @@
   right: .875rem;
   width: clamp(2.75rem, 28cqi, 5rem);
   height: auto;
-  opacity: .28;
+  color: var(--stat-accent);
+  opacity: .18;
   pointer-events: none;
 }
 
@@ -67,6 +69,7 @@
   font-weight: 700;
   line-height: 1.2;
   font-variant-numeric: tabular-nums;
+  color: var(--stat-accent);
   overflow-wrap: anywhere;
 }
 
@@ -79,6 +82,7 @@
 
 .dashboard-stat__status {
   margin-block: .25rem 1.25rem;
+  color: var(--glass-muted);
 }
 
 .dashboard-stat__track {
@@ -88,7 +92,8 @@
   min-height: .75rem;
   margin-top: auto;
   padding: 2px;
-  border: 1.5px solid #fff;
+  border: 1.5px solid var(--glass-border);
+  background: color-mix(in srgb, var(--stat-accent) 12%, transparent);
   border-radius: 999px;
 }
 
@@ -96,7 +101,7 @@
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: #fff;
+  background: var(--stat-accent);
 }
 
 /* Keep two columns on phones; allow a single column for enlarged text. */

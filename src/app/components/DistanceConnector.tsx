@@ -379,7 +379,7 @@ export function DistanceConnector({
             <Settings className="h-4 w-4" />
           </button>
 
-          <div className="flex items-center justify-between gap-4 sm:gap-6">
+          <div className="couple-hero-intro flex items-center justify-between gap-4 sm:gap-6">
             <CoupleNameHeading userName={userName} partnerName={partnerName} partnerMood={partnerMood} />
             <CoupleAvatarStack
               userName={userName}

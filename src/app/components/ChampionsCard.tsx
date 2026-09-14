@@ -3,6 +3,7 @@ import { BookOpen, Clock3, Crown, HandHeart, MessageCircleQuestion, PenLine } fr
 import { useLanguage } from '../contexts/LanguageContext';
 import { engagement, type EngagementSummary } from '../utils/api';
 import { formatEngagementTime, type EngagementCategory } from '../utils/engagement';
+import '../styles/dashboard-support.css';
 
 const copy = {
   en: { title: 'TwoBeOne Champions', subtitle: 'Your intentional time together', today: 'Today', week: '7 days', month: '30 days', reading: 'Reading', answering: 'Answering', journaling: 'Journaling', praying: 'Praying', other: 'Together', starting: 'Starting Strong', growing: 'Growing Together', devoted: 'Devoted Couple', champion: 'TwoBeOne Champions', next: 'toward the next level', empty: 'Your active time will appear here as you read, answer, journal, and pray.' },
@@ -34,37 +35,42 @@ export function ChampionsCard() {
   const levelLabel = labels[summary.champion.level];
 
   return (
-    <section className="relative overflow-hidden rounded-[1.75rem] border border-amber-100 bg-gradient-to-br from-white via-amber-50/35 to-rose-50/50 p-5 transition-all hover:-translate-y-0.5" aria-label={labels.title}>
-      <div className="absolute -right-8 -top-10 h-32 w-32 rounded-full bg-amber-200/30 blur-3xl" />
+    <section className="tbo-glass tbo-support-card tbo-champions-card relative overflow-hidden rounded-[1.75rem] p-5" aria-label={labels.title}>
       <div className="relative">
-        <div className="flex items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-100 text-amber-700 shadow-sm ring-1 ring-amber-200"><Crown className="h-5 w-5" /></span>
+        <div className="tbo-champions-heading flex items-center gap-3">
+          <span className="tbo-glass-orb flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl"><Crown aria-hidden="true" className="h-5 w-5" /></span>
           <div className="min-w-0 flex-1">
-            <p className="tbo-eyebrow text-amber-700">{labels.title}</p>
-            <h3 className="tbo-card-title truncate text-slate-900">{levelLabel}</h3>
-            <p className="tbo-caption text-slate-500">{labels.subtitle}</p>
+            <p className="tbo-eyebrow tbo-support-accent">{labels.title}</p>
+            <h3 className="tbo-card-title tbo-support-title">{levelLabel}</h3>
+            <p className="tbo-caption tbo-support-muted">{labels.subtitle}</p>
           </div>
         </div>
 
-        <div className="mt-4 grid grid-cols-3 gap-2">
+        <div className="tbo-champions-periods mt-4 grid gap-2">
           {([['today', summary.today], ['week', summary.week], ['month', summary.month]] as const).map(([key, period]) => (
-            <div key={key} className="rounded-2xl border border-white/80 bg-white/75 px-2 py-3 text-center">
-              <p className="tbo-eyebrow text-slate-500">{labels[key]}</p>
-              <p className="tbo-supporting mt-1 tabular-nums text-slate-900">{formatEngagementTime(period.totalSeconds, language)}</p>
+            <div key={key} className="tbo-glass-inset min-w-0 rounded-2xl px-2 py-3 text-center">
+              <p className="tbo-eyebrow tbo-support-muted">{labels[key]}</p>
+              <p className="tbo-supporting tbo-support-title mt-1 tabular-nums">{formatEngagementTime(period.totalSeconds, language)}</p>
             </div>
           ))}
         </div>
 
-        {summary.month.totalSeconds === 0 ? <p className="tbo-caption mt-4 text-center text-slate-500">{labels.empty}</p> : (
+        {summary.month.totalSeconds === 0 ? <p className="tbo-caption tbo-support-muted mt-4 text-center">{labels.empty}</p> : (
           <>
-            <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
+            <div className="tbo-champions-categories mt-4 grid gap-x-4 gap-y-3">
               {categories.map(category => {
                 const Icon = categoryIcons[category];
-                return <div key={category} className="flex items-center gap-2"><Icon className="h-4 w-4 text-rose-500" /><span className="tbo-caption min-w-0 flex-1 truncate text-slate-600">{labels[category]}</span><strong className="text-xs tabular-nums text-slate-800">{formatEngagementTime(summary.week.byCategory[category], language)}</strong></div>;
+                return (
+                  <div key={category} className="tbo-champions-category">
+                    <Icon aria-hidden="true" className="tbo-support-accent h-4 w-4 shrink-0" />
+                    <span className="tbo-caption tbo-support-muted min-w-0">{labels[category]}</span>
+                    <strong className="tbo-caption tbo-support-title tabular-nums">{formatEngagementTime(summary.week.byCategory[category], language)}</strong>
+                  </div>
+                );
               })}
             </div>
-            <div className="mt-4 h-2 overflow-hidden rounded-full bg-amber-100"><div className="h-full rounded-full bg-gradient-to-r from-amber-400 to-rose-500 transition-all duration-700" style={{ width: `${summary.champion.progress}%` }} /></div>
-            {summary.champion.nextTargetSeconds && <p className="tbo-caption mt-1.5 text-right text-slate-500">{summary.champion.progress}% {labels.next}</p>}
+            <div className="tbo-support-progress tbo-champions-progress mt-4"><div className="tbo-support-progress-fill" style={{ width: `${summary.champion.progress}%` }} /></div>
+            {summary.champion.nextTargetSeconds && <p className="tbo-caption tbo-support-muted mt-1.5 text-right">{summary.champion.progress}% {labels.next}</p>}
           </>
         )}
       </div>

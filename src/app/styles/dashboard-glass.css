@@ -1,0 +1,131 @@
+.couple-dashboard {
+  container-type: inline-size;
+  --foreground: var(--glass-foreground);
+  --muted-foreground: var(--glass-muted);
+  --primary: var(--glass-accent);
+  --border: var(--glass-rim);
+  padding-bottom: 1.5rem;
+}
+
+.couple-glass-hero {
+  --glass-tint: rgb(186 153 239 / .18);
+  z-index: 1;
+  border-inline: 0;
+  border-top: 0;
+  border-radius: 0 0 2rem 2rem;
+}
+
+.couple-glass-hero [data-couple-avatars] [data-slot='avatar'] {
+  border-color: var(--glass-border);
+  box-shadow: 0 0 0 1px var(--glass-rim), 0 6px 22px -8px rgb(115 60 170 / .4);
+}
+
+.couple-glass-hero .relationship-growth {
+  padding: .875rem 1rem .625rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 1.25rem;
+  background: var(--glass-inset-surface);
+  box-shadow: inset 0 1px 0 var(--glass-border);
+}
+
+.couple-glass-hero [data-stage-track] li {
+  border-color: var(--glass-border);
+  background: var(--glass-solid);
+  box-shadow: inset 0 1px 2px var(--glass-border), 0 3px 9px -4px rgb(115 60 170 / .35);
+}
+
+.couple-glass-hero [data-stage-track] li[aria-current='step'] {
+  border-color: var(--glass-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--glass-accent) 14%, transparent), 0 3px 9px -4px rgb(115 60 170 / .35);
+}
+
+.dashboard-spotlight { --glass-tint: rgb(218 190 255 / .14); }
+.dashboard-calendar { --glass-tint: rgb(255 197 224 / .14); }
+.dashboard-verse { --glass-tint: rgb(248 205 228 / .16); }
+.dashboard-glass-accent { color: var(--glass-accent); }
+
+.dashboard-glass-icon-button {
+  width: 2.75rem;
+  min-width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.dashboard-glass-arrow {
+  color: var(--glass-accent);
+  background: color-mix(in srgb, var(--glass-accent) 10%, var(--glass-solid));
+}
+
+/* Preserve the approved hero placement while allowing unusually long names to wrap. */
+.couple-dashboard [data-couple-name] > span { max-width: 100%; }
+.couple-dashboard :is(.tbo-card-title, .tbo-section-title, .tbo-supporting, .tbo-caption, .tbo-eyebrow) { overflow-wrap: anywhere; }
+
+/* Container rem queries respond to text enlargement as well as small viewports. */
+@container (max-width: 18rem) {
+  .couple-hero-content {
+    width: calc(100% - 2rem);
+    padding-inline: 0;
+  }
+
+  .couple-hero-intro { flex-wrap: wrap; }
+  .couple-hero-intro [data-couple-name] { flex-basis: 100%; }
+  .couple-hero-intro [data-couple-avatars] { margin-inline: auto; }
+  [data-relationship-counter] { flex-wrap: wrap; }
+  [data-relationship-summary] > div { display: grid; grid-template-columns: auto minmax(0, 1fr); }
+  [data-relationship-summary] p { overflow-wrap: anywhere; }
+
+  .relationship-growth [data-stage-track] { height: auto; padding-block: .75rem; }
+  .relationship-growth [data-stage-track] [role='progressbar'] {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    margin-bottom: .75rem;
+    transform: none;
+  }
+  .relationship-growth [data-stage-track] ol {
+    position: static;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    justify-content: space-between;
+  }
+  .relationship-growth [data-stage-track] li { position: static; transform: none; }
+
+  .dashboard-spotlight-header,
+  .dashboard-spotlight-header > div { flex-wrap: wrap; min-width: 0; }
+
+  .dashboard-calendar > div,
+  .dashboard-house-content { flex-wrap: wrap; }
+  .dashboard-calendar > div > .min-w-0,
+  .dashboard-house-content > .min-w-0 { flex-basis: 100%; }
+
+  .couple-dashboard > .tbo-glass:not(.couple-glass-hero, .tbo-learning-card) { padding-inline: .75rem; }
+  .couple-dashboard > .tbo-glass > [data-slot='card-header'],
+  .couple-dashboard > .tbo-glass > [data-slot='card-content'] { padding-inline: 0; }
+
+  .couple-dashboard [data-slot='card-title'] { flex-wrap: wrap; }
+  .couple-dashboard .tbo-glass-inset > .flex { flex-wrap: wrap; gap: .5rem; }
+
+  .tbo-learning-heading { flex-wrap: wrap; }
+  .tbo-support-card .tbo-learning-row { flex-wrap: wrap; }
+  .tbo-learning-row > .min-w-0 { flex-basis: 100%; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .couple-glass-hero .relationship-growth { background: var(--glass-solid); }
+  .couple-glass-hero > .pointer-events-none { display: none; }
+}
+
+@media (forced-colors: active) {
+  .couple-glass-hero .relationship-growth,
+  .couple-glass-hero [data-stage-track] li { background: Canvas; border-color: CanvasText; box-shadow: none; }
+  .dashboard-stat { color: ButtonText; }
+  .dashboard-stat__value,
+  .dashboard-stat__status,
+  .dashboard-glass-accent,
+  .dashboard-glass-arrow { color: CanvasText; }
+  .dashboard-stat__track { border-color: CanvasText; }
+  .dashboard-stat__fill { background: Highlight; }
+}

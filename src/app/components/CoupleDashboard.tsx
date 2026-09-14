@@ -50,6 +50,7 @@ import { fetchAmharicChapter, getAmharicBookName } from '../utils/amharicBibleAp
 import { ChampionsCard } from './ChampionsCard';
 import { coupleCalendarCopy } from '../data/couple-calendar';
 import '../styles/dashboard-stats.css';
+import '../styles/dashboard-glass.css';
 
 export interface CoupleDashboardProps {
   profile?: User & {
@@ -445,9 +446,6 @@ export function CoupleDashboard({
         description: devotional?.reflection || devotional?.body || devotional?.verse || devotional?.verseText || tr("Pause together, reflect on Scripture, and carry one truth into your day."),
         actionLabel: tr("Read devotion"),
         icon: BookOpen,
-        iconClass: 'bg-amber-100 text-amber-700',
-        surfaceClass: 'from-amber-50 via-white to-orange-50/80 border-amber-100',
-        accentClass: 'text-amber-800',
       };
     }
 
@@ -462,9 +460,6 @@ export function CoupleDashboard({
         description: tr("Take a few honest minutes to answer separately, then discover where your hearts meet."),
         actionLabel: tr("Start Q&A"),
         icon: MessageCircleHeart,
-        iconClass: 'bg-primary-100 text-primary-700',
-        surfaceClass: 'from-primary-50 via-white to-rose-50/80 border-primary-100',
-        accentClass: 'text-primary-700',
       };
     }
 
@@ -478,9 +473,6 @@ export function CoupleDashboard({
       description: entry?.content || tr("Write down what is happening in your relationship today—small moments become a shared story."),
       actionLabel: entry ? tr("Read journal") : tr("Open journal"),
       icon: PenLine,
-      iconClass: 'bg-sky-100 text-sky-700',
-      surfaceClass: 'from-sky-50 via-white to-cyan-50/80 border-sky-100',
-      accentClass: 'text-sky-800',
     };
   }, [devotionals, journalEntries, language, spotlightKind, spotlightQuestions, spotlightShuffle, tr]);
 
@@ -506,20 +498,8 @@ export function CoupleDashboard({
 
   return (
     <div className="couple-dashboard">
-      {/* Page-level ambient radial glow */}
-      <div className="pointer-events-none absolute -top-8 left-0 right-0 overflow-hidden" style={{ height: 260, zIndex: 0 }}>
-        <div style={{
-          position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
-          width: 480, height: 260,
-          background: 'radial-gradient(ellipse at top, rgba(244,63,94,0.10) 0%, rgba(139,92,246,0.06) 45%, transparent 72%)',
-          filter: 'blur(2px)',
-        }} />
-      </div>
-
       {/* Couple profile and shared journey */}
-      <Card className="relative overflow-hidden border-x-0 border-rose-100/80 dark:border-rose-900/30 bg-card pt-4" style={{ zIndex: 1, borderRadius: '0 0 1.75rem 1.75rem' }} data-couple-journey>
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-rose-50/70 via-card to-violet-50/40 dark:from-rose-950/20 dark:to-violet-950/20" />
-        <div className="pointer-events-none absolute -left-20 -top-28 h-64 w-64 rounded-full bg-rose-200/20 dark:bg-rose-500/5 blur-3xl" />
+      <Card className="tbo-glass couple-glass-hero relative overflow-hidden pt-4" data-couple-journey>
         {coupleData.couplePicture && (
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
             <img src={coupleData.couplePicture} alt="" className="h-full w-full object-cover opacity-10 blur-sm" />
@@ -544,7 +524,7 @@ export function CoupleDashboard({
             />
           ) : (
             <>
-              <div className="flex items-center justify-between gap-4 sm:gap-6">
+              <div className="couple-hero-intro flex items-center justify-between gap-4 sm:gap-6">
                 <CoupleNameHeading
                   userName={profile?.name || t.mood.you}
                   partnerName={partner?.name || t.mood.partner}
@@ -586,7 +566,7 @@ export function CoupleDashboard({
           ) : (
             <div className="mt-5 text-center">
               <p className="tbo-supporting mb-3 text-muted-foreground">{t.dashboard.connectWithPartner}</p>
-              <Button size="sm" variant="outline" onClick={() => onNavigate?.('profile')} className="tbo-action bg-card/80 backdrop-blur-sm">
+              <Button size="sm" variant="glass" onClick={() => onNavigate?.('profile')} className="tbo-action">
                 <Users className="mr-2 h-4 w-4" />
 
                 {tr("Add Partner")}
@@ -597,20 +577,19 @@ export function CoupleDashboard({
       </Card>
 
       {/* Randomized next step — devotion, conversation, or journal */}
-      <section className={`relative overflow-hidden rounded-[1.75rem] border bg-gradient-to-br p-5 ${spotlight.surfaceClass}`} aria-labelledby="home-spotlight-title">
-        <div className="pointer-events-none absolute -right-10 -top-12 h-36 w-36 rounded-full bg-white/70 blur-3xl" />
+      <section className="tbo-glass dashboard-spotlight relative overflow-hidden p-5" aria-labelledby="home-spotlight-title">
         <div className="relative">
-          <div className="flex items-start justify-between gap-3">
+          <div className="dashboard-spotlight-header flex items-start justify-between gap-3">
             <div className="flex items-center gap-3">
-              <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl shadow-sm ${spotlight.iconClass}`}>
+              <span className="tbo-glass-orb h-11 w-11">
                 <SpotlightIcon className="h-5 w-5" aria-hidden="true" />
               </span>
               <div>
-                <p className={`tbo-eyebrow ${spotlight.accentClass}`}>{tr("For you today")}</p>
+                <p className="tbo-eyebrow dashboard-glass-accent">{tr("For you today")}</p>
                 <p className="tbo-caption mt-0.5 text-muted-foreground">{spotlight.eyebrow}</p>
               </div>
             </div>
-            <button type="button" onClick={shuffleSpotlight} aria-label={tr("Show another suggestion")} title={tr("Show another")} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/90 bg-white/70 text-muted-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:bg-white hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 active:scale-95">
+            <button type="button" onClick={shuffleSpotlight} aria-label={tr("Show another suggestion")} title={tr("Show another")} className="tbo-glass-action dashboard-glass-icon-button">
               <RefreshCw className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
@@ -618,9 +597,9 @@ export function CoupleDashboard({
           <h2 id="home-spotlight-title" className="tbo-section-title mt-5 text-foreground">{spotlight.title}</h2>
           <p className="tbo-supporting mt-2 line-clamp-3 text-muted-foreground">{spotlight.description}</p>
 
-          <button type="button" onClick={openSpotlight} className="tbo-action group mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl bg-foreground px-5 text-background shadow-[0_10px_24px_rgba(30,25,28,0.16)] transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(30,25,28,0.20)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 active:scale-[0.985] motion-reduce:transform-none sm:w-auto">
+          <button type="button" onClick={openSpotlight} className="tbo-action tbo-glass-primary group mt-5 w-full sm:w-auto">
             {spotlight.actionLabel}
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
       </section>
@@ -629,19 +608,18 @@ export function CoupleDashboard({
       <button
         type="button"
         onClick={() => onScreenNavigate?.('couple-calendar')}
-        className="group relative w-full overflow-hidden rounded-[1.75rem] border border-rose-100 bg-gradient-to-br from-rose-50 via-white to-violet-50 p-5 text-left transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
+        className="tbo-glass tbo-glass-interactive dashboard-calendar group relative w-full overflow-hidden p-5 text-left"
       >
-        <div className="pointer-events-none absolute -right-8 -top-10 h-32 w-32 rounded-full bg-violet-200/30 blur-3xl" />
         <div className="relative flex items-center gap-4">
-          <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-white text-rose-600 shadow-sm ring-1 ring-rose-100">
+          <span className="tbo-glass-orb h-14 w-14">
             <Calendar className="h-6 w-6" aria-hidden="true" />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="tbo-eyebrow block text-rose-600">{calendarCopy.eyebrow}</span>
-            <span className="tbo-card-title mt-1 block text-slate-950">{calendarCopy.calendarCta}</span>
-            <span className="tbo-supporting mt-0.5 block text-slate-500">{calendarCopy.calendarCtaHint}</span>
+            <span className="tbo-eyebrow dashboard-glass-accent block">{calendarCopy.eyebrow}</span>
+            <span className="tbo-card-title mt-1 block">{calendarCopy.calendarCta}</span>
+            <span className="tbo-supporting mt-0.5 block text-muted-foreground">{calendarCopy.calendarCtaHint}</span>
           </span>
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-slate-950 text-white transition-transform group-hover:translate-x-0.5">
+          <span className="dashboard-glass-arrow grid h-10 w-10 shrink-0 place-items-center rounded-full">
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </span>
         </div>
@@ -697,7 +675,7 @@ export function CoupleDashboard({
               type="button"
               data-stat={id}
               onClick={onClick}
-              className="dashboard-stat"
+              className="tbo-glass dashboard-stat"
             >
               <Icon className="dashboard-stat__icon" strokeWidth={1.25} aria-hidden="true" />
               <span className="dashboard-stat__value">{value}</span>
@@ -716,12 +694,12 @@ export function CoupleDashboard({
 
       {/* Daily Bible Verse */}
       <Card 
-        className="cursor-pointer overflow-hidden rounded-[1.75rem] border-amber-100 bg-gradient-to-br from-white via-amber-50/35 to-rose-50/40 transition-all hover:-translate-y-0.5"
+        className="tbo-glass dashboard-verse overflow-hidden"
         onClick={() => setIsBibleReaderOpen(true)}
       >
         <CardHeader className="p-5 pb-3">
-          <CardTitle className="tbo-card-title flex items-center gap-3 text-slate-950">
-            <span className="grid h-10 w-10 place-items-center rounded-2xl bg-amber-100 text-amber-700"><BookOpen className="h-5 w-5" /></span>
+          <CardTitle className="tbo-card-title flex items-center gap-3">
+            <span className="tbo-glass-orb h-10 w-10"><BookOpen className="h-5 w-5" /></span>
 
             {tr("Daily Verse")}
           </CardTitle>
@@ -768,7 +746,7 @@ export function CoupleDashboard({
               {language === 'om' && <p className="tbo-caption text-muted-foreground">{tr('This reading is not available in the selected language yet.')}</p>}
               {verseLanguage === 'am' && dailyVerse.amharicText ? (
                 <>
-                  <blockquote lang="am" className="rounded-2xl border border-white bg-white/80 p-4 text-sm leading-8 text-slate-700">
+                  <blockquote lang="am" className="tbo-glass-inset p-4 text-sm leading-8">
                     "{dailyVerse.amharicText}"
                   </blockquote>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -778,7 +756,7 @@ export function CoupleDashboard({
                 </>
               ) : (
                 <>
-                  <blockquote lang="en" className="rounded-2xl border border-white bg-white/80 p-4 text-sm italic leading-7 text-slate-700">
+                  <blockquote lang="en" className="tbo-glass-inset p-4 text-sm italic leading-7">
                     "{dailyVerse.text}"
                   </blockquote>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -789,9 +767,9 @@ export function CoupleDashboard({
               )}
 
               <Button
-                variant="outline"
+                variant="glass"
                 size="sm"
-                className="tbo-action h-11 w-full rounded-xl border-amber-200 bg-white/80 text-amber-800 hover:bg-white"
+                className="tbo-action w-full"
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsBibleReaderOpen(true);
@@ -865,10 +843,10 @@ export function CoupleDashboard({
 
       {/* Journey Progress */}
       {partner && (
-        <Card className="cursor-pointer overflow-hidden rounded-[1.75rem] border-violet-100 bg-gradient-to-br from-white via-white to-violet-50/45 transition-all hover:-translate-y-0.5" onClick={() => onNavigate?.('devotions')}>
+        <Card className="tbo-glass overflow-hidden" onClick={() => onNavigate?.('devotions')}>
           <CardHeader className="p-5 pb-3">
-            <CardTitle className="tbo-card-title flex items-center gap-3 text-slate-950">
-              <span className="grid h-10 w-10 place-items-center rounded-2xl bg-violet-100 text-violet-600"><TrendingUp className="h-5 w-5" /></span>
+            <CardTitle className="tbo-card-title flex items-center gap-3">
+              <span className="tbo-glass-orb h-10 w-10"><TrendingUp className="h-5 w-5" /></span>
               {t.dashboard.yourJourneyTogether}
             </CardTitle>
             <CardDescription className="tbo-supporting">{t.dashboard.buildingFoundation}</CardDescription>
@@ -876,7 +854,7 @@ export function CoupleDashboard({
           <CardContent className="space-y-2 px-5 pb-5">
             {/* Devotionals Progress */}
             <div 
-              className="cursor-pointer space-y-2 rounded-2xl border border-white bg-white/80 p-3 transition-all hover:border-rose-100 hover:bg-white"
+              className="tbo-glass-inset cursor-pointer space-y-2 p-3"
               onClick={(e) => {
                 e.stopPropagation();
                 onNavigate?.('devotions');
@@ -893,7 +871,7 @@ export function CoupleDashboard({
 
             {/* Questions Progress */}
             <div 
-              className="cursor-pointer space-y-2 rounded-2xl border border-white bg-white/80 p-3 transition-all hover:border-emerald-100 hover:bg-white"
+              className="tbo-glass-inset cursor-pointer space-y-2 p-3"
               onClick={(e) => {
                 e.stopPropagation();
                 onScreenNavigate?.('category-selection');
@@ -908,7 +886,7 @@ export function CoupleDashboard({
 
             {/* Journal Progress */}
             <div 
-              className="cursor-pointer space-y-2 rounded-2xl border border-white bg-white/80 p-3 transition-all hover:border-sky-100 hover:bg-white"
+              className="tbo-glass-inset cursor-pointer space-y-2 p-3"
               onClick={(e) => {
                 e.stopPropagation();
                 onNavigate?.('journal');
@@ -935,10 +913,18 @@ export function CoupleDashboard({
 
       {/* Character Development House */}
       <Card
-        className="group cursor-pointer overflow-hidden rounded-[1.75rem] border-amber-200 bg-gradient-to-br from-[#fffdf7] via-amber-50/55 to-rose-50/45 transition-all hover:-translate-y-0.5"
+        className="tbo-glass tbo-glass-interactive group overflow-hidden"
+        role="button"
+        tabIndex={0}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            onScreenNavigate?.('character-house');
+          }
+        }}
         onClick={() => onScreenNavigate?.('character-house')}
       >
-        <CardContent className="flex items-center gap-4 p-5">
+        <CardContent className="dashboard-house-content flex items-center gap-4 p-5">
           <div className="relative grid h-20 w-24 shrink-0 place-items-end overflow-hidden rounded-2xl border border-amber-200 bg-gradient-to-b from-sky-100 to-emerald-50 p-3">
             <div className="absolute bottom-2 h-8 w-16 border-2 border-stone-500 bg-stone-200 shadow-sm" />
             <div className="absolute bottom-10 h-10 w-10 rotate-45 border-l-2 border-t-2 border-rose-900/30 bg-gradient-to-br from-rose-600 to-amber-700" />
@@ -946,10 +932,10 @@ export function CoupleDashboard({
             <span className="absolute right-2 top-2 grid h-6 w-6 place-items-center rounded-full bg-amber-500 text-white shadow"><Hammer className="h-3.5 w-3.5" /></span>
           </div>
           <div className="min-w-0 flex-1">
-            <p className="tbo-eyebrow text-amber-700">{tr("365-day character journey")}</p>
-            <h3 className="tbo-card-title mt-1 text-stone-950">{tr("Build the House That Honors God")}</h3>
-            <p className="tbo-caption mt-1 text-stone-600">{tr("Choose your dream home, design its rooms, and place one character-building block each day.")}</p>
-            <span className="tbo-caption mt-3 inline-flex items-center text-rose-700">{tr("Open house builder")} <ArrowRight className="ml-1 h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /></span>
+            <p className="tbo-eyebrow dashboard-glass-accent">{tr("365-day character journey")}</p>
+            <h3 className="tbo-card-title mt-1">{tr("Build the House That Honors God")}</h3>
+            <p className="tbo-caption mt-1 text-muted-foreground">{tr("Choose your dream home, design its rooms, and place one character-building block each day.")}</p>
+            <span className="tbo-caption dashboard-glass-accent mt-3 inline-flex items-center">{tr("Open house builder")} <ArrowRight className="ml-1 h-3.5 w-3.5" /></span>
           </div>
         </CardContent>
       </Card>
@@ -961,26 +947,26 @@ export function CoupleDashboard({
       />
 
       {/* Scripture Memory */}
-      <Card className="overflow-hidden rounded-[1.75rem] border-rose-100 bg-gradient-to-br from-white via-rose-50/35 to-violet-50/45 transition-all hover:-translate-y-0.5">
+      <Card className="tbo-glass overflow-hidden">
         <CardHeader className="p-5 pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="grid h-10 w-10 place-items-center rounded-2xl bg-rose-100 text-rose-600"><Brain className="h-5 w-5" /></span>
-              <CardTitle className="tbo-card-title text-slate-950">{tr("Scripture Memory")}</CardTitle>
+              <span className="tbo-glass-orb h-10 w-10"><Brain className="h-5 w-5" /></span>
+              <CardTitle className="tbo-card-title">{tr("Scripture Memory")}</CardTitle>
             </div>
             <Sparkles className="w-4 h-4 text-warning-500" />
           </div>
           <CardDescription className="tbo-supporting">{tr("Memorize God's Word together")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3 px-5 pb-5">
-          <div className="rounded-2xl border border-white bg-white/85 p-4">
+          <div className="tbo-glass-inset p-4">
             <p className="tbo-caption text-muted-foreground dark:text-muted-foreground mb-2">{tr("Featured Verse")}</p>
             <p lang="en" className="tbo-supporting mb-2">"Love is patient and kind..."</p>
-            <p lang="en" className="tbo-caption text-primary-600">1 Corinthians 13:4</p>
+            <p lang="en" className="tbo-caption dashboard-glass-accent">1 Corinthians 13:4</p>
           </div>
           <Button 
-            variant="outline" 
-            className="tbo-action h-11 w-full rounded-xl border-rose-200 bg-white/80 text-rose-700 hover:bg-white"
+            variant="glass"
+            className="tbo-action w-full"
             onClick={() => onScreenNavigate?.('scripture-memory')}
           >
             <Brain className="w-4 h-4 mr-2" />

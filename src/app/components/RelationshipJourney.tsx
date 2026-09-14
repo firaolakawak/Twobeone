@@ -89,7 +89,7 @@ export const RelationshipGrowth = memo(function RelationshipGrowth({ startDate }
   const journeyPercent = (journeyDays / finalStageDay) * 100;
 
   return (
-    <section aria-label={stageTitle} className="border-t border-border/70 pt-3">
+    <section aria-label={stageTitle} className="relationship-growth border-t border-border/70 pt-3">
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
         <h3 className="text-sm font-semibold leading-5 text-foreground">
           {stageTitle}

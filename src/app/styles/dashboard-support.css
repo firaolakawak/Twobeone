@@ -1,0 +1,276 @@
+.tbo-support-card {
+  container: dashboard-support / inline-size;
+  min-width: 0;
+  color: var(--glass-foreground);
+  overflow-wrap: anywhere;
+}
+
+.tbo-support-title {
+  color: var(--glass-foreground);
+}
+
+.tbo-support-muted {
+  color: var(--glass-muted);
+}
+
+.tbo-support-accent {
+  color: var(--glass-accent);
+}
+
+.tbo-support-card .tbo-support-complete {
+  color: var(--success-700);
+}
+
+.dark .tbo-support-card .tbo-support-complete {
+  color: #86efac;
+}
+
+.tbo-support-progress {
+  height: .1875rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--glass-accent) 16%, var(--glass-solid));
+}
+
+.tbo-support-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--glass-accent), var(--glass-rose));
+  transition: width .5s ease;
+}
+
+.tbo-learning-card {
+  border-radius: 1.75rem;
+  overflow: hidden;
+}
+
+.tbo-support-card .tbo-learning-header {
+  padding: 1.25rem;
+  border: 0;
+  border-bottom: 1px solid var(--glass-border);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.tbo-learning-heading,
+.tbo-learning-heading-copy {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  min-width: 0;
+}
+
+.tbo-learning-heading {
+  justify-content: space-between;
+}
+
+.tbo-learning-header-icon,
+.tbo-learning-module-icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.tbo-learning-header-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+}
+
+.tbo-support-card .tbo-learning-percentage {
+  flex-shrink: 0;
+  padding: .125rem .625rem;
+  border-radius: 999px;
+  color: var(--glass-accent);
+}
+
+.tbo-learning-overall-progress {
+  height: .3125rem;
+  margin-top: .5rem;
+}
+
+.tbo-learning-rows {
+  padding: .625rem .75rem;
+}
+
+.tbo-support-card .tbo-learning-row {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  width: 100%;
+  padding: .75rem;
+  border-radius: 1rem;
+  margin: .125rem 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tbo-support-card .tbo-learning-module-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: .875rem;
+}
+
+.tbo-learning-module-progress {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-top: .25rem;
+}
+
+.tbo-learning-module-progress .tbo-support-progress {
+  flex: 1;
+}
+
+.tbo-learning-done {
+  flex-shrink: 0;
+  max-width: 30%;
+}
+
+.tbo-learning-footer {
+  padding: .75rem 1rem;
+  border-top: 1px solid var(--glass-border);
+}
+
+.tbo-support-card .tbo-learning-view-all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  width: 100%;
+  padding: .75rem;
+  border-radius: .875rem;
+  cursor: pointer;
+}
+
+.tbo-champions-periods {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 4rem), 1fr));
+}
+
+.tbo-champions-categories {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+}
+
+.tbo-champions-category {
+  display: grid;
+  grid-template-columns: 1rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .5rem;
+}
+
+.tbo-champions-category strong {
+  max-width: 6rem;
+  text-align: right;
+}
+
+.tbo-champions-progress {
+  height: .5rem;
+}
+
+/* Switch to full-width copy before enlarged text runs out of row space. */
+@container dashboard-support (max-width: 14rem) {
+  .tbo-support-card .tbo-learning-header {
+    padding: .75rem;
+  }
+
+  .tbo-learning-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .tbo-learning-heading-copy {
+    display: contents;
+  }
+
+  .tbo-learning-header-icon {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .tbo-learning-heading-copy > div {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .tbo-support-card .tbo-learning-percentage {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    white-space: nowrap;
+  }
+
+  .tbo-learning-rows {
+    padding: .375rem;
+  }
+
+  .tbo-support-card .tbo-learning-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: .375rem;
+    padding: .5rem;
+  }
+
+  .tbo-support-card .tbo-learning-module-icon {
+    grid-column: 1;
+    grid-row: 1;
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .tbo-learning-row > div {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .tbo-learning-row > :last-child {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    max-width: 100%;
+  }
+
+  .tbo-learning-footer {
+    padding: .5rem;
+  }
+
+  .tbo-support-card .tbo-learning-view-all {
+    padding: .5rem;
+  }
+
+  .tbo-champions-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .5rem;
+  }
+
+  .tbo-champions-category {
+    grid-template-columns: 1rem minmax(0, 1fr);
+    gap: .25rem .5rem;
+  }
+
+  .tbo-champions-category strong {
+    grid-column: 2;
+    max-width: 100%;
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tbo-support-progress-fill {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .tbo-support-progress {
+    background: Canvas;
+    outline: 1px solid CanvasText;
+    outline-offset: -1px;
+  }
+
+  .tbo-support-progress-fill {
+    background: Highlight;
+    forced-color-adjust: none;
+  }
+}

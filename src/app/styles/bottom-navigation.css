@@ -1,0 +1,95 @@
+.tbo-bottom-navigation {
+  background: linear-gradient(to top, var(--glass-canvas), transparent);
+}
+
+.tbo-bottom-navigation__surface {
+  container: tbo-bottom-navigation / inline-size;
+  border-color: var(--glass-border);
+}
+
+.tbo-bottom-navigation__tab {
+  border-radius: 1.125rem;
+  color: var(--glass-muted);
+  transition: color 160ms ease, background-color 160ms ease;
+}
+
+.tbo-bottom-navigation__tab:hover {
+  color: var(--glass-foreground);
+  background: color-mix(in srgb, var(--glass-accent) 7%, transparent);
+}
+
+.tbo-bottom-navigation__tab[aria-current='page'] {
+  color: var(--glass-accent);
+}
+
+.tbo-bottom-navigation__tab:focus-visible {
+  outline: 2px solid var(--glass-accent);
+  outline-offset: 1px;
+}
+
+.tbo-bottom-navigation__icon {
+  max-width: 100%;
+  border: 1px solid transparent;
+  border-radius: 1rem;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.tbo-bottom-navigation__tab[aria-current='page'] .tbo-bottom-navigation__icon {
+  border-color: color-mix(in srgb, var(--glass-accent) 16%, transparent);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--glass-accent) 15%, transparent), color-mix(in srgb, var(--glass-rose) 10%, transparent));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--glass-solid) 70%, transparent);
+}
+
+.tbo-bottom-navigation__label {
+  overflow-wrap: anywhere;
+}
+
+.tbo-bottom-navigation__badge {
+  right: 0;
+  box-shadow: 0 0 0 2px var(--glass-solid);
+}
+
+/* Rem-based container queries also respond to enlarged application text. */
+@container tbo-bottom-navigation (max-width: 17rem) {
+  .tbo-bottom-navigation__items {
+    flex-wrap: wrap;
+  }
+
+  .tbo-bottom-navigation__tab {
+    flex: 1 1 calc(33.333% - .5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tbo-bottom-navigation__tab,
+  .tbo-bottom-navigation__icon {
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .tbo-bottom-navigation {
+    background: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .tbo-bottom-navigation {
+    background: none;
+  }
+
+  .tbo-bottom-navigation__tab,
+  .tbo-bottom-navigation__tab[aria-current='page'] {
+    color: ButtonText;
+  }
+
+  .tbo-bottom-navigation__tab[aria-current='page'] .tbo-bottom-navigation__icon {
+    border-color: Highlight;
+    background: Canvas;
+    box-shadow: none;
+  }
+
+  .tbo-bottom-navigation__tab:focus-visible {
+    outline-color: Highlight;
+  }
+}

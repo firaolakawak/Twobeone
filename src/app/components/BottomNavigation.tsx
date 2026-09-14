@@ -3,6 +3,7 @@ import { memo } from 'react';
 import { BookOpen, Globe2, HandHeart, Home, MessageCircleHeart, User } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
 import { useLanguage } from '../contexts/LanguageContext';
+import '../styles/bottom-navigation.css';
 
 interface BottomNavigationProps {
   activeTab: string;
@@ -26,14 +27,14 @@ export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTa
 
   return (
     <div
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-50 bg-gradient-to-t from-white via-white/95 to-transparent px-3 pt-5"
+      className="tbo-bottom-navigation pointer-events-none fixed inset-x-0 bottom-0 z-40 px-3 pt-5"
       style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)' }}
     >
       <nav
         aria-label={t.nav.primaryNavigation}
-        className="pointer-events-auto mx-auto max-w-lg rounded-[1.75rem] border border-white/90 bg-white/90 px-2 shadow-[0_-2px_10px_rgba(83,45,67,0.03),0_16px_45px_rgba(83,45,67,0.18)] ring-1 ring-neutral-950/[0.04] backdrop-blur-2xl"
+        className="tbo-glass-raised tbo-bottom-navigation__surface pointer-events-auto mx-auto max-w-lg rounded-[1.75rem] border px-2"
       >
-        <div className="flex min-h-16 items-stretch justify-between gap-0.5 py-1.5">
+        <div className="tbo-bottom-navigation__items flex min-h-16 items-stretch justify-between gap-0.5 py-1.5">
           {tabs.map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -50,22 +51,22 @@ export const BottomNavigation = memo(function BottomNavigation({ activeTab, onTa
                 whileTap={prefersReducedMotion ? undefined : { scale: 0.92 }}
                 transition={{ duration: 0.16 }}
                 title={tab.label}
-                className={`group relative flex min-h-14 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${isActive ? 'text-primary' : 'text-neutral-600 hover:text-neutral-900'}`}
+                className="tbo-bottom-navigation__tab group relative flex min-h-14 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-0.5"
               >
-                <span className="relative flex h-7 w-9 shrink-0 items-center justify-center">
+                <span className="tbo-bottom-navigation__icon relative flex h-8 w-9 shrink-0 items-center justify-center">
                   <Icon
                     aria-hidden="true"
-                    className={`h-6 w-6 transition-transform duration-200 ${isActive ? 'scale-105 text-primary' : 'group-hover:scale-105'}`}
+                    className="h-6 w-6"
                     strokeWidth={isActive ? 2.4 : 1.9}
                   />
                   {unreadCount > 0 && (
-                    <span className="tbo-caption absolute -right-1 -top-1 grid min-h-4 min-w-4 place-items-center rounded-full bg-rose-600 px-1 text-white shadow-sm ring-2 ring-white" aria-hidden="true">
+                    <span className="tbo-bottom-navigation__badge tbo-caption absolute -right-1 -top-1 grid min-h-4 min-w-4 place-items-center rounded-full bg-rose-600 px-1 text-white shadow-sm" aria-hidden="true">
                       {unreadCount > 99 ? '99+' : unreadCount}
                     </span>
                   )}
                 </span>
                 {isActive && (
-                  <span className="tbo-caption relative w-full break-words text-center text-primary">
+                  <span className="tbo-bottom-navigation__label tbo-caption relative w-full text-center">
                     {tab.label}
                   </span>
                 )}
