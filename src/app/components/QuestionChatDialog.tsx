@@ -209,7 +209,7 @@ export function QuestionChatDialog({
             </DialogDescription>
 
             {/* Bible Verse Card */}
-            <div className="bg-gradient-to-br from-muted to-white border border-border rounded-lg p-4">
+            <div className="tbo-glass-inset border border-border rounded-lg p-4">
               <div className="flex items-start gap-3">
                 <Quote className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-1" />
                 <div className="flex-1 space-y-2">

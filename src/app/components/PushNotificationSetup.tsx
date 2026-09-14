@@ -338,9 +338,9 @@ export function PushNotificationSetup({ userId, accessToken, onComplete, reminde
 
           {reminderOnly && !isSubscribed ? (
             <div className="space-y-4 py-3">
-              <div className="flex items-start gap-3 rounded-2xl bg-gradient-to-br from-primary-50 to-rose-50 p-4">
-                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white shadow-sm">
-                  <Bell className="h-5 w-5 text-primary-600" />
+              <div className="tbo-glass-inset flex items-start gap-3 p-4">
+                <div className="tbo-glass-orb h-11 w-11">
+                  <Bell className="h-5 w-5" />
                 </div>
                 <div>
                   <h3 className="tbo-card-title text-foreground">{t.notifications.enableNotifications}</h3>

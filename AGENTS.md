@@ -2,6 +2,8 @@
 
 Follow the canonical [TwoBeOne Typography Language](docs/twobeone-typography-language.md) for UI changes in this repository.
 
+Follow [TwoBeOne Glass Language](docs/twobeone-glass-language.md) for shared app-wide colors, materials, controls, and their accessible theme fallbacks.
+
 Use the shared `BackButton` for page returns, following [TwoBeOne Navigation Language](docs/twobeone-navigation-language.md).
 
 Follow [TwoBeOne Localization Language](docs/twobeone-localization-language.md) for English, Amharic, and Afaan Oromo copy, language switching, and branded loading states.

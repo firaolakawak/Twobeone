@@ -1,3 +1,4 @@
+import '../styles/feature-glass.css';
 import { useUiCopy } from '../utils/uiTranslation';
 import { guidanceMessages, guidanceLabel } from '../locales/guidance';
 import { BrandLoader } from './BrandLoader';
@@ -280,7 +281,7 @@ export function LessonScreen({
     return (
       <div style={{ padding: "24px", textAlign: "center" }}>
         <BackButton label={t.common.back} onClick={onBack} showLabel className="mb-6" />
-        <p className="tbo-supporting" style={{ color: "#64748b",  }}>{tr("Module not found.")} </p>
+        <p className="tbo-supporting" style={{ color: "var(--glass-muted)",  }}>{tr("Module not found.")} </p>
       </div>
     );
   }
@@ -366,11 +367,11 @@ export function LessonScreen({
     }
   };
 
-  const accent = module.accentColor;
-  const accentBg = module.accentBg;
+  const accent = "var(--glass-accent)";
+  const accentBg = "var(--glass-inset-surface)";
 
   return (
-    <div
+    <div className="tbo-feature-layout"
       style={{
         display: "flex",
         flexDirection: "column",
@@ -401,7 +402,7 @@ export function LessonScreen({
           <h1 className="tbo-page-title break-words"
             style={{
 
-              color: "#0f172a",
+              color: "var(--glass-foreground)",
               margin: 0,
 
             }}
@@ -412,7 +413,7 @@ export function LessonScreen({
         <span className="tbo-caption"
           style={{
 
-            color: "#64748b",
+            color: "var(--glass-muted)",
             flexShrink: 0,
 
           }}
@@ -422,13 +423,12 @@ export function LessonScreen({
       </div>
 
       {/* Module progress bar */}
-      <div
+      <div className="tbo-glass"
         style={{
-          backgroundColor: "#ffffff",
           borderRadius: "8px",
-          border: "1px solid #e2e8f0",
+          border: "1px solid var(--glass-border)",
           padding: "12px 16px",
-          boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+          boxShadow: "var(--glass-shadow)",
         }}
       >
         <div
@@ -442,7 +442,7 @@ export function LessonScreen({
           <span className="tbo-label"
             style={{
 
-              color: "#475569",
+              color: "var(--glass-muted)",
 
             }}
           >{tr("Module Progress")} </span>
@@ -460,7 +460,7 @@ export function LessonScreen({
           style={{
             height: 5,
             borderRadius: "9999px",
-            backgroundColor: "#f1f5f9",
+            backgroundColor: "var(--glass-rim)",
             overflow: "hidden",
           }}
         >
@@ -477,7 +477,7 @@ export function LessonScreen({
         <p className="tbo-caption"
           style={{
 
-            color: "#64748b",
+            color: "var(--glass-muted)",
             margin: "4px 0 0 0",
           }}
         >
@@ -488,7 +488,7 @@ export function LessonScreen({
       <div
         style={{
           backgroundColor: accentBg,
-          border: `1px solid ${module.accentBorder}`,
+          border: "1px solid var(--glass-border)",
           borderRadius: "8px",
           padding: "16px",
           display: "flex",
@@ -505,13 +505,11 @@ export function LessonScreen({
           }}
         />
         <div>
-          <p
+          <p className="tbo-supporting"
             style={{
-              fontSize: "14px",
-              color: "#1e293b",
+              color: "var(--glass-foreground)",
               fontStyle: "italic",
               margin: 0,
-              lineHeight: 1.55,
             }}
           >
             {module.scripture}
@@ -530,16 +528,15 @@ export function LessonScreen({
       </div>
 
       {/* Lesson navigation */}
-      <div
+      <div className="tbo-glass"
         style={{
-          backgroundColor: "#ffffff",
           borderRadius: "8px",
-          border: "1px solid #e2e8f0",
+          border: "1px solid var(--glass-border)",
           padding: "12px 16px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+          boxShadow: "var(--glass-shadow)",
         }}
       >
         <button className="tbo-action"
@@ -556,7 +553,7 @@ export function LessonScreen({
                 ? "not-allowed"
                 : "pointer",
             color:
-              currentLessonIndex === 0 ? "#cbd5e1" : "#475569",
+              currentLessonIndex === 0 ? "var(--glass-muted)" : "var(--glass-muted)",
 
           }}
         >
@@ -567,7 +564,7 @@ export function LessonScreen({
         <span className="tbo-caption"
           style={{
 
-            color: "#64748b",
+            color: "var(--glass-muted)",
 
           }}
         >
@@ -589,8 +586,8 @@ export function LessonScreen({
                 : "pointer",
             color:
               currentLessonIndex === totalLessons - 1
-                ? "#cbd5e1"
-                : "#475569",
+                ? "var(--glass-muted)"
+                : "var(--glass-muted)",
 
           }}
         >
@@ -600,12 +597,11 @@ export function LessonScreen({
       </div>
 
       {/* Lesson content */}
-      <div
+      <div className="tbo-glass"
         style={{
-          backgroundColor: "var(--background)",
           borderRadius: "12px",
           border: "1px solid var(--border)",
-          boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+          boxShadow: "var(--glass-shadow)",
           overflow: "hidden",
         }}
       >
@@ -648,12 +644,11 @@ export function LessonScreen({
       </div>
 
       {/* Notes */}
-      <div
+      <div className="tbo-glass"
         style={{
-          backgroundColor: "#ffffff",
           borderRadius: "12px",
-          border: "1px solid #e2e8f0",
-          boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+          border: "1px solid var(--glass-border)",
+          boxShadow: "var(--glass-shadow)",
           overflow: "hidden",
         }}
       >
@@ -663,16 +658,16 @@ export function LessonScreen({
             alignItems: "center",
             gap: "8px",
             padding: "16px",
-            borderBottom: "1px solid #e2e8f0",
+            borderBottom: "1px solid var(--glass-border)",
           }}
         >
           <FileText
-            style={{ width: 18, height: 18, color: "#7c3aed" }}
+            style={{ width: 18, height: 18, color: "var(--glass-accent)" }}
           />
           <span className="tbo-label"
             style={{
 
-              color: "#0f172a",
+              color: "var(--glass-foreground)",
             }}
           >{tr("Your Notes")} </span>
         </div>
@@ -741,7 +736,7 @@ export function LessonScreen({
               borderRadius: "6px",
               border: "none",
               cursor: disabled ? "not-allowed" : "pointer",
-              backgroundColor: isCompleted ? "var(--success-50, #f0fdf4)" : notesReady ? accent : "var(--muted)",
+              background: isCompleted ? "var(--success-50, #f0fdf4)" : notesReady ? "var(--glass-primary-paint)" : "var(--glass-inset-surface)",
               color: isCompleted ? "var(--success-700, #166534)" : notesReady ? "#ffffff" : "var(--muted-foreground)",
 
               transition: "opacity 0.15s ease, background-color 0.2s ease",
@@ -763,25 +758,24 @@ export function LessonScreen({
       })()}
 
       {/* All lessons list */}
-      <div
+      <div className="tbo-glass"
         style={{
-          backgroundColor: "#ffffff",
           borderRadius: "12px",
-          border: "1px solid #e2e8f0",
-          boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+          border: "1px solid var(--glass-border)",
+          boxShadow: "var(--glass-shadow)",
           overflow: "hidden",
         }}
       >
         <div
           style={{
             padding: "16px",
-            borderBottom: "1px solid #e2e8f0",
+            borderBottom: "1px solid var(--glass-border)",
           }}
         >
           <span className="tbo-label"
             style={{
 
-              color: "#0f172a",
+              color: "var(--glass-foreground)",
             }}
           >{tr("All Lessons")} </span>
         </div>
@@ -819,12 +813,12 @@ export function LessonScreen({
                     width: 32,
                     height: 32,
                     borderRadius: "50%",
-                    backgroundColor: done
-                      ? "var(--success-500, #22c55e)"
+                    background: done
+                      ? "var(--success-600, #16a34a)"
                       : locked
                         ? "var(--muted)"
                         : active
-                          ? accent
+                          ? "var(--glass-primary-paint)"
                           : "var(--muted)",
                     border: done || active || locked ? "none" : "2px solid var(--border)",
                     display: "flex",

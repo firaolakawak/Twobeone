@@ -35,7 +35,7 @@ export function QuestionsSection({ responses, onSaveResponse }: QuestionsSection
   const questions: Question[] = [];
   const categories: string[] = [];
 
-  const filteredQuestions = selectedCategory 
+  const filteredQuestions = selectedCategory
     ? questions.filter(q => q.category === selectedCategory)
     : questions;
 
@@ -89,7 +89,7 @@ export function QuestionsSection({ responses, onSaveResponse }: QuestionsSection
       </div>
 
       {/* Empty State - Questions managed through Admin Panel */}
-      <Card className="p-12 text-center">
+      <Card className="tbo-glass p-12 text-center">
         <MessageCircleHeart className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
         <h3 className="tbo-card-title mb-2">{tr("Questions Managed by Admin")}</h3>
         <p className="tbo-body text-muted-foreground mb-4">
@@ -153,7 +153,7 @@ export function QuestionsSection({ responses, onSaveResponse }: QuestionsSection
                     </Button>
                   </div>
                   {showPartnerResponse && (
-                    <div className="p-4 bg-sky-50 rounded-lg border border-sky-200">
+                    <div className="p-4 bg-sky-50 rounded-lg border border-[var(--glass-border)]">
                       <p className="tbo-supporting text-muted-foreground whitespace-pre-wrap">
                         {getPartnerResponse(selectedQuestion.id)?.response}
                       </p>

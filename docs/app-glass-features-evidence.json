@@ -1,0 +1,608 @@
+{
+  "scope": "Active couple feature interiors and a regression check of the approved Dashboard; actual React components mounted with local fixtures and the App main width/padding.",
+  "recordedAtUtc": "2026-09-14T18:58:43.337646+00:00",
+  "browser": "Edg/153.0.4234.32",
+  "environment": {
+    "origin": "http://127.0.0.1:5173",
+    "headless": true,
+    "deviceScaleFactor": 1,
+    "textScaling": "CSS root font size at 100%, 125%, or 200%; not native browser zoom or a physical-device run."
+  },
+  "coverage": {
+    "featureComponentsMounted": [
+      "CategorySelection",
+      "CommunityGroups",
+      "ComprehensiveBibleReader",
+      "CoupleCalendar",
+      "DailyDevotionsFeed",
+      "DevotionalDialog",
+      "EnhancedJournal",
+      "LessonScreen",
+      "MarriageReadinessReport",
+      "PartnerChat",
+      "PrayerBoard",
+      "PrayerTogetherChat",
+      "PreMarriageHub",
+      "QADiscussionHub",
+      "QuizzesHub"
+    ],
+    "distinctRenderedCases": 41,
+    "featureBaselineCases": 27,
+    "translatedEnlargedCases": 6,
+    "additionalEmptyAndReflectionCases": 6,
+    "approvedDashboardCases": 2,
+    "targetedContrastRefreshes": 12,
+    "widthsCssPx": [
+      320,
+      390,
+      446,
+      1280
+    ],
+    "languages": [
+      "en",
+      "am",
+      "om"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "note": "Representative coverage, not every combination of every component or every nested interaction. The 6 narrow cases use Amharic/Oromo, light theme, 320px and 200% root text."
+  },
+  "summary": {
+    "passed": true,
+    "unresolvedFunctionalOverflow": 0,
+    "documentOverflow": 0,
+    "visibleTextOutsideViewport": 0,
+    "visibleTextBelow12px": 0,
+    "runtimeErrors": 0,
+    "externalNetworkRequests": 0,
+    "liveNetworkWrites": 0
+  },
+  "sourceChanges": {
+    "featureComponents": [
+      "src/app/components/CoupleCalendar.tsx",
+      "src/app/components/QuizzesHub.tsx",
+      "src/app/components/LoveLanguagesQuiz.tsx",
+      "src/app/components/FaithJourneyQuiz.tsx",
+      "src/app/components/ConflictStyleQuiz.tsx",
+      "src/app/components/QuizComparison.tsx",
+      "src/app/components/PreMarriageHub.tsx",
+      "src/app/components/LessonScreen.tsx",
+      "src/app/components/DailyDevotionsFeed.tsx",
+      "src/app/components/EnhancedJournal.tsx",
+      "src/app/components/PrayerBoard.tsx",
+      "src/app/components/CommunityGroups.tsx",
+      "src/app/components/GroupDetailScreen.tsx",
+      "src/app/components/QuestionsSection.tsx",
+      "src/app/components/ProgressSection.tsx",
+      "src/app/components/DevotionalDialog.tsx",
+      "src/app/components/PrayerTogetherChat.tsx",
+      "src/app/components/RelationshipTimeline.tsx",
+      "src/app/components/CategorySelection.tsx",
+      "src/app/components/QADiscussionHub.tsx",
+      "src/app/components/DynamicQuestionPrompt.tsx",
+      "src/app/components/AIAssistant.tsx",
+      "src/app/components/ScriptureMemory.tsx",
+      "src/app/components/PreMarriageGuidance.tsx",
+      "src/app/components/MoodTracker.tsx",
+      "src/app/components/MoodAnalytics.tsx",
+      "src/app/components/MarriageReadinessReport.tsx",
+      "src/app/components/DailyQuestion.tsx",
+      "src/app/components/QuestionChatDialog.tsx",
+      "src/app/components/QAResultsView.tsx",
+      "src/app/components/DiscussionThread.tsx",
+      "src/app/components/PartnerChat.tsx",
+      "src/app/components/CharacterHouseBuilder.tsx",
+      "src/app/components/ComprehensiveBibleReader.tsx"
+    ],
+    "supportFiles": [
+      "src/app/components/qaCategoryVisuals.ts",
+      "src/app/styles/feature-glass.css"
+    ],
+    "preserved": "Existing layout at normal widths, copy, navigation callbacks, data operations, reading typography, authored media/3D artwork, meaningful status colors. Narrow container rules reflow cramped header/stat/timeline content without reducing typography."
+  },
+  "cases": [
+    [
+      "EnhancedJournal",
+      "en",
+      "light",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "EnhancedJournal",
+      "en",
+      "dark",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "PrayerBoard",
+      "en",
+      "light",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "PrayerBoard",
+      "en",
+      "dark",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "CoupleCalendar",
+      "en",
+      "light",
+      390,
+      1,
+      "fixture",
+      1
+    ],
+    [
+      "CoupleCalendar",
+      "en",
+      "dark",
+      390,
+      1,
+      "fixture",
+      1
+    ],
+    [
+      "DailyDevotionsFeed",
+      "en",
+      "light",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "DailyDevotionsFeed",
+      "en",
+      "dark",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "ComprehensiveBibleReader",
+      "en",
+      "light",
+      390,
+      1,
+      "fixture",
+      1
+    ],
+    [
+      "ComprehensiveBibleReader",
+      "en",
+      "dark",
+      390,
+      1,
+      "fixture",
+      1
+    ],
+    [
+      "QuizzesHub",
+      "en",
+      "light",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "QuizzesHub",
+      "en",
+      "dark",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "CategorySelection",
+      "en",
+      "light",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "CategorySelection",
+      "en",
+      "dark",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "QADiscussionHub",
+      "en",
+      "light",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "QADiscussionHub",
+      "en",
+      "dark",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "CommunityGroups",
+      "en",
+      "light",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "CommunityGroups",
+      "en",
+      "dark",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "PartnerChat",
+      "en",
+      "light",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "PartnerChat",
+      "en",
+      "dark",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "PreMarriageHub",
+      "en",
+      "light",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "PreMarriageHub",
+      "en",
+      "dark",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "LessonScreen",
+      "en",
+      "light",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "LessonScreen",
+      "en",
+      "dark",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "MarriageReadinessReport",
+      "en",
+      "light",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "MarriageReadinessReport",
+      "en",
+      "dark",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "EnhancedJournal",
+      "en",
+      "light",
+      1280,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "EnhancedJournal",
+      "am",
+      "light",
+      320,
+      2,
+      "fixture",
+      0
+    ],
+    [
+      "PrayerBoard",
+      "om",
+      "light",
+      320,
+      2,
+      "fixture",
+      0
+    ],
+    [
+      "CoupleCalendar",
+      "am",
+      "light",
+      320,
+      2,
+      "fixture",
+      1
+    ],
+    [
+      "QADiscussionHub",
+      "om",
+      "light",
+      320,
+      2,
+      "fixture",
+      0
+    ],
+    [
+      "CommunityGroups",
+      "am",
+      "light",
+      320,
+      2,
+      "fixture",
+      0
+    ],
+    [
+      "LessonScreen",
+      "om",
+      "light",
+      320,
+      2,
+      "fixture",
+      0
+    ],
+    [
+      "EnhancedJournal",
+      "en",
+      "light",
+      390,
+      1,
+      "empty",
+      0
+    ],
+    [
+      "DevotionalDialog",
+      "en",
+      "light",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "PrayerTogetherChat",
+      "en",
+      "light",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "EnhancedJournal",
+      "en",
+      "dark",
+      390,
+      1,
+      "empty",
+      0
+    ],
+    [
+      "DevotionalDialog",
+      "en",
+      "dark",
+      390,
+      1,
+      "fixture",
+      0
+    ],
+    [
+      "PrayerTogetherChat",
+      "en",
+      "dark",
+      390,
+      1,
+      "fixture",
+      0
+    ]
+  ],
+  "targetedFinalChecks": {
+    "buttonInkRefresh": {
+      "cases": 10,
+      "components": [
+        "EnhancedJournal",
+        "PrayerBoard",
+        "PartnerChat",
+        "CommunityGroups",
+        "QADiscussionHub"
+      ],
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "widthCssPx": 390,
+      "rootTextScale": 1,
+      "pass": true
+    },
+    "emptyStateRefresh": {
+      "cases": 2,
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "widthCssPx": 390,
+      "pass": true
+    },
+    "primaryButtonComputedColors": [
+      {
+        "theme": "light",
+        "text": "rgb(255, 255, 255)",
+        "background": "rgb(112, 56, 181)",
+        "fontSize": "14px",
+        "heightPx": 44
+      },
+      {
+        "theme": "dark",
+        "text": "rgb(46, 23, 71)",
+        "background": "rgb(203, 167, 255)",
+        "fontSize": "14px",
+        "heightPx": 44
+      }
+    ],
+    "qAndAPaint": "Raw companion action uses tbo-glass-primary; remaining progress paint uses --glass-accent, and default CTA ink comes from the theme."
+  },
+  "dashboardRegression": {
+    "cases": 2,
+    "widthCssPx": 446,
+    "rootTextScale": 1.25,
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "geometryAndVisibleCompositionMatchApprovedReference": true,
+    "moodEmojiCount": 0,
+    "removedStageDateCaptionCount": 0,
+    "documentOverflow": 0,
+    "textOutsideViewport": 0,
+    "visibleTextBelow12px": 0,
+    "sourceReport": "dashboard-reference/dividers-report.json",
+    "note": "Reviewed beside docs/couple-hero-responsive-reference.png. Dynamic timer seconds differ naturally; existing Commitment wrapping remains the same."
+  },
+  "reviewedNonFunctionalScrollFlags": [
+    {
+      "component": "CoupleCalendar",
+      "reason": "Selected-date decorative indicator extends beyond the small date circle. Numeric date text and day button remain inside the viewport."
+    },
+    {
+      "component": "ComprehensiveBibleReader",
+      "reason": "The accessibility-only title sits inside a visually hidden ancestor. Visible reading content fits."
+    },
+    {
+      "component": "CoupleDashboard",
+      "reason": "The existing dashboard-growth-orb decorative ring extends outside its inner circle."
+    }
+  ],
+  "functionalChecks": [
+    {
+      "name": "journal creation opens",
+      "pass": true
+    },
+    {
+      "name": "journal Escape closes",
+      "pass": true
+    },
+    {
+      "name": "category selection calls existing navigation callback",
+      "pass": true
+    }
+  ],
+  "harnessCorrections": [
+    "Matched the App main padding/width before final baseline/narrow runs.",
+    "Excluded intentional ellipsis/line-clamp and scroll containers from functional clipping.",
+    "Category callback check initially targeted the BackButton; corrected to the actual category button and passed."
+  ],
+  "networkPolicy": {
+    "data": "Local journal, prayer, community, chat, Q&A, devotion, module and readiness fixtures. Fetch mocks return fixture responses; unmapped external HTTP requests are blocked.",
+    "observedMockRequestMethods": [
+      "GET"
+    ],
+    "externalRequests": 0,
+    "writes": "No live service writes; action/navigation callbacks are recorded locally."
+  },
+  "consoleNotes": [
+    "Expected Vite HMR websocket warnings from the isolated intercepted-document harness; no application runtime errors."
+  ],
+  "verification": {
+    "featureTestsBeforeFinalColorAndReflowRefinements": {
+      "files": 10,
+      "passedTests": 30
+    },
+    "finalFullSuiteAndBuild": "Run separately by root after feature source freeze.",
+    "gitDiffCheck": "Passed after removing owned trailing whitespace."
+  },
+  "screenshotsForDocumentation": [
+    {
+      "name": "feature-journal-glass.png",
+      "source": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\features\\EnhancedJournal-en-light-390-1x.png"
+    },
+    {
+      "name": "feature-prayer-glass-dark.png",
+      "source": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\features\\PrayerBoard-en-dark-390-1x.png"
+    },
+    {
+      "name": "feature-questions-glass.png",
+      "source": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\features\\QADiscussionHub-en-light-390-1x.png"
+    },
+    {
+      "name": "feature-learning-glass-dark.png",
+      "source": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\features\\LessonScreen-en-dark-390-1x.png"
+    }
+  ],
+  "additionalPreviews": [
+    "EnhancedJournal-empty-en-dark-390-1x.png",
+    "DevotionalDialog-en-dark-390-1x.png",
+    "CommunityGroups-am-light-320-2x.png",
+    "QADiscussionHub-om-light-320-2x.png",
+    "dashboard-reference/dividers-en-light-446-1.25x-normal.png",
+    "dashboard-reference/dividers-en-dark-446-1.25x-normal.png"
+  ],
+  "remainingCandidates": "No known remaining functional defect in the inspected feature states. Unvisited nested, realtime, printing and authored media states rely on preserved behavior and existing tests, not claims from this browser sweep.",
+  "caseColumns": [
+    "component",
+    "language",
+    "theme",
+    "widthCssPx",
+    "rootTextScale",
+    "state",
+    "rawScrollFlags"
+  ]
+}

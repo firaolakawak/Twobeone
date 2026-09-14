@@ -145,20 +145,20 @@ export function CalendarAlarmManager({ accessToken, onOpenCalendar }: CalendarAl
   const eventTime = createUiDateTimeFormat(locale, { hour: 'numeric', minute: '2-digit' }).format(dueAlarm.occurrence);
 
   return (
-    <div className="fixed inset-0 z-[100] grid place-items-center bg-slate-950/65 p-4 backdrop-blur-sm" role="alertdialog" aria-modal="true" aria-labelledby="calendar-alarm-title" aria-describedby="calendar-alarm-description">
-      <div className="w-full max-w-md overflow-hidden rounded-[2rem] border border-amber-200 bg-white shadow-2xl">
-        <div className="relative bg-gradient-to-br from-amber-400 via-orange-500 to-rose-600 px-6 py-8 text-center text-white">
-          <button type="button" onClick={dismiss} className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-white/20 hover:bg-white/30" aria-label={tr("Dismiss alarm")}><X className="h-5 w-5" /></button>
-          <span className="mx-auto grid h-20 w-20 animate-pulse place-items-center rounded-full bg-white/20 ring-4 ring-white/20"><AlarmClock className="h-11 w-11" /></span>
+    <div className="fixed inset-0 z-[100] grid place-items-center bg-[var(--glass-overlay)] p-4" role="alertdialog" aria-modal="true" aria-labelledby="calendar-alarm-title" aria-describedby="calendar-alarm-description">
+      <div className="tbo-glass-raised w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto">
+        <div className="relative bg-[var(--glass-warning-soft)] px-6 py-8 text-center text-[var(--glass-warning)]">
+          <button type="button" onClick={dismiss} className="absolute right-4 top-4 grid h-11 w-11 place-items-center rounded-full bg-card border border-border hover:bg-accent" aria-label={tr("Dismiss alarm")}><X className="h-5 w-5" /></button>
+          <span className="mx-auto grid h-20 w-20 motion-safe:animate-pulse place-items-center rounded-full bg-card ring-4 ring-[var(--glass-border)]"><AlarmClock className="h-11 w-11" /></span>
           <p className="tbo-eyebrow mt-5 flex items-center justify-center gap-2 uppercase"><Volume2 className="h-4 w-4" />{tr("One-hour alarm")}</p>
           <h2 id="calendar-alarm-title" className="tbo-dialog-title mt-2">{dueAlarm.item.title}</h2>
         </div>
         <div className="space-y-5 p-6 text-center">
-          <p id="calendar-alarm-description" className="tbo-body text-slate-700">{tr("Starts at {time}, in one hour.", { time: eventTime })}</p>
-          {dueAlarm.item.location && <p className="tbo-label rounded-xl bg-slate-50 px-4 py-3 text-slate-600">{dueAlarm.item.location}</p>}
-          <div className="grid grid-cols-2 gap-3">
+          <p id="calendar-alarm-description" className="tbo-body text-muted-foreground">{tr("Starts at {time}, in one hour.", { time: eventTime })}</p>
+          {dueAlarm.item.location && <p className="tbo-label tbo-glass-inset px-4 py-3">{dueAlarm.item.location}</p>}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Button type="button" variant="outline" onClick={dismiss} className="h-12 rounded-xl">{tr("Dismiss")}</Button>
-            <Button type="button" onClick={() => { dismiss(); onOpenCalendar(); }} className="h-12 rounded-xl bg-rose-600 text-white hover:bg-rose-700"><CalendarDays className="h-4 w-4" />{tr("Open calendar")}</Button>
+            <Button type="button" variant="glass-primary" onClick={() => { dismiss(); onOpenCalendar(); }}><CalendarDays className="h-4 w-4" />{tr("Open calendar")}</Button>
           </div>
         </div>
       </div>

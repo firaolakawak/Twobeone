@@ -1,0 +1,515 @@
+﻿{
+    "browser":  "Edg/153.0.4234.32",
+    "layouts":  [
+                    {
+                        "mode":  "notifications",
+                        "w":  390,
+                        "s":  1,
+                        "l":  "en",
+                        "t":  "light",
+                        "problems":  [
+
+                                     ],
+                        "pageOverflow":  false,
+                        "panelOutside":  false,
+                        "bounds":  {
+                                       "left":  0,
+                                       "right":  390,
+                                       "top":  0,
+                                       "bottom":  1000
+                                   },
+                        "surface":  "linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(249, 243, 255, 0.9))",
+                        "background":  "rgba(0, 0, 0, 0)",
+                        "ink":  "rgb(25, 43, 120)",
+                        "requests":  [
+                                         {
+                                             "url":  "https://local-fixture.supabase.co/functions/v1/make-server-6d579fee/notifications",
+                                             "method":  "GET"
+                                         }
+                                     ]
+                    },
+                    {
+                        "mode":  "notifications",
+                        "w":  390,
+                        "s":  1,
+                        "l":  "en",
+                        "t":  "dark",
+                        "problems":  [
+
+                                     ],
+                        "pageOverflow":  false,
+                        "panelOutside":  false,
+                        "bounds":  {
+                                       "left":  0,
+                                       "right":  390,
+                                       "top":  0,
+                                       "bottom":  1000
+                                   },
+                        "surface":  "linear-gradient(135deg, rgba(54, 43, 73, 0.97), rgba(35, 28, 49, 0.96))",
+                        "background":  "rgba(0, 0, 0, 0)",
+                        "ink":  "rgb(245, 239, 255)",
+                        "requests":  [
+                                         {
+                                             "url":  "https://local-fixture.supabase.co/functions/v1/make-server-6d579fee/notifications",
+                                             "method":  "GET"
+                                         }
+                                     ]
+                    },
+                    {
+                        "mode":  "notifications",
+                        "w":  320,
+                        "s":  2,
+                        "l":  "am",
+                        "t":  "light",
+                        "problems":  [
+
+                                     ],
+                        "pageOverflow":  false,
+                        "panelOutside":  false,
+                        "bounds":  {
+                                       "left":  0,
+                                       "right":  320,
+                                       "top":  0,
+                                       "bottom":  1000
+                                   },
+                        "surface":  "linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(249, 243, 255, 0.9))",
+                        "background":  "rgba(0, 0, 0, 0)",
+                        "ink":  "rgb(25, 43, 120)",
+                        "requests":  [
+                                         {
+                                             "url":  "https://local-fixture.supabase.co/functions/v1/make-server-6d579fee/notifications",
+                                             "method":  "GET"
+                                         }
+                                     ]
+                    },
+                    {
+                        "mode":  "notifications",
+                        "w":  320,
+                        "s":  2,
+                        "l":  "om",
+                        "t":  "dark",
+                        "problems":  [
+
+                                     ],
+                        "pageOverflow":  false,
+                        "panelOutside":  false,
+                        "bounds":  {
+                                       "left":  0,
+                                       "right":  320,
+                                       "top":  0,
+                                       "bottom":  1000
+                                   },
+                        "surface":  "linear-gradient(135deg, rgba(54, 43, 73, 0.97), rgba(35, 28, 49, 0.96))",
+                        "background":  "rgba(0, 0, 0, 0)",
+                        "ink":  "rgb(245, 239, 255)",
+                        "requests":  [
+                                         {
+                                             "url":  "https://local-fixture.supabase.co/functions/v1/make-server-6d579fee/notifications",
+                                             "method":  "GET"
+                                         }
+                                     ]
+                    },
+                    {
+                        "mode":  "notifications",
+                        "w":  1280,
+                        "s":  1,
+                        "l":  "en",
+                        "t":  "light",
+                        "problems":  [
+
+                                     ],
+                        "pageOverflow":  false,
+                        "panelOutside":  false,
+                        "bounds":  {
+                                       "left":  880,
+                                       "right":  1280,
+                                       "top":  0,
+                                       "bottom":  1000
+                                   },
+                        "surface":  "linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(249, 243, 255, 0.9))",
+                        "background":  "rgba(0, 0, 0, 0)",
+                        "ink":  "rgb(25, 43, 120)",
+                        "requests":  [
+                                         {
+                                             "url":  "https://local-fixture.supabase.co/functions/v1/make-server-6d579fee/notifications",
+                                             "method":  "GET"
+                                         }
+                                     ]
+                    },
+                    {
+                        "mode":  "notifications",
+                        "w":  1280,
+                        "s":  1,
+                        "l":  "en",
+                        "t":  "dark",
+                        "problems":  [
+
+                                     ],
+                        "pageOverflow":  false,
+                        "panelOutside":  false,
+                        "bounds":  {
+                                       "left":  880,
+                                       "right":  1280,
+                                       "top":  0,
+                                       "bottom":  1000
+                                   },
+                        "surface":  "linear-gradient(135deg, rgba(54, 43, 73, 0.97), rgba(35, 28, 49, 0.96))",
+                        "background":  "rgba(0, 0, 0, 0)",
+                        "ink":  "rgb(245, 239, 255)",
+                        "requests":  [
+                                         {
+                                             "url":  "https://local-fixture.supabase.co/functions/v1/make-server-6d579fee/notifications",
+                                             "method":  "GET"
+                                         }
+                                     ]
+                    },
+                    {
+                        "mode":  "install",
+                        "w":  390,
+                        "s":  1,
+                        "l":  "en",
+                        "t":  "light",
+                        "problems":  [
+
+                                     ],
+                        "pageOverflow":  false,
+                        "panelOutside":  false,
+                        "bounds":  {
+                                       "left":  12,
+                                       "right":  378,
+                                       "top":  584.21875,
+                                       "bottom":  908
+                                   },
+                        "surface":  "linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(249, 243, 255, 0.9))",
+                        "background":  "rgba(0, 0, 0, 0)",
+                        "ink":  "rgb(25, 43, 120)",
+                        "requests":  [
+
+                                     ]
+                    },
+                    {
+                        "mode":  "install",
+                        "w":  390,
+                        "s":  1,
+                        "l":  "en",
+                        "t":  "dark",
+                        "problems":  [
+
+                                     ],
+                        "pageOverflow":  false,
+                        "panelOutside":  false,
+                        "bounds":  {
+                                       "left":  12,
+                                       "right":  378,
+                                       "top":  584.21875,
+                                       "bottom":  908
+                                   },
+                        "surface":  "linear-gradient(135deg, rgba(54, 43, 73, 0.97), rgba(35, 28, 49, 0.96))",
+                        "background":  "rgba(0, 0, 0, 0)",
+                        "ink":  "rgb(245, 239, 255)",
+                        "requests":  [
+
+                                     ]
+                    },
+                    {
+                        "mode":  "install",
+                        "w":  320,
+                        "s":  2,
+                        "l":  "am",
+                        "t":  "light",
+                        "problems":  [
+
+                                     ],
+                        "pageOverflow":  false,
+                        "panelOutside":  false,
+                        "bounds":  {
+                                       "left":  24,
+                                       "right":  296,
+                                       "top":  32,
+                                       "bottom":  816
+                                   },
+                        "surface":  "linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(249, 243, 255, 0.9))",
+                        "background":  "rgba(0, 0, 0, 0)",
+                        "ink":  "rgb(25, 43, 120)",
+                        "requests":  [
+
+                                     ]
+                    },
+                    {
+                        "mode":  "install",
+                        "w":  320,
+                        "s":  2,
+                        "l":  "om",
+                        "t":  "dark",
+                        "problems":  [
+
+                                     ],
+                        "pageOverflow":  false,
+                        "panelOutside":  false,
+                        "bounds":  {
+                                       "left":  24,
+                                       "right":  296,
+                                       "top":  32,
+                                       "bottom":  816
+                                   },
+                        "surface":  "linear-gradient(135deg, rgba(54, 43, 73, 0.97), rgba(35, 28, 49, 0.96))",
+                        "background":  "rgba(0, 0, 0, 0)",
+                        "ink":  "rgb(245, 239, 255)",
+                        "requests":  [
+
+                                     ]
+                    },
+                    {
+                        "mode":  "install",
+                        "w":  1280,
+                        "s":  1,
+                        "l":  "en",
+                        "t":  "light",
+                        "problems":  [
+
+                                     ],
+                        "pageOverflow":  false,
+                        "panelOutside":  false,
+                        "bounds":  {
+                                       "left":  856,
+                                       "right":  1256,
+                                       "top":  652.21875,
+                                       "bottom":  976
+                                   },
+                        "surface":  "linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(249, 243, 255, 0.9))",
+                        "background":  "rgba(0, 0, 0, 0)",
+                        "ink":  "rgb(25, 43, 120)",
+                        "requests":  [
+
+                                     ]
+                    },
+                    {
+                        "mode":  "install",
+                        "w":  1280,
+                        "s":  1,
+                        "l":  "en",
+                        "t":  "dark",
+                        "problems":  [
+
+                                     ],
+                        "pageOverflow":  false,
+                        "panelOutside":  false,
+                        "bounds":  {
+                                       "left":  856,
+                                       "right":  1256,
+                                       "top":  652.21875,
+                                       "bottom":  976
+                                   },
+                        "surface":  "linear-gradient(135deg, rgba(54, 43, 73, 0.97), rgba(35, 28, 49, 0.96))",
+                        "background":  "rgba(0, 0, 0, 0)",
+                        "ink":  "rgb(245, 239, 255)",
+                        "requests":  [
+
+                                     ]
+                    },
+                    {
+                        "mode":  "location",
+                        "w":  390,
+                        "s":  1,
+                        "l":  "en",
+                        "t":  "light",
+                        "problems":  [
+
+                                     ],
+                        "pageOverflow":  false,
+                        "panelOutside":  false,
+                        "bounds":  {
+                                       "left":  16,
+                                       "right":  374,
+                                       "top":  209.421875,
+                                       "bottom":  790.578125
+                                   },
+                        "surface":  "linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(249, 243, 255, 0.9))",
+                        "background":  "rgba(0, 0, 0, 0)",
+                        "ink":  "rgb(25, 43, 120)",
+                        "requests":  [
+                                         {
+                                             "url":  "https://jhraxjlvmixhzvzbjjsw.supabase.co/functions/v1/make-server-6d579fee/couple-locations",
+                                             "method":  "GET"
+                                         }
+                                     ]
+                    },
+                    {
+                        "mode":  "location",
+                        "w":  390,
+                        "s":  1,
+                        "l":  "en",
+                        "t":  "dark",
+                        "problems":  [
+
+                                     ],
+                        "pageOverflow":  false,
+                        "panelOutside":  false,
+                        "bounds":  {
+                                       "left":  16,
+                                       "right":  374,
+                                       "top":  209.421875,
+                                       "bottom":  790.578125
+                                   },
+                        "surface":  "linear-gradient(135deg, rgba(54, 43, 73, 0.97), rgba(35, 28, 49, 0.96))",
+                        "background":  "rgba(0, 0, 0, 0)",
+                        "ink":  "rgb(245, 239, 255)",
+                        "requests":  [
+                                         {
+                                             "url":  "https://jhraxjlvmixhzvzbjjsw.supabase.co/functions/v1/make-server-6d579fee/couple-locations",
+                                             "method":  "GET"
+                                         }
+                                     ]
+                    },
+                    {
+                        "mode":  "location",
+                        "w":  320,
+                        "s":  2,
+                        "l":  "am",
+                        "t":  "light",
+                        "problems":  [
+
+                                     ],
+                        "pageOverflow":  false,
+                        "panelOutside":  false,
+                        "bounds":  {
+                                       "left":  32,
+                                       "right":  288,
+                                       "top":  32,
+                                       "bottom":  968
+                                   },
+                        "surface":  "linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(249, 243, 255, 0.9))",
+                        "background":  "rgba(0, 0, 0, 0)",
+                        "ink":  "rgb(25, 43, 120)",
+                        "requests":  [
+                                         {
+                                             "url":  "https://jhraxjlvmixhzvzbjjsw.supabase.co/functions/v1/make-server-6d579fee/couple-locations",
+                                             "method":  "GET"
+                                         }
+                                     ]
+                    },
+                    {
+                        "mode":  "location",
+                        "w":  320,
+                        "s":  2,
+                        "l":  "om",
+                        "t":  "dark",
+                        "problems":  [
+
+                                     ],
+                        "pageOverflow":  false,
+                        "panelOutside":  false,
+                        "bounds":  {
+                                       "left":  32,
+                                       "right":  288,
+                                       "top":  32,
+                                       "bottom":  968
+                                   },
+                        "surface":  "linear-gradient(135deg, rgba(54, 43, 73, 0.97), rgba(35, 28, 49, 0.96))",
+                        "background":  "rgba(0, 0, 0, 0)",
+                        "ink":  "rgb(245, 239, 255)",
+                        "requests":  [
+                                         {
+                                             "url":  "https://jhraxjlvmixhzvzbjjsw.supabase.co/functions/v1/make-server-6d579fee/couple-locations",
+                                             "method":  "GET"
+                                         }
+                                     ]
+                    },
+                    {
+                        "mode":  "location",
+                        "w":  1280,
+                        "s":  1,
+                        "l":  "en",
+                        "t":  "light",
+                        "problems":  [
+
+                                     ],
+                        "pageOverflow":  false,
+                        "panelOutside":  false,
+                        "bounds":  {
+                                       "left":  384,
+                                       "right":  896,
+                                       "top":  223.9140625,
+                                       "bottom":  776.0859375
+                                   },
+                        "surface":  "linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(249, 243, 255, 0.9))",
+                        "background":  "rgba(0, 0, 0, 0)",
+                        "ink":  "rgb(25, 43, 120)",
+                        "requests":  [
+                                         {
+                                             "url":  "https://jhraxjlvmixhzvzbjjsw.supabase.co/functions/v1/make-server-6d579fee/couple-locations",
+                                             "method":  "GET"
+                                         }
+                                     ]
+                    },
+                    {
+                        "mode":  "location",
+                        "w":  1280,
+                        "s":  1,
+                        "l":  "en",
+                        "t":  "dark",
+                        "problems":  [
+
+                                     ],
+                        "pageOverflow":  false,
+                        "panelOutside":  false,
+                        "bounds":  {
+                                       "left":  384,
+                                       "right":  896,
+                                       "top":  223.9140625,
+                                       "bottom":  776.0859375
+                                   },
+                        "surface":  "linear-gradient(135deg, rgba(54, 43, 73, 0.97), rgba(35, 28, 49, 0.96))",
+                        "background":  "rgba(0, 0, 0, 0)",
+                        "ink":  "rgb(245, 239, 255)",
+                        "requests":  [
+                                         {
+                                             "url":  "https://jhraxjlvmixhzvzbjjsw.supabase.co/functions/v1/make-server-6d579fee/couple-locations",
+                                             "method":  "GET"
+                                         }
+                                     ]
+                    }
+                ],
+    "checks":  [
+                   {
+                       "name":  "mark-all-read uses fixture and removes unread actions",
+                       "pass":  true
+                   },
+                   {
+                       "name":  "notification close",
+                       "pass":  true
+                   },
+                   {
+                       "name":  "install dismiss",
+                       "pass":  true
+                   },
+                   {
+                       "name":  "location draft survives language switch",
+                       "pass":  true
+                   },
+                   {
+                       "name":  "location close restores focus",
+                       "pass":  true
+                   }
+               ],
+    "errors":  [
+
+               ],
+    "blockedRequests":  [
+
+                        ],
+    "screenshots":  [
+                        "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-glass-qa/app-system/notifications-light.png",
+                        "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-glass-qa/app-system/notifications-dark.png",
+                        "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-glass-qa/app-system/install-light.png",
+                        "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-glass-qa/app-system/install-dark.png",
+                        "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-glass-qa/app-system/location-light.png",
+                        "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-glass-qa/app-system/location-dark.png"
+                    ],
+    "failures":  0,
+    "limitations":  [
+                        "Actual components in a representative shell with local API fixtures, not authenticated live-account testing.",
+                        "Enlargement uses CSS root text scaling, not native browser zoom.",
+                        "No real installation, notification delivery, or live write occurred."
+                    ]
+}

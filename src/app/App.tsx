@@ -1308,7 +1308,7 @@ export default function App() {
     return (
       <LanguageProvider>
         <SEOHead />
-        <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="tbo-glass-app flex items-center justify-center min-h-screen">
           <div className="text-center space-y-4">
             <BrandLoader label={vocabulary.loading} />
           </div>
@@ -1387,7 +1387,7 @@ export default function App() {
     return (
       <LanguageProvider>
         <Suspense fallback={<ScreenLoader />}>
-          <div className="min-h-screen bg-background">
+          <div className="tbo-glass-app min-h-screen">
             <div className="pt-11 pb-28">
               <div className="max-w-6xl mx-auto px-4">
                 <BackButton
@@ -1528,20 +1528,20 @@ export default function App() {
 
             {/* Error Banner */}
             {loadError && (
-              <div className={`bg-rose-50 border border-rose-200 rounded-xl p-4 mb-4 max-w-2xl mx-auto ${isCoupleDashboard ? "w-[calc(100%-2rem)]" : ""}`}>
+              <div className={`tbo-glass-status tbo-glass-status-danger p-4 mb-4 max-w-2xl mx-auto ${isCoupleDashboard ? "w-[calc(100%-2rem)]" : ""}`}>
                 <div className="flex items-start gap-3">
-                  <AlertCircle className="w-5 h-5 text-rose-500 flex-shrink-0 mt-0.5" />
+                  <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
-                    <h3 className="text-sm font-semibold text-rose-800">
+                    <h3 className="tbo-label">
                       {vocabulary.errorTitle}
                     </h3>
-                    <p className="text-xs text-rose-700 mt-1">
+                    <p className="tbo-caption mt-1">
                       {tr(loadError)}
                     </p>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="mt-3 text-xs bg-white border-rose-200"
+                      className="mt-3"
                       onClick={() => loadUserData()}
                     >
                       {vocabulary.retry}

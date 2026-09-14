@@ -10,11 +10,11 @@ import { Badge } from './ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Progress } from './ui/progress';
 import { ScrollArea } from './ui/scroll-area';
-import { 
-  BookOpen, 
-  Brain, 
-  Target, 
-  Award, 
+import {
+  BookOpen,
+  Brain,
+  Target,
+  Award,
   Flame,
   Play,
   Eye,
@@ -241,7 +241,7 @@ export function ScriptureMemory({ onBack, accessToken, userName, partnerName }: 
     const categoryMatch = filterCategory === 'all' || verse.category === filterCategory;
 
     const progress = getVerseProgress(verse.id);
-    const statusMatch = filterStatus === 'all' || 
+    const statusMatch = filterStatus === 'all' ||
                        (filterStatus === 'new' && !progress) ||
                        (filterStatus === 'learning' && progress?.status === 'learning') ||
                        (filterStatus === 'mastered' && progress?.status === 'mastered');
@@ -252,7 +252,7 @@ export function ScriptureMemory({ onBack, accessToken, userName, partnerName }: 
   const categories = Array.from(new Set(curatedVerses.map(v => v.category)));
 
   return (
-    <div className="min-h-screen min-w-0 bg-gradient-to-br from-primary-50 via-primary-50 to-primary-50 dark:from-neutral-900 dark:via-primary-900/20 dark:to-primary-900/20 p-4 [overflow-wrap:anywhere]">
+    <div className="min-h-screen min-w-0 bg-transparent dark:via-primary-900/20 dark:to-primary-900/20 p-4 [overflow-wrap:anywhere]">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -260,7 +260,7 @@ export function ScriptureMemory({ onBack, accessToken, userName, partnerName }: 
             <BackButton label={t.common.back} onClick={onBack} />
             <div className="min-w-0 flex-1 basis-48">
               <h1 className="tbo-page-title">
-                <Brain className="mr-2 inline h-6 w-6 align-middle text-primary-600" />
+                <Brain className="mr-2 inline h-6 w-6 align-middle text-[var(--glass-accent)]" />
                 {tr('Scripture Memory')}
               </h1>
               <p className="tbo-supporting text-muted-foreground mt-1">
@@ -282,14 +282,14 @@ export function ScriptureMemory({ onBack, accessToken, userName, partnerName }: 
           <Card>
             <CardContent className="p-4">
               <div className="flex flex-col items-center">
-                <BookOpen className="w-5 h-5 text-primary-600 mb-2" />
+                <BookOpen className="w-5 h-5 text-[var(--glass-accent)] mb-2" />
                 <div className="text-xl">{stats.totalVerses}</div>
                 <div className="tbo-caption text-muted-foreground">{tr('Verses Started')}</div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-success-500/30 bg-success-50/50">
+          <Card className="tbo-glass border-success-500/30 bg-success-50/50">
             <CardContent className="p-4">
               <div className="flex flex-col items-center">
                 <Award className="w-5 h-5 text-success-700 mb-2" />
@@ -299,17 +299,17 @@ export function ScriptureMemory({ onBack, accessToken, userName, partnerName }: 
             </CardContent>
           </Card>
 
-          <Card className="border-sky-200 bg-sky-50/50">
+          <Card className="tbo-glass border-[var(--glass-border)] bg-sky-50/50">
             <CardContent className="p-4">
               <div className="flex flex-col items-center">
-                <Target className="w-5 h-5 text-sky-600 mb-2" />
-                <div className="text-xl text-sky-600">{stats.learningVerses}</div>
+                <Target className="w-5 h-5 text-[var(--glass-accent)] mb-2" />
+                <div className="text-xl text-[var(--glass-accent)]">{stats.learningVerses}</div>
                 <div className="tbo-caption text-muted-foreground">{tr('Learning')}</div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-warning-500/30 bg-warning-50/50">
+          <Card className="tbo-glass border-warning-500/30 bg-warning-50/50">
             <CardContent className="p-4">
               <div className="flex flex-col items-center">
                 <Flame className="w-5 h-5 text-warning-700 mb-2" />
@@ -387,16 +387,16 @@ export function ScriptureMemory({ onBack, accessToken, userName, partnerName }: 
                       const masteryLevel = progress?.masteryLevel || 0;
 
                       return (
-                        <Card 
+                        <Card
                           key={verse.id}
-                          className="hover:shadow-md transition-shadow cursor-pointer"
+                          className="tbo-glass hover:shadow-md transition-shadow cursor-pointer"
                           onClick={() => startLearning(verse)}
                         >
                           <CardContent className="p-4">
                             <div className="flex items-start justify-between gap-3">
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                  <span className="tbo-supporting text-primary-600 dark:text-primary-400">
+                                  <span className="tbo-supporting text-[var(--glass-accent)] dark:text-primary-400">
                                     {verse.reference}
                                   </span>
                                   {getStatusBadge(progress)}
@@ -414,8 +414,8 @@ export function ScriptureMemory({ onBack, accessToken, userName, partnerName }: 
                                       <span>•</span>
                                       <span>{tr('Reviewed {count} times', { count: progress.timesReviewed })}</span>
                                     </div>
-                                    <Progress 
-                                      value={masteryLevel} 
+                                    <Progress
+                                      value={masteryLevel}
                                       className="h-2"
                                     />
                                   </div>
@@ -449,14 +449,14 @@ export function ScriptureMemory({ onBack, accessToken, userName, partnerName }: 
 
                 <CardContent className="space-y-4">
                   {/* Verse Display */}
-                  <div className="bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-900/20 rounded-lg p-6 min-h-[150px] flex items-center justify-center">
+                  <div className="tbo-glass-inset dark:to-primary-900/20 rounded-lg p-6 min-h-[150px] flex items-center justify-center">
                     <div className="text-center">
                       {showText ? (
                         <>
                           <p lang="en" className="text-base leading-relaxed mb-4">
                             {selectedVerse.text}
                           </p>
-                          <p className="text-sm text-primary-600 dark:text-primary-400">
+                          <p className="text-sm text-[var(--glass-accent)] dark:text-primary-400">
                             — {selectedVerse.reference}
                           </p>
                         </>
@@ -528,13 +528,13 @@ export function ScriptureMemory({ onBack, accessToken, userName, partnerName }: 
 
                 <CardContent className="space-y-4">
                   {/* Question */}
-                  <div className="bg-gradient-to-br from-sky-50 to-primary-50 dark:from-sky-900/20 dark:to-primary-900/20 rounded-lg p-6">
+                  <div className="tbo-glass-inset dark:to-primary-900/20 rounded-lg p-6">
                     <div className="text-center">
                       <p className="tbo-body mb-4">
 
                         {tr("What verse is this?")}
                       </p>
-                      <p className="text-xl text-primary-600 dark:text-primary-400">
+                      <p className="text-xl text-[var(--glass-accent)] dark:text-primary-400">
                         {selectedVerse.reference}
                       </p>
                     </div>
@@ -550,7 +550,7 @@ export function ScriptureMemory({ onBack, accessToken, userName, partnerName }: 
                         className="tbo-field w-full px-4 py-3 rounded-lg border border-border bg-card"
                         rows={4}
                       />
-                      <Button 
+                      <Button
                         onClick={() => setShowAnswer(true)}
                         className="tbo-action w-full"
                       >
@@ -561,7 +561,7 @@ export function ScriptureMemory({ onBack, accessToken, userName, partnerName }: 
                   ) : (
                     <div className="space-y-4">
                       {/* Correct Answer */}
-                      <div className="bg-muted  rounded-lg p-4">
+                      <div className="bg-muted rounded-lg p-4">
                         <p className="tbo-supporting text-muted-foreground mb-2">{tr("Correct verse:")}</p>
                         <p lang="en" className="text-sm leading-relaxed">{selectedVerse.text}</p>
                       </div>
@@ -631,8 +631,8 @@ export function ScriptureMemory({ onBack, accessToken, userName, partnerName }: 
                           {stats.masteredVerses} / {curatedVerses.length}
                         </span>
                       </div>
-                      <Progress 
-                        value={(stats.masteredVerses / curatedVerses.length) * 100} 
+                      <Progress
+                        value={(stats.masteredVerses / curatedVerses.length) * 100}
                         className="h-2"
                       />
                     </div>
@@ -677,7 +677,7 @@ export function ScriptureMemory({ onBack, accessToken, userName, partnerName }: 
                           if (!verse) return null;
 
                           return (
-                            <div 
+                            <div
                               key={verseId}
                               className="flex items-center gap-3 p-3 rounded-lg bg-success-50 dark:bg-success-700/10 border border-success-500/30"
                             >

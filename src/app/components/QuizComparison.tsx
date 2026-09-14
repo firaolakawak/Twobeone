@@ -5,8 +5,8 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Progress } from './ui/progress';
 import { Badge } from './ui/badge';
-import { 
-  Heart, 
+import {
+  Heart,
   Users,
   TrendingUp,
   CheckCircle,
@@ -28,7 +28,7 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
   const tr = useUiCopy(guidanceMessages);
   if (!userResult || !partnerResult) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-primary-50/30 to-primary-50/30">
+      <div className="min-h-screen bg-transparent">
         <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm border-b">
           <div className="flex items-center justify-between px-4 py-4">
             <BackButton label={tr("Back to Quizzes")} onClick={onBack} />
@@ -40,7 +40,7 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
           <AlertCircle className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
           <h2 className="tbo-section-title mb-2">{tr("Comparison Not Available")}</h2>
           <p className="tbo-body text-muted-foreground mb-6">
-            {!partner 
+            {!partner
               ? tr("You need to connect with a partner first.")
               : tr("Your partner hasn't completed this quiz yet.")}
           </p>
@@ -89,20 +89,20 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
 
     return (
       <>
-        <Card className="mb-6">
+        <Card className="tbo-glass mb-6">
           <CardHeader>
             <CardTitle className="tbo-card-title flex items-center gap-2">
-              <Heart className="w-5 h-5 text-primary-600" />{tr("Love Language Comparison")} </CardTitle>
+              <Heart className="w-5 h-5 text-[var(--glass-accent)]" />{tr("Love Language Comparison")} </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-primary-50 rounded-lg border-2 border-primary-200">
+              <div className="p-4 tbo-glass-inset rounded-lg border-2 border-[var(--glass-border)]">
                 <p className="tbo-supporting text-muted-foreground mb-2">{tr("You")}</p>
-                <p className="tbo-body text-primary-900">{loveLanguageNames[userPrimary]}</p>
+                <p className="tbo-body text-[var(--glass-accent)]">{loveLanguageNames[userPrimary]}</p>
               </div>
-              <div className="p-4 bg-primary-50 rounded-lg border-2 border-primary-200">
+              <div className="p-4 tbo-glass-inset rounded-lg border-2 border-[var(--glass-border)]">
                 <p className="tbo-supporting text-muted-foreground mb-2">{partner?.name}</p>
-                <p className="tbo-body text-primary-900">{loveLanguageNames[partnerPrimary]}</p>
+                <p className="tbo-body text-[var(--glass-accent)]">{loveLanguageNames[partnerPrimary]}</p>
               </div>
             </div>
 
@@ -115,10 +115,10 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
           </CardContent>
         </Card>
 
-        <Card className="mb-6 bg-gradient-to-br from-primary-50 to-primary-100">
+        <Card className="mb-6 tbo-glass">
           <CardHeader>
             <CardTitle className="tbo-card-title flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-primary-600" />
+              <Sparkles className="w-5 h-5 text-[var(--glass-accent)]" />
               {currentInsight.title}
             </CardTitle>
           </CardHeader>
@@ -127,8 +127,8 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
             <div className="space-y-2">
               {currentInsight.tips.map((tip, i) => (
                 <div key={i} className="flex items-start gap-2 p-3 bg-card rounded-lg">
-                  <div className="w-6 h-6 rounded-full bg-primary-200 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="tbo-caption text-primary-700">{i + 1}</span>
+                  <div className="w-6 h-6 rounded-full bg-[var(--glass-inset-surface)] flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="tbo-caption text-[var(--glass-accent)]">{i + 1}</span>
                   </div>
                   <p className="tbo-supporting text-foreground">{tip}</p>
                 </div>
@@ -191,22 +191,22 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
 
     return (
       <>
-        <Card className="mb-6">
+        <Card className="tbo-glass mb-6">
           <CardHeader>
             <CardTitle className="tbo-card-title flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-sky-600" />{tr("Faith Journey Comparison")} </CardTitle>
+              <BookOpen className="w-5 h-5 text-[var(--glass-accent)]" />{tr("Faith Journey Comparison")} </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-sky-50 rounded-lg border-2 border-sky-200 text-center">
+              <div className="p-4 bg-sky-50 rounded-lg border-2 border-[var(--glass-border)] text-center">
                 <p className="tbo-supporting text-muted-foreground mb-2">{tr("You")}</p>
-                <p className="text-3xl font-bold text-sky-600 mb-1">{userPercentage}%</p>
-                <p className="tbo-supporting text-sky-700">{stageNames[userStage]}</p>
+                <p className="text-3xl font-bold text-[var(--glass-accent)] mb-1">{userPercentage}%</p>
+                <p className="tbo-supporting text-[var(--glass-accent)]">{stageNames[userStage]}</p>
               </div>
-              <div className="p-4 bg-sky-50 rounded-lg border-2 border-sky-200 text-center">
+              <div className="p-4 bg-sky-50 rounded-lg border-2 border-[var(--glass-border)] text-center">
                 <p className="tbo-supporting text-muted-foreground mb-2">{partner?.name}</p>
-                <p className="text-3xl font-bold text-sky-600 mb-1">{partnerPercentage}%</p>
-                <p className="tbo-supporting text-sky-900">{stageNames[partnerStage]}</p>
+                <p className="text-3xl font-bold text-[var(--glass-accent)] mb-1">{partnerPercentage}%</p>
+                <p className="tbo-supporting text-[var(--glass-accent)]">{stageNames[partnerStage]}</p>
               </div>
             </div>
 
@@ -219,28 +219,28 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
           </CardContent>
         </Card>
 
-        <Card className="mb-6 bg-gradient-to-br from-sky-50 to-sky-100">
+        <Card className="mb-6 tbo-glass">
           <CardHeader>
             <CardTitle className="tbo-card-title flex items-center gap-2">
-              <Users className="w-5 h-5 text-sky-600" />{tr("Growing Together")} </CardTitle>
+              <Users className="w-5 h-5 text-[var(--glass-accent)]" />{tr("Growing Together")} </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="tbo-body text-foreground mb-3">
-              {difference <= 15 
+              {difference <= 15
                 ? tr("You're at similar points in your faith journey. Use this as an opportunity to grow together and encourage each other.")
                 : tr("You're at different stages in your faith journey. This is an opportunity to learn from each other and grow together.")}
             </p>
             <div className="space-y-2">
               <div className="p-3 bg-card rounded-lg">
-                <p className="tbo-supporting text-sky-700 mb-1">{tr("Pray together daily")}</p>
+                <p className="tbo-supporting text-[var(--glass-accent)] mb-1">{tr("Pray together daily")}</p>
                 <p className="tbo-supporting text-muted-foreground">{tr("Strengthen your spiritual bond through shared prayer time")}</p>
               </div>
               <div className="p-3 bg-card rounded-lg">
-                <p className="tbo-supporting text-sky-700 mb-1">{tr("Study Scripture together")}</p>
+                <p className="tbo-supporting text-[var(--glass-accent)] mb-1">{tr("Study Scripture together")}</p>
                 <p className="tbo-supporting text-muted-foreground">{tr("Choose a book of the Bible or devotional to go through as a couple")}</p>
               </div>
               <div className="p-3 bg-card rounded-lg">
-                <p className="tbo-supporting text-sky-700 mb-1">{tr("Serve together")}</p>
+                <p className="tbo-supporting text-[var(--glass-accent)] mb-1">{tr("Serve together")}</p>
                 <p className="tbo-supporting text-muted-foreground">{tr("Find a ministry or cause where you can serve side by side")}</p>
               </div>
             </div>
@@ -383,7 +383,7 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
 
     const compatibilityColors: any = {
       excellent: { bg: 'bg-success-50', border: 'border-success-500/30', text: 'text-success-700', badge: 'bg-success-500' },
-      good: { bg: 'bg-sky-50', border: 'border-sky-200', text: 'text-sky-700', badge: 'bg-sky-500' },
+      good: { bg: 'bg-sky-50', border: 'border-[var(--glass-border)]', text: 'text-[var(--glass-accent)]', badge: 'bg-sky-500' },
       moderate: { bg: 'bg-warning-50', border: 'border-warning-500/30', text: 'text-warning-700', badge: 'bg-warning-500' },
       challenging: { bg: 'bg-warning-50', border: 'border-warning-500/30', text: 'text-warning-700', badge: 'bg-warning-500' }
     };
@@ -392,20 +392,20 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
 
     return (
       <>
-        <Card className="mb-6">
+        <Card className="tbo-glass mb-6">
           <CardHeader>
             <CardTitle className="tbo-card-title flex items-center gap-2">
-              <Users className="w-5 h-5 text-primary-600" />{tr("Conflict Style Comparison")} </CardTitle>
+              <Users className="w-5 h-5 text-[var(--glass-accent)]" />{tr("Conflict Style Comparison")} </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-primary-50 rounded-lg border-2 border-primary-200">
+              <div className="p-4 tbo-glass-inset rounded-lg border-2 border-[var(--glass-border)]">
                 <p className="tbo-supporting text-muted-foreground mb-2">{tr("You")}</p>
-                <p className="tbo-body text-primary-900">{styleNames[userStyle]}</p>
+                <p className="tbo-body text-[var(--glass-accent)]">{styleNames[userStyle]}</p>
               </div>
-              <div className="p-4 bg-primary-50 rounded-lg border-2 border-primary-200">
+              <div className="p-4 tbo-glass-inset rounded-lg border-2 border-[var(--glass-border)]">
                 <p className="tbo-supporting text-muted-foreground mb-2">{partner?.name}</p>
-                <p className="tbo-body text-primary-900">{styleNames[partnerStyle]}</p>
+                <p className="tbo-body text-[var(--glass-accent)]">{styleNames[partnerStyle]}</p>
               </div>
             </div>
 
@@ -434,8 +434,8 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
               <h4 className="tbo-card-title">{tr("Tips for Your Combination")}</h4>
               {compatibility.tips.map((tip: string, i: number) => (
                 <div key={i} className="flex items-start gap-2 p-3 bg-card rounded-lg">
-                  <div className="w-6 h-6 rounded-full bg-primary-200 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="tbo-caption text-primary-700">{i + 1}</span>
+                  <div className="w-6 h-6 rounded-full bg-[var(--glass-inset-surface)] flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="tbo-caption text-[var(--glass-accent)]">{i + 1}</span>
                   </div>
                   <p className="tbo-supporting text-foreground">{tip}</p>
                 </div>
@@ -483,7 +483,7 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary-50/30 via-primary-50/20 to-sky-50/30">
+    <div className="min-h-screen bg-transparent">
       <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm border-b">
         <div className="flex items-center justify-between px-4 py-4">
           <BackButton label={tr("Back to Quizzes")} onClick={onBack} />
@@ -498,17 +498,17 @@ export function QuizComparison({ quizType, userResult, partnerResult, partner, o
         {quizType === 'conflictStyle' && renderConflictStyleComparison()}
 
         {/* Biblical Encouragement */}
-        <Card className="mt-6 bg-gradient-to-br from-sky-50 to-primary-50 border-sky-200">
+        <Card className="mt-6 tbo-glass border-[var(--glass-border)]">
           <CardHeader>
             <CardTitle className="tbo-card-title flex items-center gap-2">
-              <Heart className="w-5 h-5 text-sky-600" />{tr("Biblical Encouragement")} </CardTitle>
+              <Heart className="w-5 h-5 text-[var(--glass-accent)]" />{tr("Biblical Encouragement")} </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-start gap-3 p-3 bg-card rounded-lg">
-              <BookOpen className="w-5 h-5 text-sky-600 flex-shrink-0 mt-0.5" />
+              <BookOpen className="w-5 h-5 text-[var(--glass-accent)] flex-shrink-0 mt-0.5" />
               <div>
-                <p className="tbo-supporting italic text-sky-700 mb-1">"Two are better than one, because they have a good return for their labor: If either of them falls down, one can help the other up." </p>
-                <p className="tbo-caption text-sky-700">— Ecclesiastes 4:9-10</p>
+                <p className="tbo-supporting italic text-[var(--glass-accent)] mb-1">"Two are better than one, because they have a good return for their labor: If either of them falls down, one can help the other up." </p>
+                <p className="tbo-caption text-[var(--glass-accent)]">— Ecclesiastes 4:9-10</p>
               </div>
             </div>
             <p className="tbo-supporting text-foreground">{tr("Your differences are not weaknesses—they're opportunities to strengthen each other. As you learn to love, serve, and resolve conflicts in ways that honor both of you, your relationship becomes a beautiful reflection of Christ's love.")} </p>

@@ -51,12 +51,12 @@ export function NewsletterPreferencePage({ action, onComplete }: { action: Newsl
 
   const Icon = status === 'complete' ? CheckCircle2 : isConfirmation ? MailCheck : MailX;
   return (
-    <main className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 px-4 py-12">
-      <section className="mx-auto w-full max-w-md overflow-hidden rounded-[2rem] border border-rose-100 bg-white shadow-[0_24px_70px_-28px_rgba(136,19,55,.35)]">
-        <header className="bg-gradient-to-br from-rose-500 to-pink-600 px-7 py-7 text-white">
-          <div className="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-white shadow-lg"><Heart className="h-6 w-6 fill-rose-500 text-rose-500" /></div>
-          <h1 className="tbo-page-title text-white">{tr("Shabbat Shalom")}</h1>
-          <p className="mt-1 tbo-supporting text-white/85">{copy.subtitle}</p>
+    <main className="min-h-screen tbo-glass-app text-foreground px-4 py-12">
+      <section className="tbo-glass-raised mx-auto w-full max-w-md overflow-hidden">
+        <header className="bg-accent px-7 py-7 text-foreground">
+          <div className="tbo-glass-orb mb-4 grid h-12 w-12 place-items-center"><Heart className="h-6 w-6 fill-current text-white" /></div>
+          <h1 className="tbo-page-title text-foreground">{tr("Shabbat Shalom")}</h1>
+          <p className="mt-1 tbo-supporting text-muted-foreground">{copy.subtitle}</p>
         </header>
         <div className="space-y-5 p-7 text-center">
           <Icon className={`mx-auto h-12 w-12 ${status === 'error' ? 'text-red-500' : 'text-rose-600'}`} />
@@ -71,7 +71,7 @@ export function NewsletterPreferencePage({ action, onComplete }: { action: Newsl
             </p>
           </div>
           {status !== 'complete' && (
-            <button type="button" onClick={submit} disabled={status === 'saving'} className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-rose-600 tbo-action text-white hover:bg-rose-700 disabled:opacity-60">
+            <button type="button" onClick={submit} disabled={status === 'saving'} className="flex h-12 w-full items-center justify-center gap-2 rounded-full tbo-glass-primary tbo-action disabled:opacity-60">
               {status === 'saving' && <LoadingMark className="h-4 w-4" />}
               {status === 'saving' ? copy.updating : isConfirmation ? copy.confirm : copy.unsubscribe}
             </button>

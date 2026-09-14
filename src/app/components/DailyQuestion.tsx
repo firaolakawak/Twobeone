@@ -14,10 +14,10 @@ import { sendNotification } from '../utils/notifications';
 import { QuestionChatDialog } from './QuestionChatDialog';
 import { QAResultsView } from './QAResultsView';
 import { DiscussionThread } from './DiscussionThread';
-import { 
-  BookOpen, 
-  Heart, 
-  Send, 
+import {
+  BookOpen,
+  Heart,
+  Send,
   Lock,
   Unlock,
   MessageCircle,
@@ -266,7 +266,7 @@ export function DailyQuestion({
       }
 
       toast.success(
-        isPrivate[promptIndex] 
+        isPrivate[promptIndex]
           ? tr("✨ Answer saved privately")
           : tr("💕 Answer shared with your partner!")
       );
@@ -331,7 +331,7 @@ export function DailyQuestion({
       }
 
       toast.success(
-        isPrivateAnswer 
+        isPrivateAnswer
           ? tr("✨ Answer saved privately")
           : tr("💕 Reply sent to your partner!")
       );
@@ -439,8 +439,8 @@ export function DailyQuestion({
                     key={category}
                     onClick={() => handleCategorySelect(category)}
                     className={`p-6 cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1 border-2 relative ${
-                      selectedCategory === category 
-                        ? 'border-primary-500 shadow-md' 
+                      selectedCategory === category
+                        ? 'border-primary-500 shadow-md'
                         : 'border-border'
                     }`}
                   >
@@ -478,7 +478,7 @@ export function DailyQuestion({
   }
 
   return (
-    <div className="h-full flex flex-col bg-gradient-to-br from-primary-50 via-primary-50 to-primary-50">
+    <div className="h-full flex flex-col tbo-glass-inset">
       <ScrollArea className="flex-1">
         <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
           {/* Header with Title and Back */}
@@ -555,7 +555,7 @@ export function DailyQuestion({
 
               {/* Pray Together Card */}
               {onPrayTogether && (
-                <Card className="border-2 border-primary-200 bg-gradient-to-br from-primary-50 to-primary-100">
+                <Card className="border-2 border-[var(--glass-border)] tbo-glass">
                   <div className="p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-md">
@@ -568,7 +568,7 @@ export function DailyQuestion({
                     </div>
                     <Button
                       onClick={onPrayTogether}
-                      className="tbo-action bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:opacity-90 shadow-md"
+                      className="tbo-action hover:opacity-90 shadow-md"
                     >
                       <Heart className="w-4 h-4 mr-2" />
                       {t.prayer.prayTogether}

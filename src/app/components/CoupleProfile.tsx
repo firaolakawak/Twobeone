@@ -272,10 +272,10 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
   return (
     <div className="space-y-6 pb-20">
       {/* Header with Action Button */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-wrap gap-3 justify-between items-center">
         <h1 className="tbo-page-title">{tr("Couple Profile")}</h1>
         {!partner ? (
-          <Button onClick={() => setIsLinkDialogOpen(true)} className="tbo-action bg-primary-600 hover:bg-primary-700">
+          <Button onClick={() => setIsLinkDialogOpen(true)} className="tbo-action">
             <Link2 className="w-4 h-4 mr-2" />
 
             {tr("Link Partner")}
@@ -301,7 +301,7 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
 
       {/* Profile Overview Card */}
       <Card className="overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-primary-50 to-primary-100 border-b">
+        <CardHeader className="bg-accent border-b">
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="tbo-card-title">{tr("My Profile")}</CardTitle>
@@ -385,9 +385,9 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
       {/* Partner Linking Card */}
       {!partner && (
         <Card>
-          <CardHeader className="bg-gradient-to-r from-primary-50 to-primary-100 border-b">
+          <CardHeader className="bg-accent border-b">
             <CardTitle className="tbo-card-title flex items-center gap-2">
-              <Link2 className="w-5 h-5 text-primary-600" />
+              <Link2 className="w-5 h-5 text-primary" />
 
               {tr("Connect with Your Partner")}
             </CardTitle>
@@ -399,7 +399,7 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
           <CardContent className="pt-6">
             <Button 
               onClick={() => setIsLinkDialogOpen(true)}
-              className="tbo-action w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
+              className="tbo-action w-full"
             >
               <Users className="w-4 h-4 mr-2" />
 
@@ -416,7 +416,7 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
           <Card>
             <CardHeader>
               <CardTitle className="tbo-card-title flex items-center gap-2">
-                <Camera className="w-5 h-5 text-primary-600" />
+                <Camera className="w-5 h-5 text-primary" />
 
                 {tr("Couple Picture")}
               </CardTitle>
@@ -467,7 +467,7 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
           <Card>
             <CardHeader>
               <CardTitle className="tbo-card-title flex items-center gap-2">
-                <Heart className="w-5 h-5 text-primary-600" />
+                <Heart className="w-5 h-5 text-primary" />
 
                 {tr("Our Story")}
               </CardTitle>
@@ -546,7 +546,7 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
 
               <div>
                 <Label htmlFor="milestone" className="tbo-label flex items-center gap-2 mb-2">
-                  <Check className="w-4 h-4 text-primary-600" />
+                  <Check className="w-4 h-4 text-primary" />
 
                   {tr("Current Milestone")}
                 </Label>
@@ -580,7 +580,7 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
         <DialogContent aria-describedby="link-partner-description">
           <DialogHeader>
             <DialogTitle className="tbo-dialog-title flex items-center gap-2">
-              <Link2 className="w-5 h-5 text-primary-600" />
+              <Link2 className="w-5 h-5 text-primary" />
 
               {tr("Link with Your Partner")}
             </DialogTitle>
@@ -650,7 +650,7 @@ export function CoupleProfile({ profile, partner, accessToken, onUpdateProfile, 
 
               {tr("Cancel")}
             </Button>
-            <Button onClick={handleLinkCouple} className="tbo-action bg-primary-600 hover:bg-primary-700">
+            <Button onClick={handleLinkCouple} className="tbo-action">
               <Link2 className="w-4 h-4 mr-2" />
 
               {tr("Link Partner")}

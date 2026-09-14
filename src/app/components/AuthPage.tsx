@@ -32,16 +32,6 @@ function authConnectionMessage() {
   return 'Cannot reach the sign-in service right now. Please tap Sign In again or switch between Wi-Fi and mobile data.';
 }
 
-const FloatingOrb = ({ style }: { style: React.CSSProperties }) => (
-  <div style={{
-    position: 'absolute',
-    borderRadius: '50%',
-    filter: 'blur(80px)',
-    pointerEvents: 'none',
-    ...style,
-  }} />
-);
-
 export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProps) {
   const tr = useUiCopy(publicAuthMessages);
   const [authMode, setAuthMode] = useState<AuthMode>(initialMode);
@@ -289,8 +279,9 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
     padding: 'var(--spacing-3) var(--spacing-4)',
     borderRadius: 'var(--radius-lg)',
     border: 'none',
-    background: 'var(--primary-600)',
-    color: 'var(--primary-foreground)',
+    background: 'var(--glass-primary-paint)',
+    color: '#fff',
+    boxShadow: 'var(--glass-shadow)',
     fontSize: 'var(--type-action-size)',
     lineHeight: 'var(--type-action-leading)',
     fontWeight: 'var(--type-action-weight)',
@@ -303,20 +294,15 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
   };
 
   return (
-    <div style={{
+    <div className="tbo-glass-app" style={{
       minHeight: '100vh',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       padding: 'var(--spacing-4)',
-      background: 'var(--background)',
       position: 'relative',
       overflow: 'hidden',
     }}>
-      {/* Ambient background orbs */}
-      <FloatingOrb style={{ width: 400, height: 400, background: 'var(--primary-100)', top: '-120px', right: '-100px', opacity: 0.6 }} />
-      <FloatingOrb style={{ width: 300, height: 300, background: 'var(--primary-50)', bottom: '-80px', left: '-80px', opacity: 0.8 }} />
-      <FloatingOrb style={{ width: 200, height: 200, background: 'var(--secondary-100)', top: '40%', left: '5%', opacity: 0.5 }} />
 
       {/* Language selector */}
       <div style={{ position: 'fixed', top: 'var(--spacing-4)', right: 'var(--spacing-4)', zIndex: 50 }}>
@@ -324,13 +310,9 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
       </div>
 
       {/* Card */}
-      <div style={{
+      <div className="tbo-glass-raised" style={{
         width: '100%',
         maxWidth: 420,
-        background: 'var(--card)',
-        borderRadius: 'var(--radius-2xl)',
-        border: '1px solid var(--border)',
-        boxShadow: '0 20px 60px -10px rgba(0,0,0,0.12), 0 4px 16px -4px rgba(0,0,0,0.06)',
         overflow: 'hidden',
         position: 'relative',
         zIndex: 1,
@@ -340,7 +322,7 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
         <div style={{
           padding: 'var(--spacing-8) var(--spacing-6) var(--spacing-6)',
           textAlign: 'center',
-          background: 'linear-gradient(160deg, var(--primary-50) 0%, var(--card) 60%)',
+          background: 'var(--glass-inset-surface)',
           borderBottom: '1px solid var(--border)',
         }}>
           <div style={{
@@ -349,7 +331,7 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
             justifyContent: 'center',
             width: 64, height: 64,
             borderRadius: '50%',
-            background: 'linear-gradient(135deg, var(--primary-400), var(--primary-600))',
+            background: 'var(--glass-orb)',
             boxShadow: '0 8px 24px -4px color-mix(in srgb, var(--primary-500) 40%, transparent)',
             marginBottom: 'var(--spacing-4)',
           }}>
@@ -397,7 +379,7 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     margin: '0 auto var(--spacing-4)',
                   }}>
-                    <Mail style={{ width: 26, height: 26, color: 'var(--primary-600)' }} />
+                    <Mail style={{ width: 26, height: 26, color: 'var(--glass-accent)' }} />
                   </div>
                   <p style={{ margin: '0 0 var(--spacing-2)', fontSize: 'var(--type-section-size)', lineHeight: 'var(--type-section-leading)', fontWeight: 'var(--type-section-weight)', color: 'var(--foreground)' }}>
                     {tr("Check your inbox")}</p>
@@ -410,7 +392,7 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
                     style={{
                       marginTop: 'var(--spacing-4)',
                       background: 'none', border: 'none', cursor: 'pointer',
-                      fontSize: 'var(--type-supporting-size)', color: 'var(--primary-600)',
+                      fontSize: 'var(--type-supporting-size)', color: 'var(--glass-accent)',
                       fontWeight: 'var(--type-action-weight)', fontFamily: 'inherit',
                     }}
                   >
@@ -456,7 +438,7 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
               {/* Tab pills */}
               <div style={{
                 display: 'flex',
-                background: 'var(--muted)',
+                background: 'var(--glass-inset-surface)',
                 borderRadius: 'var(--radius-lg)',
                 padding: 3,
                 gap: 3,
@@ -515,7 +497,7 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
                           background: 'none', border: 'none', cursor: 'pointer',
                           fontSize: 'var(--type-supporting-size)',
                           fontWeight: 'var(--type-action-weight)',
-                          color: 'var(--primary-600)',
+                          color: 'var(--glass-accent)',
                           fontFamily: 'inherit',
                           padding: 0,
                           marginBottom: 'var(--spacing-2)',
@@ -554,7 +536,7 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
                     <button
                       type="button"
                       onClick={() => switchMode('signup')}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit', fontSize: 'inherit', fontWeight: 'var(--type-label-weight)', color: 'var(--primary-600)' }}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit', fontSize: 'inherit', fontWeight: 'var(--type-label-weight)', color: 'var(--glass-accent)' }}
                     >
                       {tr("Sign up")}</button>
                   </p>
@@ -629,14 +611,14 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
                       border: '1.5px solid var(--primary-200)',
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--spacing-2)' }}>
-                        <span style={{ fontSize: 'var(--type-supporting-size)', fontWeight: 'var(--type-label-weight)', color: 'var(--primary-700)' }}>
+                        <span style={{ fontSize: 'var(--type-supporting-size)', fontWeight: 'var(--type-label-weight)', color: 'var(--glass-accent)' }}>
                           {tr("Your Invite Code")}</span>
-                        <CheckCircle2 style={{ width: 16, height: 16, color: 'var(--primary-600)' }} />
+                        <CheckCircle2 style={{ width: 16, height: 16, color: 'var(--glass-accent)' }} />
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
                         <code style={{
                           flex: 1, fontSize: 'var(--text-title)', fontWeight: 'var(--font-weight-bold)',
-                          letterSpacing: '0.15em', color: 'var(--primary-700)',
+                          letterSpacing: '0.15em', color: 'var(--glass-accent)',
                           background: 'var(--card)', padding: 'var(--spacing-2) var(--spacing-4)',
                           borderRadius: 'var(--radius-md)', border: '1px solid var(--primary-200)',
                           textAlign: 'center',
@@ -650,7 +632,7 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
                           style={{
                             padding: 'var(--spacing-2)', borderRadius: 'var(--radius-md)',
                             border: '1px solid var(--primary-300)', background: 'var(--card)',
-                            cursor: 'pointer', color: 'var(--primary-600)', display: 'flex',
+                            cursor: 'pointer', color: 'var(--glass-accent)', display: 'flex',
                           }}
                         >
                           <Copy style={{ width: 16, height: 16 }} />
@@ -675,7 +657,7 @@ export function AuthPage({ onAuthSuccess, initialMode = 'signin' }: AuthPageProp
                     <button
                       type="button"
                       onClick={() => switchMode('signin')}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit', fontSize: 'inherit', fontWeight: 'var(--type-label-weight)', color: 'var(--primary-600)' }}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit', fontSize: 'inherit', fontWeight: 'var(--type-label-weight)', color: 'var(--glass-accent)' }}
                     >
                       {tr("Sign in")}</button>
                   </p>
@@ -753,7 +735,7 @@ function ErrorBanner({ message }: { message: string }) {
       background: 'color-mix(in srgb, var(--destructive) 8%, transparent)',
       border: '1px solid color-mix(in srgb, var(--destructive) 25%, transparent)',
       fontSize: 'var(--type-supporting-size)',
-      color: 'var(--primary-700)',
+      color: 'var(--glass-accent)',
       lineHeight: 1.5,
     }}>
       {message}

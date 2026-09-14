@@ -50,17 +50,17 @@ export function IconsMissingNotice() {
     <>
       {/* Backdrop */}
       <div 
-        className="fixed inset-0 bg-black/50 z-50 backdrop-blur-sm"
+        className="fixed inset-0 bg-[var(--glass-overlay)] z-50"
         onClick={handleDismiss}
       />
       
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="relative bg-gradient-to-br from-warning-500 to-warning-500 rounded-2xl shadow-2xl max-w-md w-full p-6 text-white">
+        <div className="tbo-glass-raised relative max-w-md w-full max-h-[calc(100dvh-2rem)] overflow-y-auto p-6">
           {/* Close button */}
           <button
             onClick={handleDismiss}
-            className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/20 transition-colors"
+            className="absolute top-4 right-4 grid h-11 w-11 place-items-center rounded-full border border-border hover:bg-accent transition-colors"
             aria-label={tr("Dismiss")}
           >
             <X className="w-5 h-5" />
@@ -69,7 +69,7 @@ export function IconsMissingNotice() {
           {/* Content */}
           <div className="flex flex-col items-center text-center">
             {/* Icon */}
-            <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mb-4">
+            <div className="w-16 h-16 rounded-full bg-[var(--glass-warning-soft)] text-[var(--glass-warning)] flex items-center justify-center mb-4">
               <AlertTriangle className="w-8 h-8" />
             </div>
 
@@ -78,13 +78,13 @@ export function IconsMissingNotice() {
                {tr("iOS App Icons Missing")} </h3>
 
             {/* Description */}
-            <p className="tbo-supporting text-white/90 mb-6">
+            <p className="tbo-supporting text-muted-foreground mb-6">
                {tr("The app icon won't display on iOS devices. Generate and upload the required PNG icons to fix this issue.")} </p>
 
             {/* Action button */}
             <button
               onClick={handleOpenGenerator}
-              className="tbo-action inline-flex items-center gap-2 px-6 py-3 bg-card text-warning-700 rounded-lg hover:bg-card/90 transition-colors shadow-lg"
+              className="tbo-action tbo-glass-primary"
             >
               <ExternalLink className="w-4 h-4" />
                {tr("Generate Icons Now")} </button>
@@ -92,7 +92,7 @@ export function IconsMissingNotice() {
             {/* Dismiss text */}
             <button
               onClick={handleDismiss}
-              className="tbo-action mt-4 text-white/70 hover:text-white transition-colors underline"
+              className="tbo-action mt-4 text-muted-foreground hover:text-foreground transition-colors underline"
             >
                {tr("Dismiss and don't show again")} </button>
           </div>

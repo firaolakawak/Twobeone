@@ -1,3 +1,4 @@
+import '../styles/feature-glass.css';
 import { BrandLoader, LoadingMark } from './BrandLoader';
 import { useUiCopy } from '../utils/uiTranslation';
 import { questionsUiMessages, getQuestionCategorySource, getQuestionChoiceSource } from '../locales/questionsUi';
@@ -73,8 +74,8 @@ interface QADiscussionHubProps {
   onBack?: () => void; // Navigate back to category selection
 }
 
-export function QADiscussionHub({ 
-  onSaveAnswer, 
+export function QADiscussionHub({
+  onSaveAnswer,
   onPrayTogether,
   userName,
   partnerName,
@@ -307,20 +308,20 @@ export function QADiscussionHub({
     }
   };
 
-  const filteredQuestions = activeCategory === 'all' 
-    ? questions 
+  const filteredQuestions = activeCategory === 'all'
+    ? questions
     : questions.filter(q => q.category === activeCategory);
 
   const currentQuestion = filteredQuestions[currentQuestionIndex];
 
   const handlePrevious = () => {
-    setCurrentQuestionIndex((prev) => 
+    setCurrentQuestionIndex((prev) =>
       prev === 0 ? filteredQuestions.length - 1 : prev - 1
     );
   };
 
   const handleNext = () => {
-    setCurrentQuestionIndex((prev) => 
+    setCurrentQuestionIndex((prev) =>
       prev === filteredQuestions.length - 1 ? 0 : prev + 1
     );
   };
@@ -354,46 +355,46 @@ export function QADiscussionHub({
   const ActiveCategoryIcon = activeCategoryVisual.icon;
 
   return (
-    <div className="space-y-5 pb-10">
+    <div className="tbo-feature-layout space-y-5 pb-10">
       <motion.section
         initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-[2rem] border border-primary-100/80 bg-gradient-to-br from-primary-50/70 via-white to-sky-50/45 p-5 shadow-[0_18px_50px_rgba(83,45,67,0.08)] sm:p-7"
+        className="tbo-feature-header relative overflow-hidden rounded-[2rem] border border-[var(--glass-border)] tbo-glass-raised p-5 shadow-[0_18px_50px_rgba(83,45,67,0.08)] sm:p-7"
       >
-        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary-200/25 blur-3xl" />
+        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[var(--glass-inset-surface)] blur-3xl" />
         <div className="pointer-events-none absolute -bottom-20 -left-10 h-44 w-44 rounded-full bg-sky-200/25 blur-3xl" />
 
         <div className="relative">
-          <div className="mb-6 flex items-center justify-between gap-3">
+          <div className="tbo-feature-header-actions mb-6 flex items-center justify-between gap-3">
             {onBack ? (
               <BackButton label={t.common.back} onClick={onBack} />
             ) : <span />}
-            <div className={`tbo-caption inline-flex items-center gap-2 rounded-full border ${activeCategoryVisual.border} bg-white/80 px-3 py-2 ${activeCategoryVisual.text} shadow-sm`}>
+            <div className={`tbo-feature-header-badge tbo-caption inline-flex items-center gap-2 rounded-full border ${activeCategoryVisual.border} bg-[var(--glass-inset-surface)] px-3 py-2 ${activeCategoryVisual.text} shadow-sm`}>
               <ActiveCategoryIcon className="h-4 w-4" strokeWidth={1.9} aria-hidden="true" />
               {activeCategoryDetails.label}
             </div>
           </div>
 
           <div className="max-w-xl">
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-100 text-primary-700 ring-1 ring-primary-200/60">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--glass-inset-surface)] text-[var(--glass-accent)] ring-1 ring-[var(--glass-rim)]">
               <MessageSquare className="h-6 w-6" />
             </div>
             <h1 className="tbo-page-title text-foreground">{tr("A conversation worth having")}</h1>
             <p className="tbo-supporting mt-2 text-muted-foreground">{tr("Answer honestly, discover each other gently, and grow closer one question at a time.")}</p>
           </div>
 
-          <div className="mt-6 rounded-3xl border border-white/80 bg-white/65 p-4 shadow-sm backdrop-blur-sm">
-            <div className="mb-2 flex items-end justify-between gap-4">
+          <div className="mt-6 rounded-3xl border border-white/80 tbo-glass-inset p-4 shadow-sm backdrop-blur-sm">
+            <div className="tbo-feature-card-heading mb-2 flex items-end justify-between gap-4">
               <div>
-                <p className="tbo-eyebrow text-primary-600">{tr("Your progress")}</p>
+                <p className="tbo-eyebrow text-[var(--glass-accent)]">{tr("Your progress")}</p>
                 <p className="tbo-supporting mt-1 text-foreground">{remainingQuestions === 0 && filteredQuestions.length > 0 ? tr("Beautiful — this category is complete") : tr('{count} questions remaining', { count: remainingQuestions })}</p>
               </div>
-              <span className="text-2xl font-bold text-primary-700">{completionPercentage}%</span>
+              <span className="text-2xl font-bold text-[var(--glass-accent)]">{completionPercentage}%</span>
             </div>
-            <div className="h-2.5 overflow-hidden rounded-full bg-primary-100/80" role="progressbar" aria-label={tr("Category completion")} aria-valuemin={0} aria-valuemax={100} aria-valuenow={completionPercentage}>
-              <motion.div className="h-full rounded-full bg-gradient-to-r from-primary-500 to-primary-700" initial={prefersReducedMotion ? false : { width: 0 }} animate={{ width: `${completionPercentage}%` }} transition={{ duration: prefersReducedMotion ? 0 : 0.65, ease: 'easeOut' }} />
+            <div className="h-2.5 overflow-hidden rounded-full bg-[var(--glass-inset-surface)]" role="progressbar" aria-label={tr("Category completion")} aria-valuemin={0} aria-valuemax={100} aria-valuenow={completionPercentage}>
+              <motion.div className="h-full rounded-full bg-[var(--glass-accent)]" initial={prefersReducedMotion ? false : { width: 0 }} animate={{ width: `${completionPercentage}%` }} transition={{ duration: prefersReducedMotion ? 0 : 0.65, ease: 'easeOut' }} />
             </div>
-            <div className="mt-4 grid grid-cols-3 divide-x divide-primary-100 text-center">
+            <div className="tbo-feature-stats mt-4 grid grid-cols-3 divide-x divide-primary-100 text-center">
               {[
                 { value: filteredQuestions.length, label: tr("Questions") },
                 { value: answeredQuestions, label: tr("Answered") },
@@ -409,7 +410,7 @@ export function QADiscussionHub({
         </div>
       </motion.section>
 
-      <button type="button" aria-expanded={showAIAssistant} onClick={() => setShowAIAssistant(!showAIAssistant)} className="tbo-action group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-primary-700 px-5 text-white shadow-[0_10px_24px_rgba(125,55,82,0.18)] transition-all hover:-translate-y-0.5 hover:bg-primary-800 hover:shadow-[0_14px_30px_rgba(125,55,82,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 motion-reduce:transform-none">
+      <button type="button" aria-expanded={showAIAssistant} onClick={() => setShowAIAssistant(!showAIAssistant)} className="tbo-action group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl tbo-glass-primary px-5 shadow-[0_10px_24px_rgba(125,55,82,0.18)] transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(125,55,82,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 motion-reduce:transform-none">
         <Sparkles className="h-4 w-4 transition-transform group-hover:rotate-12" />
         {showAIAssistant ? tr("Close AI companion") : tr("Open AI companion")}
       </button>
@@ -424,18 +425,18 @@ export function QADiscussionHub({
 
       {/* Loading State */}
       {isLoadingQuestions && (
-        <Card className="p-12 text-center" style={{ background: 'var(--card)', borderColor: 'var(--border)' }}>
+        <Card className="tbo-glass p-12 text-center" style={{ background: 'var(--card)', borderColor: 'var(--border)' }}>
           <BrandLoader label={tr('Loading questions…')} />
         </Card>
       )}
 
       {/* Empty State */}
       {!isLoadingQuestions && filteredQuestions.length === 0 && (
-        <Card className="p-12 text-center" style={{ background: 'var(--card)', borderColor: 'var(--border)' }}>
+        <Card className="tbo-glass p-12 text-center" style={{ background: 'var(--card)', borderColor: 'var(--border)' }}>
           <MessageSquare className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--neutral-300)' }} />
           <h3 className="tbo-card-title mb-2">{tr("No Questions Yet")}</h3>
           <p className="tbo-body text-muted-foreground mb-4">
-            {activeCategory === 'all' 
+            {activeCategory === 'all'
               ? tr("No questions have been created yet. Check back later!")
               : tr("No questions in this category yet.")}
           </p>
@@ -457,17 +458,17 @@ export function QADiscussionHub({
       {/* Question Carousel */}
       {!isLoadingQuestions && filteredQuestions.length > 0 && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-white/80 p-2 shadow-sm">
-            <button type="button" onClick={handlePrevious} aria-label={tr("Previous question")} className="inline-flex min-h-10 items-center gap-1 rounded-xl px-3 text-sm font-semibold text-muted-foreground transition-colors hover:bg-primary-50 hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+          <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-[var(--glass-inset-surface)] p-2 shadow-sm">
+            <button type="button" onClick={handlePrevious} aria-label={tr("Previous question")} className="inline-flex min-h-10 items-center gap-1 rounded-xl px-3 text-sm font-semibold text-muted-foreground transition-colors hover:bg-[var(--glass-inset-surface)] hover:text-[var(--glass-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
               <ChevronLeft className="h-4 w-4" /><span className="hidden sm:inline">{tr("Previous")}</span>
             </button>
-            <div className="min-w-32 text-center">
-              <p className="tbo-eyebrow text-primary-600">{tr("Question")} {currentQuestionIndex + 1}</p>
-              <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-primary-100">
-                <div className="h-full rounded-full bg-primary-600 transition-[width] duration-300" style={{ width: `${((currentQuestionIndex + 1) / filteredQuestions.length) * 100}%` }} />
+            <div className="min-w-0 flex-1 text-center">
+              <p className="tbo-eyebrow text-[var(--glass-accent)]">{tr("Question")} {currentQuestionIndex + 1}</p>
+              <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[var(--glass-inset-surface)]">
+                <div className="h-full rounded-full bg-[var(--glass-accent)] transition-[width] duration-300" style={{ width: `${((currentQuestionIndex + 1) / filteredQuestions.length) * 100}%` }} />
               </div>
             </div>
-            <button type="button" onClick={handleNext} aria-label={tr("Next question")} className="inline-flex min-h-10 items-center gap-1 rounded-xl px-3 text-sm font-semibold text-muted-foreground transition-colors hover:bg-primary-50 hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+            <button type="button" onClick={handleNext} aria-label={tr("Next question")} className="inline-flex min-h-10 items-center gap-1 rounded-xl px-3 text-sm font-semibold text-muted-foreground transition-colors hover:bg-[var(--glass-inset-surface)] hover:text-[var(--glass-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
               <span className="hidden sm:inline">{tr("Next")}</span><ChevronRight className="h-4 w-4" />
             </button>
           </div>
@@ -482,14 +483,14 @@ export function QADiscussionHub({
 
       {/* ── General Compatibility Match ─ shown below per-question AI match ── */}
       {questions.length > 0 && (
-        <Card style={{ border: '2px solid var(--primary-200)', background: 'var(--primary-50)', borderRadius: 'var(--radius-lg)' }}>
+        <Card className="tbo-glass-inset" style={{ border: '2px solid var(--primary-200)',  borderRadius: 'var(--radius-lg)' }}>
           <CardHeader style={{ paddingBottom: 'var(--spacing-2)' }}>
-            <CardTitle className="tbo-card-title" style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)',  color: 'var(--primary-700)' }}>
+            <CardTitle className="tbo-card-title" style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)',  color: 'var(--glass-accent)' }}>
               <TrendingUp className="w-5 h-5" />
 
               {tr("General Compatibility Match")}
               {overallResult?.cached && (
-                <span className="tbo-caption" style={{  background: 'var(--primary-100)', color: 'var(--primary-700)', padding: '2px 8px', borderRadius: 'var(--radius-full)',  }}>
+                <span className="tbo-caption" style={{  background: 'var(--glass-inset-surface)', color: 'var(--glass-accent)', padding: '2px 8px', borderRadius: 'var(--radius-full)',  }}>
                   <Sparkles className="w-3 h-3 inline mr-1" />{tr("AI · Saved")}
                 </span>
               )}
@@ -504,11 +505,11 @@ export function QADiscussionHub({
 
                   {tr("Categories completed together")}
                 </span>
-                <span className="tbo-label" style={{   color: 'var(--primary-700)' }}>
+                <span className="tbo-label" style={{   color: 'var(--glass-accent)' }}>
                   {completedCatIds.length} / {ALL_CATEGORY_IDS.length}
                 </span>
               </div>
-              <div style={{ height: 8, background: 'var(--neutral-200)', borderRadius: 'var(--radius-full)', overflow: 'hidden' }}>
+              <div style={{ height: 8, background: 'var(--glass-rim)', borderRadius: 'var(--radius-full)', overflow: 'hidden' }}>
                 <div style={{
                   height: '100%',
                   width: `${(completedCatIds.length / ALL_CATEGORY_IDS.length) * 100}%`,
@@ -593,11 +594,11 @@ export function QADiscussionHub({
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
                     <div style={{ position: 'absolute', width: 62, height: 62, borderRadius: '50%', background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <span style={{ fontSize: 'var(--text-subtitle)', fontWeight: 'var(--font-weight-bold)', color: 'var(--primary-700)' }}>{overallResult.score}%</span>
+                      <span style={{ fontSize: 'var(--text-subtitle)', fontWeight: 'var(--font-weight-bold)', color: 'var(--glass-accent)' }}>{overallResult.score}%</span>
                     </div>
                   </div>
                   <div>
-                    <p className="tbo-section-title" style={{   color: 'var(--primary-700)' }}>{overallResult.label}</p>
+                    <p className="tbo-section-title" style={{   color: 'var(--glass-accent)' }}>{overallResult.label}</p>
                     <p className="tbo-supporting" style={{  color: 'var(--muted-foreground)', marginTop: 2 }}>
                       {tr('Based on {count} categories · {date}', { count: completedCatIds.length, date: tr(overallResult.aiPowered ? 'AI-powered' : 'Stats-based') })}
                     </p>
@@ -617,19 +618,19 @@ export function QADiscussionHub({
                     ))}
                   </div>
                 </div>
-                <div style={{ background: 'var(--card)', border: '1px solid var(--primary-200)', borderRadius: 'var(--radius-md)', padding: 'var(--spacing-4)' }}>
-                  <p className="tbo-supporting flex items-start gap-2 italic text-foreground"><Lightbulb className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary-600" />{overallResult.insight}</p>
+                <div className="tbo-glass" style={{  border: '1px solid var(--primary-200)', borderRadius: 'var(--radius-md)', padding: 'var(--spacing-4)' }}>
+                  <p className="tbo-supporting flex items-start gap-2 italic text-foreground"><Lightbulb className="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--glass-accent)]" />{overallResult.insight}</p>
                 </div>
-                <div style={{ background: 'var(--primary-50)', borderRadius: 'var(--radius-md)', padding: 'var(--spacing-3)', display: 'flex', gap: 'var(--spacing-3)' }}>
-                  <CalendarDays className="h-5 w-5 flex-shrink-0 text-primary-600" />
+                <div style={{ background: 'var(--glass-inset-surface)', borderRadius: 'var(--radius-md)', padding: 'var(--spacing-3)', display: 'flex', gap: 'var(--spacing-3)' }}>
+                  <CalendarDays className="h-5 w-5 flex-shrink-0 text-[var(--glass-accent)]" />
                   <div>
-                    <p className="tbo-caption" style={{   color: 'var(--primary-700)', marginBottom: 4 }}>{tr("30-Day Challenge")}</p>
+                    <p className="tbo-caption" style={{   color: 'var(--glass-accent)', marginBottom: 4 }}>{tr("30-Day Challenge")}</p>
                     <p className="tbo-supporting" style={{  color: 'var(--foreground)',  }}>{overallResult.challenge}</p>
                   </div>
                 </div>
                 {overallResult.categoryHighlights && Object.keys(overallResult.categoryHighlights).length > 0 && (
                   <details style={{ cursor: 'pointer' }}>
-                    <summary className="tbo-label" style={{   color: 'var(--primary-700)', listStyle: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <summary className="tbo-label" style={{   color: 'var(--glass-accent)', listStyle: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
                       <ChevronRight className="w-4 h-4" />
 
                       {tr("Category Highlights")}
@@ -1051,13 +1052,13 @@ function QuestionCard({
   };
 
   return (
-    <Card className="overflow-hidden rounded-[2rem] border-primary-100/80 bg-white/90 shadow-[0_22px_70px_rgba(83,45,67,0.11)]">
-      <CardHeader className="relative overflow-hidden border-b border-primary-100/70 bg-gradient-to-br from-primary-50 via-white to-secondary-50/70 p-5 sm:p-7">
-        <div className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-primary-200/25 blur-3xl" />
-        <div className="flex items-start justify-between gap-4">
-          <div className="relative flex-1">
+    <Card className="tbo-glass overflow-hidden rounded-[2rem] border-[var(--glass-border)] shadow-[0_22px_70px_rgba(83,45,67,0.11)]">
+      <CardHeader className="tbo-feature-card-content relative overflow-hidden border-b border-[var(--glass-border)] bg-[var(--glass-inset-surface)] p-5 sm:p-7">
+        <div className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-[var(--glass-inset-surface)] blur-3xl" />
+        <div className="tbo-feature-card-heading flex items-start justify-between gap-4">
+          <div className="relative min-w-0 flex-1">
             <div className="flex items-center gap-2 mb-2 flex-wrap">
-              <Badge variant="secondary" className="tbo-caption rounded-full border border-primary-100 bg-white/70 px-3 py-1 capitalize text-primary-700 shadow-sm">
+              <Badge variant="secondary" className="max-w-full whitespace-normal h-auto min-h-6 tbo-caption rounded-full border border-[var(--glass-border)] bg-[var(--glass-inset-surface)] px-3 py-1 capitalize text-[var(--glass-accent)] shadow-sm">
                 {tr(getQuestionCategorySource(question.category))}
               </Badge>
               {/* Green "Done" badge — shown whenever this question has a saved answer */}
@@ -1090,21 +1091,21 @@ function QuestionCard({
             onClick={onPrayTogether}
             aria-label={tr("Pray together about this question")}
             title={tr("Pray together")}
-            className="tbo-action relative shrink-0 rounded-full border border-primary-100 bg-white/75 text-primary-600 shadow-sm transition-all hover:-translate-y-0.5 hover:bg-primary-50 hover:text-primary-700 hover:shadow-md motion-reduce:transform-none"
+            className="tbo-action relative shrink-0 rounded-full border border-[var(--glass-border)] bg-[var(--glass-inset-surface)] text-[var(--glass-accent)] shadow-sm transition-all hover:-translate-y-0.5 hover:bg-[var(--glass-inset-surface)] hover:text-[var(--glass-accent)] hover:shadow-md motion-reduce:transform-none"
           >
             <Heart className="w-5 h-5" />
           </Button>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-6 p-4 sm:p-7">
+      <CardContent className="tbo-feature-card-content space-y-6 p-4 sm:p-7">
         {/* Scripture */}
         <div
-          className="relative overflow-hidden rounded-3xl border border-amber-100 bg-gradient-to-br from-amber-50/90 to-orange-50/55 p-4 shadow-sm sm:p-5"
+          className="relative overflow-hidden rounded-3xl border border-amber-100 tbo-glass-inset p-4 shadow-sm sm:p-5"
         >
           <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-amber-200/25 blur-2xl" />
           <div className="flex items-start gap-3">
-            <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/75 text-amber-700 shadow-sm"><BookOpen className="h-5 w-5" /></span>
+            <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[var(--glass-inset-surface)] text-[var(--glass-accent)] shadow-sm"><BookOpen className="h-5 w-5" /></span>
             <div className="relative">
               <p className="mb-2 italic leading-relaxed text-foreground">
                 {question.verse}
@@ -1140,7 +1141,7 @@ function QuestionCard({
                 <button
                   onClick={() => setIsEditing(true)}
                   type="button"
-                  className="tbo-action flex min-h-9 items-center gap-1 rounded-full bg-primary-50 px-3 text-primary-700 transition-colors hover:bg-primary-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                  className="tbo-action flex min-h-9 items-center gap-1 rounded-full bg-[var(--glass-inset-surface)] px-3 text-[var(--glass-accent)] transition-colors hover:bg-[var(--glass-inset-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
                 >
 
                   {tr("Edit")}
@@ -1164,12 +1165,12 @@ function QuestionCard({
                   {question.prompts.map((prompt) => (
                     <div key={prompt.id} className="space-y-1.5">
                       <p className="tbo-supporting text-foreground">{prompt.text}</p>
-                      <div className="rounded-2xl border border-emerald-100 bg-white/80 px-4 py-3 shadow-sm">
+                      <div className="rounded-2xl border border-emerald-100 bg-[var(--glass-inset-surface)] px-4 py-3 shadow-sm">
                         <p className="tbo-supporting text-foreground">{formatAnswerForDisplay(myAnswers[prompt.id])}</p>
                       </div>
                     </div>
                   ))}
-                  <Button onClick={onNextQuestion} className="tbo-action h-12 w-full rounded-2xl bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-[0_10px_25px_rgba(190,68,112,0.22)] transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(190,68,112,0.28)] motion-reduce:transform-none">
+                  <Button onClick={onNextQuestion} className="tbo-action h-12 w-full rounded-2xl shadow-[0_10px_25px_rgba(190,68,112,0.22)] transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(190,68,112,0.28)] motion-reduce:transform-none">
                     <ChevronRight className="mr-2 h-4 w-4" />  {tr("Next Question")}
                   </Button>
                 </div>
@@ -1197,7 +1198,7 @@ function QuestionCard({
               <Button
                 onClick={handleSaveAndContinue}
                 disabled={isSaving || !canContinue}
-                className="tbo-action h-12 w-full rounded-2xl transition-all enabled:bg-gradient-to-r enabled:from-primary-600 enabled:to-primary-700 enabled:text-white enabled:shadow-[0_10px_25px_rgba(190,68,112,0.22)] enabled:hover:-translate-y-0.5 enabled:hover:shadow-[0_14px_30px_rgba(190,68,112,0.28)] disabled:bg-neutral-100 disabled:text-muted-foreground motion-reduce:transform-none"
+                className="tbo-action h-12 w-full rounded-2xl transition-all enabled:shadow-[0_10px_25px_rgba(190,68,112,0.22)] enabled:hover:-translate-y-0.5 enabled:hover:shadow-[0_14px_30px_rgba(190,68,112,0.28)] disabled:bg-[var(--glass-inset-surface)] disabled:text-muted-foreground motion-reduce:transform-none"
                 style={{
 
                   cursor: (isSaving || !canContinue) ? 'not-allowed' : 'pointer',
@@ -1226,19 +1227,19 @@ function QuestionCard({
 
         {bothAnswered ? (
           /* ✅ Both answered → reveal partner's response */
-          <Collapsible defaultOpen={false} className="rounded-2xl border border-primary-200 bg-primary-50/55">
-            <CollapsibleTrigger className="group flex min-h-16 w-full items-center justify-between gap-3 rounded-2xl px-4 py-3 text-left transition-colors hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 [&[data-state=open]_.partner-chevron]:rotate-180">
+          <Collapsible defaultOpen={false} className="rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-inset-surface)]">
+            <CollapsibleTrigger className="group flex min-h-16 w-full items-center justify-between gap-3 rounded-2xl px-4 py-3 text-left transition-colors hover:bg-[var(--glass-inset-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 [&[data-state=open]_.partner-chevron]:rotate-180">
               <span className="flex min-w-0 items-center gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/80 text-primary-600 shadow-sm"><Heart className="h-5 w-5 fill-current" /></span>
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--glass-inset-surface)] text-[var(--glass-accent)] shadow-sm"><Heart className="h-5 w-5 fill-current" /></span>
                 <span className="min-w-0">
-                  <span className="tbo-label block break-words text-primary-800">{partnerName ? tr("{name}'s Answer", { name: partnerName }) : t.questions.partnersAnswer}</span>
-                  <span className="tbo-caption mt-0.5 block text-primary-700/70">{tr("Ready to reveal")}</span>
+                  <span className="tbo-label block break-words text-[var(--glass-accent)]">{partnerName ? tr("{name}'s Answer", { name: partnerName }) : t.questions.partnersAnswer}</span>
+                  <span className="tbo-caption mt-0.5 block text-[var(--glass-accent)]/70">{tr("Ready to reveal")}</span>
                 </span>
               </span>
-              <ChevronDown className="partner-chevron h-5 w-5 shrink-0 text-primary-700 transition-transform duration-200" aria-hidden="true" />
+              <ChevronDown className="partner-chevron h-5 w-5 shrink-0 text-[var(--glass-accent)] transition-transform duration-200" aria-hidden="true" />
             </CollapsibleTrigger>
             <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-              <div className="space-y-4 border-t border-primary-100 px-4 pb-4 pt-4">
+              <div className="space-y-4 border-t border-[var(--glass-border)] px-4 pb-4 pt-4">
                 {question.prompts.map((prompt) => {
                   const answer = normalisedPartnerAnswers[prompt.id];
                   if (answer === undefined || answer === null || answer === '') return null;
@@ -1247,7 +1248,7 @@ function QuestionCard({
                   return (
                     <div key={prompt.id} className="space-y-1.5">
                       <p className="tbo-caption text-muted-foreground">{prompt.text}</p>
-                      <div className="rounded-2xl border border-primary-100 bg-white/85 px-4 py-3 shadow-sm">
+                      <div className="rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-inset-surface)] px-4 py-3 shadow-sm">
                         <p className="tbo-supporting text-foreground">{displayValue}</p>
                       </div>
                     </div>
@@ -1260,8 +1261,8 @@ function QuestionCard({
         ) : userHasSaved ? (
           /* ⏳ You answered, partner hasn't yet → waiting state */
           <div
-            className="text-center py-6"
-            style={{ background: 'var(--muted)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)' }}
+            className="tbo-glass-inset text-center py-6"
+            style={{  border: '1px solid var(--border)', borderRadius: 'var(--radius-md)' }}
           >
             <Heart className="w-10 h-10 mx-auto mb-3" style={{ color: 'var(--neutral-300)' }} />
             <p className="tbo-body" style={{ color: 'var(--muted-foreground)',  margin: 0,  }}>
@@ -1276,16 +1277,16 @@ function QuestionCard({
         ) : (
           /* 🔒 You haven't answered yet → partner's answer stays hidden */
           <div
-            className="text-center py-6"
+            className="tbo-glass-inset text-center py-6"
             style={{
-              background: 'var(--muted)',
+
               border: '1px dashed var(--border)',
               borderRadius: 'var(--radius-md)',
             }}
           >
             <div
               className="mx-auto mb-3 flex items-center justify-center"
-              style={{ width: 48, height: 48, borderRadius: 'var(--radius-full)', background: 'var(--neutral-200)' }}
+              style={{ width: 48, height: 48, borderRadius: 'var(--radius-full)', background: 'var(--glass-rim)' }}
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--neutral-500)' }}>
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
@@ -1303,29 +1304,29 @@ function QuestionCard({
 
         {/* AI-Powered Compatibility Match */}
         {bothAnswered && (
-          <Collapsible defaultOpen={false} className="rounded-2xl border border-violet-200 bg-gradient-to-br from-violet-50/80 to-primary-50/60">
-            <CollapsibleTrigger className="group flex min-h-16 w-full items-center justify-between gap-3 rounded-2xl px-4 py-3 text-left transition-colors hover:bg-violet-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 [&[data-state=open]_.compatibility-chevron]:rotate-180">
+          <Collapsible defaultOpen={false} className="rounded-2xl border border-[var(--glass-border)] tbo-glass-inset">
+            <CollapsibleTrigger className="group flex min-h-16 w-full items-center justify-between gap-3 rounded-2xl px-4 py-3 text-left transition-colors hover:bg-[var(--glass-inset-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 [&[data-state=open]_.compatibility-chevron]:rotate-180">
               <span className="flex min-w-0 items-center gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/80 text-violet-600 shadow-sm"><Sparkles className={`h-5 w-5 ${isLoadingAI ? 'animate-pulse' : ''}`} /></span>
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--glass-inset-surface)] text-[var(--glass-accent)] shadow-sm"><Sparkles className={`h-5 w-5 ${isLoadingAI ? 'animate-pulse' : ''}`} /></span>
                 <span className="min-w-0">
-                  <span className="tbo-label flex items-center gap-2 text-violet-950">{tr("Compatibility Match")} <span className="tbo-eyebrow rounded-full bg-white/80 px-2 py-0.5 text-violet-700">AI</span></span>
-                  <span className="tbo-caption mt-0.5 block break-words text-violet-800/70">{isLoadingAI ? tr("Analysing your answers…") : aiCompatibility ? tr('{label} · Tap for insight', { label: tr(aiCompatibility.label) }) : tr("Tap to view your insight")}</span>
+                  <span className="tbo-label flex items-center gap-2 text-foreground">{tr("Compatibility Match")} <span className="tbo-eyebrow rounded-full bg-[var(--glass-inset-surface)] px-2 py-0.5 text-[var(--glass-accent)]">AI</span></span>
+                  <span className="tbo-caption mt-0.5 block break-words text-[var(--glass-accent)]/70">{isLoadingAI ? tr("Analysing your answers…") : aiCompatibility ? tr('{label} · Tap for insight', { label: tr(aiCompatibility.label) }) : tr("Tap to view your insight")}</span>
                 </span>
               </span>
               <span className="flex shrink-0 items-center gap-2">
                 {aiCompatibility && <span className="text-lg font-bold" style={{ color: getMatchColor(aiCompatibility.score) }}>{aiCompatibility.score}%</span>}
-                <ChevronDown className="compatibility-chevron h-5 w-5 text-violet-700 transition-transform duration-200" aria-hidden="true" />
+                <ChevronDown className="compatibility-chevron h-5 w-5 text-[var(--glass-accent)] transition-transform duration-200" aria-hidden="true" />
               </span>
             </CollapsibleTrigger>
             <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-              <div className="border-t border-violet-100 p-4 sm:p-5">
+              <div className="border-t border-[var(--glass-border)] p-4 sm:p-5">
 
             {/* Loading skeleton */}
             {isLoadingAI && (
-              <div
+              <div className="tbo-glass-inset"
                 style={{
                   padding: 'var(--spacing-6)',
-                  background: 'var(--primary-50)',
+
                   border: '2px solid var(--primary-200)',
                   borderRadius: 'var(--radius-lg)',
                 }}
@@ -1359,8 +1360,8 @@ function QuestionCard({
                       <span className="tbo-caption"
                         style={{
 
-                          color: 'var(--primary-600)',
-                          background: 'var(--primary-100)',
+                          color: 'var(--glass-accent)',
+                          background: 'var(--glass-inset-surface)',
                           padding: '2px 8px',
                           borderRadius: 'var(--radius-full)',
                           display: 'inline-flex',
@@ -1435,7 +1436,7 @@ function QuestionCard({
                 {/* Weekly Recommendation */}
                 <div
                   style={{
-                    background: 'var(--primary-50)',
+                    background: 'var(--glass-inset-surface)',
                     borderRadius: 'var(--radius-md)',
                     padding: 'var(--spacing-3)',
                     display: 'flex',
@@ -1445,7 +1446,7 @@ function QuestionCard({
                 >
                   <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>📅</span>
                   <div>
-                    <p className="tbo-caption" style={{   color: 'var(--primary-700)', margin: '0 0 2px 0' }}>
+                    <p className="tbo-caption" style={{   color: 'var(--glass-accent)', margin: '0 0 2px 0' }}>
 
                       {tr("This Week's Recommendation")}
                     </p>

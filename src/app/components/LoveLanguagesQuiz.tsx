@@ -7,11 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Progress } from './ui/progress';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
-import { 
-  Heart, 
-  Gift, 
-  Clock, 
-  MessageCircle, 
+import {
+  Heart,
+  Gift,
+  Clock,
+  MessageCircle,
   HandHeart,
   Sparkles,
   BookOpen
@@ -157,7 +157,7 @@ export function LoveLanguagesQuiz({ existingResult, onComplete, onBack }: LoveLa
     const primaryInsight = scriptureInsights[results.primary as keyof typeof scriptureInsights];
 
     return (
-      <div className="min-h-screen bg-gradient-to-b from-primary-50/50 to-primary-50/50">
+      <div className="min-h-screen bg-transparent">
         <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm border-b">
           <div className="flex items-center justify-between px-4 py-4">
             <BackButton label={tr("Back to Quizzes")} onClick={onBack} />
@@ -168,7 +168,7 @@ export function LoveLanguagesQuiz({ existingResult, onComplete, onBack }: LoveLa
 
         <div className="max-w-2xl mx-auto px-4 py-6 pb-24">
           {/* Primary Love Language */}
-          <Card className="mb-6 overflow-hidden border-primary-200">
+          <Card className="tbo-glass mb-6 overflow-hidden border-[var(--glass-border)]">
             <div className="h-2 bg-gradient-to-r from-primary-500 to-primary-500"></div>
             <CardHeader className="text-center pb-4">
               <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-primary-500 to-primary-500 mb-4 mx-auto">
@@ -185,16 +185,16 @@ export function LoveLanguagesQuiz({ existingResult, onComplete, onBack }: LoveLa
               </p>
 
               {/* Scripture Insight */}
-              <div className="p-4 bg-gradient-to-br from-sky-50 to-sky-100 rounded-lg border border-sky-200">
+              <div className="p-4 tbo-glass-inset rounded-lg border border-[var(--glass-border)]">
                 <div className="flex items-start gap-3 mb-3">
-                  <BookOpen className="w-5 h-5 text-sky-600 flex-shrink-0 mt-0.5" />
+                  <BookOpen className="w-5 h-5 text-[var(--glass-accent)] flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium text-sky-700 italic mb-1">"{primaryInsight.verse}"</p>
-                    <p className="tbo-caption text-sky-700">— {primaryInsight.reference}</p>
+                    <p className="font-medium text-[var(--glass-accent)] italic mb-1">"{primaryInsight.verse}"</p>
+                    <p className="tbo-caption text-[var(--glass-accent)]">— {primaryInsight.reference}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <Sparkles className="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" />
+                  <Sparkles className="w-5 h-5 text-[var(--glass-accent)] flex-shrink-0 mt-0.5" />
                   <p className="tbo-supporting text-foreground">{primaryInsight.guidance}</p>
                 </div>
               </div>
@@ -211,7 +211,7 @@ export function LoveLanguagesQuiz({ existingResult, onComplete, onBack }: LoveLa
                       <div key={lang} className="space-y-2">
                         <div className="flex items-center justify-between text-sm">
                           <div className="flex items-center gap-2">
-                            <LangIcon className="w-4 h-4 text-primary-600" />
+                            <LangIcon className="w-4 h-4 text-[var(--glass-accent)]" />
                             <span>{loveLanguages[lang as keyof typeof loveLanguages].name}</span>
                           </div>
                           <span className="font-medium">{score}/{questions.length}</span>
@@ -225,13 +225,13 @@ export function LoveLanguagesQuiz({ existingResult, onComplete, onBack }: LoveLa
           </Card>
 
           {/* Secondary Love Language */}
-          <Card className="mb-6 bg-gradient-to-br from-primary-50 to-primary-100 border-primary-200">
+          <Card className="mb-6 tbo-glass border-[var(--glass-border)]">
             <CardHeader>
               <CardTitle className="tbo-card-title flex items-center gap-2">
-                <SecondaryIcon className="w-5 h-5 text-primary-600" />{tr("Your Secondary Love Language")} </CardTitle>
+                <SecondaryIcon className="w-5 h-5 text-[var(--glass-accent)]" />{tr("Your Secondary Love Language")} </CardTitle>
             </CardHeader>
             <CardContent>
-              <h4 className="tbo-card-title text-primary-900 mb-2">
+              <h4 className="tbo-card-title text-[var(--glass-accent)] mb-2">
                 {loveLanguages[results.secondary as keyof typeof loveLanguages].name}
               </h4>
               <p className="tbo-supporting text-muted-foreground">
@@ -244,19 +244,19 @@ export function LoveLanguagesQuiz({ existingResult, onComplete, onBack }: LoveLa
           <Card>
             <CardHeader>
               <CardTitle className="tbo-card-title flex items-center gap-2">
-                <Heart className="w-5 h-5 text-primary-600" />{tr("Growing Together")} </CardTitle>
+                <Heart className="w-5 h-5 text-[var(--glass-accent)]" />{tr("Growing Together")} </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="p-3 bg-primary-50 rounded-lg">
-                <p className="tbo-supporting text-primary-900 mb-1">{tr("Share with your partner")}</p>
+              <div className="p-3 tbo-glass-inset rounded-lg">
+                <p className="tbo-supporting text-[var(--glass-accent)] mb-1">{tr("Share with your partner")}</p>
                 <p className="tbo-supporting text-muted-foreground">{tr("Help your partner understand how you feel most loved")}</p>
               </div>
               <div className="p-3 bg-sky-50 rounded-lg">
-                <p className="tbo-supporting text-sky-700 mb-1">{tr("Learn their language")}</p>
+                <p className="tbo-supporting text-[var(--glass-accent)] mb-1">{tr("Learn their language")}</p>
                 <p className="tbo-supporting text-muted-foreground">{tr("Ask your partner to take this quiz and compare results")}</p>
               </div>
-              <div className="p-3 bg-primary-50 rounded-lg">
-                <p className="tbo-supporting text-primary-900 mb-1">{tr("Practice intentionally")}</p>
+              <div className="p-3 tbo-glass-inset rounded-lg">
+                <p className="tbo-supporting text-[var(--glass-accent)] mb-1">{tr("Practice intentionally")}</p>
                 <p className="tbo-supporting text-muted-foreground">{tr("Regularly express love in your partner's primary language")}</p>
               </div>
             </CardContent>
@@ -275,7 +275,7 @@ export function LoveLanguagesQuiz({ existingResult, onComplete, onBack }: LoveLa
   const types = question.type.split('-');
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary-50/50 to-primary-50/50">
+    <div className="min-h-screen bg-transparent">
       <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm border-b">
         <div className="flex items-center justify-between px-4 py-4">
           <BackButton label={tr("Back to Quizzes")} onClick={onBack} />
@@ -292,7 +292,7 @@ export function LoveLanguagesQuiz({ existingResult, onComplete, onBack }: LoveLa
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <Card className="border-primary-200">
+        <Card className="tbo-glass border-[var(--glass-border)]">
           <CardHeader>
             <div className="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-primary-500 to-primary-500 mb-4 mx-auto">
               <Heart className="w-8 h-8 text-white" />
@@ -302,12 +302,12 @@ export function LoveLanguagesQuiz({ existingResult, onComplete, onBack }: LoveLa
           <CardContent className="space-y-4">
             <Button
               onClick={() => handleAnswer('a1')}
-              className="tbo-action w-full h-auto whitespace-normal break-words py-6 text-left justify-start bg-card hover:bg-primary-50 text-foreground border-2 border-border hover:border-primary-300"
+              className="tbo-action w-full h-auto whitespace-normal break-words py-6 text-left justify-start bg-card hover:bg-[var(--glass-inset-surface)] text-foreground border-2 border-border hover:border-primary-300"
               variant="outline"
             >
               <div className="flex items-start gap-3 w-full">
-                <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="font-semibold text-primary-600">A</span>
+                <div className="w-8 h-8 rounded-full bg-[var(--glass-inset-surface)] flex items-center justify-center flex-shrink-0 mt-1">
+                  <span className="font-semibold text-[var(--glass-accent)]">A</span>
                 </div>
                 <span className="flex-1 text-base">{question.a1}</span>
               </div>
@@ -315,12 +315,12 @@ export function LoveLanguagesQuiz({ existingResult, onComplete, onBack }: LoveLa
 
             <Button
               onClick={() => handleAnswer('a2')}
-              className="tbo-action w-full h-auto whitespace-normal break-words py-6 text-left justify-start bg-card hover:bg-primary-50 text-foreground border-2 border-border hover:border-primary-300"
+              className="tbo-action w-full h-auto whitespace-normal break-words py-6 text-left justify-start bg-card hover:bg-[var(--glass-inset-surface)] text-foreground border-2 border-border hover:border-primary-300"
               variant="outline"
             >
               <div className="flex items-start gap-3 w-full">
-                <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="font-semibold text-primary-600">B</span>
+                <div className="w-8 h-8 rounded-full bg-[var(--glass-inset-surface)] flex items-center justify-center flex-shrink-0 mt-1">
+                  <span className="font-semibold text-[var(--glass-accent)]">B</span>
                 </div>
                 <span className="flex-1 text-base">{question.a2}</span>
               </div>

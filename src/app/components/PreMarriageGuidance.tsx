@@ -19,7 +19,7 @@ export function PreMarriageGuidance({ modules }: PreMarriageGuidanceProps) {
   const tr = useUiCopy(guidanceMessages);
   const { t } = useLanguage();
   return (
-    <Card className="bg-card rounded-2xl p-6">
+    <Card className="tbo-glass bg-card rounded-2xl p-6">
       <div className="flex items-center gap-2 text-warning-700 mb-6">
         <GraduationCap className="w-5 h-5" />
         <h3 className="tbo-card-title">{t.dashboard.preMarriageGuidance}</h3>

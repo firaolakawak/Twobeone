@@ -12,8 +12,8 @@ import { Label } from './ui/label';
 import { Badge } from './ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { 
-  Plus, 
+import {
+  Plus,
   Heart,
   Calendar,
   TrendingUp,
@@ -206,7 +206,7 @@ export function RelationshipTimeline({
     if (milestones.length === 0) return null;
 
     const firstMeeting = milestones.find(m => m.category === 'First Meeting');
-    const daysTogether = firstMeeting 
+    const daysTogether = firstMeeting
       ? Math.floor((Date.now() - new Date(firstMeeting.date).getTime()) / (1000 * 60 * 60 * 24))
       : 0;
 
@@ -252,7 +252,7 @@ export function RelationshipTimeline({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary-50/30 to-primary-50/30">
+    <div className="min-h-screen bg-transparent">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-card border-b">
         <div className="px-4 py-4">
@@ -268,10 +268,10 @@ export function RelationshipTimeline({
                 )}
               </div>
             </div>
-            <Button 
+            <Button
               onClick={() => setIsOpen(true)}
               size="sm"
-              className="tbo-action bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
+              className="tbo-action"
             >
               <Plus className="w-4 h-4 mr-2" />
 
@@ -282,17 +282,17 @@ export function RelationshipTimeline({
           {/* Stats Bar */}
           {stats && (
             <div className="grid grid-cols-4 gap-2 mb-4">
-              <div className="bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-primary-700">{stats.totalMilestones}</div>
-                <div className="tbo-caption text-primary-600">{t.milestones.title}</div>
+              <div className="tbo-glass-inset rounded-lg p-3 text-center">
+                <div className="text-2xl font-bold text-[var(--glass-accent)]">{stats.totalMilestones}</div>
+                <div className="tbo-caption text-[var(--glass-accent)]">{t.milestones.title}</div>
               </div>
-              <div className="bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-primary-700">{stats.daysTogether}</div>
-                <div className="tbo-caption text-primary-600">{tr("Days")}</div>
+              <div className="tbo-glass-inset rounded-lg p-3 text-center">
+                <div className="text-2xl font-bold text-[var(--glass-accent)]">{stats.daysTogether}</div>
+                <div className="tbo-caption text-[var(--glass-accent)]">{tr("Days")}</div>
               </div>
-              <div className="bg-gradient-to-br from-sky-50 to-sky-100 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-sky-700">{stats.avgEmotion}</div>
-                <div className="tbo-caption text-sky-600">{tr("Avg Joy")}</div>
+              <div className="tbo-glass-inset rounded-lg p-3 text-center">
+                <div className="text-2xl font-bold text-[var(--glass-accent)]">{stats.avgEmotion}</div>
+                <div className="tbo-caption text-[var(--glass-accent)]">{tr("Avg Joy")}</div>
               </div>
               <div className="bg-gradient-to-br from-warning-50 to-warning-50 rounded-lg p-3 text-center">
                 <div className="text-2xl font-bold text-warning-700">{stats.achievements}</div>
@@ -353,7 +353,7 @@ export function RelationshipTimeline({
                 </p>
                 <Button
                   onClick={() => setIsOpen(true)}
-                  className="tbo-action bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
+                  className="tbo-action"
                 >
                   <Plus className="w-5 h-5 mr-2" />
                   {t.milestones.addFirstMilestone}
@@ -376,7 +376,7 @@ export function RelationshipTimeline({
                       </div>
 
                       {/* Content Card */}
-                      <Card className="overflow-hidden hover:shadow-lg transition-shadow border-0">
+                      <Card className="tbo-glass overflow-hidden hover:shadow-lg transition-shadow border-0">
                         <div className={`h-2 bg-gradient-to-r ${catData.color}`}></div>
                         <CardContent className="p-5">
                           <div className="flex items-start justify-between mb-3">
@@ -386,7 +386,7 @@ export function RelationshipTimeline({
                                   {tr(milestone.category)}
                                 </Badge>
                                 {milestone.isPartner && (
-                                  <Badge className="tbo-caption bg-gradient-to-r from-primary-100 to-error-50 text-primary-800">
+                                  <Badge className="tbo-caption bg-gradient-to-r from-primary-100 to-error-50 text-[var(--glass-accent)]">
                                     💕 {partnerName}
                                   </Badge>
                                 )}
@@ -424,7 +424,7 @@ export function RelationshipTimeline({
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => handleEdit(milestone)}
-                                  className="tbo-action h-8 text-sky-600 hover:text-sky-700 hover:bg-sky-50"
+                                  className="tbo-action h-8 text-[var(--glass-accent)] hover:text-[var(--glass-accent)] hover:bg-sky-50"
                                 >
                                   <Edit2 className="w-4 h-4" />
                                 </Button>
@@ -472,7 +472,7 @@ export function RelationshipTimeline({
 
                         return (
                           <div key={milestone.id} className="flex-1 flex flex-col items-center gap-2">
-                            <div 
+                            <div
                               className={`w-full rounded-t-lg bg-gradient-to-t ${getEmotionColor(milestone.emotionLevel)} transition-all hover:opacity-80 cursor-pointer`}
                               style={{ height: `${height}%` }}
                               title={`${milestone.title}: ${milestone.emotionLevel}/10`}
@@ -529,11 +529,11 @@ export function RelationshipTimeline({
                     const isEarned = achievements.some(a => a.id === badge.id);
 
                     return (
-                      <div 
+                      <div
                         key={badge.id}
                         className={`relative overflow-hidden rounded-xl p-4 transition-all ${
-                          isEarned 
-                            ? 'bg-gradient-to-br from-warning-50 to-warning-50 border-2 border-warning-500/50 shadow-md' 
+                          isEarned
+                            ? 'bg-gradient-to-br from-warning-50 to-warning-50 border-2 border-warning-500/50 shadow-md'
                             : 'bg-muted border-2 border-border opacity-50 grayscale'
                         }`}
                       >
@@ -587,7 +587,7 @@ export function RelationshipTimeline({
                     }}
                     className={`flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all ${
                       category === cat.value
-                        ? `border-primary-500 bg-primary-50 scale-105`
+                        ? `border-primary-500 bg-[var(--glass-inset-surface)] scale-105`
                         : 'border-border hover:border-primary-300'
                     }`}
                   >
@@ -662,10 +662,10 @@ export function RelationshipTimeline({
 
                 {tr("Cancel")}
               </Button>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={isLoading}
-                className="tbo-action bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
+                className="tbo-action"
               >
                 {isLoading && <LoadingMark />}
                 {isLoading ? t.common.loading : editingMilestone ? t.common.save : t.milestones.addMilestone}

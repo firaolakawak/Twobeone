@@ -1,13 +1,15 @@
 import * as React from "react";
 
 import { cn } from "./utils";
+import { glassMaterial } from "./materials";
 
 function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card"
       className={cn(
-        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border",
+        "flex min-w-0 flex-col gap-6 rounded-2xl border [overflow-wrap:anywhere]",
+        glassMaterial('card', className, props.style),
         className,
       )}
       {...props}

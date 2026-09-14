@@ -1,0 +1,622 @@
+{
+  "browser": "Edg/153.0.4234.32",
+  "cases": [
+    {
+      "screen": "auth",
+      "w": 390,
+      "scale": 1,
+      "lang": "en",
+      "theme": "light",
+      "overflow": false,
+      "scrollWidth": 390,
+      "outside": [],
+      "heading": [
+        {
+          "text": "TwoBeOne",
+          "color": "rgb(25, 43, 120)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "auth",
+      "w": 1280,
+      "scale": 1,
+      "lang": "en",
+      "theme": "light",
+      "overflow": false,
+      "scrollWidth": 1280,
+      "outside": [],
+      "heading": [
+        {
+          "text": "TwoBeOne",
+          "color": "rgb(25, 43, 120)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "auth",
+      "w": 390,
+      "scale": 1,
+      "lang": "en",
+      "theme": "dark",
+      "overflow": false,
+      "scrollWidth": 390,
+      "outside": [],
+      "heading": [
+        {
+          "text": "TwoBeOne",
+          "color": "rgb(245, 239, 255)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "auth",
+      "w": 320,
+      "scale": 2,
+      "lang": "am",
+      "theme": "light",
+      "overflow": false,
+      "scrollWidth": 320,
+      "outside": [],
+      "heading": [
+        {
+          "text": "TwoBeOne",
+          "color": "rgb(25, 43, 120)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "auth",
+      "w": 320,
+      "scale": 2,
+      "lang": "om",
+      "theme": "dark",
+      "overflow": false,
+      "scrollWidth": 320,
+      "outside": [],
+      "heading": [
+        {
+          "text": "TwoBeOne",
+          "color": "rgb(245, 239, 255)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "onboarding",
+      "w": 390,
+      "scale": 1,
+      "lang": "en",
+      "theme": "light",
+      "overflow": false,
+      "scrollWidth": 390,
+      "outside": [],
+      "heading": [
+        {
+          "text": "Grow together in faith and love",
+          "color": "rgb(25, 43, 120)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "onboarding",
+      "w": 1280,
+      "scale": 1,
+      "lang": "en",
+      "theme": "light",
+      "overflow": false,
+      "scrollWidth": 1280,
+      "outside": [],
+      "heading": [
+        {
+          "text": "Grow together in faith and love",
+          "color": "rgb(25, 43, 120)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "onboarding",
+      "w": 390,
+      "scale": 1,
+      "lang": "en",
+      "theme": "dark",
+      "overflow": false,
+      "scrollWidth": 390,
+      "outside": [],
+      "heading": [
+        {
+          "text": "Grow together in faith and love",
+          "color": "rgb(245, 239, 255)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "onboarding",
+      "w": 320,
+      "scale": 2,
+      "lang": "am",
+      "theme": "light",
+      "overflow": false,
+      "scrollWidth": 320,
+      "outside": [],
+      "heading": [
+        {
+          "text": "በእምነትና በፍቅር አብራችሁ እደጉ",
+          "color": "rgb(25, 43, 120)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "onboarding",
+      "w": 320,
+      "scale": 2,
+      "lang": "om",
+      "theme": "dark",
+      "overflow": false,
+      "scrollWidth": 320,
+      "outside": [],
+      "heading": [
+        {
+          "text": "Amantii fi jaalalaan waliin guddadhaa",
+          "color": "rgb(245, 239, 255)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "landing",
+      "w": 390,
+      "scale": 1,
+      "lang": "en",
+      "theme": "light",
+      "overflow": false,
+      "scrollWidth": 390,
+      "outside": [],
+      "heading": [
+        {
+          "text": "Love is a journey.Grow together.",
+          "color": "rgb(25, 43, 120)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "landing",
+      "w": 1280,
+      "scale": 1,
+      "lang": "en",
+      "theme": "light",
+      "overflow": false,
+      "scrollWidth": 1280,
+      "outside": [],
+      "heading": [
+        {
+          "text": "Love is a journey.Grow together.",
+          "color": "rgb(25, 43, 120)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "landing",
+      "w": 390,
+      "scale": 1,
+      "lang": "en",
+      "theme": "dark",
+      "overflow": false,
+      "scrollWidth": 390,
+      "outside": [],
+      "heading": [
+        {
+          "text": "Love is a journey.Grow together.",
+          "color": "rgb(245, 239, 255)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "landing",
+      "w": 320,
+      "scale": 2,
+      "lang": "am",
+      "theme": "light",
+      "overflow": false,
+      "scrollWidth": 320,
+      "outside": [],
+      "heading": [
+        {
+          "text": "ፍቅር ጉዞ ነው።በአንድነት እደጉ።",
+          "color": "rgb(25, 43, 120)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "landing",
+      "w": 320,
+      "scale": 2,
+      "lang": "om",
+      "theme": "dark",
+      "overflow": false,
+      "scrollWidth": 320,
+      "outside": [],
+      "heading": [
+        {
+          "text": "Jaalalli imala dha.Waliin guddadhaa.",
+          "color": "rgb(245, 239, 255)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "settings",
+      "w": 390,
+      "scale": 1,
+      "lang": "en",
+      "theme": "light",
+      "overflow": false,
+      "scrollWidth": 390,
+      "outside": [],
+      "heading": [
+        {
+          "text": "Firaol Akawak",
+          "color": "rgb(25, 43, 120)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "settings",
+      "w": 1280,
+      "scale": 1,
+      "lang": "en",
+      "theme": "light",
+      "overflow": false,
+      "scrollWidth": 1280,
+      "outside": [],
+      "heading": [
+        {
+          "text": "Firaol Akawak",
+          "color": "rgb(25, 43, 120)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "settings",
+      "w": 390,
+      "scale": 1,
+      "lang": "en",
+      "theme": "dark",
+      "overflow": false,
+      "scrollWidth": 390,
+      "outside": [],
+      "heading": [
+        {
+          "text": "Firaol Akawak",
+          "color": "rgb(245, 239, 255)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "settings",
+      "w": 320,
+      "scale": 2,
+      "lang": "am",
+      "theme": "light",
+      "overflow": false,
+      "scrollWidth": 320,
+      "outside": [],
+      "heading": [
+        {
+          "text": "Firaol Akawak",
+          "color": "rgb(25, 43, 120)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "settings",
+      "w": 320,
+      "scale": 2,
+      "lang": "om",
+      "theme": "dark",
+      "overflow": false,
+      "scrollWidth": 320,
+      "outside": [],
+      "heading": [
+        {
+          "text": "Firaol Akawak",
+          "color": "rgb(245, 239, 255)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "users",
+      "w": 390,
+      "scale": 1,
+      "lang": "en",
+      "theme": "light",
+      "overflow": false,
+      "scrollWidth": 390,
+      "outside": [],
+      "heading": [
+        {
+          "text": "User Management",
+          "color": "rgb(25, 43, 120)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "users",
+      "w": 1280,
+      "scale": 1,
+      "lang": "en",
+      "theme": "light",
+      "overflow": false,
+      "scrollWidth": 1280,
+      "outside": [],
+      "heading": [
+        {
+          "text": "User Management",
+          "color": "rgb(25, 43, 120)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "users",
+      "w": 390,
+      "scale": 1,
+      "lang": "en",
+      "theme": "dark",
+      "overflow": false,
+      "scrollWidth": 390,
+      "outside": [],
+      "heading": [
+        {
+          "text": "User Management",
+          "color": "rgb(245, 239, 255)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "users",
+      "w": 320,
+      "scale": 2,
+      "lang": "am",
+      "theme": "light",
+      "overflow": false,
+      "scrollWidth": 320,
+      "outside": [],
+      "heading": [
+        {
+          "text": "የተጠቃሚ አስተዳደር",
+          "color": "rgb(25, 43, 120)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "users",
+      "w": 320,
+      "scale": 2,
+      "lang": "om",
+      "theme": "dark",
+      "overflow": false,
+      "scrollWidth": 320,
+      "outside": [],
+      "heading": [
+        {
+          "text": "Bulchiinsa fayyadamtootaa",
+          "color": "rgb(245, 239, 255)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "questions",
+      "w": 390,
+      "scale": 1,
+      "lang": "en",
+      "theme": "light",
+      "overflow": false,
+      "scrollWidth": 390,
+      "outside": [],
+      "heading": [
+        {
+          "text": "Q&A Questions",
+          "color": "rgb(109, 53, 189)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "questions",
+      "w": 1280,
+      "scale": 1,
+      "lang": "en",
+      "theme": "light",
+      "overflow": false,
+      "scrollWidth": 1280,
+      "outside": [],
+      "heading": [
+        {
+          "text": "Q&A Questions",
+          "color": "rgb(109, 53, 189)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "questions",
+      "w": 390,
+      "scale": 1,
+      "lang": "en",
+      "theme": "dark",
+      "overflow": false,
+      "scrollWidth": 390,
+      "outside": [],
+      "heading": [
+        {
+          "text": "Q&A Questions",
+          "color": "rgb(217, 185, 255)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "questions",
+      "w": 320,
+      "scale": 2,
+      "lang": "am",
+      "theme": "light",
+      "overflow": false,
+      "scrollWidth": 320,
+      "outside": [],
+      "heading": [
+        {
+          "text": "ጥያቄዎችና መልሶች",
+          "color": "rgb(109, 53, 189)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "questions",
+      "w": 320,
+      "scale": 2,
+      "lang": "om",
+      "theme": "dark",
+      "overflow": false,
+      "scrollWidth": 320,
+      "outside": [],
+      "heading": [
+        {
+          "text": "Gaaffii fi deebii",
+          "color": "rgb(217, 185, 255)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "devotionals",
+      "w": 390,
+      "scale": 1,
+      "lang": "en",
+      "theme": "light",
+      "overflow": false,
+      "scrollWidth": 390,
+      "outside": [],
+      "heading": [
+        {
+          "text": "Daily Devotionals",
+          "color": "rgb(109, 53, 189)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "devotionals",
+      "w": 1280,
+      "scale": 1,
+      "lang": "en",
+      "theme": "light",
+      "overflow": false,
+      "scrollWidth": 1280,
+      "outside": [],
+      "heading": [
+        {
+          "text": "Daily Devotionals",
+          "color": "rgb(109, 53, 189)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "devotionals",
+      "w": 390,
+      "scale": 1,
+      "lang": "en",
+      "theme": "dark",
+      "overflow": false,
+      "scrollWidth": 390,
+      "outside": [],
+      "heading": [
+        {
+          "text": "Daily Devotionals",
+          "color": "rgb(217, 185, 255)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "devotionals",
+      "w": 320,
+      "scale": 2,
+      "lang": "am",
+      "theme": "light",
+      "overflow": false,
+      "scrollWidth": 320,
+      "outside": [],
+      "heading": [
+        {
+          "text": "ዕለታዊ የመንፈስ ምግብ",
+          "color": "rgb(109, 53, 189)"
+        }
+      ],
+      "small": []
+    },
+    {
+      "screen": "devotionals",
+      "w": 320,
+      "scale": 2,
+      "lang": "om",
+      "theme": "dark",
+      "overflow": false,
+      "scrollWidth": 320,
+      "outside": [],
+      "heading": [
+        {
+          "text": "Dubbisa hafuuraa guyyaa",
+          "color": "rgb(217, 185, 255)"
+        }
+      ],
+      "small": []
+    }
+  ],
+  "errors": [],
+  "requests": [],
+  "description": "Representative actual component browser checks with local fixtures and external writes blocked.",
+  "screenWidths": [
+    320,
+    390,
+    1280
+  ],
+  "scales": [
+    1,
+    2
+  ],
+  "languages": [
+    "en",
+    "am",
+    "om"
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "scope": "Auth, Onboarding, Landing, Profile Settings, populated Users/Questions/Devotionals consoles; representative layout coverage, not every route/state."
+}

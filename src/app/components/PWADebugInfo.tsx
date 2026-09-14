@@ -95,8 +95,8 @@ export function PWADebugInfo() {
   };
 
   return (
-    <div className="fixed inset-0 z-[999] bg-black/50 flex items-center justify-center p-16">
-      <Card className="bg-card  p-24 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+    <div className="fixed inset-0 z-[999] bg-[var(--glass-overlay)] flex items-center justify-center p-4">
+      <Card className="tbo-glass-raised p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
         <div className="flex items-center gap-12 mb-24">
           <Smartphone className="w-24 h-24 text-primary-600" />
           <h2 className="tbo-section-title text-foreground dark:text-white">{tr("PWA Debug Info")}</h2>

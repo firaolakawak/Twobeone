@@ -1,0 +1,25 @@
+/* Feature content keeps its type scale when translated or enlarged. */
+.tbo-feature-layout {
+  container: tbo-feature / inline-size;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@container tbo-feature (max-width: 18rem) {
+  .tbo-feature-header,
+  .tbo-feature-card-content { padding-inline: .5rem; }
+  .tbo-feature-inner { padding-inline: 0; }
+  .tbo-feature-stats { grid-template-columns: minmax(0, 1fr); gap: .75rem; }
+  .tbo-feature-stats > div { padding-inline: 0; border-inline-width: 0; }
+  .tbo-feature-card-heading { flex-direction: column; align-items: flex-start; }
+  .tbo-feature-card-heading > * { min-width: 0; max-width: 100%; }
+  .tbo-feature-header-actions { flex-wrap: wrap; }
+  .tbo-feature-header-badge { max-width: 100%; flex-wrap: wrap; }
+  .tbo-feature-small-action { min-height: 2.75rem; height: auto; max-width: 100%; flex-wrap: wrap; }
+  .tbo-journal-track { margin-left: 0; padding-left: 0; border-left-width: 0; }
+  .tbo-journal-marker { display: none; }
+}
+
+@container tbo-feature (max-width: 12rem) {
+  .tbo-feature-header-badge { order: 1; width: 100%; }
+}

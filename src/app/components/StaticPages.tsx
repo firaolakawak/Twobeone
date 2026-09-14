@@ -43,14 +43,14 @@ function PageShell({ onBack, onGetStarted, children }: PageShellProps) {
   const tr = useUiCopy(publicStaticMessages);
   return (
     <div
-      className="min-h-screen antialiased"
-      style={{ background: "var(--background)", color: "var(--foreground)", overflowWrap: "anywhere" }}
+      className="tbo-glass-app min-h-screen antialiased"
+      style={{ color: "var(--foreground)", overflowWrap: "anywhere" }}
     >
       {/* Sticky nav */}
       <nav
         className="sticky top-0 z-50 border-b"
         style={{
-          background: "rgba(255,255,255,0.88)",
+          background: "var(--glass-raised-surface)",
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
           borderColor: "var(--primary-100)",
@@ -88,7 +88,7 @@ function PageShell({ onBack, onGetStarted, children }: PageShellProps) {
             className="tbo-action min-h-9 px-5 py-2 max-w-full rounded-xl text-white transition-all"
             style={{
               background:
-                "linear-gradient(135deg, var(--primary-500), var(--primary-600))",
+                "var(--glass-primary-paint)",
               boxShadow: "0 4px 15px rgba(244,63,94,0.30)",
             }}
           > {tr("Get Started")} </button>
@@ -106,8 +106,8 @@ function PageShell({ onBack, onGetStarted, children }: PageShellProps) {
       <footer
         className="border-t py-8 mt-16"
         style={{
-          background: "var(--neutral-900)",
-          borderColor: "var(--neutral-800)",
+          background: "var(--glass-solid)",
+          borderColor: "var(--border)",
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -116,9 +116,9 @@ function PageShell({ onBack, onGetStarted, children }: PageShellProps) {
               className="w-4 h-4 fill-current"
               style={{ color: "var(--primary-500)" }}
             />
-            <span className="tbo-supporting text-white">TwoBeOne</span>
+            <span className="tbo-supporting text-foreground">TwoBeOne</span>
           </div>
-          <p className="tbo-caption " style={{ color: "var(--neutral-500)" }}>
+          <p className="tbo-caption " style={{ color: "var(--glass-muted)" }}>
             © {new Date().getFullYear()} {tr("TwoBeOne. All rights reserved.")} </p>
           <button
             onClick={onGetStarted}
@@ -169,8 +169,8 @@ function PageHeader({
       <span
         className="tbo-caption inline-flex items-center px-4 py-1.5 rounded-full border"
         style={{
-          background: "var(--primary-50)",
-          color: "var(--primary-700)",
+          background: "var(--accent)",
+          color: "var(--glass-accent)",
           borderColor: "var(--primary-200)",
         }}
       >
@@ -178,13 +178,13 @@ function PageHeader({
       </span>
       <h1
         className="tbo-page-title "
-        style={{ color: "var(--neutral-900)" }}
+        style={{ color: "var(--glass-foreground)" }}
       >
         {tr(title)}
       </h1>
       <p
         className="tbo-body "
-        style={{ color: "var(--neutral-600)" }}
+        style={{ color: "var(--glass-muted)" }}
       >
         {tr(subtitle)}
       </p>
@@ -296,9 +296,9 @@ export function BlogPage({ onBack, onGetStarted }: BlogPageProps) {
             key={idx}
             className="rounded-2xl border overflow-hidden transition-all duration-200 flex flex-col"
             style={{
-              background: "rgba(255,255,255,0.8)",
+              background: "var(--glass-surface)",
               borderColor: "var(--neutral-200)",
-              boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+              boxShadow: "var(--glass-shadow)",
             }}
             onMouseEnter={(e) => {
               const el = e.currentTarget as HTMLElement;
@@ -309,7 +309,7 @@ export function BlogPage({ onBack, onGetStarted }: BlogPageProps) {
             onMouseLeave={(e) => {
               const el = e.currentTarget as HTMLElement;
               el.style.transform = "translateY(0)";
-              el.style.boxShadow = "0 2px 12px rgba(0,0,0,0.04)";
+              el.style.boxShadow = "var(--glass-shadow)";
               el.style.borderColor = "var(--neutral-200)";
             }}
           >
@@ -334,7 +334,7 @@ export function BlogPage({ onBack, onGetStarted }: BlogPageProps) {
                 </span>
                 <div
                   className="tbo-caption flex items-center gap-1"
-                  style={{ color: "var(--neutral-400)" }}
+                  style={{ color: "var(--glass-muted)" }}
                 >
                   <Clock className="w-3 h-3" />
                   {tr('{count} min read', { count: Number.parseInt(post.readTime, 10) })}
@@ -344,7 +344,7 @@ export function BlogPage({ onBack, onGetStarted }: BlogPageProps) {
               {/* Title */}
               <h2
                 className="tbo-card-title "
-                style={{ color: "var(--neutral-900)" }}
+                style={{ color: "var(--glass-foreground)" }}
               >
                 {tr(post.title)}
               </h2>
@@ -352,7 +352,7 @@ export function BlogPage({ onBack, onGetStarted }: BlogPageProps) {
               {/* Excerpt */}
               <p
                 className="tbo-supporting flex-1"
-                style={{ color: "var(--neutral-600)" }}
+                style={{ color: "var(--glass-muted)" }}
               >
                 {tr(post.excerpt)}
               </p>
@@ -366,14 +366,14 @@ export function BlogPage({ onBack, onGetStarted }: BlogPageProps) {
                   <span className="text-base select-none">{post.emoji}</span>
                   <span
                     className="tbo-caption "
-                    style={{ color: "var(--neutral-700)" }}
+                    style={{ color: "var(--glass-foreground)" }}
                   >
                     {tr(post.author)}
                   </span>
                 </div>
                 <div
                   className="tbo-caption flex items-center gap-1"
-                  style={{ color: "var(--neutral-400)" }}
+                  style={{ color: "var(--glass-muted)" }}
                 >
                   <Calendar className="w-3 h-3" />
                   {formatUiDate(new Date(post.date), UI_LOCALES[language], { year: 'numeric', month: 'long', day: 'numeric' })}
@@ -390,8 +390,8 @@ export function BlogPage({ onBack, onGetStarted }: BlogPageProps) {
           className="tbo-action inline-flex items-center gap-2 min-h-12 py-3 px-6 max-w-full rounded-xl border-2 transition-all"
           style={{
             borderColor: "var(--primary-300)",
-            color: "var(--primary-700)",
-            background: "var(--primary-50)",
+            color: "var(--glass-accent)",
+            background: "var(--accent)",
           }}
         > {tr("Load More Articles")} <ExternalLink className="w-4 h-4" />
         </button>
@@ -476,7 +476,7 @@ export function HelpCenterPage({ onBack, onGetStarted }: HelpCenterPageProps) {
       <div className="max-w-xl mx-auto mb-14 relative">
         <div
           className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5"
-          style={{ color: "var(--neutral-400)" }}
+          style={{ color: "var(--glass-muted)" }}
         >
           <HelpCircle className="w-5 h-5" />
         </div>
@@ -488,8 +488,8 @@ export function HelpCenterPage({ onBack, onGetStarted }: HelpCenterPageProps) {
           className="h-13 pl-12 rounded-2xl text-base border shadow-sm"
           style={{
             borderColor: "var(--primary-200)",
-            background: "white",
-            color: "var(--neutral-900)",
+            background: "var(--input-background)",
+            color: "var(--glass-foreground)",
           }}
         />
       </div>
@@ -503,9 +503,9 @@ export function HelpCenterPage({ onBack, onGetStarted }: HelpCenterPageProps) {
               key={idx}
               className="rounded-2xl border p-6 space-y-4 transition-all duration-200"
               style={{
-                background: "rgba(255,255,255,0.8)",
+                background: "var(--glass-surface)",
                 borderColor: "var(--neutral-200)",
-                boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+                boxShadow: "var(--glass-shadow)",
               }}
               onMouseEnter={(e) => {
                 const el = e.currentTarget as HTMLElement;
@@ -515,7 +515,7 @@ export function HelpCenterPage({ onBack, onGetStarted }: HelpCenterPageProps) {
               onMouseLeave={(e) => {
                 const el = e.currentTarget as HTMLElement;
                 el.style.borderColor = "var(--neutral-200)";
-                el.style.boxShadow = "0 2px 12px rgba(0,0,0,0.04)";
+                el.style.boxShadow = "var(--glass-shadow)";
               }}
             >
               <div className="flex items-start gap-4">
@@ -531,13 +531,13 @@ export function HelpCenterPage({ onBack, onGetStarted }: HelpCenterPageProps) {
                 <div>
                   <h3
                     className="tbo-card-title mb-1"
-                    style={{ color: "var(--neutral-900)" }}
+                    style={{ color: "var(--glass-foreground)" }}
                   >
                     {tr(cat.title)}
                   </h3>
                   <p
                     className="tbo-supporting "
-                    style={{ color: "var(--neutral-600)" }}
+                    style={{ color: "var(--glass-muted)" }}
                   >
                     {tr(cat.description)}
                   </p>
@@ -548,7 +548,7 @@ export function HelpCenterPage({ onBack, onGetStarted }: HelpCenterPageProps) {
                   <li key={i}>
                     <button
                       className="tbo-action w-full text-left py-1.5 flex items-center gap-2 transition-colors group"
-                      style={{ color: "var(--neutral-600)" }}
+                      style={{ color: "var(--glass-muted)" }}
                       onMouseEnter={(e) => (e.currentTarget.style.color = cat.color)}
                       onMouseLeave={(e) => (e.currentTarget.style.color = "var(--neutral-600)")}
                     >
@@ -570,7 +570,7 @@ export function HelpCenterPage({ onBack, onGetStarted }: HelpCenterPageProps) {
       <div className="max-w-2xl mx-auto">
         <h2
           className="tbo-section-title mb-6 text-center"
-          style={{ color: "var(--neutral-900)" }}
+          style={{ color: "var(--glass-foreground)" }}
         > {tr("Popular Articles")} </h2>
         <div className="space-y-2.5">
           {POPULAR_ARTICLES.map((article, idx) => (
@@ -578,23 +578,23 @@ export function HelpCenterPage({ onBack, onGetStarted }: HelpCenterPageProps) {
               key={idx}
               className="w-full text-left flex flex-wrap items-center justify-between gap-2 p-4 rounded-xl border transition-all duration-150"
               style={{
-                background: "rgba(255,255,255,0.8)",
+                background: "var(--glass-surface)",
                 borderColor: "var(--neutral-200)",
               }}
               onMouseEnter={(e) => {
                 const el = e.currentTarget as HTMLElement;
                 el.style.borderColor = "var(--primary-300)";
-                el.style.background = "var(--primary-50)";
+                el.style.background = "var(--accent)";
               }}
               onMouseLeave={(e) => {
                 const el = e.currentTarget as HTMLElement;
                 el.style.borderColor = "var(--neutral-200)";
-                el.style.background = "rgba(255,255,255,0.8)";
+                el.style.background = "var(--glass-surface)";
               }}
             >
               <span
                 className="tbo-supporting "
-                style={{ color: "var(--neutral-800)" }}
+                style={{ color: "var(--glass-foreground)" }}
               >
                 {tr(article)}
               </span>
@@ -673,9 +673,9 @@ export function CommunityPage({ onBack, onGetStarted }: CommunityPageProps) {
             key={idx}
             className="rounded-2xl border p-6 space-y-3 transition-all duration-200"
             style={{
-              background: "rgba(255,255,255,0.8)",
+              background: "var(--glass-surface)",
               borderColor: "var(--neutral-200)",
-              boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+              boxShadow: "var(--glass-shadow)",
             }}
             onMouseEnter={(e) => {
               const el = e.currentTarget as HTMLElement;
@@ -687,27 +687,27 @@ export function CommunityPage({ onBack, onGetStarted }: CommunityPageProps) {
               const el = e.currentTarget as HTMLElement;
               el.style.transform = "translateY(0)";
               el.style.borderColor = "var(--neutral-200)";
-              el.style.boxShadow = "0 2px 12px rgba(0,0,0,0.04)";
+              el.style.boxShadow = "var(--glass-shadow)";
             }}
           >
             <div className="text-4xl select-none">{item.emoji}</div>
             <h3
               className="tbo-card-title "
-              style={{ color: "var(--neutral-900)" }}
+              style={{ color: "var(--glass-foreground)" }}
             >
               {tr(item.title)}
             </h3>
             <p
               className="tbo-supporting "
-              style={{ color: "var(--neutral-600)" }}
+              style={{ color: "var(--glass-muted)" }}
             >
               {tr(item.description)}
             </p>
             <span
               className="tbo-caption inline-block px-3 py-1 rounded-full"
               style={{
-                background: "var(--primary-50)",
-                color: "var(--primary-700)",
+                background: "var(--accent)",
+                color: "var(--glass-accent)",
               }}
             >
               {tr(item.members.endsWith('couples') ? '{count}+ couples' : '{count}+ members', { count: item.members.split('+')[0] })}
@@ -721,18 +721,18 @@ export function CommunityPage({ onBack, onGetStarted }: CommunityPageProps) {
         className="max-w-3xl mx-auto rounded-3xl p-6 sm:p-10 text-center border space-y-6"
         style={{
           background:
-            "linear-gradient(135deg, var(--primary-50) 0%, rgba(255,255,255,0.9) 100%)",
+            "var(--glass-journey-surface)",
           borderColor: "var(--primary-200)",
-          boxShadow: "0 20px 60px rgba(244,63,94,0.08)",
+          boxShadow: "var(--glass-shadow)",
         }}
       >
         <h2
           className="tbo-section-title "
-          style={{ color: "var(--neutral-900)" }}
+          style={{ color: "var(--glass-foreground)" }}
         > {tr("A Community Built on Christ")} </h2>
         <p
           className="tbo-body max-w-xl mx-auto"
-          style={{ color: "var(--neutral-600)" }}
+          style={{ color: "var(--glass-muted)" }}
         > {tr("Our community is carefully maintained to be a safe, encouraging, and biblical space. Every group is led by experienced Christian couples who understand what it means to walk in covenant love.")} </p>
         <div className="grid sm:grid-cols-2 gap-3 max-w-md mx-auto">
           {COMMUNITY_VALUES.map((val, idx) => {
@@ -741,7 +741,7 @@ export function CommunityPage({ onBack, onGetStarted }: CommunityPageProps) {
               <div
                 key={idx}
                 className="tbo-supporting flex items-center gap-2"
-                style={{ color: "var(--neutral-700)" }}
+                style={{ color: "var(--glass-foreground)" }}
               >
                 <Icon
                   className="w-4 h-4 flex-shrink-0"
@@ -757,7 +757,7 @@ export function CommunityPage({ onBack, onGetStarted }: CommunityPageProps) {
           className="tbo-action inline-flex items-center gap-2 min-h-12 py-3 px-6 max-w-full rounded-xl text-white transition-all"
           style={{
             background:
-              "linear-gradient(135deg, var(--primary-500), var(--primary-600))",
+              "var(--glass-primary-paint)",
             boxShadow: "0 8px 24px rgba(244,63,94,0.35)",
           }}
           onMouseEnter={(e) => {
@@ -842,7 +842,7 @@ export function ContactPage({ onBack, onGetStarted }: ContactPageProps) {
         <div className="lg:col-span-2 space-y-5">
           <h2
             className="tbo-section-title mb-6"
-            style={{ color: "var(--neutral-900)" }}
+            style={{ color: "var(--glass-foreground)" }}
           > {tr("Get in Touch")} </h2>
           {CONTACT_METHODS.map((method, idx) => {
             const Icon = method.icon;
@@ -851,7 +851,7 @@ export function ContactPage({ onBack, onGetStarted }: ContactPageProps) {
                 key={idx}
                 className="flex gap-4 items-start p-4 rounded-2xl border transition-all duration-150"
                 style={{
-                  background: "rgba(255,255,255,0.8)",
+                  background: "var(--glass-surface)",
                   borderColor: "var(--neutral-200)",
                 }}
                 onMouseEnter={(e) => {
@@ -862,7 +862,7 @@ export function ContactPage({ onBack, onGetStarted }: ContactPageProps) {
                 onMouseLeave={(e) => {
                   const el = e.currentTarget as HTMLElement;
                   el.style.borderColor = "var(--neutral-200)";
-                  el.style.background = "rgba(255,255,255,0.8)";
+                  el.style.background = "var(--glass-surface)";
                 }}
               >
                 <div
@@ -876,7 +876,7 @@ export function ContactPage({ onBack, onGetStarted }: ContactPageProps) {
                 <div>
                   <p
                     className="tbo-label "
-                    style={{ color: "var(--neutral-900)" }}
+                    style={{ color: "var(--glass-foreground)" }}
                   >
                     {tr(method.title)}
                   </p>
@@ -888,7 +888,7 @@ export function ContactPage({ onBack, onGetStarted }: ContactPageProps) {
                   </p>
                   <p
                     className="tbo-caption mt-0.5"
-                    style={{ color: "var(--neutral-500)" }}
+                    style={{ color: "var(--glass-muted)" }}
                   >
                     {tr(method.detail)}
                   </p>
@@ -903,21 +903,21 @@ export function ContactPage({ onBack, onGetStarted }: ContactPageProps) {
           <div
             className="rounded-2xl border p-8"
             style={{
-              background: "rgba(255,255,255,0.85)",
+              background: "var(--glass-raised-surface)",
               borderColor: "var(--neutral-200)",
-              boxShadow: "0 4px 24px rgba(0,0,0,0.05)",
+              boxShadow: "var(--glass-shadow-raised)",
             }}
           >
             <h2
               className="tbo-section-title mb-6"
-              style={{ color: "var(--neutral-900)" }}
+              style={{ color: "var(--glass-foreground)" }}
             > {tr("Send a Message")} </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label
                     className="tbo-label block"
-                    style={{ color: "var(--neutral-500)" }}
+                    style={{ color: "var(--glass-muted)" }}
                   > {tr("Full Name *")} </label>
                   <Input
                     type="text"
@@ -928,15 +928,15 @@ export function ContactPage({ onBack, onGetStarted }: ContactPageProps) {
                     className="h-11 rounded-xl text-sm border"
                     style={{
                       borderColor: "var(--neutral-200)",
-                      background: "white",
-                      color: "var(--neutral-900)",
+                      background: "var(--input-background)",
+                      color: "var(--glass-foreground)",
                     }}
                   />
                 </div>
                 <div className="space-y-1.5">
                   <label
                     className="tbo-label block"
-                    style={{ color: "var(--neutral-500)" }}
+                    style={{ color: "var(--glass-muted)" }}
                   > {tr("Email Address *")} </label>
                   <Input
                     type="email"
@@ -947,8 +947,8 @@ export function ContactPage({ onBack, onGetStarted }: ContactPageProps) {
                     className="h-11 rounded-xl text-sm border"
                     style={{
                       borderColor: "var(--neutral-200)",
-                      background: "white",
-                      color: "var(--neutral-900)",
+                      background: "var(--input-background)",
+                      color: "var(--glass-foreground)",
                     }}
                   />
                 </div>
@@ -956,7 +956,7 @@ export function ContactPage({ onBack, onGetStarted }: ContactPageProps) {
               <div className="space-y-1.5">
                 <label
                   className="tbo-label block"
-                  style={{ color: "var(--neutral-500)" }}
+                  style={{ color: "var(--glass-muted)" }}
                 > {tr("Subject")} </label>
                 <Input
                   type="text"
@@ -966,15 +966,15 @@ export function ContactPage({ onBack, onGetStarted }: ContactPageProps) {
                   className="h-11 rounded-xl text-sm border"
                   style={{
                     borderColor: "var(--neutral-200)",
-                    background: "white",
-                    color: "var(--neutral-900)",
+                    background: "var(--input-background)",
+                    color: "var(--glass-foreground)",
                   }}
                 />
               </div>
               <div className="space-y-1.5">
                 <label
                   className="tbo-label block"
-                  style={{ color: "var(--neutral-500)" }}
+                  style={{ color: "var(--glass-muted)" }}
                 > {tr("Message *")} </label>
                 <textarea
                   placeholder={tr("Tell us how we can help…")}
@@ -985,8 +985,8 @@ export function ContactPage({ onBack, onGetStarted }: ContactPageProps) {
                   className="w-full rounded-xl text-sm border p-3 resize-none outline-none transition-colors"
                   style={{
                     borderColor: "var(--neutral-200)",
-                    background: "white",
-                    color: "var(--neutral-900)",
+                    background: "var(--input-background)",
+                    color: "var(--glass-foreground)",
                     fontFamily: "inherit",
                     lineHeight: 1.6,
                   }}
@@ -1000,7 +1000,7 @@ export function ContactPage({ onBack, onGetStarted }: ContactPageProps) {
                 className="tbo-action w-full min-h-12 py-3 rounded-xl text-white transition-all flex items-center justify-center gap-2 disabled:opacity-60"
                 style={{
                   background:
-                    "linear-gradient(135deg, var(--primary-500), var(--primary-600))",
+                    "var(--glass-primary-paint)",
                   boxShadow: "0 8px 24px rgba(244,63,94,0.35)",
                 }}
               >
@@ -1084,7 +1084,7 @@ export function CookiePolicyPage({ onBack, onGetStarted }: CookiePolicyPageProps
       <div className="max-w-3xl mx-auto mb-8 flex flex-wrap items-center justify-between gap-2">
         <span
           className="tbo-caption inline-flex items-center gap-1.5"
-          style={{ color: "var(--neutral-500)" }}
+          style={{ color: "var(--glass-muted)" }}
         >
           <Calendar className="w-3.5 h-3.5" /> {tr("Last updated: August 1, 2026")} </span>
         <span
@@ -1106,7 +1106,7 @@ export function CookiePolicyPage({ onBack, onGetStarted }: CookiePolicyPageProps
               key={idx}
               className="rounded-2xl border overflow-hidden transition-all duration-200"
               style={{
-                background: "rgba(255,255,255,0.85)",
+                background: "var(--glass-raised-surface)",
                 borderColor: isOpen ? "var(--warning-500)" : "var(--neutral-200)",
                 boxShadow: isOpen
                   ? "0 8px 32px rgba(245,158,11,0.12)"
@@ -1120,7 +1120,7 @@ export function CookiePolicyPage({ onBack, onGetStarted }: CookiePolicyPageProps
               >
                 <h3
                   className="tbo-card-title "
-                  style={{ color: "var(--neutral-900)" }}
+                  style={{ color: "var(--glass-foreground)" }}
                 >
                   {tr(section.title)}
                 </h3>
@@ -1146,7 +1146,7 @@ export function CookiePolicyPage({ onBack, onGetStarted }: CookiePolicyPageProps
                   >
                     <p
                       className="tbo-supporting "
-                      style={{ color: "var(--neutral-600)" }}
+                      style={{ color: "var(--glass-muted)" }}
                     >
                       {tr(section.content)}
                     </p>
@@ -1156,7 +1156,7 @@ export function CookiePolicyPage({ onBack, onGetStarted }: CookiePolicyPageProps
                           <li
                             key={i}
                             className="tbo-supporting flex items-center gap-2"
-                            style={{ color: "var(--neutral-600)" }}
+                            style={{ color: "var(--glass-muted)" }}
                           >
                             <span
                               className="w-1.5 h-1.5 rounded-full flex-shrink-0"

@@ -21,7 +21,7 @@
 .relationship-summary-counter { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; gap: .125rem; }
 .relationship-summary-days { font-size: var(--type-journey-days-size); font-weight: 700; line-height: 1; letter-spacing: -.025em; font-variant-numeric: tabular-nums; }
 .relationship-summary-label { color: var(--hero-muted, var(--muted-foreground)); overflow-wrap: anywhere; }
-.relationship-summary-panel-divider { width: 1px; height: 2rem; background: var(--hero-rim, rgb(186 139 222 / .6)); opacity: .7; }
+.relationship-summary-panel-divider { width: .125rem; height: 2rem; background: var(--hero-rim, rgb(186 139 222 / .6)); opacity: 1; }
 .relationship-summary-clock-group { display: flex; align-items: center; justify-content: flex-start; gap: .375rem; min-width: 0; color: var(--hero-clock, #c90040); }
 .relationship-summary-clock-icon { width: clamp(1rem, 5cqi, 1.5rem); height: clamp(1rem, 5cqi, 1.5rem); flex: 0 0 auto; }
 .relationship-summary-clock { font-size: var(--type-journey-clock-size); font-weight: var(--type-journey-clock-weight); line-height: var(--type-journey-clock-leading); font-variant-numeric: tabular-nums; letter-spacing: -.025em; }
@@ -34,7 +34,7 @@
 button.relationship-summary-distance { min-height: 2.75rem; min-width: 2.75rem; border: 1px solid transparent; text-align: start; cursor: pointer; }
 button.relationship-summary-distance:hover { box-shadow: inset 0 0 0 1px var(--glass-accent); }
 button.relationship-summary-distance:focus-visible { outline: 3px solid var(--glass-accent); outline-offset: 3px; }
-.relationship-summary-context-divider { width: 1px; height: 1.75rem; flex: 0 0 auto; background: var(--hero-rim, rgb(186 139 222 / .6)); opacity: .8; }
+.relationship-summary-context-divider { width: .125rem; height: 1.75rem; flex: 0 0 auto; background: var(--hero-rim, rgb(186 139 222 / .6)); opacity: 1; }
 .relationship-summary-tagline { flex: 1 1 0; min-width: 0; color: var(--hero-muted, currentColor); overflow-wrap: anywhere; }
 .dark .relationship-summary-clock-group,
 .dark .relationship-summary-clock,
@@ -42,7 +42,7 @@ button.relationship-summary-distance:focus-visible { outline: 3px solid var(--gl
 
 @container relationship-summary (max-width: 16rem) {
   .relationship-summary-panel { grid-template-columns: minmax(0, 1fr); gap: .75rem; }
-  .relationship-summary-panel-divider { width: 100%; height: 1px; }
+  .relationship-summary-panel-divider { width: 100%; height: .125rem; }
   .relationship-summary-clock-group { flex-wrap: wrap; }
   .relationship-summary-context { flex-wrap: wrap; gap: .5rem; }
   .relationship-summary-context:has(.relationship-summary-distance) { display: flex; }

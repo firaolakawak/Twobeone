@@ -104,7 +104,7 @@ export function QAResultsView({
         const partnerAnswer = getAnswerForPrompt(index, true);
 
         return (
-          <Card key={index} className="border-2 border-border overflow-hidden bg-card shadow-sm">
+          <Card key={index} className="tbo-glass border-2 border-border overflow-hidden bg-card shadow-sm">
             <div className="p-5 space-y-4">
               {/* Question */}
               <h3 className="tbo-card-title text-foreground">
@@ -125,8 +125,8 @@ export function QAResultsView({
                           <>
                             <Avatar className="w-9 h-9 flex-shrink-0 bg-gradient-to-br from-sky-500 to-sky-600 text-white flex items-center justify-center text-sm">
                               {userProfile.profilePicture ? (
-                                <img 
-                                  src={userProfile.profilePicture} 
+                                <img
+                                  src={userProfile.profilePicture}
                                   alt={userProfile.name}
                                   className="w-full h-full object-cover rounded-full"
                                 />
@@ -135,14 +135,14 @@ export function QAResultsView({
                               )}
                             </Avatar>
                             <div className={`flex-1 max-w-[75%] rounded-2xl rounded-tl-sm px-4 py-3 ${
-                              isPrivateReply 
-                                ? 'bg-sky-50 border border-sky-200' 
+                              isPrivateReply
+                                ? 'bg-sky-50 border border-[var(--glass-border)]'
                                 : 'bg-muted'
                             }`}>
                               {isPrivateReply && (
                                 <div className="flex items-center gap-1.5 mb-1">
-                                  <Lock className="w-3 h-3 text-sky-600" />
-                                  <span className="tbo-caption text-sky-600">{t.questions.private}</span>
+                                  <Lock className="w-3 h-3 text-[var(--glass-accent)]" />
+                                  <span className="tbo-caption text-[var(--glass-accent)]">{t.questions.private}</span>
                                 </div>
                               )}
                               <p className="tbo-supporting text-foreground">
@@ -173,8 +173,8 @@ export function QAResultsView({
                             </div>
                             <Avatar className="w-9 h-9 flex-shrink-0 bg-gradient-to-br from-primary-500 to-primary-600 text-white flex items-center justify-center text-sm">
                               {partner?.profilePicture ? (
-                                <img 
-                                  src={partner.profilePicture} 
+                                <img
+                                  src={partner.profilePicture}
                                   alt={partner.name}
                                   className="w-full h-full object-cover rounded-full"
                                 />
@@ -205,9 +205,9 @@ export function QAResultsView({
                         <div className="space-y-2 bg-muted rounded-lg p-3 border border-border">
                           <Textarea
                             value={replyTexts[index] || ''}
-                            onChange={(e) => setReplyTexts(prev => ({ 
-                              ...prev, 
-                              [index]: e.target.value 
+                            onChange={(e) => setReplyTexts(prev => ({
+                              ...prev,
+                              [index]: e.target.value
                             }))}
                             placeholder={t.questions.writeAReply}
                             className="tbo-field min-h-[80px] resize-none bg-card"
@@ -218,7 +218,7 @@ export function QAResultsView({
                               onClick={() => handleReply(index)}
                               disabled={isSubmitting || !replyTexts[index]?.trim()}
                               size="sm"
-                              className="tbo-action bg-gradient-to-r from-sky-500 to-sky-600 text-white hover:opacity-90"
+                              className="tbo-action hover:opacity-90"
                             >
                               <Send className="w-3.5 h-3.5 mr-1.5" />
                               {t.common.save}
@@ -246,9 +246,9 @@ export function QAResultsView({
                   <div className="flex items-center justify-between">
                     <span className="tbo-supporting text-foreground">{t.questions.shareYourAnswer}</span>
                     <button
-                      onClick={() => setIsPrivateAnswers(prev => ({ 
-                        ...prev, 
-                        [index]: !prev[index] 
+                      onClick={() => setIsPrivateAnswers(prev => ({
+                        ...prev,
+                        [index]: !prev[index]
                       }))}
                       className="tbo-action flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
                     >
@@ -267,9 +267,9 @@ export function QAResultsView({
                   </div>
                   <Textarea
                     value={activeAnswers[index] || ''}
-                    onChange={(e) => setActiveAnswers(prev => ({ 
-                      ...prev, 
-                      [index]: e.target.value 
+                    onChange={(e) => setActiveAnswers(prev => ({
+                      ...prev,
+                      [index]: e.target.value
                     }))}
                     placeholder={t.questions.shareYourThoughts}
                     className="tbo-field min-h-[100px] resize-none bg-card"
@@ -278,7 +278,7 @@ export function QAResultsView({
                     onClick={() => handleSubmit(index)}
                     disabled={isSubmitting || !activeAnswers[index]?.trim()}
                     size="sm"
-                    className="tbo-action w-full bg-gradient-to-r from-sky-500 to-sky-600 text-white hover:opacity-90"
+                    className="tbo-action w-full hover:opacity-90"
                   >
                     <Send className="w-4 h-4 mr-2" />
                     {isPrivateAnswers[index] ? t.questions.savePriva : t.questions.sendAndSave}

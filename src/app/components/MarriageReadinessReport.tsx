@@ -160,7 +160,7 @@ export function MarriageReadinessReport({ onBack }: Props) {
   const certDate = formatUiDate(new Date(result.generatedAt), UI_LOCALES[language], { year: 'numeric', month: 'long', day: 'numeric' });
 
   return (
-    <div className="marriage-report-print-root" style={{ minHeight: '100vh', background: 'var(--background)' }}>
+    <div className="marriage-report-print-root" style={{ minHeight: '100vh' }}>
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         @page {
@@ -172,6 +172,8 @@ export function MarriageReadinessReport({ onBack }: Props) {
             margin: 0 !important;
             padding: 0 !important;
             background: #ffffff !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
           }
 
           body * {
@@ -260,7 +262,7 @@ export function MarriageReadinessReport({ onBack }: Props) {
       <div className="report-print-content" style={{ maxWidth: 640, margin: '0 auto', padding: '0 0 56px' }}>
 
         {/* Hero score card */}
-        <div className="report-section" style={{ margin: '16px 16px 0', borderRadius: 16, border: '1px solid var(--border)', overflow: 'hidden', background: 'var(--card, var(--background))' }}>
+        <div className="tbo-glass report-section" style={{ margin: '16px 16px 0', borderRadius: 16, border: '1px solid var(--border)', overflow: 'hidden',  }}>
           <div style={{ padding: '28px 24px 20px', textAlign: 'center' }}>
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 14 }}>
               <ScoreRing score={score} size={140} accent={accent} />
@@ -298,13 +300,13 @@ export function MarriageReadinessReport({ onBack }: Props) {
 
         {/* Narrative */}
         {report?.overallNarrative && (
-          <div className="report-section" style={{ margin: '12px 16px 0', padding: '18px', borderRadius: 14, border: '1px solid var(--border)', background: 'var(--background)' }}>
+          <div className="tbo-glass report-section" style={{ margin: '12px 16px 0', padding: '18px', borderRadius: 14, border: '1px solid var(--border)',  }}>
             <p className="tbo-supporting" style={{ margin: 0,  color: 'var(--foreground)',  }}>{report.overallNarrative}</p>
           </div>
         )}
 
         {/* Category breakdown */}
-        <div style={{ margin: '12px 16px 0', borderRadius: 14, border: '1px solid var(--border)', overflow: 'hidden', background: 'var(--background)' }}>
+        <div className="tbo-glass" style={{ margin: '12px 16px 0', borderRadius: 14, border: '1px solid var(--border)', overflow: 'hidden',  }}>
           <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', background: 'var(--muted)' }}>
             <p className="tbo-card-title" style={{ margin: 0,   color: 'var(--foreground)' }}>{tr("Activity Breakdown")}</p>
           </div>
@@ -327,7 +329,7 @@ export function MarriageReadinessReport({ onBack }: Props) {
             { label: tr("Devotions"), value: `${categories.devotional.completions}`, sub: tr('completed') },
             { label: tr('Daily Entries'), value: `${categories.activity.entries}`, sub: tr('mood + journal') },
           ].map(({ label, value, sub }) => (
-            <div key={label} style={{ padding: '12px 10px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--background)', textAlign: 'center' }}>
+            <div className="tbo-glass" key={label} style={{ padding: '12px 10px', borderRadius: 10, border: '1px solid var(--border)',  textAlign: 'center' }}>
               <div className="tbo-card-title" style={{   color: 'var(--foreground)',  }}>{value}</div>
               <div className="tbo-caption" style={{   color: 'var(--foreground)', marginTop: 3 }}>{label}</div>
               <div className="tbo-caption" style={{  color: 'var(--muted-foreground)', marginTop: 1 }}>{sub}</div>
@@ -339,7 +341,7 @@ export function MarriageReadinessReport({ onBack }: Props) {
         {(report?.strengths?.length || report?.growthAreas?.length) && (
           <div className="report-section" style={{ margin: '12px 16px 0', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             {report?.strengths?.length ? (
-              <div style={{ padding: '14px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--muted)' }}>
+              <div className="tbo-glass-inset" style={{ padding: '14px', borderRadius: 12, border: '1px solid var(--border)',  }}>
                 <p className="tbo-label" style={{ margin: '0 0 8px',   color: 'var(--foreground)' }}>{tr("Strengths")}</p>
                 {report.strengths.map((s, i) => (
                   <div className="tbo-caption" key={i} style={{  color: 'var(--foreground)', marginBottom: 5,  display: 'flex', gap: 6 }}>
@@ -349,7 +351,7 @@ export function MarriageReadinessReport({ onBack }: Props) {
               </div>
             ) : null}
             {report?.growthAreas?.length ? (
-              <div style={{ padding: '14px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--muted)' }}>
+              <div className="tbo-glass-inset" style={{ padding: '14px', borderRadius: 12, border: '1px solid var(--border)',  }}>
                 <p className="tbo-label" style={{ margin: '0 0 8px',   color: 'var(--foreground)' }}>{tr("Growth Areas")}</p>
                 {report.growthAreas.map((g, i) => (
                   <div className="tbo-caption" key={i} style={{  color: 'var(--foreground)', marginBottom: 5,  display: 'flex', gap: 6 }}>
@@ -363,24 +365,24 @@ export function MarriageReadinessReport({ onBack }: Props) {
 
         {/* Bible verse */}
         {report?.bibleVerse && (
-          <div className="report-section" style={{ margin: '12px 16px 0', padding: '18px 20px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--muted)', textAlign: 'center' }}>
+          <div className="tbo-glass-inset report-section" style={{ margin: '12px 16px 0', padding: '18px 20px', borderRadius: 12, border: '1px solid var(--border)',  textAlign: 'center' }}>
             <p  style={{ margin: 0, fontSize: 14, fontStyle: 'italic', color: 'var(--foreground)', lineHeight: 1.7 }}>"{report.bibleVerse}"</p>
           </div>
         )}
 
         {/* Closing encouragement */}
         {report?.closingEncouragement && (
-          <div className="report-section" style={{ margin: '12px 16px 0', padding: '16px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--background)' }}>
+          <div className="tbo-glass report-section" style={{ margin: '12px 16px 0', padding: '16px', borderRadius: 12, border: '1px solid var(--border)',  }}>
             <p className="tbo-supporting" style={{ margin: 0,  color: 'var(--muted-foreground)',  }}>{report.closingEncouragement}</p>
           </div>
         )}
 
         {/* Certificate */}
-        <div className="print-page" style={{
+        <div className="tbo-glass print-page" style={{
           margin: '20px 16px 0',
           borderRadius: 16, overflow: 'hidden',
           border: `2px solid ${eligible ? accent : 'var(--border)'}`,
-          background: 'var(--background)',
+
         }}>
           <div style={{
             padding: '24px 24px 18px', textAlign: 'center',

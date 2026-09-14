@@ -140,9 +140,9 @@ export function PrayerTogetherChat({
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
     return formatUiTime(date, UI_LOCALES[language], {
-      hour: 'numeric', 
+      hour: 'numeric',
       minute: '2-digit',
-      hour12: true 
+      hour12: true
     });
   };
 
@@ -158,7 +158,7 @@ export function PrayerTogetherChat({
       return tr("Yesterday");
     } else {
       return formatUiDate(date, UI_LOCALES[language], {
-        month: 'short', 
+        month: 'short',
         day: 'numeric',
         year: date.getFullYear() !== today.getFullYear() ? 'numeric' : undefined
       });
@@ -176,14 +176,14 @@ export function PrayerTogetherChat({
   }, {} as Record<string, PrayerMessage[]>);
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-[1.5rem] border border-rose-100 bg-gradient-to-br from-white to-rose-50/45 shadow-[0_14px_45px_-34px_rgba(190,24,93,0.45)]">
+    <div className="flex flex-col overflow-hidden rounded-[1.5rem] border border-[var(--glass-border)] tbo-glass-inset shadow-[0_14px_45px_-34px_rgba(190,24,93,0.45)]">
       {/* Chat Header - Fixed height with 16dp padding */}
-      <div className="flex-shrink-0 bg-gradient-to-r from-rose-600 to-pink-600 px-4 py-3.5 text-white">
+      <div className="flex-shrink-0 bg-[var(--glass-inset-surface)] px-4 py-3.5 text-foreground">
         <div className="flex items-center gap-2">
           <Heart className="h-5 w-5 fill-white" aria-hidden="true" />
           <div>
             <h4 className="tbo-card-title">{tr("Your shared reflection")}</h4>
-            <p className="tbo-caption text-rose-50">{tr("Share what this reading stirred in you")}</p>
+            <p className="tbo-caption text-muted-foreground">{tr("Share what this reading stirred in you")}</p>
           </div>
         </div>
       </div>
@@ -197,11 +197,11 @@ export function PrayerTogetherChat({
             </div>
           ) : messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-4">
-              <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100">
-                <Heart className="h-8 w-8 fill-rose-500 text-rose-500" aria-hidden="true" />
+              <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--glass-inset-surface)]">
+                <Heart className="h-8 w-8 fill-rose-500 text-muted-foreground0" aria-hidden="true" />
               </div>
-              <p className="tbo-supporting mb-1 text-slate-700">{tr("Begin the conversation")}</p>
-              <p className="tbo-caption text-slate-500">
+              <p className="tbo-supporting mb-1 text-foreground">{tr("Begin the conversation")}</p>
+              <p className="tbo-caption text-muted-foreground">
 
                 {tr("Share your thoughts, prayers, and reflections about this devotional")}
               </p>
@@ -212,9 +212,9 @@ export function PrayerTogetherChat({
                 <div key={date}>
                   {/* Date Divider - 8dp spacing */}
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="h-px flex-1 bg-rose-100" />
-                    <span className="tbo-caption px-2 text-rose-600">{date}</span>
-                    <div className="h-px flex-1 bg-rose-100" />
+                    <div className="h-px flex-1 bg-[var(--glass-inset-surface)]" />
+                    <span className="tbo-caption px-2 text-[var(--glass-accent)]">{date}</span>
+                    <div className="h-px flex-1 bg-[var(--glass-inset-surface)]" />
                   </div>
 
                   {/* Messages for this date - 12dp spacing */}
@@ -223,21 +223,21 @@ export function PrayerTogetherChat({
                       const isCurrentUser = message.userId === currentUserId;
 
                       return (
-                        <div 
+                        <div
                           key={message.id}
                           className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
                         >
                           <div className={`max-w-[75%] ${isCurrentUser ? 'order-2' : 'order-1'}`}>
                             {/* Message Bubble - 16dp padding */}
-                            <div 
+                            <div
                               className={`rounded-2xl px-4 py-3 ${
-                                isCurrentUser 
+                                isCurrentUser
                                   ? 'rounded-br-sm bg-rose-600 text-white'
-                                  : 'rounded-bl-sm bg-white text-slate-800 shadow-sm ring-1 ring-slate-100'
+                                  : 'rounded-bl-sm bg-[var(--glass-inset-surface)] text-foreground shadow-sm ring-1 ring-[var(--glass-rim)]'
                               }`}
                             >
                               {!isCurrentUser && (
-                                <p className="tbo-caption mb-1 text-rose-600">
+                                <p className="tbo-caption mb-1 text-[var(--glass-accent)]">
                                   {message.userName}
                                 </p>
                               )}
@@ -247,7 +247,7 @@ export function PrayerTogetherChat({
                             </div>
 
                             {/* Timestamp - 4dp margin */}
-                            <p className={`tbo-caption mt-1 px-2 text-slate-400 ${
+                            <p className={`tbo-caption mt-1 px-2 text-muted-foreground ${
                               isCurrentUser ? 'text-right' : 'text-left'
                             }`}>
                               {formatTime(message.createdAt)}
@@ -265,7 +265,7 @@ export function PrayerTogetherChat({
       </div>
 
       {/* Input Area - Fixed at bottom with 12dp padding */}
-      <div className="flex-shrink-0 border-t border-rose-100 bg-white p-3">
+      <div className="flex-shrink-0 border-t border-[var(--glass-border)] bg-[var(--glass-inset-surface)] p-3">
         <div className="flex gap-2 items-end">
           <textarea
             value={newMessage}
@@ -273,7 +273,7 @@ export function PrayerTogetherChat({
             onKeyPress={handleKeyPress}
             placeholder={tr("Share your prayer or reflection...")}
             aria-label={tr("Shared devotional reflection")}
-            className="tbo-field min-h-[44px] max-h-[120px] flex-1 resize-none rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3 text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-rose-300 focus:bg-white focus:ring-4 focus:ring-rose-100"
+            className="tbo-field min-h-[44px] max-h-[120px] flex-1 resize-none rounded-xl border border-[var(--glass-border)] bg-[var(--glass-inset-surface)] px-4 py-3 text-foreground outline-none transition-all placeholder:text-muted-foreground focus:border-rose-300 focus:bg-[var(--glass-inset-surface)] focus:ring-4 focus:ring-[var(--glass-rim)]"
             rows={1}
             disabled={isSending}
           />
@@ -281,7 +281,7 @@ export function PrayerTogetherChat({
             onClick={sendMessage}
             disabled={!newMessage.trim() || isSending}
             size="icon"
-            className="tbo-action h-11 w-11 flex-shrink-0 rounded-xl bg-rose-600 text-white shadow-sm hover:bg-rose-700"
+            className="tbo-action h-11 w-11 flex-shrink-0 rounded-xl shadow-sm"
             aria-label={tr("Send shared reflection")}
           >
             {isSending ? (
@@ -291,7 +291,7 @@ export function PrayerTogetherChat({
             )}
           </Button>
         </div>
-        <p className="tbo-caption mt-2 text-center text-slate-400">
+        <p className="tbo-caption mt-2 text-center text-muted-foreground">
 
           {tr("Shared privately with")} {partnerName}
         </p>

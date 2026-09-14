@@ -125,7 +125,7 @@ export function AIAssistant({ questions, onClose }: AIAssistantProps) {
   }
 
   return (
-    <div
+    <div className="tbo-glass-inset"
       style={{
         padding: 'var(--spacing-6)',
         display: 'flex',
@@ -133,7 +133,7 @@ export function AIAssistant({ questions, onClose }: AIAssistantProps) {
         minWidth: 0,
         overflowWrap: 'anywhere',
         gap: 'var(--spacing-5)',
-        background: 'var(--primary-50)',
+
         border: '2px solid var(--primary-200)',
         borderRadius: 'var(--radius-xl)',
       }}
@@ -146,14 +146,14 @@ export function AIAssistant({ questions, onClose }: AIAssistantProps) {
               width: '48px',
               height: '48px',
               borderRadius: 'var(--radius-full)',
-              background: 'var(--primary-600)',
+              background: 'var(--glass-primary-paint)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
             }}
           >
-            <Sparkles className="w-6 h-6" style={{ color: 'var(--primary-foreground)' }} />
+            <Sparkles className="w-6 h-6" style={{ color: '#fff' }} />
           </div>
           <div className="min-w-0 break-words">
             <h3 className="tbo-card-title"
@@ -194,7 +194,7 @@ export function AIAssistant({ questions, onClose }: AIAssistantProps) {
           },
           {
             feature: 'verse' as const,
-            icon: <BookOpen className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--primary-600)' }} />,
+            icon: <BookOpen className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--glass-accent)' }} />,
             label: tr("Recommend a Verse"),
             sub: tr("Personalised for your current journey"),
             disabled: isLoading,
@@ -248,7 +248,7 @@ export function AIAssistant({ questions, onClose }: AIAssistantProps) {
           style={{ width: '100%' }}
         >
           {isLoading && activeFeature === 'custom' ? (
-            <><LoadingMark className="w-4 h-4 mr-2 " />{tr("Processing…")}</>
+            <><LoadingMark className="w-4 h-4 mr-2" />{tr("Processing…")}</>
           ) : (
             <><Sparkles className="w-4 h-4 mr-2" />{tr("Ask AI")}</>
           )}
@@ -271,8 +271,8 @@ export function AIAssistant({ questions, onClose }: AIAssistantProps) {
               alignItems: 'center',
               gap: 'var(--spacing-1)',
               padding: 'var(--spacing-1) var(--spacing-3)',
-              background: 'var(--primary-600)',
-              color: 'var(--primary-foreground)',
+              background: 'var(--glass-primary-paint)',
+              color: '#fff',
               borderRadius: 'var(--radius-full)',
 
               width: 'fit-content',
@@ -282,9 +282,9 @@ export function AIAssistant({ questions, onClose }: AIAssistantProps) {
             {isAIPowered ? tr("Gemini AI Response") : tr("Basic Summary (AI unavailable)")}
           </div>
           <ScrollArea className="h-96">
-            <div
+            <div className="tbo-glass"
               style={{
-                background: 'var(--card)',
+
                 borderRadius: 'var(--radius-md)',
                 padding: 'var(--spacing-4)',
                 border: '1px solid var(--border)',

@@ -108,7 +108,7 @@ function EngagementReportSummary({ summary, language }: { summary: any; language
     : language === 'om'
       ? { title: 'Yeroo waliinii torban kanaa', reading: 'Dubbisuu', answering: 'Deebisuu', journaling: 'Yaadannoo', praying: 'Kadhachuu' }
       : { title: 'Intentional time this week', reading: 'Reading', answering: 'Answering', journaling: 'Journaling', praying: 'Praying' };
-  return <div className="mt-4 rounded-xl bg-rose-50/70 p-3"><p className="tbo-caption mb-2 text-rose-700">{words.title} · {Math.round(summary.week.totalSeconds / 60)}  {tr("min")}</p><div className="tbo-caption grid grid-cols-2 gap-2 text-slate-600">{(['reading', 'answering', 'journaling', 'praying'] as const).map(key => <span key={key}>{words[key]} <strong>{Math.round((summary.week.byCategory[key] || 0) / 60)}m</strong></span>)}</div></div>;
+  return <div className="mt-4 rounded-xl tbo-glass-inset p-3"><p className="tbo-caption mb-2 text-[var(--glass-accent)]">{words.title} · {Math.round(summary.week.totalSeconds / 60)}  {tr("min")}</p><div className="tbo-caption grid grid-cols-2 gap-2 text-muted-foreground">{(['reading', 'answering', 'journaling', 'praying'] as const).map(key => <span key={key}>{words[key]} <strong>{Math.round((summary.week.byCategory[key] || 0) / 60)}m</strong></span>)}</div></div>;
 }
 
 export function MoodAnalytics({
@@ -375,7 +375,7 @@ export function MoodAnalytics({
       emoji: "😔",
       label: t.mood.sad,
       desc: t.mood.sad,
-      bg: "var(--neutral-100)",
+      bg: 'var(--glass-rim)',
       border: "var(--neutral-400)",
       color: "var(--neutral-600)",
     },
@@ -407,7 +407,7 @@ export function MoodAnalytics({
       case "great":
         return "border-success-500/50 bg-success-50";
       case "good":
-        return "border-sky-200 bg-sky-50";
+        return "border-[var(--glass-border)] bg-sky-50";
       case "okay":
         return "border-warning-500/50 bg-warning-50";
       case "sad":
@@ -455,7 +455,7 @@ export function MoodAnalytics({
           <Button
             onClick={handleGenerateWeeklyReport}
             disabled={weeklyReportLoading}
-            className="tbo-action bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
+            className="tbo-action"
           >
             {weeklyReportLoading ? (
               <>
@@ -473,10 +473,10 @@ export function MoodAnalytics({
       </div>
 
       {/* Track Today's Mood */}
-      <Card className="border-2 border-primary-200 bg-gradient-to-br from-primary-50 to-primary-100">
+      <Card className="border-2 border-[var(--glass-border)] tbo-glass">
         <CardHeader>
           <CardTitle className="tbo-card-title flex items-center gap-2">
-            <Heart className="w-5 h-5 text-primary-600" />
+            <Heart className="w-5 h-5 text-[var(--glass-accent)]" />
             {t.mood.howAreYouFeelingToday}
           </CardTitle>
           <CardDescription className="tbo-supporting">
@@ -505,7 +505,7 @@ export function MoodAnalytics({
                     gap: "var(--spacing-2)",
                     minHeight: "80px",
                     borderRadius: "var(--radius-md)",
-                    border: `2px solid ${isSelected ? cfg.border : "var(--neutral-200)"}`,
+                    border: `2px solid ${isSelected ? cfg.border : 'var(--glass-rim)'}`,
                     background: isSelected
                       ? cfg.bg
                       : "var(--card)",
@@ -543,7 +543,7 @@ export function MoodAnalytics({
           {/* Optional Note */}
           <div className="space-y-2">
             <label className="tbo-label flex items-center gap-2">
-              <MessageCircle className="w-4 h-4 text-primary-600" />
+              <MessageCircle className="w-4 h-4 text-[var(--glass-accent)]" />
               {t.mood.addNote}
             </label>
             <Textarea className="tbo-field"
@@ -557,7 +557,7 @@ export function MoodAnalytics({
           <Button
             onClick={handleSaveMood}
             disabled={isSaving}
-            className="tbo-action w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-600"
+            className="tbo-action w-full"
           >
             {isSaving ? (
               <>
@@ -586,7 +586,7 @@ export function MoodAnalytics({
             <CardContent>
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
-                  <Activity className="w-6 h-6 text-primary-600" />
+                  <Activity className="w-6 h-6 text-[var(--glass-accent)]" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold">
@@ -614,7 +614,7 @@ export function MoodAnalytics({
             <CardContent>
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
-                  <Heart className="w-6 h-6 text-primary-600" />
+                  <Heart className="w-6 h-6 text-[var(--glass-accent)]" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold">
@@ -686,7 +686,7 @@ export function MoodAnalytics({
                     { label: tr("Sad"), bg: "var(--error-500)" },
                     {
                       label: tr("No entry"),
-                      bg: "var(--neutral-200)",
+                      bg: 'var(--glass-rim)',
                     },
                   ].map(({ label, bg }) => (
                     <div
@@ -738,7 +738,7 @@ export function MoodAnalytics({
                   ].map(({ name, key }) => {
                     const moodColor = (val: number | null) => {
                       if (val === null || val === undefined)
-                        return "var(--neutral-200)";
+                        return 'var(--glass-rim)';
                       if (val >= 3.5)
                         return "var(--success-500)";
                       if (val >= 2.5)
@@ -812,7 +812,7 @@ export function MoodAnalytics({
         <Card>
           <CardHeader>
             <CardTitle className="tbo-card-title flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-sky-600" />
+              <BarChart3 className="w-5 h-5 text-[var(--glass-accent)]" />
 
               {tr("Mood Distribution (Last 30 Days)")}
             </CardTitle>
@@ -953,10 +953,10 @@ export function MoodAnalytics({
 
       {/* Relationship reflection */}
       {partner && (
-        <Card className="border-2 border-primary-200 bg-gradient-to-br from-primary-50/50 to-primary-50/50">
+        <Card className="border-2 border-[var(--glass-border)] tbo-glass">
           <CardHeader>
             <CardTitle className="tbo-card-title flex items-center gap-2">
-              <Brain className="w-5 h-5 text-primary-600" />
+              <Brain className="w-5 h-5 text-[var(--glass-accent)]" />
               {t.mood.relationshipReflection}
             </CardTitle>
             <CardDescription className="tbo-supporting">
@@ -966,9 +966,9 @@ export function MoodAnalytics({
           <CardContent className="space-y-4">
             {analysis ? (
               <div
-                className="rounded-lg p-4"
+                className="tbo-glass rounded-lg p-4"
                 style={{
-                  background: "var(--card)",
+
                   border: `1px solid ${analysis.isFallback ? "var(--border)" : "var(--primary-200)"}`,
                   borderRadius: "var(--radius-md)",
                 }}
@@ -1076,7 +1076,7 @@ export function MoodAnalytics({
             <Button
               onClick={handleAnalyze}
               disabled={isAnalyzing}
-              className="tbo-action w-full bg-gradient-to-r from-primary-600 to-sky-600 hover:from-primary-700 hover:to-sky-700"
+              className="tbo-action w-full"
             >
               {isAnalyzing ? (
                 <>

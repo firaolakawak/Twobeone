@@ -30,21 +30,21 @@ export function ProgressSection({ progress }: ProgressSectionProps) {
       label: tr("Days Active"),
       current: progress.completedDays,
       goal: goals.completedDays,
-      color: 'text-sky-600'
+      color: 'text-[var(--glass-accent)]'
     },
     {
       icon: BookOpen,
       label: tr("Journal Entries"),
       current: progress.journalEntries,
       goal: goals.journalEntries,
-      color: 'text-primary-600'
+      color: 'text-[var(--glass-accent)]'
     },
     {
       icon: HandHeart,
       label: tr("Prayers"),
       current: progress.prayerRequests,
       goal: goals.prayerRequests,
-      color: 'text-primary-600'
+      color: 'text-[var(--glass-accent)]'
     },
     {
       icon: MessageCircle,
@@ -88,7 +88,7 @@ export function ProgressSection({ progress }: ProgressSectionProps) {
         })}
       </div>
 
-      <Card className="bg-gradient-to-br from-sky-50 to-primary-50 border-sky-200">
+      <Card className="tbo-glass border-[var(--glass-border)]">
         <CardHeader>
           <CardTitle className="tbo-card-title">{tr("Keep Growing Together")}</CardTitle>
           <CardDescription className="tbo-supporting">

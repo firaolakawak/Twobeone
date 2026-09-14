@@ -7,10 +7,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { 
-  Heart, 
-  BookOpen, 
-  MessageCircle, 
+import {
+  Heart,
+  BookOpen,
+  MessageCircle,
   Sparkles,
   CheckCircle,
   ArrowRight,
@@ -193,7 +193,7 @@ export function QuizzesHub({ profile, partner, accessToken, onBack }: QuizzesHub
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary-50/30 via-primary-50/20 to-sky-50/30">
+    <div className="min-h-screen bg-transparent">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm border-b">
         <div className="flex items-center justify-between px-4 py-4">
@@ -215,7 +215,7 @@ export function QuizzesHub({ profile, partner, accessToken, onBack }: QuizzesHub
 
         {/* Stats Card */}
         {!loading && (
-          <Card className="mb-6 bg-gradient-to-r from-primary-500 to-primary-600 text-white border-0">
+          <Card className="tbo-glass mb-6 border-0">
             <CardContent className="p-6">
               <div className="grid grid-cols-3 gap-4">
                 <div className="text-center">
@@ -278,8 +278,8 @@ export function QuizzesHub({ profile, partner, accessToken, onBack }: QuizzesHub
                       </div>
 
                       <div className="flex items-start gap-2 p-3 bg-sky-50 rounded-lg mb-4">
-                        <Sparkles className="w-4 h-4 text-sky-600 flex-shrink-0 mt-0.5" />
-                        <p className="text-xs text-sky-700 italic">{quiz.scripture}</p>
+                        <Sparkles className="w-4 h-4 text-[var(--glass-accent)] flex-shrink-0 mt-0.5" />
+                        <p className="text-xs text-[var(--glass-accent)] italic">{quiz.scripture}</p>
                       </div>
 
                       {isCompleted && userResult && (
@@ -316,31 +316,31 @@ export function QuizzesHub({ profile, partner, accessToken, onBack }: QuizzesHub
         </div>
 
         {/* Info Card */}
-        <Card className="bg-gradient-to-br from-primary-50 to-primary-100 border-primary-200">
+        <Card className="tbo-glass border-[var(--glass-border)]">
           <CardHeader>
-            <CardTitle className="tbo-card-title flex items-center gap-2 text-primary-900">
+            <CardTitle className="tbo-card-title flex items-center gap-2 text-[var(--glass-accent)]">
               <Trophy className="w-5 h-5" />{tr("Why Take These Quizzes?")} </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-start gap-3">
-              <Heart className="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" />
+              <Heart className="w-5 h-5 text-[var(--glass-accent)] flex-shrink-0 mt-0.5" />
               <div>
-                <p className="tbo-body text-primary-900">{tr("Deepen Understanding")}</p>
-                <p className="tbo-supporting text-primary-700">{tr("Learn how you and your partner express love and handle challenges")}</p>
+                <p className="tbo-body text-[var(--glass-accent)]">{tr("Deepen Understanding")}</p>
+                <p className="tbo-supporting text-[var(--glass-accent)]">{tr("Learn how you and your partner express love and handle challenges")}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <BookOpen className="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" />
+              <BookOpen className="w-5 h-5 text-[var(--glass-accent)] flex-shrink-0 mt-0.5" />
               <div>
-                <p className="tbo-body text-primary-900">{tr("Biblical Insights")}</p>
-                <p className="tbo-supporting text-primary-700">{tr("Each result includes Scripture-based guidance for growth")}</p>
+                <p className="tbo-body text-[var(--glass-accent)]">{tr("Biblical Insights")}</p>
+                <p className="tbo-supporting text-[var(--glass-accent)]">{tr("Each result includes Scripture-based guidance for growth")}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <Users className="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" />
+              <Users className="w-5 h-5 text-[var(--glass-accent)] flex-shrink-0 mt-0.5" />
               <div>
-                <p className="tbo-body text-primary-900">{tr("Partner Comparison")}</p>
-                <p className="tbo-supporting text-primary-700">{tr("Compare results to find compatibility and areas to work on together")}</p>
+                <p className="tbo-body text-[var(--glass-accent)]">{tr("Partner Comparison")}</p>
+                <p className="tbo-supporting text-[var(--glass-accent)]">{tr("Compare results to find compatibility and areas to work on together")}</p>
               </div>
             </div>
           </CardContent>

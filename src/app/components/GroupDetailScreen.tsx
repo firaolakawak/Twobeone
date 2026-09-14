@@ -11,10 +11,10 @@ import { Badge } from './ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Separator } from './ui/separator';
-import { 
-  Users, 
-  Calendar, 
-  MapPin, 
+import {
+  Users,
+  Calendar,
+  MapPin,
   Video,
   MessageCircle,
   Heart,
@@ -127,8 +127,8 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
   const formatMeetingDate = (dateString: string) => {
     const date = new Date(dateString);
     return formatUiDate(date, UI_LOCALES[language], {
-      weekday: 'long', 
-      month: 'long', 
+      weekday: 'long',
+      month: 'long',
       day: 'numeric',
       hour: 'numeric',
       minute: '2-digit'
@@ -140,7 +140,7 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
     const now = new Date();
     const diffTime = date.getTime() - now.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays < 0) return tr('Past meeting');
     if (diffDays === 0) return tr('Today');
     if (diffDays === 1) return tr('Tomorrow');
@@ -149,7 +149,7 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary-50/30 to-primary-50/30 pb-6 [overflow-wrap:anywhere]">
+    <div className="min-h-screen bg-transparent pb-6 [overflow-wrap:anywhere]">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-card border-b">
         <div className="px-4 py-4">
@@ -168,7 +168,7 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
 
       {/* Cover/Hero Section */}
       <div className="relative">
-        <div className="h-32 bg-gradient-to-r from-primary-400 via-primary-500 to-primary-400"></div>
+        <div className="h-32 bg-[var(--glass-inset-surface)]"></div>
         <div className="absolute -bottom-10 left-4">
           <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center border-4 border-white shadow-lg">
             <Heart className="w-10 h-10 text-white" />
@@ -187,7 +187,7 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
               )}
             </div>
             <p className="tbo-body text-muted-foreground mb-3">{tr(group.description)}</p>
-            
+
             {/* Quick Stats */}
             <div className="tbo-supporting flex flex-wrap items-center gap-4 text-muted-foreground">
               <div className="flex items-center gap-1">
@@ -213,8 +213,8 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
         <div className="flex flex-wrap items-center gap-2">
           {group.isJoined ? (
             <>
-              <Button 
-                className="flex-1 basis-40 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 h-auto min-h-9 flex-wrap min-w-0 max-w-full whitespace-normal [overflow-wrap:anywhere] py-2"
+              <Button
+                className="flex-1 basis-40 h-auto min-h-9 flex-wrap min-w-0 max-w-full whitespace-normal [overflow-wrap:anywhere] py-2"
                 onClick={handleJoinLiveRoom}
               >
                 <Video className="w-4 h-4 mr-2" />
@@ -235,8 +235,8 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
               </Button>
             </>
           ) : (
-            <Button 
-              className="flex-1 basis-40 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 h-auto min-h-9 flex-wrap min-w-0 max-w-full whitespace-normal [overflow-wrap:anywhere] py-2"
+            <Button
+              className="flex-1 basis-40 h-auto min-h-9 flex-wrap min-w-0 max-w-full whitespace-normal [overflow-wrap:anywhere] py-2"
               onClick={handleJoinGroup}
             >
               <Heart className="w-4 h-4 mr-2" />
@@ -247,7 +247,7 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
 
         {/* Next Meeting Card */}
         {group.nextMeeting && (
-          <Card className="border-2 border-primary-200 bg-gradient-to-r from-primary-50 to-primary-100">
+          <Card className="border-2 border-[var(--glass-border)] tbo-glass">
             <CardContent className="p-4">
               <div className="flex flex-wrap items-start gap-3">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center flex-shrink-0">
@@ -267,7 +267,7 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
                     </p>
                   )}
                 </div>
-                <Button size="sm" className="h-auto min-h-9 flex-wrap min-w-0 max-w-full whitespace-normal [overflow-wrap:anywhere] break-words py-2 bg-primary-600 hover:bg-primary-700">
+                <Button size="sm" className="h-auto min-h-9 flex-wrap min-w-0 max-w-full whitespace-normal [overflow-wrap:anywhere] break-words py-2">
                   <Calendar className="w-4 h-4 mr-2" />
                    <span className="min-w-0 [overflow-wrap:anywhere]">{tr("RSVP")}</span> </Button>
               </div>
@@ -295,9 +295,9 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
                 <p className="tbo-body text-foreground whitespace-pre-line">
                   {tr(group.longDescription)}
                 </p>
-                
+
                 <Separator />
-                
+
                 {/* Tags */}
                 <div>
                   <h4 className="tbo-label mb-3 min-w-0 break-words">{tr("Topics")}</h4>
@@ -330,7 +330,7 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
                     </Avatar>
                     <div className="min-w-0 flex-1 break-words">
                       <h4 className="tbo-label min-w-0 break-words">{leader.name}</h4>
-                      <p className="tbo-supporting text-primary-600 mb-1">{tr(leader.role)}</p>
+                      <p className="tbo-supporting text-[var(--glass-accent)] mb-1">{tr(leader.role)}</p>
                       <p className="tbo-supporting text-muted-foreground">{tr(leader.bio)}</p>
                     </div>
                   </div>
@@ -348,13 +348,13 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {group.resources.map((resource: any, idx: number) => (
-                    <div 
+                    <div
                       key={idx}
                       className="flex flex-wrap min-w-0 items-center justify-between gap-3 p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
                     >
                       <div className="flex flex-wrap min-w-0 flex-1 basis-full sm:basis-auto items-center gap-3">
-                        <div className="w-10 h-10 shrink-0 rounded-lg bg-gradient-to-br from-sky-100 to-sky-100 flex items-center justify-center">
-                          <BookOpen className="w-5 h-5 text-sky-600" />
+                        <div className="w-10 h-10 shrink-0 rounded-lg tbo-glass-inset flex items-center justify-center">
+                          <BookOpen className="w-5 h-5 text-[var(--glass-accent)]" />
                         </div>
                         <div className="min-w-0 flex-1 basis-32">
                           <h5 className="tbo-label min-w-0 break-words">{tr(resource.title)}</h5>
@@ -379,7 +379,7 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
                 {group.recentActivity.map((activity: any, idx: number) => (
                   <div key={idx} className="tbo-supporting flex items-center gap-3">
                     <Avatar className="w-8 h-8">
-                      <AvatarFallback className="bg-gradient-to-br from-primary-200 to-primary-200 text-primary-700 text-xs">
+                      <AvatarFallback className="bg-gradient-to-br from-primary-200 to-primary-200 text-[var(--glass-accent)] text-xs">
                         {activity.user.split(' ').map((n: string) => n[0]).join('')}
                       </AvatarFallback>
                     </Avatar>
@@ -402,7 +402,7 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
               </CardHeader>
               <CardContent className="space-y-3">
                 {group.upcomingMeetings?.map((meeting: any, idx: number) => (
-                  <div key={idx} className="p-4 rounded-lg border bg-gradient-to-r from-primary-50 to-primary-100">
+                  <div key={idx} className="p-4 rounded-lg border tbo-glass-inset">
                     <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
                       <div className="min-w-0 flex-1 basis-32">
                         <h4 className="tbo-card-title min-w-0 break-words">{tr(meeting.topic)}</h4>
@@ -417,7 +417,7 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
                       <Button size="sm" variant="outline" className="flex-1 basis-32 h-auto min-h-9 flex-wrap min-w-0 max-w-full whitespace-normal [overflow-wrap:anywhere] py-2">
                         <Calendar className="w-4 h-4 mr-2" />
                          <span className="min-w-0 [overflow-wrap:anywhere]">{tr("Add to Calendar")}</span> </Button>
-                      <Button size="sm" className="flex-1 basis-32 bg-primary-600 hover:bg-primary-700 h-auto min-h-9 flex-wrap min-w-0 max-w-full whitespace-normal [overflow-wrap:anywhere] py-2">
+                      <Button size="sm" className="flex-1 basis-32 h-auto min-h-9 flex-wrap min-w-0 max-w-full whitespace-normal [overflow-wrap:anywhere] py-2">
                          <span className="min-w-0 [overflow-wrap:anywhere]">{tr("RSVP")}</span> </Button>
                     </div>
                   </div>
@@ -438,7 +438,7 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
                   {['John & Sarah M.', 'David & Emily T.', 'Michael & Lisa R.', 'Chris & Anna P.'].map((member, idx) => (
                     <div key={idx} className="flex flex-wrap items-center gap-3">
                       <Avatar>
-                        <AvatarFallback className="bg-gradient-to-br from-primary-200 to-primary-200 text-primary-700">
+                        <AvatarFallback className="bg-gradient-to-br from-primary-200 to-primary-200 text-[var(--glass-accent)]">
                           {member.split(' ').slice(0, 2).map(n => n[0]).join('')}
                         </AvatarFallback>
                       </Avatar>
@@ -473,7 +473,7 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
                     ].map((msg, idx) => (
                       <div key={idx} className="flex flex-wrap items-start gap-3">
                         <Avatar className="w-8 h-8">
-                          <AvatarFallback className="bg-gradient-to-br from-primary-200 to-primary-200 text-primary-700 text-xs">
+                          <AvatarFallback className="bg-gradient-to-br from-primary-200 to-primary-200 text-[var(--glass-accent)] text-xs">
                             {msg.user.split(' ').map(n => n[0]).join('')}
                           </AvatarFallback>
                         </Avatar>
@@ -496,19 +496,19 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
                       onChange={(e) => setMessage(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                     />
-                    <Button onClick={handleSendMessage} className="h-auto min-h-9 flex-wrap min-w-0 max-w-full whitespace-normal [overflow-wrap:anywhere] break-words py-2 bg-primary-600 hover:bg-primary-700">
+                    <Button onClick={handleSendMessage} className="h-auto min-h-9 flex-wrap min-w-0 max-w-full whitespace-normal [overflow-wrap:anywhere] break-words py-2">
                       <Send className="w-4 h-4" />
                     </Button>
                   </div>
                 </CardContent>
               </Card>
             ) : (
-              <Card className="p-12 text-center">
+              <Card className="tbo-glass p-12 text-center">
                 <Lock className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                 <h3 className="tbo-card-title text-foreground mb-2 min-w-0 break-words">{tr("Join to Chat")}</h3>
                 <p className="tbo-body text-muted-foreground mb-4">
                    {tr("Join this group to participate in group discussions")} </p>
-                <Button className="bg-gradient-to-r from-primary-600 to-primary-700" onClick={handleJoinGroup}>
+                <Button className="" onClick={handleJoinGroup}>
                    {tr("Join Group")} </Button>
               </Card>
             )}
@@ -517,10 +517,10 @@ export function GroupDetailScreen({ groupId, onBack }: GroupDetailScreenProps) {
 
         {/* Danger Zone - Only for joined members */}
         {group.isJoined && (
-          <Card className="border-error-500/30">
+          <Card className="tbo-glass border-error-500/30">
             <CardContent className="p-4">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full text-error-500 hover:text-error-700 hover:bg-error-50 border-error-500/30 h-auto min-h-9 flex-wrap min-w-0 max-w-full whitespace-normal [overflow-wrap:anywhere] py-2"
                 onClick={handleLeaveGroup}
               >

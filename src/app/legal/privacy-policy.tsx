@@ -21,16 +21,16 @@ export function PrivacyPolicy({ language }: PrivacyPolicyProps) {
     <div lang={resolvedLanguage} className="max-w-4xl mx-auto px-0 sm:px-6 py-6 space-y-8 [overflow-wrap:anywhere]">
         <div className="text-center space-y-2">
           <div className="flex justify-center">
-            <Shield className="w-16 h-16 text-primary-600" />
+            <Shield className="w-16 h-16 text-primary" />
           </div>
-          <h1 className="tbo-page-title text-primary-900"> {tr("Privacy Policy")} </h1>
+          <h1 className="tbo-page-title text-foreground"> {tr("Privacy Policy")} </h1>
           <p className="text-muted-foreground"> {tr("Last Updated: August 17, 2026")} </p>
         </div>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Heart className="w-5 h-5 text-primary-600" /> {tr("Introduction")} </CardTitle>
+              <Heart className="w-5 h-5 text-primary" /> {tr("Introduction")} </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p> {tr("Welcome to")} <strong>TwoBeOne</strong> {tr("(\"we,\" \"our,\" or \"us\"). TwoBeOne is a Christian couple-centered mobile application designed to strengthen relationships through Bible-based guidance, shared reflection, and spiritual growth.")} </p>
@@ -40,10 +40,10 @@ export function PrivacyPolicy({ language }: PrivacyPolicyProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Database className="w-5 h-5 text-primary-600" /> {tr("Information We Collect")} </CardTitle>
+              <Database className="w-5 h-5 text-primary" /> {tr("Information We Collect")} </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
@@ -93,10 +93,10 @@ export function PrivacyPolicy({ language }: PrivacyPolicyProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Lock className="w-5 h-5 text-primary-600" /> {tr("How We Use Your Information")} </CardTitle>
+              <Lock className="w-5 h-5 text-primary" /> {tr("How We Use Your Information")} </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p> {tr("We use the information we collect to:")} </p>
@@ -115,15 +115,15 @@ export function PrivacyPolicy({ language }: PrivacyPolicyProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Heart className="w-5 h-5 text-primary-600" /> {tr("Partner Data Sharing (Critical)")} </CardTitle>
+              <Heart className="w-5 h-5 text-primary" /> {tr("Partner Data Sharing (Critical)")} </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="bg-primary-50 border-l-4 border-primary-600 p-4 rounded">
-              <p className="font-semibold text-primary-900 mb-2"> {tr("⚠️ Important: When you connect with a partner using an invite code:")} </p>
-              <ul className="list-disc list-inside space-y-1 text-primary-900">
+            <div className="bg-accent border-l-4 border-primary-600 p-4 rounded">
+              <p className="font-semibold text-foreground mb-2"> {tr("⚠️ Important: When you connect with a partner using an invite code:")} </p>
+              <ul className="list-disc list-inside space-y-1 text-foreground">
                 <li> {tr("Your partner will have access to most of your content within the app")} </li>
                 <li> {tr("This includes devotional responses, prayer requests, question answers, gratitude entries, and milestones")} </li>
                 <li> {tr("Location data (if enabled) is shared with your partner")} </li>
@@ -149,7 +149,7 @@ export function PrivacyPolicy({ language }: PrivacyPolicyProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle> {tr("Third-Party Service Providers")} </CardTitle>
           </CardHeader>
@@ -159,7 +159,7 @@ export function PrivacyPolicy({ language }: PrivacyPolicyProps) {
             <div className="space-y-3">
               <div>
                 <h4 className="font-semibold"> {tr("Supabase (Database & Authentication)")} </h4>
-                <p className="tbo-supporting text-muted-foreground"> {tr("We use Supabase to store and manage your data securely. Supabase is SOC 2 Type 2 compliant and provides enterprise-grade security.")} <br /> {tr("Privacy Policy:")} <a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:underline">https://supabase.com/privacy</a>
+                <p className="tbo-supporting text-muted-foreground"> {tr("We use Supabase to store and manage your data securely. Supabase is SOC 2 Type 2 compliant and provides enterprise-grade security.")} <br /> {tr("Privacy Policy:")} <a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">https://supabase.com/privacy</a>
                 </p>
               </div>
 
@@ -170,7 +170,7 @@ export function PrivacyPolicy({ language }: PrivacyPolicyProps) {
 
               <div>
                 <h4 className="font-semibold"> {tr("Resend (Email Delivery)")} </h4>
-                <p className="tbo-supporting text-muted-foreground"> {tr("We use Resend to deliver essential account messages and the weekly Saturday email. Messages are sent to registered users and confirmed standalone subscribers. You can opt out at any time through the unsubscribe link included in each edition.")} <br /> {tr("Privacy Policy:")} <a href="https://resend.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:underline">https://resend.com/legal/privacy-policy</a>
+                <p className="tbo-supporting text-muted-foreground"> {tr("We use Resend to deliver essential account messages and the weekly Saturday email. Messages are sent to registered users and confirmed standalone subscribers. You can opt out at any time through the unsubscribe link included in each edition.")} <br /> {tr("Privacy Policy:")} <a href="https://resend.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">https://resend.com/legal/privacy-policy</a>
                 </p>
               </div>
 
@@ -185,7 +185,7 @@ export function PrivacyPolicy({ language }: PrivacyPolicyProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle> {tr("Data Security")} </CardTitle>
           </CardHeader>
@@ -203,7 +203,7 @@ export function PrivacyPolicy({ language }: PrivacyPolicyProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle> {tr("Your Privacy Rights")} </CardTitle>
           </CardHeader>
@@ -247,7 +247,7 @@ export function PrivacyPolicy({ language }: PrivacyPolicyProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle> {tr("Data Retention")} </CardTitle>
           </CardHeader>
@@ -263,7 +263,7 @@ export function PrivacyPolicy({ language }: PrivacyPolicyProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle> {tr("Children's Privacy")} </CardTitle>
           </CardHeader>
@@ -273,7 +273,7 @@ export function PrivacyPolicy({ language }: PrivacyPolicyProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle> {tr("International Data Transfers")} </CardTitle>
           </CardHeader>
@@ -283,10 +283,10 @@ export function PrivacyPolicy({ language }: PrivacyPolicyProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-primary-600" /> {tr("California Privacy Rights (CCPA)")} </CardTitle>
+              <MapPin className="w-5 h-5 text-primary" /> {tr("California Privacy Rights (CCPA)")} </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p> {tr("If you are a California resident, you have specific rights under the California Consumer Privacy Act (CCPA):")} </p>
@@ -301,7 +301,7 @@ export function PrivacyPolicy({ language }: PrivacyPolicyProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle> {tr("European Union Rights (GDPR)")} </CardTitle>
           </CardHeader>
@@ -324,7 +324,7 @@ export function PrivacyPolicy({ language }: PrivacyPolicyProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle> {tr("Changes to This Privacy Policy")} </CardTitle>
           </CardHeader>
@@ -340,10 +340,10 @@ export function PrivacyPolicy({ language }: PrivacyPolicyProps) {
           </CardContent>
         </Card>
 
-        <Card className="bg-primary-50 border-primary-200">
+        <Card className="bg-accent border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Mail className="w-5 h-5 text-primary-600" /> {tr("Contact Us")} </CardTitle>
+              <Mail className="w-5 h-5 text-primary" /> {tr("Contact Us")} </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <p> {tr("If you have questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us:")} </p>
@@ -371,16 +371,16 @@ function PrivacyPolicyAmharic() {
     <div lang="am" className="max-w-4xl mx-auto px-0 sm:px-6 py-6 space-y-8 [overflow-wrap:anywhere]" dir="ltr">
         <div className="text-center space-y-2">
           <div className="flex justify-center">
-            <Shield className="w-16 h-16 text-primary-600" />
+            <Shield className="w-16 h-16 text-primary" />
           </div>
-          <h1 className="tbo-page-title text-primary-900">የግላዊነት ፖሊሲ</h1>
+          <h1 className="tbo-page-title text-foreground">የግላዊነት ፖሊሲ</h1>
           <p className="text-muted-foreground">መጨረሻ የዘመነ፡ ህዳር 22፣ 2024</p>
         </div>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Heart className="w-5 h-5 text-primary-600" />
+              <Heart className="w-5 h-5 text-primary" />
               መግቢያ
             </CardTitle>
           </CardHeader>
@@ -400,10 +400,10 @@ function PrivacyPolicyAmharic() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Database className="w-5 h-5 text-primary-600" />
+              <Database className="w-5 h-5 text-primary" />
               የምንሰበስበው መረጃ
             </CardTitle>
           </CardHeader>
@@ -439,19 +439,19 @@ function PrivacyPolicyAmharic() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Heart className="w-5 h-5 text-primary-600" />
+              <Heart className="w-5 h-5 text-primary" />
               የአጋር ውሂብ መጋራት (ወሳኝ)
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="bg-primary-50 border-l-4 border-primary-600 p-4 rounded">
-              <p className="font-semibold text-primary-900 mb-2">
+            <div className="bg-accent border-l-4 border-primary-600 p-4 rounded">
+              <p className="font-semibold text-foreground mb-2">
                 ⚠️ አስፈላጊ፡ የግብዣ ኮድ ተጠቅመው ከአጋር ጋር ሲገናኙ፡
               </p>
-              <ul className="list-disc list-inside space-y-1 text-primary-900">
+              <ul className="list-disc list-inside space-y-1 text-foreground">
                 <li>አጋርዎ በመተግበሪያው ውስጥ ወደ ብዙዎቹ ይዘቶችዎ መዳረሻ ይኖረዋል</li>
                 <li>ይህ የመንፈሳዊ ምላሾች፣ የጸሎት ጥያቄዎች፣ የጥያቄ መልሶች ያካትታል</li>
                 <li>የአካባቢ ውሂብ (ካንቁ) ከአጋርዎ ጋር ይጋራል</li>
@@ -465,10 +465,10 @@ function PrivacyPolicyAmharic() {
           </CardContent>
         </Card>
 
-        <Card className="bg-primary-50 border-primary-200">
+        <Card className="bg-accent border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Mail className="w-5 h-5 text-primary-600" />
+              <Mail className="w-5 h-5 text-primary" />
               ያግኙን
             </CardTitle>
           </CardHeader>

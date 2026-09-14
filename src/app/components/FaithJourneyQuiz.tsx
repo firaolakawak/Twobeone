@@ -6,8 +6,8 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Progress } from './ui/progress';
 import { Label } from './ui/label';
-import { 
-  BookOpen, 
+import {
+  BookOpen,
   Heart,
   Users,
   Sparkles,
@@ -199,7 +199,7 @@ export function FaithJourneyQuiz({ existingResult, onComplete, onBack }: FaithJo
     const StageIcon = stageInfo.icon;
 
     return (
-      <div className="min-h-screen bg-gradient-to-b from-sky-50/50 to-sky-50/50">
+      <div className="min-h-screen bg-transparent">
         <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm border-b">
           <div className="flex items-center justify-between px-4 py-4">
             <BackButton label={tr("Back to Quizzes")} onClick={onBack} />
@@ -210,7 +210,7 @@ export function FaithJourneyQuiz({ existingResult, onComplete, onBack }: FaithJo
 
         <div className="max-w-2xl mx-auto px-4 py-6 pb-24">
           {/* Main Result */}
-          <Card className="mb-6 overflow-hidden border-sky-200">
+          <Card className="tbo-glass mb-6 overflow-hidden border-[var(--glass-border)]">
             <div className={`h-2 bg-gradient-to-r ${stageInfo.color}`}></div>
             <CardHeader className="text-center pb-4">
               <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br ${stageInfo.color} mb-4 mx-auto`}>
@@ -221,7 +221,7 @@ export function FaithJourneyQuiz({ existingResult, onComplete, onBack }: FaithJo
                 {stageInfo.name}
               </h3>
               <div className="mt-4">
-                <div className="text-4xl font-bold text-sky-600 mb-1">{results.percentage}%</div>
+                <div className="text-4xl font-bold text-[var(--glass-accent)] mb-1">{results.percentage}%</div>
                 <p className="tbo-supporting text-muted-foreground">{tr("Spiritual Maturity Score")}</p>
               </div>
             </CardHeader>
@@ -229,12 +229,12 @@ export function FaithJourneyQuiz({ existingResult, onComplete, onBack }: FaithJo
               <p className="tbo-body text-center text-muted-foreground">{stageInfo.description}</p>
 
               {/* Scripture */}
-              <div className="p-4 bg-gradient-to-br from-sky-50 to-sky-100 rounded-lg border border-sky-200">
+              <div className="p-4 tbo-glass-inset rounded-lg border border-[var(--glass-border)]">
                 <div className="flex items-start gap-3">
-                  <BookOpen className="w-5 h-5 text-sky-600 flex-shrink-0 mt-0.5" />
+                  <BookOpen className="w-5 h-5 text-[var(--glass-accent)] flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium text-sky-700 italic mb-1">"{stageInfo.scripture.verse}"</p>
-                    <p className="text-xs text-sky-700">— {stageInfo.scripture.reference}</p>
+                    <p className="font-medium text-[var(--glass-accent)] italic mb-1">"{stageInfo.scripture.verse}"</p>
+                    <p className="text-xs text-[var(--glass-accent)]">— {stageInfo.scripture.reference}</p>
                   </div>
                 </div>
               </div>
@@ -242,12 +242,12 @@ export function FaithJourneyQuiz({ existingResult, onComplete, onBack }: FaithJo
               {/* Guidance */}
               <div>
                 <h4 className="tbo-card-title mb-3 flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-primary-600" />{tr("Next Steps for Growth")} </h4>
+                  <Sparkles className="w-5 h-5 text-[var(--glass-accent)]" />{tr("Next Steps for Growth")} </h4>
                 <div className="space-y-2">
                   {stageInfo.guidance.map((tip, i) => (
-                    <div key={i} className="flex items-start gap-2 p-3 bg-primary-50 rounded-lg">
-                      <div className="w-6 h-6 rounded-full bg-primary-200 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <span className="tbo-caption text-primary-700">{i + 1}</span>
+                    <div key={i} className="flex items-start gap-2 p-3 tbo-glass-inset rounded-lg">
+                      <div className="w-6 h-6 rounded-full bg-[var(--glass-inset-surface)] flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="tbo-caption text-[var(--glass-accent)]">{i + 1}</span>
                       </div>
                       <p className="tbo-supporting text-foreground">{tip}</p>
                     </div>
@@ -276,22 +276,22 @@ export function FaithJourneyQuiz({ existingResult, onComplete, onBack }: FaithJo
           </Card>
 
           {/* Couple Growth */}
-          <Card className="mb-6 bg-gradient-to-br from-primary-50 to-primary-100 border-primary-200">
+          <Card className="mb-6 tbo-glass border-[var(--glass-border)]">
             <CardHeader>
               <CardTitle className="tbo-card-title flex items-center gap-2">
-                <Users className="w-5 h-5 text-primary-600" />{tr("Growing Together")} </CardTitle>
+                <Users className="w-5 h-5 text-[var(--glass-accent)]" />{tr("Growing Together")} </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="p-3 bg-card rounded-lg border">
-                <p className="tbo-supporting text-primary-900 mb-1">{tr("Pray together daily")}</p>
+                <p className="tbo-supporting text-[var(--glass-accent)] mb-1">{tr("Pray together daily")}</p>
                 <p className="tbo-supporting text-muted-foreground">{tr("Couples who pray together grow stronger spiritually and relationally")}</p>
               </div>
               <div className="p-3 bg-card rounded-lg border">
-                <p className="tbo-supporting text-primary-900 mb-1">{tr("Study Scripture together")}</p>
+                <p className="tbo-supporting text-[var(--glass-accent)] mb-1">{tr("Study Scripture together")}</p>
                 <p className="tbo-supporting text-muted-foreground">{tr("Read and discuss the Bible with your partner to deepen both your faith")}</p>
               </div>
               <div className="p-3 bg-card rounded-lg border">
-                <p className="tbo-supporting text-primary-900 mb-1">{tr("Serve side by side")}</p>
+                <p className="tbo-supporting text-[var(--glass-accent)] mb-1">{tr("Serve side by side")}</p>
                 <p className="tbo-supporting text-muted-foreground">{tr("Find ways to serve together in your church or community")}</p>
               </div>
             </CardContent>
@@ -309,7 +309,7 @@ export function FaithJourneyQuiz({ existingResult, onComplete, onBack }: FaithJo
   const question = questions[currentQuestion];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-50/50 to-sky-50/50">
+    <div className="min-h-screen bg-transparent">
       <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm border-b">
         <div className="flex items-center justify-between px-4 py-4">
           <BackButton label={tr("Back to Quizzes")} onClick={onBack} />
@@ -326,7 +326,7 @@ export function FaithJourneyQuiz({ existingResult, onComplete, onBack }: FaithJo
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <Card className="border-sky-200">
+        <Card className="tbo-glass border-[var(--glass-border)]">
           <CardHeader>
             <div className="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-sky-500 to-sky-500 mb-4 mx-auto">
               <BookOpen className="w-8 h-8 text-white" />
@@ -340,12 +340,12 @@ export function FaithJourneyQuiz({ existingResult, onComplete, onBack }: FaithJo
                 <Button
                   key={index}
                   onClick={() => handleAnswer(score)}
-                  className="tbo-action w-full h-auto whitespace-normal break-words py-4 text-left justify-start bg-card hover:bg-sky-50 text-foreground border-2 border-border hover:border-sky-200"
+                  className="tbo-action w-full h-auto whitespace-normal break-words py-4 text-left justify-start bg-card hover:bg-sky-50 text-foreground border-2 border-border hover:border-[var(--glass-border)]"
                   variant="outline"
                 >
                   <div className="flex items-start gap-3 w-full">
                     <div className="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <span className="tbo-label text-sky-600">{index + 1}</span>
+                      <span className="tbo-label text-[var(--glass-accent)]">{index + 1}</span>
                     </div>
                     <span className="flex-1">{option}</span>
                   </div>

@@ -58,32 +58,32 @@ export function PWAUpdateNotification() {
 
   return (
     <div className="fixed top-4 left-4 right-4 z-50 animate-in slide-in-from-top duration-500 md:left-auto md:right-4 md:max-w-md">
-      <Card className="bg-gradient-to-r from-sky-600 to-sky-600 border-0 shadow-2xl">
-        <div className="p-4 text-white">
+      <Card className="tbo-glass-raised">
+        <div className="p-4 text-foreground">
           <div className="flex items-start gap-3 mb-3">
-            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+            <div className="tbo-glass-orb w-10 h-10">
               <RefreshCw className="w-5 h-5" />
             </div>
             <div className="flex-1">
               <h3 className="tbo-card-title mb-1">{t.pwaUpdate.title}</h3>
-              <p className="tbo-supporting text-sky-100">
+              <p className="tbo-supporting text-muted-foreground">
                 {t.pwaUpdate.description}
               </p>
             </div>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button
               onClick={handleUpdate}
-              className="flex-1 bg-card text-sky-600 hover:bg-sky-50"
+              variant="glass-primary"
+              className="flex-1"
             >
               <RefreshCw className="w-4 h-4 mr-2" />
               {t.pwaUpdate.updateNow}
             </Button>
             <Button
               onClick={() => setShowUpdate(false)}
-              variant="ghost"
-              className="text-white hover:bg-white/10"
+              variant="glass"
             >
               {t.pwaUpdate.later}
             </Button>

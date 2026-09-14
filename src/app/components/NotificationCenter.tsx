@@ -338,20 +338,20 @@ export function NotificationCenter({
         <>
           {/* Dimmed Backdrop */}
           <div
-            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 z-40 bg-[var(--glass-overlay)] transition-opacity"
             onClick={() => setIsOpen(false)}
           />
 
           {/* Full Screen Height Drawer Panel */}
-          <div className="[overflow-wrap:anywhere] fixed right-0 top-0 bottom-0 w-full max-w-[400px] bg-white shadow-2xl z-50 flex flex-col overflow-hidden border-l border-slate-200 animate-in slide-in-from-right duration-300">
+          <div className="tbo-glass-raised [overflow-wrap:anywhere] fixed right-0 top-0 bottom-0 w-full max-w-[400px] z-50 flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
             {/* High Contrast Header Area */}
-            <div className="flex flex-wrap items-center justify-between gap-3 p-4 border-b border-slate-200 bg-slate-50 flex-shrink-0">
+            <div className="flex flex-wrap items-center justify-between gap-3 p-4 border-b border-border bg-muted flex-shrink-0">
               <div>
-                <h3 className="tbo-card-title text-slate-950">
+                <h3 className="tbo-card-title text-foreground">
                   {t?.notifications?.title || tr("Notifications")}
                 </h3>
                 {unreadCount > 0 && (
-                  <p className="tbo-caption text-rose-600 mt-0.5">
+                  <p className="tbo-caption text-[var(--glass-rose)] mt-0.5">
                     {unreadCount} {t.notifications.unreadItems}
                   </p>
                 )}
@@ -359,20 +359,20 @@ export function NotificationCenter({
               <div className="flex flex-wrap min-w-0 max-w-full items-center gap-1">
                 {unreadCount > 0 && (
                   <Button
-                    variant="ghost"
+                    variant="glass"
                     size="sm"
                     onClick={markAllAsRead}
                     disabled={isLoading}
-                    className="tbo-action min-h-8 h-auto max-w-full min-w-0 whitespace-normal text-slate-800 hover:text-slate-950 px-2.5 hover:bg-slate-200/80 border border-slate-200 bg-white"
+                    className="tbo-action h-auto max-w-full min-w-0 whitespace-normal"
                   >
-                    {isLoading ? <LoadingMark /> : <Check className="w-3.5 h-3.5 mr-1 text-slate-900" />}
+                    {isLoading ? <LoadingMark /> : <Check className="w-3.5 h-3.5 mr-1" />}
                     {t.notifications.markAllRead}
                   </Button>
                 )}
                 <button
                   onClick={() => setIsOpen(false)}
                   aria-label={tr("Close")}
-                  className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-colors border border-transparent hover:border-slate-300"
+                  className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-muted-foreground hover:text-foreground hover:bg-accent transition-colors border border-border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -380,18 +380,18 @@ export function NotificationCenter({
             </div>
 
             {/* Scrollable List container matching absolute layout boundaries */}
-            <ScrollArea className="flex-1 w-full h-full min-h-0 divide-y divide-slate-200 overflow-y-auto bg-white">
+            <ScrollArea className="flex-1 w-full h-full min-h-0 divide-y divide-border overflow-y-auto">
               {!hasLoaded ? (
                 <BrandLoader className="min-h-48 px-4 py-12" />
               ) : notifications.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full py-20 px-4 text-center">
-                  <div className="p-4 bg-slate-100 rounded-2xl mb-3 border border-slate-200">
-                    <Bell className="w-8 h-8 text-slate-400" />
+                  <div className="tbo-glass-inset p-4 mb-3">
+                    <Bell className="w-8 h-8 text-muted-foreground" />
                   </div>
-                  <p className="tbo-body text-slate-900">
+                  <p className="tbo-body text-foreground">
                     {t.notifications.allCaughtUp}
                   </p>
-                  <p className="tbo-caption text-slate-500 max-w-[240px] mt-1.5">
+                  <p className="tbo-caption text-muted-foreground max-w-[240px] mt-1.5">
                     {t.notifications.noNewNotifications}
                   </p>
                 </div>
@@ -410,8 +410,8 @@ export function NotificationCenter({
                         }
                         className={`group relative p-4 flex gap-3.5 cursor-pointer transition-all duration-150 border-l-4 select-none ${
                           !notification.isRead
-                            ? "bg-slate-50/90 border-l-rose-600 hover:bg-slate-100/80"
-                            : "border-l-transparent hover:bg-slate-50"
+                            ? "bg-muted border-l-primary hover:bg-accent"
+                            : "border-l-transparent hover:bg-muted"
                         }`}
                       >
                         {/* High Contrast Icon Container */}
@@ -425,34 +425,30 @@ export function NotificationCenter({
                         <div className="flex-1 min-w-0">
                           <div className="flex flex-wrap items-start justify-between gap-2">
                             <p
-                              className={`tbo-label min-w-0 max-w-full text-slate-950 ${
-                                !notification.isRead
-                                  ? ""
-                                  : " text-slate-800"
-                              }`}
+                              className="tbo-label min-w-0 max-w-full text-foreground"
                             >
                               {copy.title}
                             </p>
-                            <span className="tbo-caption min-w-0 max-w-full text-slate-500 whitespace-normal bg-slate-100 px-1.5 py-0.5 rounded">
+                            <span className="tbo-caption min-w-0 max-w-full text-muted-foreground whitespace-normal bg-muted px-1.5 py-0.5 rounded">
                               {formatTime(
                                 notification.createdAt,
                               )}
                             </span>
                           </div>
 
-                          <p className="tbo-caption text-slate-700 mt-1.5 line-clamp-3">
+                          <p className="tbo-caption text-muted-foreground mt-1.5 line-clamp-3">
                             {copy.message}
                           </p>
 
                           {/* Quick Actions Action bar */}
-                          <div className="flex flex-wrap items-center gap-3 mt-3 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-150">
+                          <div className="flex flex-wrap items-center gap-3 mt-3">
                             {!notification.isRead && (
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   markAsRead(notification.id);
                                 }}
-                                className="tbo-action text-rose-700 hover:text-rose-900 flex items-center gap-0.5 bg-rose-100 border border-rose-200 px-2 py-0.5 rounded shadow-sm"
+                                className="tbo-action tbo-glass-action"
                               >
                                 {t.notifications.markRead}
                               </button>
@@ -464,9 +460,9 @@ export function NotificationCenter({
                                   notification.id,
                                 );
                               }}
-                              className="tbo-action text-slate-600 hover:text-slate-900 flex items-center gap-1 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded shadow-sm ml-auto"
+                              className="tbo-action tbo-glass-action ml-auto"
                             >
-                              <Trash2 className="w-3 h-3 text-slate-500" />
+                              <Trash2 className="w-3 h-3" />
                               {t.common.delete}
                             </button>
                           </div>

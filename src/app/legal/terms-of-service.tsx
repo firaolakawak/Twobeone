@@ -21,9 +21,9 @@ export function TermsOfService({ language }: TermsOfServiceProps) {
     <div lang={resolvedLanguage} className="max-w-4xl mx-auto px-0 sm:px-6 py-6 space-y-8 [overflow-wrap:anywhere]">
         <div className="text-center space-y-2">
           <div className="flex justify-center">
-            <FileText className="w-16 h-16 text-primary-600" />
+            <FileText className="w-16 h-16 text-primary" />
           </div>
-          <h1 className="tbo-page-title text-primary-900"> {tr("Terms of Service")} </h1>
+          <h1 className="tbo-page-title text-foreground"> {tr("Terms of Service")} </h1>
           <p className="text-muted-foreground"> {tr("Last Updated: November 22, 2024")} </p>
         </div>
 
@@ -37,10 +37,10 @@ export function TermsOfService({ language }: TermsOfServiceProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Heart className="w-5 h-5 text-primary-600" /> {tr("1. Acceptance of Terms")} </CardTitle>
+              <Heart className="w-5 h-5 text-primary" /> {tr("1. Acceptance of Terms")} </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p> {tr("By creating an account, connecting with a partner, or using any feature of TwoBeOne, you affirm that:")} </p>
@@ -54,7 +54,7 @@ export function TermsOfService({ language }: TermsOfServiceProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle> {tr("2. Description of Service")} </CardTitle>
           </CardHeader>
@@ -74,10 +74,10 @@ export function TermsOfService({ language }: TermsOfServiceProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-primary-600" /> {tr("3. Account Registration & Partner Connection")} </CardTitle>
+              <Users className="w-5 h-5 text-primary" /> {tr("3. Account Registration & Partner Connection")} </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
@@ -104,7 +104,7 @@ export function TermsOfService({ language }: TermsOfServiceProps) {
 
             <div>
               <h3 className="font-semibold mb-2"> {tr("3.3 Disconnection Policy")} </h3>
-              <div className="bg-primary-50 border-l-4 border-primary-600 p-4 rounded">
+              <div className="bg-accent border-l-4 border-primary-600 p-4 rounded">
                 <p className="font-semibold mb-2"> {tr("Critical: Two-Partner Consent Required")} </p>
                 <ul className="list-disc list-inside space-y-1 tbo-body">
                   <li><strong> {tr("Mutual Agreement:")} </strong> {tr("Both partners must agree to disconnect")} </li>
@@ -119,7 +119,7 @@ export function TermsOfService({ language }: TermsOfServiceProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Ban className="w-5 h-5 text-error-500" /> {tr("4. Acceptable Use Policy")} </CardTitle>
@@ -145,7 +145,7 @@ export function TermsOfService({ language }: TermsOfServiceProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle> {tr("5. User Content")} </CardTitle>
           </CardHeader>
@@ -192,7 +192,7 @@ export function TermsOfService({ language }: TermsOfServiceProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle> {tr("6. Intellectual Property Rights")} </CardTitle>
           </CardHeader>
@@ -215,7 +215,7 @@ export function TermsOfService({ language }: TermsOfServiceProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle> {tr("7. Privacy & Data Protection")} </CardTitle>
           </CardHeader>
@@ -231,7 +231,7 @@ export function TermsOfService({ language }: TermsOfServiceProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle> {tr("8. Location Services (Optional)")} </CardTitle>
           </CardHeader>
@@ -248,7 +248,7 @@ export function TermsOfService({ language }: TermsOfServiceProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle> {tr("9. Payment Terms (If Applicable)")} </CardTitle>
           </CardHeader>
@@ -272,10 +272,10 @@ export function TermsOfService({ language }: TermsOfServiceProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Shield className="w-5 h-5 text-primary-600" /> {tr("10. Disclaimers & Limitations of Liability")} </CardTitle>
+              <Shield className="w-5 h-5 text-primary" /> {tr("10. Disclaimers & Limitations of Liability")} </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -311,7 +311,7 @@ export function TermsOfService({ language }: TermsOfServiceProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle> {tr("11. Indemnification")} </CardTitle>
           </CardHeader>
@@ -326,7 +326,7 @@ export function TermsOfService({ language }: TermsOfServiceProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle> {tr("12. Termination")} </CardTitle>
           </CardHeader>
@@ -356,7 +356,7 @@ export function TermsOfService({ language }: TermsOfServiceProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle> {tr("13. Modifications to Terms")} </CardTitle>
           </CardHeader>
@@ -371,7 +371,7 @@ export function TermsOfService({ language }: TermsOfServiceProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle> {tr("14. Dispute Resolution & Governing Law")} </CardTitle>
           </CardHeader>
@@ -393,7 +393,7 @@ export function TermsOfService({ language }: TermsOfServiceProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle> {tr("15. General Provisions")} </CardTitle>
           </CardHeader>
@@ -409,7 +409,7 @@ export function TermsOfService({ language }: TermsOfServiceProps) {
           </CardContent>
         </Card>
 
-        <Card className="bg-primary-50 border-primary-200">
+        <Card className="bg-accent border-border">
           <CardHeader>
             <CardTitle> {tr("16. Contact Information")} </CardTitle>
           </CardHeader>
@@ -454,9 +454,9 @@ function TermsOfServiceAmharic() {
     <div lang="am" className="max-w-4xl mx-auto px-0 sm:px-6 py-6 space-y-8 [overflow-wrap:anywhere]" dir="ltr">
         <div className="text-center space-y-2">
           <div className="flex justify-center">
-            <FileText className="w-16 h-16 text-primary-600" />
+            <FileText className="w-16 h-16 text-primary" />
           </div>
-          <h1 className="tbo-page-title text-primary-900">የአገልግሎት ውል</h1>
+          <h1 className="tbo-page-title text-foreground">የአገልግሎት ውል</h1>
           <p className="text-muted-foreground">መጨረሻ የዘመነ፡ ህዳር 22፣ 2024</p>
         </div>
 
@@ -475,10 +475,10 @@ function TermsOfServiceAmharic() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Heart className="w-5 h-5 text-primary-600" />
+              <Heart className="w-5 h-5 text-primary" />
               1. ውሎችን መቀበል
             </CardTitle>
           </CardHeader>
@@ -495,7 +495,7 @@ function TermsOfServiceAmharic() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle>2. የአገልግሎት መግለጫ</CardTitle>
           </CardHeader>
@@ -513,10 +513,10 @@ function TermsOfServiceAmharic() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-primary-600" />
+              <Users className="w-5 h-5 text-primary" />
               3. የመለያ ምዝገባ እና የአጋር ግንኙነት
             </CardTitle>
           </CardHeader>
@@ -541,7 +541,7 @@ function TermsOfServiceAmharic() {
 
             <div>
               <h3 className="font-semibold mb-2">3.3 የመለያየት ፖሊሲ</h3>
-              <div className="bg-primary-50 border-l-4 border-primary-600 p-4 rounded">
+              <div className="bg-accent border-l-4 border-primary-600 p-4 rounded">
                 <p className="font-semibold mb-2">ወሳኝ፡ የሁለት አጋር ፈቃድ ያስፈልጋል</p>
                 <ul className="list-disc list-inside space-y-1 tbo-body">
                   <li><strong>የጋራ ስምምነት፡</strong> ሁለቱም አጋሮች ለመለያየት መስማማት አለባቸው</li>
@@ -554,7 +554,7 @@ function TermsOfServiceAmharic() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="tbo-glass-raised">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Ban className="w-5 h-5 text-error-500" />
@@ -573,7 +573,7 @@ function TermsOfServiceAmharic() {
           </CardContent>
         </Card>
 
-        <Card className="bg-primary-50 border-primary-200">
+        <Card className="bg-accent border-border">
           <CardHeader>
             <CardTitle>16. የመገኛ መረጃ</CardTitle>
           </CardHeader>

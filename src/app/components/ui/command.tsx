@@ -5,6 +5,7 @@ import { Command as CommandPrimitive } from "cmdk";
 import { SearchIcon } from "lucide-react";
 
 import { cn } from "./utils";
+import { glassMaterial } from "./materials";
 import {
   Dialog,
   DialogContent,
@@ -21,7 +22,8 @@ function Command({
     <CommandPrimitive
       data-slot="command"
       className={cn(
-        "bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md",
+        "flex h-full w-full flex-col overflow-hidden rounded-xl",
+        glassMaterial('inset', className, props.style),
         className,
       )}
       {...props}

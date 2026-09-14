@@ -31,12 +31,12 @@ export function LegalConsent({ language: suppliedLanguage, onAccept, isLoading =
     <>
       <div className="space-y-6 py-4">
         {/* Important Note */}
-        <div className="bg-primary-50 border-l-4 border-primary-600 p-4 rounded">
+        <div className="tbo-glass-inset border-l-4 border-primary p-4 rounded">
           <div className="flex gap-3">
-            <AlertCircle className="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
             <div>
-              <h4 className="font-semibold text-primary-900 mb-1">{content.importantNote}</h4>
-              <p className="tbo-supporting text-primary-800">{content.partnerSharingNote}</p>
+              <h4 className="font-semibold text-primary mb-1">{content.importantNote}</h4>
+              <p className="tbo-supporting text-primary">{content.partnerSharingNote}</p>
             </div>
           </div>
         </div>
@@ -64,7 +64,7 @@ export function LegalConsent({ language: suppliedLanguage, onAccept, isLoading =
             <Button
               variant="link"
               size="sm"
-              className="tbo-action h-auto p-0 text-primary-600 hover:text-primary-700 ml-8"
+              className="tbo-action h-auto p-0 text-primary hover:text-primary ml-8"
               onClick={() => setShowTerms(true)}
             >
               <FileText className="w-3 h-3 mr-1" />
@@ -93,7 +93,7 @@ export function LegalConsent({ language: suppliedLanguage, onAccept, isLoading =
             <Button
               variant="link"
               size="sm"
-              className="tbo-action h-auto p-0 text-primary-600 hover:text-primary-700 ml-8"
+              className="tbo-action h-auto p-0 text-primary hover:text-primary ml-8"
               onClick={() => setShowPrivacy(true)}
             >
               <Shield className="w-3 h-3 mr-1" />
@@ -111,7 +111,7 @@ export function LegalConsent({ language: suppliedLanguage, onAccept, isLoading =
 
         {/* Continue Button */}
         <Button
-          className="w-full bg-primary-600 hover:bg-primary-700"
+          className="w-full"
           disabled={!canProceed || isLoading}
           onClick={onAccept}
         >

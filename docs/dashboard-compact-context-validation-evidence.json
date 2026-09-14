@@ -247,5 +247,95 @@
   "limitations": [
     "Text enlargement used CSS root font scaling; native browser zoom was not independently exercised.",
     "Reference preview uses fixture initials instead of private profile photos."
-  ]
+  ],
+  "dividerVisibilityRecheck": {
+    "scope": "Only the requested stronger divider appearance; three targeted visual checks.",
+    "count": 3,
+    "cases": [
+      {
+        "widthCssPx": 446,
+        "rootTextScale": 1.25,
+        "theme": "light",
+        "language": "en",
+        "pageOverflow": false,
+        "dividers": [
+          {
+            "class": "relationship-summary-panel-divider",
+            "width": 2.5,
+            "height": 40,
+            "display": "block",
+            "opacity": "1",
+            "paint": "rgba(255, 255, 255, 0.95)",
+            "ariaHidden": "true"
+          },
+          {
+            "class": "relationship-summary-context-divider",
+            "width": 2.5,
+            "height": 25,
+            "display": "block",
+            "opacity": "1",
+            "paint": "rgba(255, 255, 255, 0.95)",
+            "ariaHidden": "true"
+          }
+        ]
+      },
+      {
+        "widthCssPx": 446,
+        "rootTextScale": 1.25,
+        "theme": "dark",
+        "language": "en",
+        "pageOverflow": false,
+        "dividers": [
+          {
+            "class": "relationship-summary-panel-divider",
+            "width": 2.5,
+            "height": 40,
+            "display": "block",
+            "opacity": "1",
+            "paint": "rgba(242, 222, 255, 0.28)",
+            "ariaHidden": "true"
+          },
+          {
+            "class": "relationship-summary-context-divider",
+            "width": 2.5,
+            "height": 25,
+            "display": "block",
+            "opacity": "1",
+            "paint": "rgba(242, 222, 255, 0.28)",
+            "ariaHidden": "true"
+          }
+        ]
+      },
+      {
+        "widthCssPx": 320,
+        "rootTextScale": 2,
+        "theme": "light",
+        "language": "en",
+        "pageOverflow": false,
+        "dividers": [
+          {
+            "class": "relationship-summary-panel-divider",
+            "width": 222,
+            "height": 4,
+            "display": "block",
+            "opacity": "1",
+            "paint": "rgba(255, 255, 255, 0.95)",
+            "ariaHidden": "true"
+          },
+          {
+            "class": "relationship-summary-context-divider",
+            "width": 0,
+            "height": 0,
+            "display": "none",
+            "opacity": "1",
+            "paint": "rgba(255, 255, 255, 0.95)",
+            "ariaHidden": "true"
+          }
+        ]
+      }
+    ],
+    "applicationErrors": 0,
+    "notes": "At 125% both vertical dividers are 2.5px thick and opacity 1. At 320px/200%, the panel separator becomes horizontal (222 by 4px), and the context separator is hidden. No additional matrix or functional checks were run for this CSS-only follow-up.",
+    "rawReport": "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-glass-qa/visible-dividers/dividers-report.json"
+  }
 }

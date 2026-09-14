@@ -623,9 +623,9 @@ export function SettingsScreen({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 text-slate-900 [overflow-wrap:anywhere]">
+    <div className="min-h-screen text-foreground [overflow-wrap:anywhere]">
       <div className="mx-auto w-full max-w-3xl space-y-7 pb-28">
-        <Card className="relative isolate overflow-hidden rounded-[2rem] border-rose-100 bg-gradient-to-br from-rose-50 via-white to-amber-50 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)]">
+        <Card className="relative isolate overflow-hidden rounded-[2rem]">
           <div className="profile-cover-header" data-profile-cover>
             {coverPicture && coverPicture !== failedCoverPicture && <img src={coverPicture} alt="" className="profile-cover-image" data-profile-cover-image onError={() => setFailedCoverPicture(coverPicture)} />}
             <div className="profile-cover-toolbar">
@@ -668,7 +668,7 @@ export function SettingsScreen({
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" sideOffset={10} className="w-48 rounded-2xl border-rose-100 p-1.5 shadow-xl">
-                    <DropdownMenuItem onSelect={() => document.getElementById('profile-picture-upload')?.click()} className="tbo-action min-h-10 whitespace-normal rounded-xl px-3 text-slate-700 focus:bg-rose-50 focus:text-rose-700">
+                    <DropdownMenuItem onSelect={() => document.getElementById('profile-picture-upload')?.click()} className="tbo-action min-h-10 whitespace-normal rounded-xl px-3 text-foreground focus:bg-rose-50 focus:text-rose-700">
                        {tr("Change Picture")} </DropdownMenuItem>
                     <DropdownMenuItem variant="destructive" disabled={!profile?.profilePicture} onSelect={() => void handleDeleteProfilePicture()} className="tbo-action min-h-10 whitespace-normal rounded-xl px-3">
                        {tr("Delete Picture")} </DropdownMenuItem>
@@ -676,10 +676,10 @@ export function SettingsScreen({
                 </DropdownMenu>
               </div>
               <div className="min-w-0 flex-1 sm:pb-1">
-                <h1 className="tbo-page-title text-slate-950 min-w-0 break-words">{profile?.name || tr("Your Profile")}</h1>
-                <p className="tbo-supporting mt-1 break-all text-slate-500">{profile?.email}</p>
+                <h1 className="tbo-page-title text-foreground min-w-0 break-words">{profile?.name || tr("Your Profile")}</h1>
+                <p className="tbo-supporting mt-1 break-all text-muted-foreground">{profile?.email}</p>
                 {partner && (
-                  <div className="tbo-label mt-3 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-rose-700 ring-1 ring-rose-100">
+                  <div className="tbo-label mt-3 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1.5 text-primary border border-border">
                     <Heart className="h-4 w-4 fill-rose-500 text-rose-500" />
                     <span>{tr("Connected with")} {partner.name}</span>
                   </div>
@@ -691,24 +691,24 @@ export function SettingsScreen({
 
         {/* Settings Tabs */}
         <Tabs defaultValue="personal" className="w-full gap-6">
-          <TabsList className="mb-6 grid h-14 w-full grid-cols-5 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-inner" aria-label={tr("Profile settings sections")}>
-            <TabsTrigger value="personal" aria-label={tr("Personal")} className="h-full gap-2 rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm min-w-0 whitespace-normal">
+          <TabsList className="mb-6 grid h-14 w-full grid-cols-5 rounded-[1.25rem] p-1.5" aria-label={tr("Profile settings sections")}>
+            <TabsTrigger value="personal" aria-label={tr("Personal")} className="h-full gap-2 rounded-[0.9rem] min-w-0 whitespace-normal">
               <User className="w-4 h-4" />
               <span className="hidden sm:inline">{tr("Personal")}</span>
             </TabsTrigger>
-            <TabsTrigger value="couple" aria-label={tr("Couple")} className="h-full gap-2 rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm min-w-0 whitespace-normal">
+            <TabsTrigger value="couple" aria-label={tr("Couple")} className="h-full gap-2 rounded-[0.9rem] min-w-0 whitespace-normal">
               <Heart className="w-4 h-4" />
               <span className="hidden sm:inline">{tr("Couple")}</span>
             </TabsTrigger>
-            <TabsTrigger value="privacy" aria-label={tr("Privacy")} className="h-full gap-2 rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm min-w-0 whitespace-normal">
+            <TabsTrigger value="privacy" aria-label={tr("Privacy")} className="h-full gap-2 rounded-[0.9rem] min-w-0 whitespace-normal">
               <Shield className="w-4 h-4" />
               <span className="hidden sm:inline">{tr("Privacy")}</span>
             </TabsTrigger>
-            <TabsTrigger value="notifications" aria-label={tr("Alerts")} className="h-full gap-2 rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm min-w-0 whitespace-normal">
+            <TabsTrigger value="notifications" aria-label={tr("Alerts")} className="h-full gap-2 rounded-[0.9rem] min-w-0 whitespace-normal">
               <Bell className="w-4 h-4" />
               <span className="hidden sm:inline">{tr("Alerts")}</span>
             </TabsTrigger>
-            <TabsTrigger value="app" aria-label={tr("App settings")} className="h-full gap-2 rounded-[0.9rem] text-slate-500 data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:shadow-sm min-w-0 whitespace-normal">
+            <TabsTrigger value="app" aria-label={tr("App settings")} className="h-full gap-2 rounded-[0.9rem] min-w-0 whitespace-normal">
               <Settings className="w-4 h-4" />
               <span className="hidden sm:inline">{tr("App")}</span>
             </TabsTrigger>
@@ -716,7 +716,7 @@ export function SettingsScreen({
 
           {/* Personal Information Tab */}
           <TabsContent value="personal" className="space-y-6">
-            <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
+            <Card className="rounded-[1.5rem]">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <User className="w-5 h-5" />
@@ -788,7 +788,7 @@ export function SettingsScreen({
                 <Button 
                   onClick={handleSavePersonalInfo} 
                   disabled={isSaving}
-                  className="min-h-11 w-full rounded-full bg-rose-600 text-white shadow-sm hover:bg-rose-700 h-auto whitespace-normal py-2"
+                  className="min-h-11 w-full rounded-full  h-auto whitespace-normal py-2"
                 >
                   {isSaving ? tr("Saving...") : tr("Save Changes")}
                 </Button>
@@ -796,7 +796,7 @@ export function SettingsScreen({
             </Card>
 
             {/* Account Actions */}
-            <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
+            <Card className="rounded-[1.5rem]">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Settings className="w-5 h-5" />
@@ -808,20 +808,20 @@ export function SettingsScreen({
                   <>
                     <Button 
                       variant="outline" 
-                      className="w-full justify-start bg-gradient-to-r from-primary-50 to-sky-50 border-primary-300 hover:bg-primary-100 h-auto min-h-9 whitespace-normal py-2"
+                      className="w-full justify-start  h-auto min-h-9 whitespace-normal py-2"
                       onClick={onNavigateToAdmin}
                     >
-                      <Shield className="w-4 h-4 mr-2 text-primary-600" />
-                      <span className="text-primary-900">{tr("Admin Panel")}</span>
+                      <Shield className="w-4 h-4 mr-2 text-primary" />
+                      <span className="text-primary">{tr("Admin Panel")}</span>
                     </Button>
                     {onNavigateToDebug && (
                       <Button 
                         variant="outline" 
-                        className="w-full justify-start bg-gradient-to-r from-sky-50 to-sky-100 border-sky-200 hover:bg-sky-100 h-auto min-h-9 whitespace-normal py-2"
+                        className="w-full justify-start  h-auto min-h-9 whitespace-normal py-2"
                         onClick={onNavigateToDebug}
                       >
-                        <Bug className="w-4 h-4 mr-2 text-sky-600" />
-                        <span className="text-sky-700">{tr("Debug Questions")}</span>
+                        <Bug className="w-4 h-4 mr-2 text-primary" />
+                        <span className="text-primary">{tr("Debug Questions")}</span>
                       </Button>
                     )}
                     <Separator className="my-2" />
@@ -856,7 +856,7 @@ export function SettingsScreen({
 
           {/* Couple Settings Tab */}
           <TabsContent value="couple" className="space-y-6">
-            <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
+            <Card className="rounded-[1.5rem]">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Heart className="w-5 h-5 text-primary-500" />
@@ -883,10 +883,10 @@ export function SettingsScreen({
 
                 {/* Link by Code Section */}
                 {!partner && (
-                  <div className="space-y-3 rounded-2xl border border-rose-100 bg-gradient-to-r from-rose-50 to-amber-50 p-4">
+                  <div className="space-y-3 rounded-2xl tbo-glass-inset p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <Key className="w-5 h-5 text-primary-600" />
-                      <h4 className="tbo-card-title text-primary-900 min-w-0 break-words">{tr("Link by Code")}</h4>
+                      <Key className="w-5 h-5 text-primary" />
+                      <h4 className="tbo-card-title text-primary min-w-0 break-words">{tr("Link by Code")}</h4>
                     </div>
                     <p className="tbo-supporting text-foreground mb-3">
                        {tr("Connect with your partner using their invite code")} </p>
@@ -902,7 +902,7 @@ export function SettingsScreen({
                         aria-label={isLinking ? tr("Loading...") : tr("Link")}
                         aria-busy={isLinking}
                         disabled={isLinking || !partnerCode}
-                        className="h-auto min-h-9 max-w-full whitespace-normal rounded-full bg-rose-600 hover:bg-rose-700"
+                        className="h-auto min-h-9 max-w-full whitespace-normal rounded-full "
                       >
                         {isLinking ? (
                           <><LoadingMark className="w-4 h-4 " /></>
@@ -918,7 +918,7 @@ export function SettingsScreen({
                 {profile?.inviteCode && (
                   <div className="space-y-2">
                     <Label>{tr("My Invite Code")}</Label>
-                    <div className="p-4 bg-gradient-to-r from-sky-50 to-sky-100 rounded-lg border border-sky-200">
+                    <div className="p-4 tbo-glass-inset rounded-lg">
                       <div className="flex items-center justify-between mb-2">
                         <p className="tbo-supporting text-foreground">{tr("Share this code with your partner:")}</p>
                         <Button
@@ -950,14 +950,14 @@ export function SettingsScreen({
                               toast.error(tr("Failed to copy. Please select and copy manually."));
                             }
                           }}
-                          className="text-sky-600 hover:text-sky-700"
+                          className="text-primary hover:text-primary"
                         >
                           <Copy className="w-4 h-4 mr-1" />
                            {tr("Copy")} </Button>
                       </div>
                       <div className="flex items-center gap-3 p-3 bg-card rounded-lg border border-sky-200">
-                        <Key className="w-5 h-5 text-sky-600 flex-shrink-0" />
-                        <code className="font-mono text-sm font-bold text-sky-700 tracking-wide break-all flex-1">
+                        <Key className="w-5 h-5 text-primary flex-shrink-0" />
+                        <code className="font-mono text-sm font-bold text-primary tracking-wide break-all flex-1">
                           {profile.inviteCode}
                         </code>
                       </div>
@@ -1007,7 +1007,7 @@ export function SettingsScreen({
                 <Button 
                   onClick={handleSavePersonalInfo}
                   disabled={isSaving}
-                  className="min-h-11 w-full rounded-full bg-rose-600 text-white shadow-sm hover:bg-rose-700 h-auto whitespace-normal py-2"
+                  className="min-h-11 w-full rounded-full  h-auto whitespace-normal py-2"
                 >
                   {isSaving ? tr("Saving...") : tr("Save Changes")}
                 </Button>
@@ -1054,7 +1054,7 @@ export function SettingsScreen({
 
           {/* Privacy Settings Tab */}
           <TabsContent value="privacy" className="space-y-6">
-            <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
+            <Card className="rounded-[1.5rem]">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="w-5 h-5" />
@@ -1124,14 +1124,14 @@ export function SettingsScreen({
                 <Button 
                   onClick={handleSavePrivacySettings}
                   disabled={isSaving}
-                  className="mt-4 min-h-11 w-full rounded-full bg-rose-600 text-white shadow-sm hover:bg-rose-700 h-auto whitespace-normal py-2"
+                  className="mt-4 min-h-11 w-full rounded-full  h-auto whitespace-normal py-2"
                 >
                   {isSaving ? tr("Saving...") : tr("Save Privacy Settings")}
                 </Button>
               </CardContent>
             </Card>
 
-            <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
+            <Card className="rounded-[1.5rem]">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Lock className="w-5 h-5" />
@@ -1158,7 +1158,7 @@ export function SettingsScreen({
 
           {/* Notification Settings Tab */}
           <TabsContent value="notifications" className="space-y-6">
-            <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
+            <Card className="rounded-[1.5rem]">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Bell className="w-5 h-5" />
@@ -1216,14 +1216,14 @@ export function SettingsScreen({
                 <Button 
                   onClick={handleSaveNotificationSettings}
                   disabled={isSaving}
-                  className="mt-4 min-h-11 w-full rounded-full bg-rose-600 text-white shadow-sm hover:bg-rose-700 h-auto whitespace-normal py-2"
+                  className="mt-4 min-h-11 w-full rounded-full  h-auto whitespace-normal py-2"
                 >
                   {isSaving ? tr("Saving...") : tr("Save Notification Settings")}
                 </Button>
               </CardContent>
             </Card>
 
-            <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
+            <Card className="rounded-[1.5rem]">
               <CardHeader>
                 <CardTitle>{tr("Notification Channels")}</CardTitle>
                 <CardDescription>{tr("Choose how you want to receive notifications")}</CardDescription>
@@ -1267,7 +1267,7 @@ export function SettingsScreen({
           {/* App & PWA Settings Tab */}
           <TabsContent value="app" className="space-y-6">
             {/* Language Selection */}
-            <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
+            <Card className="rounded-[1.5rem]">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Globe className="w-5 h-5" />
@@ -1295,7 +1295,7 @@ export function SettingsScreen({
                       border: language === lang.code
                         ? '2px solid var(--primary-600)'
                         : '2px solid var(--border)',
-                      background: language === lang.code ? 'var(--primary-50)' : 'var(--card)',
+                      background: language === lang.code ? 'var(--accent)' : 'var(--card)',
                       cursor: 'pointer',
                       transition: 'all 150ms',
                     }}
@@ -1324,7 +1324,7 @@ export function SettingsScreen({
             </Card>
 
             {/* Daily Reminders */}
-            <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
+            <Card className="rounded-[1.5rem]">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Bell className="w-5 h-5" />
@@ -1361,7 +1361,7 @@ export function SettingsScreen({
                 </div>
                 <div
                   className="tbo-supporting rounded-lg p-3"
-                  style={{ background: 'var(--primary-50)', border: '1px solid var(--primary-200)', color: 'var(--primary-700)' }}
+                  style={{ background: 'var(--accent)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
                 >
                    {tr("💡 Reminders are sent once per day only when you haven't checked in. You'll be prompted to log your mood, complete your devotional, and answer a Q&A question.")} </div>
 
@@ -1392,7 +1392,7 @@ export function SettingsScreen({
             <InstallBanner />
 
             {/* Legal Documents Section */}
-            <Card className="rounded-[1.5rem] border-slate-200/80 bg-white shadow-sm">
+            <Card className="rounded-[1.5rem]">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Scale className="w-5 h-5" />
@@ -1528,7 +1528,7 @@ export function SettingsScreen({
       <Dialog open={showHelpDialog} onOpenChange={setShowHelpDialog}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-sky-600">
+            <DialogTitle className="flex items-center gap-2 text-primary">
               <HelpCircle className="w-6 h-6" />
                {tr("Help & Support")} </DialogTitle>
             <DialogDescription asChild className="space-y-2 pt-4">
@@ -1554,7 +1554,7 @@ export function SettingsScreen({
       <Dialog open={showContactDialog} onOpenChange={setShowContactDialog}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-sky-600">
+            <DialogTitle className="flex items-center gap-2 text-primary">
               <Mail className="w-6 h-6" />
                {tr("Contact Us")} </DialogTitle>
             <DialogDescription asChild className="space-y-2 pt-4">

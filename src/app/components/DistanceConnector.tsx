@@ -41,6 +41,7 @@ import { createClient } from "../utils/supabase/client";
 import { useLanguage } from "../contexts/LanguageContext";
 import { CoupleAvatarStack, PresenceDot } from "./CoupleAvatarStack";
 import { CoupleHeroHeading } from "./CoupleMoodHeading";
+import '../styles/system-overlays.css';
 
 interface DistanceConnectorProps {
   userId: string;
@@ -590,7 +591,7 @@ export function DistanceConnector({
         onOpenChange={setShowSettings}
       >
         <DialogContent
-          className="w-[calc(100%-2rem)] max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl p-5 border-none shadow-2xl bg-white"
+          className="tbo-glass-raised tbo-location-dialog w-[calc(100%-2rem)] max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto"
           onCloseAutoFocus={(event) => {
             if (settingsOpener.current?.isConnected) {
               event.preventDefault();
@@ -599,12 +600,12 @@ export function DistanceConnector({
           }}
         >
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-slate-950">
-              <MapPin className="w-5 h-5 text-rose-500" />
+            <DialogTitle className="flex items-center gap-2 text-foreground">
+              <MapPin className="w-5 h-5 shrink-0 text-[var(--glass-accent)]" />
 
               {tr("Location Settings")}
             </DialogTitle>
-            <DialogDescription className="text-slate-500">
+            <DialogDescription className="text-muted-foreground">
 
               {tr("Share your location region with your partner to calculate distances.")}
             </DialogDescription>
@@ -612,22 +613,22 @@ export function DistanceConnector({
 
           <div className="space-y-4 py-3">
             {userLocation?.location && (
-              <div className="p-3.5 bg-emerald-50/50 border border-emerald-100 rounded-xl flex gap-3">
-                <div className="p-2 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0 h-8 w-8">
-                  <Check className="w-4 h-4 text-emerald-600 stroke-[3]" />
+              <div className="tbo-glass-status tbo-glass-status-success tbo-location-baseline p-3.5 flex gap-3">
+                <div className="p-2 rounded-xl bg-card flex items-center justify-center flex-shrink-0 h-8 w-8">
+                  <Check className="w-4 h-4 stroke-[3]" />
                 </div>
-                <div className="min-w-0 break-words">
-                  <h4 className="tbo-label text-slate-900">
+                <div className="min-w-0 [overflow-wrap:anywhere]">
+                  <h4 className="tbo-label">
 
                     {tr("Active Location Baseline")}
                   </h4>
-                  <p className="tbo-body text-slate-950 mt-0.5">
+                  <p className="tbo-body mt-0.5">
                     {userLocation.location.city}
                     {userLocation.location.country
                       ? `, ${userLocation.location.country}`
                       : ""}
                   </p>
-                  <span className="tbo-caption inline-block bg-white border border-emerald-200 text-emerald-700 px-1.5 py-0.5 rounded mt-1.5">
+                  <span className="tbo-caption inline-block max-w-full bg-card border border-border px-1.5 py-0.5 rounded mt-1.5">
                     {userLocation.locationType === "live"
                       ? tr("📍 GPS LIVE Mode")
                       : tr("📌 Manual Entry")}
@@ -638,13 +639,14 @@ export function DistanceConnector({
 
             {/* GPS Link Option */}
             <div className="space-y-1.5">
-              <h4 className="tbo-label text-slate-900 flex items-center gap-1.5">
-                <Navigation className="w-3.5 h-3.5 text-purple-600" />
+              <h4 className="tbo-label text-foreground flex items-center gap-1.5">
+                <Navigation className="w-3.5 h-3.5 shrink-0 text-[var(--glass-accent)]" />
 
                 {tr("Automatic Device GPS")}
               </h4>
               <Button
-                className="w-full bg-slate-900 hover:bg-slate-800 text-white h-auto min-h-9 whitespace-normal py-2 rounded-xl shadow-sm"
+                variant="glass-primary"
+                className="w-full"
                 onClick={handleEnableLiveLocation}
                 disabled={isLoading}
               >
@@ -662,21 +664,21 @@ export function DistanceConnector({
 
             <div className="relative py-1">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-100" />
+                <div className="w-full border-t border-border" />
               </div>
-              <div className="tbo-caption relative flex justify-center text-slate-400">
-                <span className="bg-white px-2">{tr("Or")}</span>
+              <div className="tbo-caption relative flex justify-center text-muted-foreground">
+                <span className="bg-card px-2">{tr("Or")}</span>
               </div>
             </div>
 
             {/* Manual Entry Column */}
             <div className="space-y-2">
-              <h4 className="tbo-label text-slate-900 flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-sky-600" />
+              <h4 className="tbo-label text-foreground flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 shrink-0 text-[var(--glass-accent)]" />
 
                 {tr("Manual City Input")}
               </h4>
-              <div className="flex gap-2">
+              <div className="tbo-location-manual flex gap-2">
                 <Input
                   id="manual-city"
                   placeholder={tr("e.g., Abu Dhabi, UAE")}
@@ -684,7 +686,7 @@ export function DistanceConnector({
                   onChange={(e) =>
                     setManualCity(e.target.value)
                   }
-                  className="h-9 border-slate-200 focus:border-purple-500 rounded-xl"
+                  className="min-w-0 h-auto min-h-11"
                   onKeyDown={(e) => {
                     if (e.key === "Enter")
                       handleSetManualLocation();
@@ -694,7 +696,7 @@ export function DistanceConnector({
                   variant="outline"
                   onClick={handleSetManualLocation}
                   disabled={isSubmitting || !manualCity.trim()}
-                  className="h-auto min-h-9 px-4 py-2 border-slate-200 rounded-xl whitespace-normal"
+                  className="h-auto min-h-11 px-4 py-2 whitespace-normal"
                 >
                   {isSubmitting && <LoadingMark />}
                   {isSubmitting ? tr("Searching...") : tr("Set")}
@@ -706,7 +708,7 @@ export function DistanceConnector({
             {userLocation?.location && (
               <Button
                 variant="ghost"
-                className="w-full text-rose-600 hover:text-rose-700 hover:bg-rose-50 h-auto min-h-9 whitespace-normal py-2 rounded-xl border border-transparent hover:border-rose-100"
+                className="w-full text-[var(--glass-danger)] hover:text-[var(--glass-danger)] hover:bg-[var(--glass-danger-soft)] h-auto min-h-11 whitespace-normal py-2 rounded-xl"
                 onClick={handleRemoveLocation}
                 disabled={isLoading}
               >
@@ -715,7 +717,7 @@ export function DistanceConnector({
               </Button>
             )}
 
-            <p className="tbo-caption text-slate-400 text-center pt-1">
+            <p className="tbo-caption text-muted-foreground text-center pt-1">
 
               {tr("🔒 Private: Location records are shared only within your connected partnership.")}
             </p>

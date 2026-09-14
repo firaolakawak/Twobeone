@@ -6,6 +6,7 @@ import { Download, Heart, Plus, Share, Smartphone, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { getTranslations, type Language } from '../utils/i18n';
 import { isAppShellEnvironment } from '../utils/appShell';
+import '../styles/system-overlays.css';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -141,26 +142,26 @@ export function PWAInstallPrompt() {
       role="dialog"
       aria-modal="false"
       aria-labelledby="install-twobeone-title"
-      className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+5.75rem)] z-[220] mx-auto max-h-[calc(100dvh-env(safe-area-inset-bottom)-6.75rem)] max-w-md overflow-y-auto rounded-[1.75rem] animate-in slide-in-from-bottom-4 fade-in duration-300 md:bottom-6 md:left-auto md:right-6 md:mx-0 md:w-[25rem]"
+      className="tbo-install-prompt fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+5.75rem)] z-[220] mx-auto max-h-[calc(100dvh-env(safe-area-inset-bottom)-6.75rem)] max-w-md overflow-y-auto rounded-[1.75rem] motion-safe:animate-in slide-in-from-bottom-4 fade-in duration-300 md:bottom-6 md:left-auto md:right-6 md:mx-0 md:w-[25rem]"
     >
-      <div className="overflow-hidden rounded-[1.75rem] border border-rose-100 bg-white/95 shadow-[0_22px_60px_-18px_rgba(136,19,55,0.35)] backdrop-blur-xl">
-        <div className="relative bg-gradient-to-br from-rose-500 via-pink-500 to-rose-600 px-5 pb-4 pt-5 text-white">
+      <div className="tbo-glass-raised overflow-hidden">
+        <div className="relative bg-muted border-b border-border px-5 pb-4 pt-5 text-foreground">
           <button
             type="button"
             onClick={dismiss}
             aria-label={t.install.dismiss}
-            className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/15 transition-colors hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full bg-card border border-border transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <X className="h-4 w-4" />
           </button>
 
-          <div className="flex items-center gap-3 pr-9">
+          <div className="tbo-install-heading">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white shadow-lg">
               <Heart className="h-6 w-6 fill-rose-500 text-rose-500" />
             </div>
-            <div>
-              <h2 id="install-twobeone-title" className="tbo-dialog-title text-white">{t.install.title}</h2>
-              <p className="tbo-caption mt-0.5 text-white/85">{t.install.subtitle}</p>
+            <div className="min-w-0 [overflow-wrap:anywhere]">
+              <h2 id="install-twobeone-title" className="tbo-dialog-title text-foreground">{t.install.title}</h2>
+              <p className="tbo-caption mt-0.5 text-muted-foreground">{t.install.subtitle}</p>
             </div>
           </div>
         </div>
@@ -168,7 +169,7 @@ export function PWAInstallPrompt() {
         <div className="p-4">
           {platform === 'ios' ? (
             <div className="space-y-3" data-testid="ios-install-steps">
-              <div className="grid grid-cols-3 gap-2 text-center">
+              <div className="tbo-install-steps text-center">
                 <InstallStep number="1" icon={<Share className="h-4 w-4" />} label={t.install.iosStep1} />
                 <InstallStep number="2" icon={<Plus className="h-4 w-4" />} label={t.install.iosStep2} />
                 <InstallStep number="3" icon={<Smartphone className="h-4 w-4" />} label={t.install.iosStep3} />
@@ -183,7 +184,7 @@ export function PWAInstallPrompt() {
           ) : platform === 'native' && deferredPrompt ? (
             <div className="space-y-3">
               <p className="tbo-supporting text-muted-foreground">{t.install.subtitle}</p>
-              <Button type="button" onClick={install} className="tbo-action h-11 w-full rounded-xl bg-rose-600 text-white hover:bg-rose-700">
+              <Button type="button" variant="glass-primary" onClick={install} className="tbo-action w-full">
                 <Download className="mr-2 h-4 w-4" /> {t.install.installButton}
               </Button>
             </div>
@@ -209,11 +210,11 @@ export function PWAInstallPrompt() {
 function InstallStep({ number, icon, label }: { number: string; icon: ReactNode; label: string }) {
   const tr = useUiCopy(systemMessages);
   return (
-    <div className="rounded-2xl bg-rose-50 px-2 py-3">
-      <div className="mx-auto mb-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-white text-rose-600 shadow-sm">
+    <div className="tbo-glass-inset px-2 py-3">
+      <div className="tbo-glass-orb mx-auto mb-1.5 h-7 w-7">
         {icon}
       </div>
-      <p className="tbo-caption text-foreground"><span className="sr-only">{tr("Step")} {number}: </span>{label}</p>
+      <p className="tbo-caption text-foreground [overflow-wrap:anywhere]"><span className="sr-only">{tr("Step")} {number}: </span>{label}</p>
     </div>
   );
 }

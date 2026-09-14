@@ -82,65 +82,65 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
 
   const userResponses = responses?.user || [];
   const categories = [
-    { 
-      id: 'daily-life', 
+    {
+      id: 'daily-life',
       label: t.questions.categories.dailyLifeHabits,
       description: t.questions.categoryDescriptions.dailyLifeHabits,
     },
-    { 
-      id: 'intimacy', 
+    {
+      id: 'intimacy',
       label: t.questions.categories.intimacyLifestyle,
       description: t.questions.categoryDescriptions.intimacyLifestyle,
     },
-    { 
-      id: 'love-balance', 
+    {
+      id: 'love-balance',
       label: t.questions.categories.loveBalance,
       description: t.questions.categoryDescriptions.loveBalance,
     },
-    { 
-      id: 'dream-wedding', 
+    {
+      id: 'dream-wedding',
       label: t.questions.categories.dreamWeddingHome,
       description: t.questions.categoryDescriptions.dreamWeddingHome,
     },
-    { 
-      id: 'travel', 
+    {
+      id: 'travel',
       label: t.questions.categories.travelAdventure,
       description: t.questions.categoryDescriptions.travelAdventure,
     },
-    { 
-      id: 'boundaries', 
+    {
+      id: 'boundaries',
       label: t.questions.categories.relationshipBoundaries,
       description: t.questions.categoryDescriptions.relationshipBoundaries,
     },
-    { 
-      id: 'trust', 
+    {
+      id: 'trust',
       label: t.questions.categories.trustTruth,
       description: t.questions.categoryDescriptions.trustTruth,
     },
-    { 
-      id: 'kids-future', 
+    {
+      id: 'kids-future',
       label: t.questions.categories.kidsFuture,
       description: t.questions.categoryDescriptions.kidsFuture,
     },
-    { 
-      id: 'finance', 
+    {
+      id: 'finance',
       label: t.questions.categories.financeGoals,
       description: t.questions.categoryDescriptions.financeGoals,
     },
-    { 
-      id: 'family', 
+    {
+      id: 'family',
       label: t.questions.categories.familyRelations,
       description: t.questions.categoryDescriptions.familyRelations,
     },
-    { 
-      id: 'bible', 
+    {
+      id: 'bible',
       label: t.questions.categories.bibleConvictions,
       description: t.questions.categoryDescriptions.bibleConvictions,
     },
   ];
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,rgba(251,247,249,0.9)_0%,#fff_28%,#fff_100%)] pb-20">
+    <div className="min-h-screen bg-transparent pb-20">
       <div className="mx-auto max-w-5xl space-y-7 px-4 py-5 sm:px-6 sm:py-8">
         {onBack && (
           <BackButton label={tr("Back home")} onClick={onBack} />
@@ -148,10 +148,10 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
 
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-100 text-primary-700">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--glass-inset-surface)] text-[var(--glass-accent)]">
             <MessageCircleHeart className="h-6 w-6" />
           </div>
-          <p className="tbo-eyebrow mb-2 text-primary-600">{t.questions.title}</p>
+          <p className="tbo-eyebrow mb-2 text-[var(--glass-accent)]">{t.questions.title}</p>
           <h1 className="tbo-page-title text-foreground">
             {t.questions.selectCategory}
           </h1>
@@ -191,7 +191,7 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
                           {category.label}
                         </h3>
                         {!isLoadingProgress && progress.total > 0 && (
-                          <span className={`tbo-caption inline-flex flex-shrink-0 items-center gap-1 rounded-full border border-black/[0.05] bg-white/80 px-2.5 py-1 ${visual.text}`}>
+                          <span className={`tbo-caption inline-flex flex-shrink-0 items-center gap-1 rounded-full border border-black/[0.05] bg-[var(--glass-inset-surface)] px-2.5 py-1 ${visual.text}`}>
                             {isComplete && <Check className="h-3 w-3" strokeWidth={3} />}
                             {progress.percentage}%
                           </span>
@@ -201,7 +201,7 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
                         {category.description}
                       </p>
 
-                      <div className="mt-4 rounded-2xl border border-black/[0.045] bg-white/65 p-3" aria-label={tr('{category} progress', { category: category.label })}>
+                      <div className="mt-4 rounded-2xl border border-black/[0.045] tbo-glass-inset p-3" aria-label={tr('{category} progress', { category: category.label })}>
                         {isLoadingProgress ? (
                           <div className="tbo-caption flex items-center gap-2" role="status">
                             <LoadingMark />
@@ -217,7 +217,7 @@ export function CategorySelection({ onSelectCategory, onBack, responses }: Categ
                                 {progress.remaining === 0 ? tr("Complete") : tr('{count} remaining', { count: progress.remaining })}
                               </span>
                             </div>
-                            <div className="h-2.5 overflow-hidden rounded-full bg-white/90 ring-1 ring-black/[0.04]" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress.percentage}>
+                            <div className="h-2.5 overflow-hidden rounded-full bg-[var(--glass-inset-surface)] ring-1 ring-black/[0.04]" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress.percentage}>
                               <motion.div
                                 initial={prefersReducedMotion ? false : { width: 0 }}
                                 animate={{ width: `${progress.percentage}%` }}

@@ -55,8 +55,8 @@ const DEFAULT_MODULES = [
       },
     ],
     iconKey: "book",
-    accentColor: "var(--primary-600)",
-    accentBg: "var(--primary-50)",
+    accentColor: 'var(--glass-accent)',
+    accentBg: 'var(--glass-inset-surface)',
     accentBorder: "var(--primary-200)",
     duration: "1h 35m",
     isLocked: false,
@@ -208,8 +208,8 @@ const DEFAULT_MODULES = [
     ],
     iconKey: "home",
     accentColor: "var(--neutral-700)",
-    accentBg: "var(--neutral-100)",
-    accentBorder: "var(--neutral-200)",
+    accentBg: 'var(--glass-rim)',
+    accentBorder: 'var(--glass-rim)',
     duration: "1h 40m",
     isLocked: false,
   },
@@ -239,7 +239,7 @@ const ACCENT_PALETTES = [
     accentBorder: "#fef3c7",
   }, // Amber / Warning
   {
-    accentColor: "#475569",
+    accentColor: "var(--glass-muted)",
     accentBg: "#f8fafc",
     accentBorder: "#e2e8f0",
   }, // Slate / Neutral
@@ -338,7 +338,7 @@ function LinearProgress({
       style={{
         height: 6,
         borderRadius: "9999px",
-        backgroundColor: "#e2e8f0",
+        backgroundColor: "var(--glass-rim)",
         overflow: "hidden",
         width: "100%",
       }}
@@ -369,7 +369,6 @@ function ModuleCard({
 }) {
   const tr = useUiCopy(guidanceMessages);
   const { t } = useLanguage();
-  const [hovered, setHovered] = useState(false);
   const isComplete = progress === 100;
   const hasStarted = progress > 0 && !isComplete;
 
@@ -381,6 +380,7 @@ function ModuleCard({
 
   return (
     <div
+      className="tbo-glass tbo-glass-interactive"
       role="button"
       tabIndex={0}
       onClick={() =>
@@ -391,24 +391,11 @@ function ModuleCard({
         !module.isLocked &&
         onModuleClick(module.id)
       }
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       style={{
-        backgroundColor: "#ffffff",
         borderRadius: "12px",
-        border: `1px solid ${hovered && !module.isLocked ? module.accentColor : "#e2e8f0"}`,
-        boxShadow:
-          hovered && !module.isLocked
-            ? "0 4px 6px -1px rgba(0,0,0,0.1)"
-            : "0 1px 3px rgba(0,0,0,0.05)",
         padding: "16px",
         cursor: module.isLocked ? "not-allowed" : "pointer",
         opacity: module.isLocked ? 0.55 : 1,
-        transform:
-          hovered && !module.isLocked
-            ? "translateY(-2px)"
-            : "translateY(0)",
-        transition: "all 0.2s ease",
         display: "flex",
         flexDirection: "column",
         gap: "12px",
@@ -426,7 +413,7 @@ function ModuleCard({
             width: 48,
             height: 48,
             borderRadius: "8px",
-            backgroundColor: module.accentBg,
+            backgroundColor: "var(--glass-inset-surface)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -446,13 +433,13 @@ function ModuleCard({
               style={{
                 width: 22,
                 height: 22,
-                color: "#94a3b8",
+                color: "var(--glass-muted)",
               }}
             />
           ) : (
             <ModuleIcon
               iconKey={module.iconKey}
-              color={module.accentColor}
+              color={"var(--glass-accent)"}
             />
           )}
         </div>
@@ -469,7 +456,7 @@ function ModuleCard({
             <p className="tbo-body"
               style={{
 
-                color: "#0f172a",
+                color: "var(--glass-foreground)",
                 margin: 0,
 
               }}
@@ -479,8 +466,8 @@ function ModuleCard({
             <span className="tbo-caption"
               style={{
 
-                color: module.accentColor,
-                backgroundColor: module.accentBg,
+                color: "var(--glass-accent)",
+                backgroundColor: "var(--glass-inset-surface)",
                 borderRadius: "9999px",
                 padding: "2px 10px",
                 flexShrink: 0,
@@ -492,7 +479,7 @@ function ModuleCard({
           <p className="tbo-supporting"
             style={{
 
-              color: module.accentColor,
+              color: "var(--glass-accent)",
 
               margin: "2px 0 0 0",
             }}
@@ -505,18 +492,16 @@ function ModuleCard({
       <div
         style={{
           padding: "12px",
-          backgroundColor: module.accentBg,
+          backgroundColor: "var(--glass-inset-surface)",
           borderRadius: "8px",
-          borderLeft: `4px solid ${module.accentColor}`,
+          borderLeft: `4px solid ${"var(--glass-accent)"}`,
         }}
       >
-        <p
+        <p className="tbo-supporting"
           style={{
-            fontSize: "13px",
-            color: "#334155",
+            color: "var(--glass-foreground)",
             fontStyle: "italic",
             margin: "0 0 4px 0",
-            lineHeight: 1.5,
           }}
         >
           {module.scripture}
@@ -524,7 +509,7 @@ function ModuleCard({
         <p className="tbo-caption"
           style={{
 
-            color: module.accentColor,
+            color: "var(--glass-accent)",
 
             margin: 0,
           }}
@@ -536,7 +521,7 @@ function ModuleCard({
       <p className="tbo-supporting"
         style={{
 
-          color: "#475569",
+          color: "var(--glass-muted)",
 
           margin: 0,
         }}
@@ -565,14 +550,14 @@ function ModuleCard({
                 width: 6,
                 height: 6,
                 borderRadius: "50%",
-                backgroundColor: module.accentColor,
+                backgroundColor: "var(--glass-accent)",
                 flexShrink: 0,
               }}
             />
             <span className="tbo-supporting"
               style={{
 
-                color: "#475569",
+                color: "var(--glass-muted)",
                 flex: 1,
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -584,7 +569,7 @@ function ModuleCard({
             <span className="tbo-caption"
               style={{
 
-                color: "#94a3b8",
+                color: "var(--glass-muted)",
                 flexShrink: 0,
               }}
             >
@@ -596,7 +581,7 @@ function ModuleCard({
           <span className="tbo-caption"
             style={{
 
-              color: "#94a3b8",
+              color: "var(--glass-muted)",
               paddingLeft: 14,
             }}
           >
@@ -623,14 +608,14 @@ function ModuleCard({
             }}
           >
             <span className="tbo-caption"
-              style={{  color: "#64748b" }}
+              style={{  color: "var(--glass-muted)" }}
             >
               {tr("{count} lessons · {duration}", { count: module.lessons?.length || 0, duration: guidanceLabel(tr, module.duration) })}
             </span>
             <span className="tbo-caption"
               style={{
 
-                color: isComplete ? "#16a34a" : "#64748b",
+                color: isComplete ? "#16a34a" : "var(--glass-muted)",
 
               }}
             >
@@ -643,7 +628,7 @@ function ModuleCard({
           </div>
           <LinearProgress
             value={progress}
-            color={isComplete ? "#16a34a" : module.accentColor}
+            color={isComplete ? "#16a34a" : "var(--glass-accent)"}
           />
         </div>
 
@@ -653,7 +638,7 @@ function ModuleCard({
               display: "flex",
               alignItems: "center",
               gap: 4,
-              backgroundColor: module.accentColor,
+              background: "var(--glass-primary-paint)",
               color: "#ffffff",
               borderRadius: "9999px",
               padding: "6px 14px",
@@ -836,13 +821,11 @@ export function PreMarriageHub({
       )}
 
       {/* Hero Banner */}
-      <div
+      <div className="tbo-glass-raised"
         style={{
-          background:
-            "linear-gradient(135deg, #be123c 0%, #f43f5e 100%)",
           borderRadius: "16px",
           padding: "24px",
-          color: "#ffffff",
+          color: "var(--glass-foreground)",
         }}
       >
         <div
@@ -858,7 +841,7 @@ export function PreMarriageHub({
               width: 44,
               height: 44,
               borderRadius: "8px",
-              backgroundColor: "rgba(255,255,255,0.2)",
+              backgroundColor: "var(--glass-inset-surface)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -868,7 +851,7 @@ export function PreMarriageHub({
               style={{
                 width: 24,
                 height: 24,
-                color: "#ffffff",
+                color: "var(--glass-foreground)",
               }}
             />
           </div>
@@ -876,14 +859,14 @@ export function PreMarriageHub({
             <h1 className="tbo-page-title"
               style={{
 
-                color: "#ffffff",
+                color: "var(--glass-foreground)",
                 margin: 0,
               }}
             >{tr("Pre-Marriage Guidance")} </h1>
             <p className="tbo-supporting"
               style={{
 
-                color: "rgba(255,255,255,0.85)",
+                color: "var(--glass-muted)",
                 margin: "2px 0 0 0",
               }}
             >{tr("Prepare for a Christ-centered marriage")} </p>
@@ -892,7 +875,7 @@ export function PreMarriageHub({
 
         <div
           style={{
-            backgroundColor: "rgba(255,255,255,0.15)",
+            backgroundColor: "var(--glass-inset-surface)",
             borderRadius: "8px",
             padding: "12px",
           }}
@@ -908,14 +891,14 @@ export function PreMarriageHub({
             <span className="tbo-label"
               style={{
 
-                color: "rgba(255,255,255,0.9)",
+                color: "var(--glass-muted)",
 
               }}
             >{tr("Overall Progress")} </span>
             <span className="tbo-card-title"
               style={{
 
-                color: "#ffffff",
+                color: "var(--glass-foreground)",
               }}
             >
               {isLoadingProgress ? "–" : `${overallProgress}%`}
@@ -925,7 +908,7 @@ export function PreMarriageHub({
             style={{
               height: 8,
               borderRadius: "9999px",
-              backgroundColor: "rgba(255,255,255,0.3)",
+              backgroundColor: "var(--glass-inset-surface)",
               overflow: "hidden",
             }}
           >
@@ -933,7 +916,7 @@ export function PreMarriageHub({
               style={{
                 height: "100%",
                 width: `${overallProgress}%`,
-                backgroundColor: "#ffffff",
+                backgroundColor: "var(--glass-accent)",
                 transition: "width 0.6s ease",
               }}
             />
@@ -941,7 +924,7 @@ export function PreMarriageHub({
           <p className="tbo-caption"
             style={{
 
-              color: "rgba(255,255,255,0.75)",
+              color: "var(--glass-muted)",
               margin: "8px 0 0 0",
             }}
           >
@@ -955,6 +938,7 @@ export function PreMarriageHub({
       {/* Marriage Readiness CTA */}
       {onViewReadiness && (
         <button
+          className="tbo-glass-action"
           onClick={onViewReadiness}
           style={{
             display: "flex",
@@ -963,8 +947,6 @@ export function PreMarriageHub({
             width: "100%",
             padding: "16px 20px",
             borderRadius: "14px",
-            border: "2px solid var(--primary)",
-            background: "color-mix(in srgb, var(--primary) 8%, var(--background))",
             cursor: "pointer",
             textAlign: "left",
           }}
@@ -989,14 +971,14 @@ export function PreMarriageHub({
         <h2 className="tbo-section-title"
           style={{
 
-            color: "#1e293b",
+            color: "var(--glass-foreground)",
             margin: "0 0 2px 0",
           }}
         >{tr("Your Learning Path")} </h2>
         <p className="tbo-supporting"
           style={{
 
-            color: "#64748b",
+            color: "var(--glass-muted)",
             margin: 0,
           }}
         >
@@ -1051,22 +1033,22 @@ export function PreMarriageHub({
           style={{
             textAlign: "center",
             padding: "40px 16px",
-            backgroundColor: "#f8fafc",
+            backgroundColor: "var(--glass-solid)",
             borderRadius: "12px",
-            border: "1px dashed #cbd5e1",
+            border: "1px dashed var(--glass-border)",
           }}
         >
           <p className="tbo-body"
             style={{
 
-              color: "#334155",
+              color: "var(--glass-foreground)",
               margin: "0 0 8px 0",
             }}
           >{tr("No modules yet in this language configuration")} </p>
           <p className="tbo-supporting"
             style={{
 
-              color: "#64748b",
+              color: "var(--glass-muted)",
               margin: 0,
             }}
           >{tr("Upload this language dataset inside Admin → Learning Modules → Import")} </p>

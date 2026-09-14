@@ -5,6 +5,7 @@
 @import './default_theme.css';
 @import './globals.css';
 @import './glass.css';
+@import './glass-controls.css';
 
 @import './typography.css';
 @import './navigation.css';

@@ -136,7 +136,7 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
 
   return (
     <main
-      className={`${styles.screen} relative isolate flex flex-col bg-white text-slate-950`}
+      className={`${styles.screen} tbo-glass-app relative isolate flex flex-col text-foreground`}
     >
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-rose-200/55 blur-3xl" />
@@ -145,7 +145,7 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
 
       <header className="relative z-10 mx-auto flex flex-wrap min-h-12 w-full max-w-md shrink-0 items-center justify-between gap-3">
         <div className="flex items-center gap-2" aria-label="TwoBeOne">
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-rose-500 to-rose-600 shadow-lg shadow-rose-200">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-rose-500 to-rose-600 ">
             <Heart className="h-5 w-5 fill-white text-white" aria-hidden="true" />
           </span>
           <span className="text-base font-extrabold tracking-tight">TwoBeOne</span>
@@ -154,7 +154,7 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
           <button
             type="button"
             onClick={handleSkip}
-            className="min-h-11 rounded-full px-4 tbo-label text-slate-500 transition-colors active:bg-slate-100"
+            className="min-h-11 rounded-full px-4 tbo-label text-muted-foreground transition-colors active:bg-slate-100"
           >
             {copy.skip}
           </button>
@@ -189,7 +189,7 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
               >
                 <div className={`${styles.details} grid gap-2.5`}>
                   {[BookOpen, Heart, MessageCircleHeart].map((Icon, index) => (
-                    <div key={copy.features[index]} className="flex min-w-0 items-center gap-3 rounded-2xl border border-slate-100 bg-white/80 px-4 py-2.5 shadow-sm">
+                    <div key={copy.features[index]} className="flex min-w-0 items-center gap-3 tbo-glass-inset rounded-2xl px-4 py-2.5 shadow-sm">
                       <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-rose-50 text-rose-600">
                         <Icon className="h-4.5 w-4.5" aria-hidden="true" />
                       </span>
@@ -224,7 +224,7 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
                 body={copy.privateBody}
               >
                 <div className={styles.details}>
-                  <p className="mb-2.5 flex items-center gap-2 tbo-eyebrow uppercase text-slate-500">
+                  <p className="mb-2.5 flex items-center gap-2 tbo-eyebrow uppercase text-muted-foreground">
                     <Languages className="h-4 w-4" aria-hidden="true" />
                     {copy.language}
                   </p>
@@ -240,8 +240,8 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
                           onClick={() => setLanguage(option.code)}
                           className={`min-h-14 min-w-0 rounded-2xl border px-2 py-2 text-center transition-all ${
                             selected
-                              ? "border-rose-500 bg-rose-50 text-rose-700 shadow-sm"
-                              : "border-slate-200 bg-white text-slate-600 active:bg-slate-50"
+                              ? "border-primary bg-accent text-accent-foreground shadow-sm"
+                              : "border-border bg-card text-muted-foreground active:bg-slate-50"
                           }`}
                         >
                           <span className="block tbo-action">{option.shortLabel}</span>
@@ -262,7 +262,7 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
           {Array.from({ length: totalSteps }).map((_, index) => (
             <span
               key={index}
-              className={`h-2 rounded-full transition-all duration-200 ${index === step ? "w-7 bg-rose-500" : "w-2 bg-slate-200"}`}
+              className={`h-2 rounded-full transition-all duration-200 ${index === step ? "w-7 bg-primary" : "w-2 bg-border"}`}
             />
           ))}
         </div>
@@ -275,7 +275,7 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
             <button
               type="button"
               onClick={() => goToStep(step + 1)}
-              className="flex min-h-14 min-w-0 flex-[1_1_9rem] items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-rose-500 to-rose-600 px-5 py-3 tbo-action text-white shadow-lg shadow-rose-200 transition-transform active:scale-[0.98]"
+              className="flex min-h-14 min-w-0 flex-[1_1_9rem] items-center justify-center gap-2 rounded-2xl tbo-glass-primary px-5 py-3 tbo-action text-white  transition-transform active:scale-[0.98]"
             >
               {copy.next}
               <ArrowRight className="h-5 w-5 shrink-0" />
@@ -286,7 +286,7 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
             <button
               type="button"
               onClick={() => finish("signup")}
-              className="min-h-14 min-w-0 rounded-2xl bg-gradient-to-r from-rose-500 to-rose-600 px-5 py-3 tbo-action text-white shadow-lg shadow-rose-200 active:scale-[0.98]"
+              className="min-h-14 min-w-0 rounded-2xl tbo-glass-primary px-5 py-3 tbo-action text-white  active:scale-[0.98]"
             >
               {copy.create}
             </button>
@@ -324,10 +324,10 @@ function OnboardingPage({
       <div className={`${styles.artwork} ${compact ? styles.compactArtwork : ""}`}>{artwork}</div>
       <div className="min-w-0">
         <p className="mb-2 tbo-eyebrow uppercase text-rose-500">{eyebrow}</p>
-        <h1 className="m-0 tbo-page-title text-slate-950">
+        <h1 className="m-0 tbo-page-title text-foreground">
           {title}
         </h1>
-        <p className="mt-3 tbo-body text-slate-500">{body}</p>
+        <p className="mt-3 tbo-body text-muted-foreground">{body}</p>
         {children}
       </div>
     </div>

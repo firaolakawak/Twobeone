@@ -2,8 +2,8 @@
 :root {
   --glass-canvas: #f4eefb;
   --glass-solid: #faf7ff;
-  --glass-foreground: #292044;
-  --glass-muted: #655877;
+  --glass-foreground: #192b78;
+  --glass-muted: #5862a2;
   --glass-accent: #6d35bd;
   --glass-rose: #b62e72;
   --glass-border: rgb(255 255 255 / .88);
@@ -23,9 +23,26 @@
   --glass-journey-muted: #5862a2;
   --glass-journey-pink: #d72d9f;
   --glass-journey-solid: #f8f2ff;
+  --glass-field: #fcfaff;
+  --glass-field-border: #9b84b7;
+  --glass-divider: rgb(117 92 161 / .24);
+  --glass-overlay: rgb(38 25 64 / .42);
+  --glass-primary-solid: #7038b5;
+  --glass-primary-hover: #5d299d;
+  --glass-primary-ink: #ffffff;
+  --glass-selected: #eadcfb;
+  --glass-selected-ink: #573091;
+  --glass-danger: #b42337;
+  --glass-danger-ink: #ffffff;
+  --glass-danger-soft: #ffedf1;
+  --glass-success: #15704a;
+  --glass-success-soft: #e7f7ee;
+  --glass-warning: #86520c;
+  --glass-warning-soft: #fff5dc;
 }
 
-.dark {
+.dark,
+:root[data-theme="dark"] {
   --glass-canvas: #151120;
   --glass-solid: #282035;
   --glass-foreground: #f5efff;
@@ -46,12 +63,76 @@
   --glass-journey-muted: #c4b9e4;
   --glass-journey-pink: #ff9ad8;
   --glass-journey-solid: #30223f;
+  --glass-field: #281e36;
+  --glass-field-border: #85709e;
+  --glass-divider: rgb(209 184 242 / .26);
+  --glass-overlay: rgb(9 5 17 / .68);
+  --glass-primary-solid: #cba7ff;
+  --glass-primary-hover: #dec5ff;
+  --glass-primary-ink: #2e1747;
+  --glass-selected: #49345f;
+  --glass-selected-ink: #e4cfff;
+  --glass-danger: #ffb1be;
+  --glass-danger-ink: #381320;
+  --glass-danger-soft: #482333;
+  --glass-success: #a0e6bf;
+  --glass-success-soft: #193d32;
+  --glass-warning: #f7d48f;
+  --glass-warning-soft: #42331e;
 }
 
+/* The active app shares one semantic palette, including portals outside its shell. */
+:root,
+.dark,
+:root[data-theme="dark"] {
+  --background: var(--glass-canvas);
+  --foreground: var(--glass-foreground);
+  --card: var(--glass-solid);
+  --card-foreground: var(--glass-foreground);
+  --popover: var(--glass-solid);
+  --popover-foreground: var(--glass-foreground);
+  --primary: var(--glass-primary-solid);
+  --primary-foreground: var(--glass-primary-ink);
+  --destructive: var(--glass-danger);
+  --destructive-foreground: var(--glass-danger-ink);
+  --secondary: var(--glass-selected);
+  --secondary-foreground: var(--glass-selected-ink);
+  --muted: var(--glass-inset-surface);
+  --muted-foreground: var(--glass-muted);
+  --accent: var(--glass-selected);
+  --accent-foreground: var(--glass-selected-ink);
+  --border: var(--glass-divider);
+  --input: var(--glass-field-border);
+  --input-background: var(--glass-field);
+  --switch-background: var(--glass-field-border);
+  --ring: var(--glass-accent);
+  --sidebar: var(--glass-solid);
+  --sidebar-foreground: var(--glass-foreground);
+  --sidebar-primary: var(--glass-primary-solid);
+  --sidebar-primary-foreground: var(--glass-primary-ink);
+  --sidebar-accent: var(--glass-selected);
+  --sidebar-accent-foreground: var(--glass-selected-ink);
+  --sidebar-border: var(--glass-divider);
+  --sidebar-ring: var(--glass-accent);
+}
+
+body,
 .tbo-glass-app {
   background-color: var(--glass-canvas);
   background-image: var(--glass-ambient);
 }
+
+.tbo-glass-page { min-width: 0; color: var(--glass-foreground); background: transparent; }
+
+.tbo-glass-status {
+  border: 1px solid var(--glass-divider);
+  border-radius: 1rem;
+  color: var(--glass-foreground);
+  background: var(--glass-solid);
+}
+.tbo-glass-status-danger { color: var(--glass-danger); background: var(--glass-danger-soft); }
+.tbo-glass-status-success { color: var(--glass-success); background: var(--glass-success-soft); }
+.tbo-glass-status-warning { color: var(--glass-warning); background: var(--glass-warning-soft); }
 
 .tbo-glass,
 .tbo-glass-raised,
@@ -186,6 +267,12 @@
 }
 
 @media (prefers-reduced-transparency: reduce) {
+  :root, .dark, :root[data-theme="dark"] {
+    --glass-surface: var(--glass-solid);
+    --glass-raised-surface: var(--glass-solid);
+    --glass-inset-surface: var(--glass-solid);
+    --glass-journey-surface: var(--glass-journey-solid);
+  }
   .tbo-glass,
   .tbo-glass-raised,
   .tbo-glass-inset,
@@ -194,17 +281,54 @@
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
-  .tbo-glass-app { background-image: none; }
+  body, .tbo-glass-app { background-image: none; }
 }
 
 @media (forced-colors: active) {
-  .tbo-glass-app { background: Canvas; }
+  :root, .dark, :root[data-theme="dark"] {
+    --glass-canvas: Canvas;
+    --glass-solid: Canvas;
+    --glass-foreground: CanvasText;
+    --glass-muted: CanvasText;
+    --glass-accent: LinkText;
+    --glass-rose: LinkText;
+    --glass-border: CanvasText;
+    --glass-rim: transparent;
+    --glass-divider: CanvasText;
+    --glass-surface: Canvas;
+    --glass-raised-surface: Canvas;
+    --glass-inset-surface: Canvas;
+    --glass-field: Field;
+    --glass-field-border: FieldText;
+    --glass-selected: Highlight;
+    --glass-selected-ink: HighlightText;
+    --glass-primary-solid: ButtonFace;
+    --glass-primary-hover: Highlight;
+    --glass-primary-ink: ButtonText;
+    --glass-primary-paint: ButtonFace;
+    --glass-journey-surface: Canvas;
+    --glass-journey-solid: Canvas;
+    --glass-journey-ink: CanvasText;
+    --glass-journey-muted: CanvasText;
+    --glass-journey-pink: LinkText;
+    --glass-shadow: none;
+    --glass-shadow-raised: none;
+    --glass-danger: CanvasText;
+    --glass-danger-ink: Canvas;
+    --glass-success: CanvasText;
+    --glass-warning: CanvasText;
+    --glass-danger-soft: Canvas;
+    --glass-success-soft: Canvas;
+    --glass-warning-soft: Canvas;
+  }
+  body, .tbo-glass-app { background: Canvas; }
   .tbo-glass,
   .tbo-glass-raised,
   .tbo-glass-inset,
   .tbo-glass-action,
   .tbo-glass-primary,
   .tbo-glass-orb,
+  .tbo-glass-status,
   .tbo-app-header::before {
     background: Canvas;
     color: CanvasText;

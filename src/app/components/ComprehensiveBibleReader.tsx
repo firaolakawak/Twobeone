@@ -91,8 +91,8 @@ const HIGHLIGHT_COLORS = [
   { name: 'Yellow', class: 'bg-warning-50', value: 'yellow' },
   { name: 'Green', class: 'bg-success-50', value: 'green' },
   { name: 'Blue', class: 'bg-sky-100', value: 'blue' },
-  { name: 'Pink', class: 'bg-primary-200', value: 'pink' },
-  { name: 'Purple', class: 'bg-primary-200', value: 'purple' },
+  { name: 'Pink', class: 'bg-[var(--glass-inset-surface)]', value: 'pink' },
+  { name: 'Purple', class: 'bg-[var(--glass-inset-surface)]', value: 'purple' },
 ];
 
 export function ComprehensiveBibleReader({
@@ -297,8 +297,8 @@ export function ComprehensiveBibleReader({
       yellow: 'bg-warning-50',
       green: 'bg-success-50',
       blue: 'bg-sky-100',
-      pink: 'bg-primary-200',
-      purple: 'bg-primary-200'
+      pink: 'bg-[var(--glass-inset-surface)]',
+      purple: 'bg-[var(--glass-inset-surface)]'
     };
 
     return colorMap[highlight.color] || '';
@@ -322,7 +322,7 @@ export function ComprehensiveBibleReader({
         </DialogDescription>
 
         {/* Header */}
-        <div className="shrink-0" style={{ background: 'linear-gradient(to right, var(--primary), var(--secondary))', color: 'var(--primary-foreground)', padding: 'var(--spacing-4) var(--spacing-6)' }}>
+        <div className="shrink-0 bg-[var(--glass-inset-surface)]" style={{ color: 'var(--glass-foreground)', padding: 'var(--spacing-4) var(--spacing-6)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 'var(--spacing-2)', marginBottom: 'var(--spacing-2)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
               <BookOpen style={{ width: '1.5rem', height: '1.5rem', flexShrink: 0 }} />
@@ -332,13 +332,13 @@ export function ComprehensiveBibleReader({
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
               {/* Language toggle */}
-              <div role="group" aria-label={tr('Reading language')} style={{ display: 'flex', background: 'rgba(255,255,255,0.15)', borderRadius: 'var(--radius-full)', padding: '2px' }}>
+              <div role="group" aria-label={tr('Reading language')} style={{ display: 'flex', background: 'var(--glass-inset-surface)', borderRadius: 'var(--radius-full)', padding: '2px' }}>
                 <button className="tbo-action"
                   onClick={() => setReaderLanguage('am')}
                   lang="am" aria-pressed={readerLanguage === 'am'}
                   style={{
-                    background: readerLanguage === 'am' ? 'rgba(255,255,255,0.9)' : 'transparent',
-                    color: readerLanguage === 'am' ? 'var(--primary)' : 'rgba(255,255,255,0.85)',
+                    background: readerLanguage === 'am' ? 'var(--glass-solid)' : 'transparent',
+                    color: readerLanguage === 'am' ? 'var(--glass-accent)' : 'var(--glass-muted)',
                     borderRadius: 'var(--radius-full)',
 
                     padding: 'var(--spacing-1) var(--spacing-2)',
@@ -354,8 +354,8 @@ export function ComprehensiveBibleReader({
                   onClick={() => setReaderLanguage('en')}
                   lang="en" aria-pressed={readerLanguage === 'en'}
                   style={{
-                    background: readerLanguage === 'en' ? 'rgba(255,255,255,0.9)' : 'transparent',
-                    color: readerLanguage === 'en' ? 'var(--primary)' : 'rgba(255,255,255,0.85)',
+                    background: readerLanguage === 'en' ? 'var(--glass-solid)' : 'transparent',
+                    color: readerLanguage === 'en' ? 'var(--glass-accent)' : 'var(--glass-muted)',
                     borderRadius: 'var(--radius-full)',
 
                     padding: 'var(--spacing-1) var(--spacing-2)',
@@ -373,7 +373,7 @@ export function ComprehensiveBibleReader({
                 size="icon"
                 onClick={onClose}
                 aria-label={tr('Close')}
-                className="tbo-action text-white hover:bg-white/20"
+                className="tbo-action text-[var(--glass-accent)] hover:bg-[var(--glass-inset-surface)]"
               >
                 <X className="w-5 h-5" />
               </Button>
@@ -385,7 +385,7 @@ export function ComprehensiveBibleReader({
             <Button
               variant="ghost"
               onClick={() => setShowBookSelector(!showBookSelector)}
-              className="tbo-action h-auto min-h-9 whitespace-normal text-white hover:bg-white/20 border border-white/30"
+              className="tbo-action h-auto min-h-9 whitespace-normal text-[var(--glass-accent)] hover:bg-[var(--glass-inset-surface)] border border-[var(--glass-border)]"
             >
               <Menu className="w-4 h-4 mr-2" />
               <span lang={readerLanguage}>{displayBook(selectedBook)}</span>
@@ -393,7 +393,7 @@ export function ComprehensiveBibleReader({
             <Button
               variant="ghost"
               onClick={() => setShowChapterSelector(!showChapterSelector)}
-              className="tbo-action h-auto min-h-9 whitespace-normal text-white hover:bg-white/20 border border-white/30"
+              className="tbo-action h-auto min-h-9 whitespace-normal text-[var(--glass-accent)] hover:bg-[var(--glass-inset-surface)] border border-[var(--glass-border)]"
             >
               {tr('Chapter {chapter}', { chapter: selectedChapter })}
             </Button>
@@ -405,7 +405,7 @@ export function ComprehensiveBibleReader({
                 size="icon"
                 onClick={handlePreviousChapter}
                 aria-label={tr('Previous chapter')}
-                className="tbo-action text-white hover:bg-white/20"
+                className="tbo-action text-[var(--glass-accent)] hover:bg-[var(--glass-inset-surface)]"
               >
                 <ChevronLeft className="w-5 h-5" />
               </Button>
@@ -414,7 +414,7 @@ export function ComprehensiveBibleReader({
                 size="icon"
                 onClick={handleNextChapter}
                 aria-label={tr('Next chapter')}
-                className="tbo-action text-white hover:bg-white/20"
+                className="tbo-action text-[var(--glass-accent)] hover:bg-[var(--glass-inset-surface)]"
               >
                 <ChevronRight className="w-5 h-5" />
               </Button>
@@ -449,7 +449,7 @@ export function ComprehensiveBibleReader({
                   </button>
                 )) : Object.entries(BIBLE_BOOKS).map(([testament, books]) => (
                   <div key={testament}>
-                    <h3 className="tbo-card-title" style={{  color: 'var(--primary)', marginBottom: 'var(--spacing-2)',  }}>
+                    <h3 className="tbo-card-title" style={{  color: 'var(--glass-accent)', marginBottom: 'var(--spacing-2)',  }}>
                       {tr(testament)}
                     </h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -465,8 +465,8 @@ export function ComprehensiveBibleReader({
                             cursor: 'pointer',
 
                             fontFamily: 'inherit',
-                            background: book === selectedBook ? 'var(--primary-50, #f5f3ff)' : 'transparent',
-                            color: book === selectedBook ? 'var(--primary)' : 'var(--foreground)',
+                            background: book === selectedBook ? 'var(--glass-inset-surface)' : 'transparent',
+                            color: book === selectedBook ? 'var(--glass-accent)' : 'var(--foreground)',
 
                             transition: 'background 0.1s',
                           }}
@@ -485,8 +485,8 @@ export function ComprehensiveBibleReader({
         {/* Chapter Selector */}
         {showChapterSelector && (
           <div className="absolute top-24 left-6 right-6 bg-card rounded-lg shadow-2xl border z-50 max-h-[60vh] overflow-hidden">
-            <div className="p-4 border-b bg-primary-50">
-              <h3 className="tbo-card-title" style={{  color: 'var(--primary)',  }}>
+            <div className="p-4 border-b bg-[var(--glass-inset-surface)]">
+              <h3 className="tbo-card-title" style={{  color: 'var(--glass-accent)',  }}>
                 {tr('Select Chapter — {book}', { book: displayBook(selectedBook) })}
               </h3>
             </div>
@@ -500,7 +500,7 @@ export function ComprehensiveBibleReader({
                       className={`tbo-action px-4 py-2 rounded-lg transition-colors ${
                         chapter === selectedChapter
                           ? "bg-primary-600 text-white "
-                          : 'bg-muted hover:bg-primary-50'
+                          : 'bg-muted hover:bg-[var(--glass-inset-surface)]'
                       }`}
                     >
                       {chapter}
@@ -513,7 +513,7 @@ export function ComprehensiveBibleReader({
         )}
 
         {language === 'om' && (
-          <p className="tbo-supporting shrink-0 border-b bg-primary-50 px-6 py-3">
+          <p className="tbo-supporting shrink-0 border-b bg-[var(--glass-inset-surface)] px-6 py-3">
             {tr(readerLanguage === 'am'
               ? 'Afaan Oromo Scripture is not available in this app yet. You have selected the Amharic reading.'
               : 'Afaan Oromo Scripture is not available in this app yet. The reading is shown in English; you can also choose Amharic.')}
@@ -522,7 +522,7 @@ export function ComprehensiveBibleReader({
 
         {/* Bible download progress banner */}
         {bibleDownloading && (
-          <div style={{ background: 'var(--primary)', color: 'var(--primary-foreground)', padding: 'var(--spacing-2) var(--spacing-6)', display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', fontSize: 'var(--text-sm)' }}>
+          <div style={{ background: 'var(--glass-inset-surface)', color: 'var(--glass-foreground)', padding: 'var(--spacing-2) var(--spacing-6)', display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)', fontSize: 'var(--text-sm)' }}>
             <LoadingMark size={20} />
             <span>{tr('Downloading the Amharic Bible for the first time…')}</span>
           </div>
@@ -552,7 +552,7 @@ export function ComprehensiveBibleReader({
                       <div
                         className={`p-4 rounded-lg transition-all cursor-pointer ${
                           isSelected
-                            ? 'bg-primary-50 border-2 border-primary-300'
+                            ? 'bg-[var(--glass-inset-surface)] border-2 border-primary-300'
                             : highlightClass
                             ? `${highlightClass} border border-border`
                             : 'hover:bg-muted'
@@ -560,7 +560,7 @@ export function ComprehensiveBibleReader({
                         onClick={() => setSelectedVerse(isSelected ? null : v.number)}
                       >
                         <div className="flex gap-3">
-                          <span className="tbo-label flex-shrink-0 w-7 h-7 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center">
+                          <span className="tbo-label flex-shrink-0 w-7 h-7 bg-[var(--glass-inset-surface)] text-[var(--glass-accent)] rounded-full flex items-center justify-center">
                             {v.number}
                           </span>
                           <p lang={readerLanguage} className="min-w-0 flex-1 text-foreground leading-relaxed">
@@ -625,7 +625,7 @@ export function ComprehensiveBibleReader({
                                   handleHighlightVerse(v.number, v.text);
                                 }}
                                 disabled={!!pendingAction || !onSaveHighlight}
-                                className="tbo-action h-auto min-h-9 flex-1 whitespace-normal bg-primary-600 hover:bg-primary-700"
+                                className="tbo-action h-auto min-h-9 flex-1 whitespace-normal"
                               >
                                 {pendingAction === 'highlight' ? <LoadingMark /> : <Highlighter className="w-4 h-4 mr-2 shrink-0" />}
                                 {tr('Save Highlight')}
@@ -638,7 +638,7 @@ export function ComprehensiveBibleReader({
                                   handleShareWithPartner(v.number, v.text);
                                 }}
                                 disabled={!!pendingAction || !onShareWithPartner}
-                                className="tbo-action h-auto min-h-9 flex-1 whitespace-normal border-primary-300 text-primary-700 hover:bg-primary-50"
+                                className="tbo-action h-auto min-h-9 flex-1 whitespace-normal border-primary-300 text-[var(--glass-accent)] hover:bg-[var(--glass-inset-surface)]"
                               >
                                 {pendingAction === 'share' ? <LoadingMark /> : <Share2 className="w-4 h-4 mr-2 shrink-0" />}
                                 {tr('Share')}

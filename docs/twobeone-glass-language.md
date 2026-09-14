@@ -1,10 +1,10 @@
 # TwoBeOne Glass Language
 
-Version 1 — 14 September 2026
+Version 2 — App-wide adoption, 14 September 2026
 
 The later [dashboard reference restructure](dashboard-reference-restructure.md) replaces the initial dashboard arrangement with the user's supplied growth panel, four feature tiles, and Scripture banner, while retaining the original stage names and progression.
 
-The glass material system translates the lavender, rose, luminous edges, and frosted panels of the supplied reference into the existing TwoBeOne interface. Its initial application covers the authenticated web shell, header controls, bottom navigation, and couple dashboard. Other public, authentication, administration, and feature interiors retain their existing surfaces until intentionally migrated.
+The glass material system translates the lavender, rose, luminous edges, and frosted panels of the supplied reference into the existing TwoBeOne interface. Following the user's app-wide request, it now covers the active web application's public, authentication, couple, Profile, administration, and system surfaces. The active entry is `src/main.tsx` → `src/app/App.tsx`; the installed PWA and URL wrapper use the same web UI.
 
 Review the implemented [light dashboard](glass-dashboard-light.png) and [dark dashboard](glass-dashboard-dark.png), captured with sample data.
 
@@ -27,7 +27,11 @@ The executable source is [glass.css](../src/styles/glass.css), imported by the a
 | Border / radius / blur | `--glass-border` / `--glass-radius` / `--glass-blur` |
 | Standard / raised elevation | `--glass-shadow` / `--glass-shadow-raised` |
 
-Use glass classes explicitly on selected surfaces. Do not apply a translucent background to every `Card`, button, or dialog automatically. Reading and form content need a sufficiently opaque background; use the inset or raised material when needed. Preserve semantic success, error, and warning meaning.
+Shared primitives now choose purposeful default materials from [glass-controls.css](../src/styles/glass-controls.css). Ordinary cards use a luminous surface over an opaque base without blur, nested cards use an inset material, and fields stay opaque. Floating menus and dialogs use a bounded raised material. Default actions use the paired primary fill and ink; explicit `glass-primary` actions retain the violet-to-rose gradient. Reading and form content keep sufficiently opaque backgrounds. Success, error, and warning colors retain their meaning with separate light/dark ink pairs.
+
+Use explicit glass classes on bespoke page surfaces. The shared `glassMaterial` helper preserves supplied background artwork, semantic fills, inline background styles, and existing glass compositions; `tbo-surface-plain` opts out of the default material. Hover/focus-only colors do not suppress the resting material. Do not defeat a page's chosen material with `!important`, descendant color rewrites, or nested backdrop blur.
+
+Generic `--background`, `--foreground`, `--card`, `--popover`, `--primary`, `--destructive`, field, selection, and sidebar tokens map to the same glass palette, including portaled content. The light main/supporting inks match the approved navy hero colors. Existing `--primary-*` rose brand tokens remain available to the shared return control and brand artwork.
 
 ```tsx
 <Card className="tbo-glass">
@@ -58,3 +62,7 @@ The dashboard retains its existing sections, destinations, couple photos, stage 
 Component-specific arrangement lives in `src/app/styles/dashboard-glass.css`, `dashboard-stats.css`, `dashboard-support.css`, `bottom-navigation.css`, and `header-controls.css`. Keep ordinary layout rules in those files and shared material rules in `src/styles/glass.css`.
 
 See [validation notes](glass-validation-2026-09-14.md) for the checks actually performed and their limits.
+
+## App-wide implementation
+
+The later [app-wide rollout](app-glass-rollout.md) records migrated screen families, shared controls, representative previews, and integrated verification. The compact hero, stage names, distance action, Profile cover editing, typography roles, and six primary navigation destinations remain in place. Public phone illustrations, user photos, video canvases, chart meanings, authored reading content, and the 3D character house retain their intentional presentation.

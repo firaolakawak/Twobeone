@@ -103,7 +103,7 @@ export function MoodTracker({ onMoodSelect, userMood, partnerMood }: MoodTracker
   };
 
   return (
-    <Card className="bg-card rounded-2xl p-6">
+    <Card className="tbo-glass bg-card rounded-2xl p-6">
       <div className="flex items-center gap-2 mb-4" style={{ color: 'var(--primary-600)' }}>
         <Smile className="w-5 h-5" />
         <h3 style={{ fontWeight: 'var(--font-weight-medium)', margin: 0 }}>{t.dashboard.todaysMood}</h3>

@@ -26,7 +26,7 @@ export function OfflineIndicator() {
   if (online && showReconnected) {
     return (
       <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[300] animate-in slide-in-from-top duration-300">
-        <div className="px-4 py-2 rounded-full shadow-lg flex items-center gap-2" style={{ background: 'var(--success-500)', color: '#fff' }}>
+        <div className="tbo-glass-status tbo-glass-status-success px-4 py-2 flex items-center gap-2">
           <Wifi className="w-4 h-4" />
           <span className="tbo-label">{t.offline.backOnline}</span>
         </div>
@@ -37,7 +37,7 @@ export function OfflineIndicator() {
   if (!online) {
     return (
       <div className="fixed top-0 left-0 right-0 z-[300] animate-in slide-in-from-top duration-300">
-        <div className="px-4 py-3 flex items-center justify-center gap-2" style={{ background: 'var(--warning-500)', color: '#fff' }}>
+        <div className="tbo-glass-status tbo-glass-status-warning px-4 py-3 flex items-center justify-center gap-2">
           <WifiOff className="w-5 h-5" />
           <span className="tbo-label">{t.offline.youreOffline}</span>
         </div>

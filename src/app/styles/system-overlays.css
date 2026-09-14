@@ -1,0 +1,14 @@
+.tbo-install-prompt { container: install-prompt / inline-size; }
+.tbo-install-heading { display: flex; align-items: center; gap: .75rem; padding-inline-end: 2.75rem; }
+.tbo-install-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; }
+
+@container install-prompt (max-width: 20rem) {
+  .tbo-install-heading { flex-direction: column; align-items: flex-start; padding-inline-end: 0; }
+  .tbo-install-steps { grid-template-columns: minmax(0, 1fr); }
+}
+
+.tbo-location-dialog { container: location-settings / inline-size; padding: clamp(.75rem, 4vw, 1.25rem); overflow-wrap: anywhere; }
+@container location-settings (max-width: 18rem) {
+  .tbo-location-baseline, .tbo-location-manual { flex-direction: column; }
+  .tbo-location-baseline { padding: .75rem; }
+}

@@ -85,10 +85,10 @@ export function PWAUpdateAvailable() {
 
   return (
     <div className="fixed bottom-20 left-4 right-4 z-[200] animate-in slide-in-from-bottom duration-300 sm:left-auto sm:right-4 sm:w-96">
-      <Card className="bg-card  shadow-2xl border-2 border-primary-500">
+      <Card className="tbo-glass-raised">
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shrink-0">
+            <div className="tbo-glass-orb w-10 h-10">
               <RefreshCw className="w-5 h-5 text-white" />
             </div>
             <div className="flex-1 min-w-0">
@@ -98,7 +98,7 @@ export function PWAUpdateAvailable() {
               <p className="tbo-supporting text-muted-foreground dark:text-muted-foreground mb-3">
                 {t.pwaUpdate.description}
               </p>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button
                   onClick={handleDismiss}
                   variant="outline"
@@ -110,8 +110,9 @@ export function PWAUpdateAvailable() {
                 </Button>
                 <Button
                   onClick={handleUpdate}
+                  variant="glass-primary"
                   size="sm"
-                  className="flex-1 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white"
+                  className="flex-1"
                 >
                   <RefreshCw className="w-4 h-4 mr-1" />
                   {t.pwaUpdate.updateNow}

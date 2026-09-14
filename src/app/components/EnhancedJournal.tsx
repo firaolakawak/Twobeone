@@ -1,3 +1,4 @@
+import '../styles/feature-glass.css';
 import { formatUiDate, formatUiTime } from '../utils/uiDateTime';
 import { useUiCopy, UI_LOCALES } from '../utils/uiTranslation';
 import { journalUiMessages } from '../locales/journalUi';
@@ -430,43 +431,43 @@ export function EnhancedJournal({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 text-slate-900 selection:bg-rose-200 dark:bg-neutral-950 dark:text-neutral-50">
-      <main className="mx-auto w-full max-w-3xl space-y-7 px-4 pb-32 pt-5 sm:px-6 sm:pt-8">
-        <header className="relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-rose-50 via-white to-amber-50 px-6 py-7 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)] ring-1 ring-rose-100/80 sm:px-9 sm:py-9">
-          <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-rose-200/30 blur-3xl" aria-hidden="true" />
+    <div className="tbo-feature-layout min-h-screen bg-transparent text-foreground selection:bg-[var(--glass-inset-surface)]">
+      <main className="tbo-feature-inner mx-auto w-full max-w-3xl space-y-7 px-4 pb-32 pt-5 sm:px-6 sm:pt-8">
+        <header className="tbo-feature-header relative isolate overflow-hidden rounded-[2rem] tbo-glass-raised px-6 py-7 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)] ring-1 ring-[var(--glass-rim)] sm:px-9 sm:py-9">
+          <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-[var(--glass-inset-surface)] blur-3xl" aria-hidden="true" />
           <div className="pointer-events-none absolute -bottom-24 -left-16 h-52 w-52 rounded-full bg-amber-200/30 blur-3xl" aria-hidden="true" />
           <div className="relative">
             <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <div className="tbo-caption mb-4 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-rose-700 shadow-sm ring-1 ring-rose-100">
+                <div className="tbo-caption mb-4 inline-flex items-center gap-2 rounded-full bg-[var(--glass-inset-surface)] px-3 py-1.5 text-[var(--glass-accent)] shadow-sm ring-1 ring-[var(--glass-rim)]">
                   <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" aria-hidden="true" />
 
                   {tr("Our story, held with care")}
                 </div>
-                <h1 className="tbo-page-title break-words text-slate-950">{t.journal.title}</h1>
-                <p className="tbo-supporting mt-2 max-w-lg text-slate-600">{tr("Capture the reflections, milestones, and little moments shaping your life together.")}</p>
+                <h1 className="tbo-page-title break-words text-foreground">{t.journal.title}</h1>
+                <p className="tbo-supporting mt-2 max-w-lg text-muted-foreground">{tr("Capture the reflections, milestones, and little moments shaping your life together.")}</p>
               </div>
-              <Button type="button" onClick={openEntryForm} className="tbo-action min-h-11 h-auto whitespace-normal rounded-full bg-rose-600 px-5 text-white shadow-lg shadow-rose-200 hover:bg-rose-700">
+              <Button type="button" onClick={openEntryForm} className="tbo-action min-h-11 h-auto whitespace-normal rounded-full px-5 shadow-lg">
                 <Plus className="h-4 w-4" aria-hidden="true" />
                 {t.journal.newEntry}
               </Button>
             </div>
-            <div className="mt-7 grid grid-cols-3 gap-3 border-t border-rose-100/80 pt-5 [overflow-wrap:anywhere]">
-              <div><p className="text-xl font-bold text-slate-900">{validEntries.length}</p><p className="tbo-caption mt-0.5 text-slate-500">{tr("Entries")}</p></div>
-              <div className="border-l border-rose-100 pl-3"><p className="text-xl font-bold text-slate-900">{sharedEntryCount}</p><p className="tbo-caption mt-0.5 text-slate-500">{tr("Shared")}</p></div>
-              <div className="border-l border-rose-100 pl-3"><p className="text-xl font-bold text-slate-900">{eventEntryCount}</p><p className="tbo-caption mt-0.5 text-slate-500">{tr("Moments")}</p></div>
+            <div className="tbo-feature-stats mt-7 grid grid-cols-3 gap-3 border-t border-[var(--glass-border)] pt-5 [overflow-wrap:anywhere]">
+              <div><p className="text-xl font-bold text-foreground">{validEntries.length}</p><p className="tbo-caption mt-0.5 text-muted-foreground">{tr("Entries")}</p></div>
+              <div className="border-l border-[var(--glass-border)] pl-3"><p className="text-xl font-bold text-foreground">{sharedEntryCount}</p><p className="tbo-caption mt-0.5 text-muted-foreground">{tr("Shared")}</p></div>
+              <div className="border-l border-[var(--glass-border)] pl-3"><p className="text-xl font-bold text-foreground">{eventEntryCount}</p><p className="tbo-caption mt-0.5 text-muted-foreground">{tr("Moments")}</p></div>
             </div>
           </div>
         </header>
 
         <section className="space-y-5" aria-label={tr("Journal controls")}>
-          <div className="grid min-h-14 grid-cols-3 gap-1 rounded-[1.25rem] border border-slate-200/80 bg-slate-100/70 p-1.5 shadow-[inset_0_1px_2px_rgba(15,23,42,0.04),0_10px_30px_-24px_rgba(15,23,42,0.45)]" role="tablist" aria-label={tr("Journal entry types")}>
+          <div className="grid min-h-14 grid-cols-3 gap-1 rounded-[1.25rem] border border-[var(--glass-border)] tbo-glass-inset p-1.5 shadow-[inset_0_1px_2px_rgba(15,23,42,0.04),0_10px_30px_-24px_rgba(15,23,42,0.45)]" role="tablist" aria-label={tr("Journal entry types")}>
             {([
               { value: "all", label: tr("All Entries"), icon: BookOpen },
               { value: "journal", label: tr("Reflections"), icon: Heart },
               { value: "event", label: tr("Moments"), icon: Sparkles },
             ] as const).map(({ value, label, icon: Icon }) => (
-              <button key={value} type="button" role="tab" aria-label={label} aria-selected={entryFilter === value} onClick={() => setEntryFilter(value)} className={`tbo-action flex min-h-11 min-w-0 flex-wrap items-center justify-center gap-2 rounded-[0.9rem] px-2 py-2 [overflow-wrap:anywhere] transition-all ${entryFilter === value ? "bg-white text-rose-700 shadow-sm ring-1 ring-rose-100" : "text-slate-500 hover:bg-white/65 hover:text-slate-800"}`}>
+              <button key={value} type="button" role="tab" aria-label={label} aria-selected={entryFilter === value} onClick={() => setEntryFilter(value)} className={`tbo-action flex min-h-11 min-w-0 flex-wrap items-center justify-center gap-2 rounded-[0.9rem] px-2 py-2 [overflow-wrap:anywhere] transition-all ${entryFilter === value ? "bg-[var(--glass-inset-surface)] text-[var(--glass-accent)] shadow-sm ring-1 ring-[var(--glass-rim)]" : "text-muted-foreground hover:bg-[var(--glass-inset-surface)] hover:text-foreground"}`}>
                 <Icon className="h-4 w-4" aria-hidden="true" />
                 <span className="hidden sm:inline">{label}</span><span className="sm:hidden">{value === "all" ? tr("All") : label}</span>
               </button>
@@ -474,9 +475,9 @@ export function EnhancedJournal({
           </div>
 
           <div className="relative" role="search">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
-            <Input type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} onKeyDown={(event) => { if (event.key === "Escape") setSearchQuery(""); }} placeholder={t.journal.searchPlaceholder} aria-label={tr("Search journal entries")} className="tbo-field h-12 rounded-2xl border-slate-200 bg-white pl-11 pr-11 shadow-[0_8px_25px_-22px_rgba(15,23,42,0.55)] placeholder:text-slate-400 focus-visible:border-rose-300 focus-visible:ring-4 focus-visible:ring-rose-100" />
-            {searchQuery && <button type="button" onClick={() => setSearchQuery("")} className="tbo-action absolute right-2.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700" aria-label={tr("Clear journal search")}><X className="h-4 w-4" aria-hidden="true" /></button>}
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+            <Input type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} onKeyDown={(event) => { if (event.key === "Escape") setSearchQuery(""); }} placeholder={t.journal.searchPlaceholder} aria-label={tr("Search journal entries")} className="tbo-field h-12 rounded-2xl border-[var(--glass-border)] bg-[var(--glass-inset-surface)] pl-11 pr-11 shadow-[0_8px_25px_-22px_rgba(15,23,42,0.55)] placeholder:text-muted-foreground focus-visible:border-rose-300 focus-visible:ring-4 focus-visible:ring-[var(--glass-rim)]" />
+            {searchQuery && <button type="button" onClick={() => setSearchQuery("")} className="tbo-action absolute right-2.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground hover:bg-[var(--glass-inset-surface)] hover:text-foreground" aria-label={tr("Clear journal search")}><X className="h-4 w-4" aria-hidden="true" /></button>}
           </div>
         </section>
 
@@ -495,8 +496,8 @@ export function EnhancedJournal({
           return (
             <div key={dateKey} className="mb-10 last:mb-0">
               {/* Date Header Segment */}
-              <div className="sticky top-0 z-20 mb-6 flex items-center gap-4 rounded-2xl bg-slate-50/90 py-2 backdrop-blur-sm dark:bg-neutral-950/90">
-                <div className="flex h-14 w-14 flex-col items-center justify-center rounded-2xl bg-rose-50 text-rose-700 shadow-sm ring-1 ring-rose-100 dark:bg-rose-500/20 dark:text-rose-300">
+              <div className="sticky top-0 z-20 mb-6 flex items-center gap-4 rounded-2xl bg-[var(--glass-inset-surface)] py-2 backdrop-blur-sm">
+                <div className="flex h-14 w-14 flex-col items-center justify-center rounded-2xl bg-[var(--glass-inset-surface)] text-[var(--glass-accent)] shadow-sm ring-1 ring-[var(--glass-rim)]  dark:text-rose-300">
                   <span className="tbo-eyebrow opacity-80">
                     {month.slice(0, 3)}
                   </span>
@@ -515,7 +516,7 @@ export function EnhancedJournal({
               </div>
 
               {/* Entries Stack */}
-              <div className="relative ml-7 space-y-6 border-l border-rose-200/70 pl-6 dark:border-neutral-800">
+              <div className="tbo-journal-track relative ml-7 space-y-6 border-l border-[var(--glass-border)] pl-6">
                 {groupedEntries[dateKey].map((entry) => {
                   const isEvent =
                     (entry as any).entryType === "event";
@@ -538,9 +539,9 @@ export function EnhancedJournal({
                       className="relative group transition-all duration-300"
                     >
                       {/* Timeline Indicator Node */}
-                      <div className="absolute -left-[31px] top-6 h-2.5 w-2.5 rounded-full border-2 border-rose-500 bg-white shadow-sm transition-colors duration-300 group-hover:bg-rose-500" />
+                      <div className="tbo-journal-marker absolute -left-[31px] top-6 h-2.5 w-2.5 rounded-full border-2 border-rose-500 bg-[var(--glass-inset-surface)] shadow-sm transition-colors duration-300 group-hover:bg-rose-500" />
 
-                      <Card className="overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-[0_12px_36px_-28px_rgba(15,23,42,0.45)] transition-all duration-300 hover:-translate-y-0.5 hover:border-rose-200 hover:shadow-[0_18px_42px_-26px_rgba(190,24,93,0.3)] dark:border-neutral-800/60 dark:bg-neutral-900">
+                      <Card className="tbo-glass overflow-hidden rounded-[1.5rem] border border-[var(--glass-border)] shadow-[0_12px_36px_-28px_rgba(15,23,42,0.45)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--glass-border)] hover:shadow-[0_18px_42px_-26px_rgba(190,24,93,0.3)]">
                         {/* Hero Block Media */}
                         {imageMedia && imageMedia.url && (
                           <div
@@ -558,14 +559,14 @@ export function EnhancedJournal({
                               <ZoomIn className="w-6 h-6 text-white drop-shadow" />
                             </div>
                             {emoji && (
-                              <div className="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-background/90 backdrop-blur-md flex items-center justify-center text-xl shadow-md border border-neutral-200/20">
+                              <div className="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-background/90 backdrop-blur-md flex items-center justify-center text-xl shadow-md border border-[var(--glass-border)]">
                                 {emoji}
                               </div>
                             )}
                           </div>
                         )}
 
-                        <CardContent className="p-5 sm:p-6">
+                        <CardContent className="tbo-feature-card-content p-5 sm:p-6">
                           {/* Badges Stack */}
                           <div className="flex flex-wrap items-center gap-2 mb-3">
                             {isEvent && !imageMedia && (
@@ -577,7 +578,7 @@ export function EnhancedJournal({
                               className={`tbo-caption inline-flex items-center px-2.5 py-0.5 rounded-full border ${
                                 isEvent
                                   ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
-                                  : "bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400 border-rose-100 dark:border-rose-500/20"
+                                  : "bg-[var(--glass-inset-surface)] text-[var(--glass-accent)]  dark:text-rose-400 border-[var(--glass-border)] dark:border-rose-500/20"
                               }`}
                             >
                               {isEvent
@@ -585,7 +586,7 @@ export function EnhancedJournal({
                                 : tr("📖 Journal")}
                             </span>
                             {isPartner && (
-                              <span className="tbo-caption inline-flex items-center px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                              <span className="tbo-caption inline-flex items-center px-2.5 py-0.5 rounded-full bg-rose-500/10 text-[var(--glass-accent)] dark:text-rose-400 border border-rose-500/20">
                                 💖 {partnerName}
                               </span>
                             )}
@@ -615,7 +616,7 @@ export function EnhancedJournal({
                           </div>
 
                           {entry.content && (
-                            <p className="tbo-body break-words text-neutral-600 dark:text-neutral-300 whitespace-pre-wrap mb-4">
+                            <p className="tbo-body break-words text-muted-foreground whitespace-pre-wrap mb-4">
                               {entry.content}
                             </p>
                           )}
@@ -673,7 +674,7 @@ export function EnhancedJournal({
                                   .map((media, idx) => (
                                     <div
                                       key={idx}
-                                      className="rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 flex items-center gap-2 bg-neutral-50/50 dark:bg-neutral-900/50"
+                                      className="rounded-xl border border-[var(--glass-border)] p-3 flex items-center gap-2 tbo-glass-inset"
                                     >
                                       <Mic className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                                       <span className="tbo-caption text-muted-foreground truncate flex-1">
@@ -687,7 +688,7 @@ export function EnhancedJournal({
                           {/* Render Comments */}
                           {entry.comments &&
                             entry.comments.length > 0 && (
-                              <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800 space-y-3">
+                              <div className="mt-4 pt-4 border-t border-[var(--glass-border)] space-y-3">
                                 {entry.comments
                                   .slice(0, 2)
                                   .map((comment: any) => (
@@ -725,14 +726,14 @@ export function EnhancedJournal({
                             )}
 
                           {/* Component Card Interface Toolbar */}
-                          <div className="flex items-center justify-end gap-1 pt-3 mt-4 border-t border-neutral-100 dark:border-neutral-800">
+                          <div className="flex flex-wrap items-center justify-end gap-1 pt-3 mt-4 border-t border-[var(--glass-border)]">
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() =>
                                 setCommentingEntry(entry)
                               }
-                              className="tbo-action h-8 rounded-full px-3 text-muted-foreground hover:bg-rose-50 hover:text-rose-700 dark:hover:text-rose-400"
+                              className="tbo-feature-small-action tbo-action h-8 rounded-full px-3 text-muted-foreground hover:bg-[var(--glass-inset-surface)] hover:text-[var(--glass-accent)] dark:hover:text-rose-400"
                             >
                               <MessageCircle className="w-4 h-4 mr-1.5" />
 
@@ -746,7 +747,7 @@ export function EnhancedJournal({
                                   onClick={() =>
                                     handleEdit(entry)
                                   }
-                                  className="tbo-action h-8 rounded-full px-3 text-muted-foreground hover:bg-slate-100 hover:text-foreground"
+                                  className="tbo-feature-small-action tbo-action h-8 rounded-full px-3 text-muted-foreground hover:bg-[var(--glass-inset-surface)] hover:text-foreground"
                                 >
                                   <Edit2 className="w-4 h-4 mr-1.5" />
 
@@ -765,7 +766,7 @@ export function EnhancedJournal({
                                         entry.id,
                                       );
                                   }}
-                                  className="tbo-action h-8 rounded-full px-3 text-muted-foreground hover:bg-red-50 hover:text-destructive"
+                                  className="tbo-feature-small-action tbo-action h-8 rounded-full px-3 text-muted-foreground hover:bg-red-50 hover:text-destructive"
                                 >
                                   <Trash2 className="w-4 h-4 mr-1.5" />
 
@@ -785,20 +786,20 @@ export function EnhancedJournal({
         })}
 
         {visibleEntries.length === 0 && (
-          <div className="mx-auto max-w-sm rounded-[2rem] border border-rose-100 bg-gradient-to-br from-white to-rose-50/60 px-8 py-14 text-center shadow-sm">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 text-rose-600">
+          <div className="mx-auto max-w-sm rounded-[2rem] border border-[var(--glass-border)] tbo-glass-inset px-8 py-14 text-center shadow-sm">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--glass-inset-surface)] text-[var(--glass-accent)]">
               {searchQuery ? <Search className="h-6 w-6" /> : <BookOpen className="h-6 w-6" />}
             </div>
-            <h3 className="tbo-card-title mb-2 text-slate-900">
+            <h3 className="tbo-card-title mb-2 text-foreground">
               {searchQuery ? tr("No matching entries") : entryFilter === "event" ? tr("No moments yet") : t.journal.noEntries}
             </h3>
-            <p className="tbo-supporting mb-6 text-slate-500">
+            <p className="tbo-supporting mb-6 text-muted-foreground">
               {searchQuery ? tr("Try another title, detail, or location.") : tr("Start documenting your shared faith journey and the moments you want to remember.")}
             </p>
             {searchQuery ? (
-              <Button type="button" variant="ghost" onClick={() => setSearchQuery("")} className="tbo-action rounded-full text-rose-700 hover:bg-rose-100/70 hover:text-rose-800">{tr("Clear search")}</Button>
+              <Button type="button" variant="ghost" onClick={() => setSearchQuery("")} className="tbo-action rounded-full text-[var(--glass-accent)] hover:bg-[var(--glass-inset-surface)] hover:text-[var(--glass-accent)]">{tr("Clear search")}</Button>
             ) : (
-              <Button type="button" onClick={openEntryForm} className="tbo-action rounded-full bg-rose-600 px-5 text-white hover:bg-rose-700"><Plus className="h-4 w-4" />  {tr("Create First Entry")}</Button>
+              <Button type="button" onClick={openEntryForm} className="tbo-action rounded-full px-5"><Plus className="h-4 w-4" />  {tr("Create First Entry")}</Button>
             )}
           </div>
         )}
@@ -813,14 +814,14 @@ export function EnhancedJournal({
           if (!open) resetForm();
         }}
       >
-        <DialogContent className="max-h-[92dvh] gap-0 overflow-y-auto rounded-[1.75rem] border-rose-100 p-0 sm:max-w-xl">
-          <DialogHeader className="border-b border-rose-100 bg-gradient-to-br from-rose-50 via-white to-amber-50 px-6 py-6 pr-12 text-left">
-            <DialogTitle className="tbo-dialog-title text-slate-900">
+        <DialogContent className="max-h-[92dvh] gap-0 overflow-y-auto rounded-[1.75rem] border-[var(--glass-border)] p-0 sm:max-w-xl">
+          <DialogHeader className="border-b border-[var(--glass-border)] tbo-glass-raised px-6 py-6 pr-12 text-left">
+            <DialogTitle className="tbo-dialog-title text-foreground">
               {editingEntry
                 ? t.journal.edit
                 : t.journal.newEntry}
             </DialogTitle>
-            <DialogDescription className="tbo-supporting text-slate-600">
+            <DialogDescription className="tbo-supporting text-muted-foreground">
               {entryType === "journal"
                 ? tr("Write what is on your heart and choose whether to share it.")
                 : tr("Preserve a meaningful moment in your story together.")}
@@ -834,16 +835,16 @@ export function EnhancedJournal({
             }
             className="w-full p-6"
           >
-            <TabsList className="grid h-12 w-full grid-cols-2 rounded-2xl bg-slate-100 p-1">
+            <TabsList className="grid h-12 w-full grid-cols-2 rounded-2xl bg-[var(--glass-inset-surface)] p-1">
               <TabsTrigger
                 value="journal"
-                className="tbo-action rounded-xl py-2 data-[state=active]:text-rose-700 data-[state=active]:shadow-sm"
+                className="tbo-action rounded-xl py-2 data-[state=active]:text-[var(--glass-accent)] data-[state=active]:shadow-sm"
               >
                 {t.journal.title}
               </TabsTrigger>
               <TabsTrigger
                 value="event"
-                className="tbo-action rounded-xl py-2 data-[state=active]:text-rose-700 data-[state=active]:shadow-sm"
+                className="tbo-action rounded-xl py-2 data-[state=active]:text-[var(--glass-accent)] data-[state=active]:shadow-sm"
               >
 
                 {tr("Event")}
@@ -855,7 +856,7 @@ export function EnhancedJournal({
               className="mt-5 space-y-5"
             >
               {/* Chronological Configurations Segment */}
-              <div className="grid grid-cols-2 gap-3 rounded-2xl border border-rose-100 bg-gradient-to-r from-rose-50/70 to-amber-50/70 p-4">
+              <div className="grid grid-cols-2 gap-3 rounded-2xl border border-[var(--glass-border)] tbo-glass-inset p-4">
                 <div className="space-y-1.5">
                   <Label
                     htmlFor="date"
@@ -885,7 +886,7 @@ export function EnhancedJournal({
                       newDate.setDate(day);
                       setSelectedDate(newDate);
                     }}
-                    className="tbo-field h-10 rounded-xl border-slate-200 bg-white shadow-none focus-visible:ring-rose-400"
+                    className="tbo-field h-10 rounded-xl border-[var(--glass-border)] bg-[var(--glass-inset-surface)] shadow-none focus-visible:ring-rose-400"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -909,7 +910,7 @@ export function EnhancedJournal({
                       newDate.setMinutes(minutes);
                       setSelectedDate(newDate);
                     }}
-                    className="tbo-field h-10 rounded-xl border-slate-200 bg-white shadow-none focus-visible:ring-rose-400"
+                    className="tbo-field h-10 rounded-xl border-[var(--glass-border)] bg-[var(--glass-inset-surface)] shadow-none focus-visible:ring-rose-400"
                   />
                 </div>
               </div>
@@ -928,7 +929,7 @@ export function EnhancedJournal({
                         onClick={() => setEmoji(e)}
                         aria-pressed={emoji === e}
                         aria-label={tr('Use {emoji} for this moment', { emoji: e })}
-                        className={`rounded-xl p-2 text-xl transition-all ${emoji === e ? "bg-rose-50 ring-1 ring-rose-300" : "hover:bg-slate-100"}`}
+                        className={`rounded-xl p-2 text-xl transition-all ${emoji === e ? "bg-[var(--glass-inset-surface)] ring-1 ring-rose-300" : "hover:bg-[var(--glass-inset-surface)]"}`}
                       >
                         {e}
                       </button>
@@ -955,7 +956,7 @@ export function EnhancedJournal({
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   required
-                  className="tbo-field h-11 rounded-xl border-slate-200 focus-visible:ring-rose-400"
+                  className="tbo-field h-11 rounded-xl border-[var(--glass-border)] focus-visible:ring-rose-400"
                 />
               </div>
 
@@ -979,7 +980,7 @@ export function EnhancedJournal({
                     onChange={(e) =>
                       setLocation(e.target.value)
                     }
-                    className="tbo-field h-11 rounded-xl border-slate-200 focus-visible:ring-rose-400"
+                    className="tbo-field h-11 rounded-xl border-[var(--glass-border)] focus-visible:ring-rose-400"
                   />
                 </div>
               )}
@@ -999,7 +1000,7 @@ export function EnhancedJournal({
                   onChange={(e) => setContent(e.target.value)}
                   rows={4}
                   required={entryType === "journal"}
-                  className="tbo-field resize-none rounded-xl border-slate-200 focus-visible:ring-rose-400"
+                  className="tbo-field resize-none rounded-xl border-[var(--glass-border)] focus-visible:ring-rose-400"
                 />
               </div>
 
@@ -1017,7 +1018,7 @@ export function EnhancedJournal({
                     onClick={() =>
                       fileInputRef.current?.click()
                     }
-                    className="tbo-action h-10 rounded-xl border-slate-200 hover:bg-rose-50 hover:text-rose-700"
+                    className="tbo-action h-10 rounded-xl border-[var(--glass-border)] hover:bg-[var(--glass-inset-surface)] hover:text-[var(--glass-accent)]"
                   >
                     <ImageIcon className="w-3.5 h-3.5 mr-1.5 text-muted-foreground" />{" "}
 
@@ -1030,7 +1031,7 @@ export function EnhancedJournal({
                     onClick={() =>
                       videoInputRef.current?.click()
                     }
-                    className="tbo-action h-10 rounded-xl border-slate-200 hover:bg-rose-50 hover:text-rose-700"
+                    className="tbo-action h-10 rounded-xl border-[var(--glass-border)] hover:bg-[var(--glass-inset-surface)] hover:text-[var(--glass-accent)]"
                   >
                     <Video className="w-3.5 h-3.5 mr-1.5 text-muted-foreground" />{" "}
 
@@ -1045,7 +1046,7 @@ export function EnhancedJournal({
                         ? stopRecording
                         : startRecording
                     }
-                    className={`tbo-action h-10 rounded-xl ${isRecording ? "border-red-200 bg-red-50 text-red-600" : "border-slate-200 hover:bg-rose-50 hover:text-rose-700"}`}
+                    className={`tbo-action h-10 rounded-xl ${isRecording ? "border-red-200 bg-red-50 text-red-600" : "border-[var(--glass-border)] hover:bg-[var(--glass-inset-surface)] hover:text-[var(--glass-accent)]"}`}
                   >
                     <Mic
                       className={`w-3.5 h-3.5 mr-1.5 ${isRecording ? "animate-pulse text-destructive" : "text-muted-foreground"}`}
@@ -1077,7 +1078,7 @@ export function EnhancedJournal({
                     {mediaFiles.map((media, index) => (
                       <div
                         key={index}
-                        className="border border-neutral-100 dark:border-neutral-900 rounded-lg p-1.5 flex items-center justify-between gap-2 bg-muted/30"
+                        className="border border-[var(--glass-border)] dark:border-neutral-900 rounded-lg p-1.5 flex items-center justify-between gap-2 bg-muted/30"
                       >
                         <div className="flex items-center gap-2 min-w-0">
                           {media.type === "image" && (
@@ -1107,7 +1108,7 @@ export function EnhancedJournal({
               </div>
 
               {/* Privacy Config Segment */}
-              <div className="flex items-center justify-between rounded-2xl border border-rose-100 bg-gradient-to-r from-rose-50 to-amber-50 p-4">
+              <div className="flex items-center justify-between rounded-2xl border border-[var(--glass-border)] tbo-glass-inset p-4">
                 <Label
                   htmlFor="shared"
                   className="tbo-label cursor-pointer"
@@ -1137,7 +1138,7 @@ export function EnhancedJournal({
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="tbo-action h-10 rounded-full border-0 bg-rose-600 px-5 text-white shadow-sm hover:bg-rose-700"
+                  className="tbo-action h-10 rounded-full border-0 px-5 shadow-sm"
                 >
                   {isLoading && <LoadingMark />}
                   {isLoading
@@ -1190,7 +1191,7 @@ export function EnhancedJournal({
               <Button
                 size="sm"
                 onClick={handleAddComment}
-                className="tbo-action rounded-lg px-4 bg-gradient-to-r from-orange-500 to-amber-600 text-white border-0 hover:opacity-95"
+                className="tbo-action rounded-lg px-4 border-0 hover:opacity-95"
               >
                 <Send className="w-3.5 h-3.5 mr-1.5" />  {tr("Send")}
               </Button>

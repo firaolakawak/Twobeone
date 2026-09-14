@@ -1,0 +1,72 @@
+{
+  "browser": "Edg/153.0.4234.32",
+  "cases": [
+    {
+      "language": "en",
+      "actualLanguage": "en",
+      "title": "Love is a journey.Grow together.",
+      "pageOverflow": false,
+      "ink": "rgb(25, 43, 120)",
+      "canvas": "rgb(244, 238, 251)",
+      "compiledScripts": [
+        "http://127.0.0.1:4187/assets/index-DIZUBtBy.js"
+      ],
+      "fonts": [
+        "Shiromeda Serif"
+      ]
+    },
+    {
+      "language": "am",
+      "actualLanguage": "am",
+      "title": "ፍቅር ጉዞ ነው።በአንድነት እደጉ።",
+      "pageOverflow": false,
+      "ink": "rgb(25, 43, 120)",
+      "canvas": "rgb(244, 238, 251)",
+      "compiledScripts": [
+        "http://127.0.0.1:4187/assets/index-DIZUBtBy.js"
+      ],
+      "fonts": [
+        "Shiromeda Serif",
+        "Shiromeda Serif"
+      ]
+    }
+  ],
+  "errors": [],
+  "failedLocalAssets": [],
+  "externalRequests": [
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://jhraxjlvmixhzvzbjjsw.supabase.co/functions/v1/make-server-6d579fee/health"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://jhraxjlvmixhzvzbjjsw.supabase.co/functions/v1/make-server-6d579fee/landing/screenshots"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://jhraxjlvmixhzvzbjjsw.supabase.co/functions/v1/make-server-6d579fee/health"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://jhraxjlvmixhzvzbjjsw.supabase.co/functions/v1/make-server-6d579fee/landing/screenshots"
+    }
+  ],
+  "pass": true,
+  "scope": "Production build public App at390px; external reads intercepted with local empty fixtures. No live account writes or deployment."
+}

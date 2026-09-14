@@ -5,8 +5,8 @@ import { useState } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Progress } from './ui/progress';
-import { 
-  MessageCircle, 
+import {
+  MessageCircle,
   Shield,
   Handshake,
   Volume2,
@@ -218,7 +218,7 @@ export function ConflictStyleQuiz({ existingResult, onComplete, onBack }: Confli
     const secondaryStyle = styles[results.secondary as keyof typeof styles];
 
     return (
-      <div className="min-h-screen bg-gradient-to-b from-primary-50/50 to-primary-50/50">
+      <div className="min-h-screen bg-transparent">
         <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm border-b">
           <div className="flex items-center justify-between px-4 py-4">
             <BackButton label={tr("Back to Quizzes")} onClick={onBack} />
@@ -229,7 +229,7 @@ export function ConflictStyleQuiz({ existingResult, onComplete, onBack }: Confli
 
         <div className="max-w-2xl mx-auto px-4 py-6 pb-24">
           {/* Primary Style */}
-          <Card className="mb-6 overflow-hidden border-primary-200">
+          <Card className="tbo-glass mb-6 overflow-hidden border-[var(--glass-border)]">
             <div className={`h-2 bg-gradient-to-r ${styleInfo.color}`}></div>
             <CardHeader className="text-center pb-4">
               <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br ${styleInfo.color} mb-4 mx-auto`}>
@@ -244,12 +244,12 @@ export function ConflictStyleQuiz({ existingResult, onComplete, onBack }: Confli
               <p className="tbo-body text-center text-muted-foreground">{styleInfo.description}</p>
 
               {/* Scripture */}
-              <div className="p-4 bg-gradient-to-br from-sky-50 to-sky-100 rounded-lg border border-sky-200">
+              <div className="p-4 tbo-glass-inset rounded-lg border border-[var(--glass-border)]">
                 <div className="flex items-start gap-3">
-                  <BookOpen className="w-5 h-5 text-sky-600 flex-shrink-0 mt-0.5" />
+                  <BookOpen className="w-5 h-5 text-[var(--glass-accent)] flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium text-sky-700 italic mb-1">"{styleInfo.scripture.verse}"</p>
-                    <p className="text-xs text-sky-700">— {styleInfo.scripture.reference}</p>
+                    <p className="font-medium text-[var(--glass-accent)] italic mb-1">"{styleInfo.scripture.verse}"</p>
+                    <p className="text-xs text-[var(--glass-accent)]">— {styleInfo.scripture.reference}</p>
                   </div>
                 </div>
               </div>
@@ -270,13 +270,13 @@ export function ConflictStyleQuiz({ existingResult, onComplete, onBack }: Confli
 
               {/* Growth Areas */}
               <div>
-                <h4 className="tbo-card-title mb-3 flex items-center gap-2 text-primary-700">
+                <h4 className="tbo-card-title mb-3 flex items-center gap-2 text-[var(--glass-accent)]">
                   <Sparkles className="w-5 h-5" />{tr("Growth Opportunities")} </h4>
                 <div className="space-y-2">
                   {styleInfo.growthAreas.map((area, i) => (
-                    <div key={i} className="flex items-start gap-2 p-3 bg-primary-50 rounded-lg">
-                      <div className="w-6 h-6 rounded-full bg-primary-200 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <span className="tbo-caption text-primary-700">{i + 1}</span>
+                    <div key={i} className="flex items-start gap-2 p-3 tbo-glass-inset rounded-lg">
+                      <div className="w-6 h-6 rounded-full bg-[var(--glass-inset-surface)] flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="tbo-caption text-[var(--glass-accent)]">{i + 1}</span>
                       </div>
                       <p className="tbo-supporting text-foreground">{area}</p>
                     </div>
@@ -309,7 +309,7 @@ export function ConflictStyleQuiz({ existingResult, onComplete, onBack }: Confli
                         <div key={style} className="space-y-2">
                           <div className="flex items-center justify-between text-sm">
                             <div className="flex items-center gap-2">
-                              <StyleIconSmall className="w-4 h-4 text-primary-600" />
+                              <StyleIconSmall className="w-4 h-4 text-[var(--glass-accent)]" />
                               <span>{StyleInfo.name}</span>
                             </div>
                             <span className="font-medium">{score}/{questions.length}</span>
@@ -324,10 +324,10 @@ export function ConflictStyleQuiz({ existingResult, onComplete, onBack }: Confli
           </Card>
 
           {/* Secondary Style */}
-          <Card className="mb-6 bg-gradient-to-br from-sky-50 to-sky-100 border-sky-200">
+          <Card className="mb-6 tbo-glass border-[var(--glass-border)]">
             <CardHeader>
               <CardTitle className="tbo-card-title flex items-center gap-2">
-                <MessageCircle className="w-5 h-5 text-sky-600" />{tr("Your Secondary Style:")} {secondaryStyle.name}
+                <MessageCircle className="w-5 h-5 text-[var(--glass-accent)]" />{tr("Your Secondary Style:")} {secondaryStyle.name}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -340,19 +340,19 @@ export function ConflictStyleQuiz({ existingResult, onComplete, onBack }: Confli
           <Card>
             <CardHeader>
               <CardTitle className="tbo-card-title flex items-center gap-2">
-                <Heart className="w-5 h-5 text-primary-600" />{tr("Growing Together in Conflict")} </CardTitle>
+                <Heart className="w-5 h-5 text-[var(--glass-accent)]" />{tr("Growing Together in Conflict")} </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="p-3 bg-primary-50 rounded-lg">
-                <p className="tbo-supporting text-primary-900 mb-1">{tr("Pray before difficult conversations")}</p>
+              <div className="p-3 tbo-glass-inset rounded-lg">
+                <p className="tbo-supporting text-[var(--glass-accent)] mb-1">{tr("Pray before difficult conversations")}</p>
                 <p className="tbo-supporting text-muted-foreground">{tr("Ask God for wisdom, patience, and love")}</p>
               </div>
               <div className="p-3 bg-sky-50 rounded-lg">
-                <p className="tbo-supporting text-sky-700 mb-1">{tr("Use \"I feel\" statements")}</p>
+                <p className="tbo-supporting text-[var(--glass-accent)] mb-1">{tr("Use \"I feel\" statements")}</p>
                 <p className="tbo-supporting text-muted-foreground">{tr("Share your emotions without blaming your partner")}</p>
               </div>
-              <div className="p-3 bg-primary-50 rounded-lg">
-                <p className="tbo-supporting text-primary-900 mb-1">{tr("Take breaks when needed")}</p>
+              <div className="p-3 tbo-glass-inset rounded-lg">
+                <p className="tbo-supporting text-[var(--glass-accent)] mb-1">{tr("Take breaks when needed")}</p>
                 <p className="tbo-supporting text-muted-foreground">{tr("It's okay to pause and return when emotions settle")}</p>
               </div>
               <div className="p-3 bg-success-50 rounded-lg">
@@ -374,7 +374,7 @@ export function ConflictStyleQuiz({ existingResult, onComplete, onBack }: Confli
   const question = questions[currentQuestion];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary-50/50 to-primary-50/50">
+    <div className="min-h-screen bg-transparent">
       <div className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm border-b">
         <div className="flex items-center justify-between px-4 py-4">
           <BackButton label={tr("Back to Quizzes")} onClick={onBack} />
@@ -391,7 +391,7 @@ export function ConflictStyleQuiz({ existingResult, onComplete, onBack }: Confli
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <Card className="border-primary-200">
+        <Card className="tbo-glass border-[var(--glass-border)]">
           <CardHeader>
             <div className="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-primary-500 to-primary-500 mb-4 mx-auto">
               <MessageCircle className="w-8 h-8 text-white" />
@@ -403,12 +403,12 @@ export function ConflictStyleQuiz({ existingResult, onComplete, onBack }: Confli
               <Button
                 key={index}
                 onClick={() => handleAnswer(index)}
-                className="tbo-action w-full h-auto whitespace-normal break-words py-4 text-left justify-start bg-card hover:bg-primary-50 text-foreground border-2 border-border hover:border-primary-300"
+                className="tbo-action w-full h-auto whitespace-normal break-words py-4 text-left justify-start bg-card hover:bg-[var(--glass-inset-surface)] text-foreground border-2 border-border hover:border-primary-300"
                 variant="outline"
               >
                 <div className="flex items-start gap-3 w-full">
-                  <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="tbo-label text-primary-600">{index + 1}</span>
+                  <div className="w-8 h-8 rounded-full bg-[var(--glass-inset-surface)] flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="tbo-label text-[var(--glass-accent)]">{index + 1}</span>
                   </div>
                   <span className="flex-1">{option}</span>
                 </div>
