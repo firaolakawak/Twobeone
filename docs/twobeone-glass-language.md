@@ -2,6 +2,8 @@
 
 Version 1 — 14 September 2026
 
+The later [dashboard reference restructure](dashboard-reference-restructure.md) replaces the initial dashboard arrangement with the user's supplied growth panel, four feature tiles, and Scripture banner, while retaining the original stage names and progression.
+
 The glass material system translates the lavender, rose, luminous edges, and frosted panels of the supplied reference into the existing TwoBeOne interface. Its initial application covers the authenticated web shell, header controls, bottom navigation, and couple dashboard. Other public, authentication, administration, and feature interiors retain their existing surfaces until intentionally migrated.
 
 Review the implemented [light dashboard](glass-dashboard-light.png) and [dark dashboard](glass-dashboard-dark.png), captured with sample data.

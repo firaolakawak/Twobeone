@@ -125,7 +125,8 @@ describe('couple dashboard journey', () => {
     expect(partnerMood).toHaveTextContent('😊');
     expect(heading).toContainElement(partnerMood);
     expect(heading).toHaveTextContent(/^Firaol & Keti\s*😊$/);
-    expect(journey.getByRole('region', { name: 'Growth Stage' })).toBeVisible();
+    expect(screen.getByRole('region', { name: 'Growth Stage' })).toBeVisible();
+    expect(journey.queryByRole('region', { name: 'Growth Stage' })).not.toBeInTheDocument();
     expect(journey.queryByText(nextMilestoneTitle)).not.toBeInTheDocument();
     expect(journey.queryByRole('region', { name: nextMilestoneTitle })).not.toBeInTheDocument();
     expect(journey.queryByText(/\d+d \d+h/)).not.toBeInTheDocument();

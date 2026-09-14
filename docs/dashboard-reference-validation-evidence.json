@@ -1,0 +1,176 @@
+{
+  "browser": "Edg/153.0.4234.32",
+  "completedAt": "2026-09-14T16:51:33.093Z",
+  "fixture": "Actual CoupleDashboard, LanguageProvider, header controls and BottomNavigation mounted with local populated fixtures; external requests mocked or blocked.",
+  "matrix": {
+    "report": "matrix-report.json",
+    "scope": "320/390/1280px; en/am/om; light/dark;100%/200% root text. Run before final canonical stage-label correction.",
+    "count": 36,
+    "pageOverflow": 0,
+    "functionalOverflow": 0,
+    "outside": 0,
+    "smallText": 0,
+    "runtimeErrors": [],
+    "externalRequests": 0
+  },
+  "stageCorrection": {
+    "report": "stages-report.json",
+    "scope": "Canonical Seed/Growth/Unity/Commitment/Covenant names, accurate day ranges, 103-day Growth active state.570/390English100%,320Amharic/Oromo200%,eachlight/dark. No layout geometry changed.",
+    "count": 8,
+    "pageOverflow": 0,
+    "functionalOverflow": 0,
+    "outside": 0,
+    "smallText": 0,
+    "runtimeErrors": [],
+    "externalRequests": 0,
+    "observations": [
+      "570px canonical labels and ranges fit in one line each.",
+      "390px Commitment now fits one line after measured max-width allowance adjustment; no neighboring label collisions.",
+      "320px translated enlarged stage labels and day ranges wrap without clipping."
+    ]
+  },
+  "interactions": {
+    "report": "interactions-report.json",
+    "checks": [
+      {
+        "check": "feature tile",
+        "index": 0,
+        "dialog": true,
+        "dialogTitle": "Bible Reader — Ecclesiastes, chapter 4"
+      },
+      {
+        "check": "feature tile",
+        "index": 1,
+        "actual": {
+          "type": "tab",
+          "value": "journal"
+        },
+        "dialog": false
+      },
+      {
+        "check": "feature tile",
+        "index": 2,
+        "actual": {
+          "type": "tab",
+          "value": "prayer"
+        },
+        "dialog": false
+      },
+      {
+        "check": "feature tile",
+        "index": 3,
+        "actual": {
+          "type": "screen",
+          "value": "couple-calendar"
+        },
+        "dialog": false
+      },
+      {
+        "check": "banner keyboard focus",
+        "focused": true,
+        "outline": "solid",
+        "outlineWidth": "3px"
+      },
+      {
+        "check": "banner opens reader",
+        "dialog": true,
+        "dialogTitle": "Bible Reader — Ecclesiastes, chapter 4",
+        "action": {
+          "type": "screen",
+          "value": "couple-calendar"
+        }
+      }
+    ],
+    "mediaChecks": [
+      {
+        "check": "prefers-reduced-transparency",
+        "theme": "light",
+        "active": true
+      },
+      {
+        "check": "forced-colors",
+        "theme": "light",
+        "active": true
+      },
+      {
+        "check": "prefers-reduced-motion",
+        "theme": "light",
+        "active": true
+      },
+      {
+        "check": "prefers-reduced-transparency",
+        "theme": "dark",
+        "active": true
+      },
+      {
+        "check": "forced-colors",
+        "theme": "dark",
+        "active": true
+      },
+      {
+        "check": "prefers-reduced-motion",
+        "theme": "dark",
+        "active": true
+      }
+    ],
+    "runtimeErrors": []
+  },
+  "previews": {
+    "light": "C:/twobeoneapp/docs/glass-dashboard-reference.png",
+    "dark": "C:/twobeoneapp/docs/glass-dashboard-reference-dark.png",
+    "latestLightTemporary": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\reference\\final-stage-en-light-570-1x.png"
+  },
+  "notes": [
+    "The active stage orb pseudo-element extends its decorative ring beyond clientWidth; excluded from functional overflow totals.",
+    "570px group screenshots hide fixed header/navigation to avoid screenshot obstruction.",
+    "Only Vite development HMR WebSocket warnings remain.",
+    "Native mobile platforms, authored live API content, and native-speaker editorial review were not exercised."
+  ],
+  "stageLabelSpacingFinal": {
+    "report": "final-stage-report.json",
+    "checks": [
+      {
+        "width": 390,
+        "collisions": [],
+        "commitment": {
+          "text": "Commitment",
+          "bounds": {
+            "x": 226.34375,
+            "y": 496.59375,
+            "width": 71.703125,
+            "height": 16.796875,
+            "top": 496.59375,
+            "right": 298.046875,
+            "bottom": 513.390625,
+            "left": 226.34375
+          },
+          "clientHeight": 17,
+          "lineHeight": "16.8px",
+          "scrollWidth": 72,
+          "clientWidth": 72
+        }
+      },
+      {
+        "width": 570,
+        "collisions": [],
+        "commitment": {
+          "text": "Commitment",
+          "bounds": {
+            "x": 349.140625,
+            "y": 501,
+            "width": 71.703125,
+            "height": 16.796875,
+            "top": 501,
+            "right": 420.84375,
+            "bottom": 517.796875,
+            "left": 349.140625
+          },
+          "clientHeight": 17,
+          "lineHeight": "16.8px",
+          "scrollWidth": 72,
+          "clientWidth": 72
+        }
+      }
+    ]
+  }
+}

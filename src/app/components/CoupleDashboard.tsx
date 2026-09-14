@@ -5,40 +5,27 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
-import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
-import { Separator } from './ui/separator';
-import { ScrollArea } from './ui/scroll-area';
 import {
   BookOpen,
   PenLine,
   MessageCircleHeart,
-  Calendar,
   TrendingUp,
   Sparkles,
   Users,
-  Award,
-  Target,
   ArrowRight,
-  Clock,
-  CheckCircle,
-  Plus,
-  Settings,
-  Share2,
-  BookHeart,
-  HandHeart,
   Brain,
   RefreshCw,
   Hammer,
 } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { ComprehensiveBibleReader } from './ComprehensiveBibleReader';
 import { LearningModulesCard } from './LearningModulesCard';
 import { PushNotificationSetup } from './PushNotificationSetup';
 import { DistanceConnector } from './DistanceConnector';
 import { DailyMoodCheckIn } from './DailyMoodCheckIn';
 import { CoupleNameHeading, PartnerMoodEmoji } from './CoupleMoodHeading';
-import { RelationshipSummary, RelationshipGrowth } from './RelationshipJourney';
+import { RelationshipSummary } from './RelationshipJourney';
+import { DashboardFeatureSection } from './DashboardFeatureSection';
 import { CoupleAvatarStack } from './CoupleAvatarStack';
 import { useDailyMoods } from '../hooks/useDailyMoods';
 import { projectId } from '../utils/supabase/info';
@@ -48,8 +35,6 @@ import type { User, JournalEntry, PrayerRequest, Progress as ProgressType, Quest
 import { moods as moodsApi, questions as questionsApi } from '../utils/api';
 import { fetchAmharicChapter, getAmharicBookName } from '../utils/amharicBibleApi';
 import { ChampionsCard } from './ChampionsCard';
-import { coupleCalendarCopy } from '../data/couple-calendar';
-import '../styles/dashboard-stats.css';
 import '../styles/dashboard-glass.css';
 
 export interface CoupleDashboardProps {
@@ -155,13 +140,13 @@ export function CoupleDashboard({
 }: CoupleDashboardProps) {
   const tr = useUiCopy(coupleUiMessages);
   const { t, language } = useLanguage();
-  const calendarCopy = coupleCalendarCopy[language];
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [coupleData, setCoupleData] = useState<CoupleData>({});
   const [dailyVerse, setDailyVerse] = useState<BibleVerse | null>(null);
   const [isLoadingVerse, setIsLoadingVerse] = useState(true);
   const [isBibleReaderOpen, setIsBibleReaderOpen] = useState(false);
+  const [readerReference, setReaderReference] = useState<string>();
   const [verseLanguage, setVerseLanguage] = useState<'en' | 'am'>(() => language === 'am' ? 'am' : 'en');
   const { userMood, partnerMood, loaded: moodsLoaded, saveMood } = useDailyMoods(partner ? profile?.id : undefined, partner?.id);
   const [totalQuestionsCount, setTotalQuestionsCount] = useState(0);
@@ -403,8 +388,6 @@ export function CoupleDashboard({
 
   // Calculate stats
   const sharedJournalEntries = journalEntries.filter(e => e.isShared).length;
-  const totalPrayers = prayers.length;
-  const answeredPrayers = prayers.filter(p => p.isAnswered).length;
 
   // Count actual unique questions answered from responses
   // Each response has a questionId, count unique base question IDs (before :prompt: suffix)
@@ -559,9 +542,6 @@ export function CoupleDashboard({
                   }}
                 />
               )}
-              <div className="mt-4">
-                <RelationshipGrowth startDate={relationshipStart} />
-              </div>
             </>
           ) : (
             <div className="mt-5 text-center">
@@ -575,6 +555,18 @@ export function CoupleDashboard({
           )}
         </CardContent>
       </Card>
+
+      <DashboardFeatureSection
+        startDate={relationshipStart}
+        showGrowth={Boolean(partner)}
+        onBibleStudy={() => {
+          setReaderReference('Ecclesiastes 4:9');
+          setIsBibleReaderOpen(true);
+        }}
+        onJournal={() => onNavigate?.('journal')}
+        onPrayer={() => onNavigate?.('prayer')}
+        onCalendar={() => onScreenNavigate?.('couple-calendar')}
+      />
 
       {/* Randomized next step — devotion, conversation, or journal */}
       <section className="tbo-glass dashboard-spotlight relative overflow-hidden p-5" aria-labelledby="home-spotlight-title">
@@ -604,98 +596,13 @@ export function CoupleDashboard({
         </div>
       </section>
 
-      {/* Couple Calendar — shared plans automatically carried into prayer */}
-      <button
-        type="button"
-        onClick={() => onScreenNavigate?.('couple-calendar')}
-        className="tbo-glass tbo-glass-interactive dashboard-calendar group relative w-full overflow-hidden p-5 text-left"
-      >
-        <div className="relative flex items-center gap-4">
-          <span className="tbo-glass-orb h-14 w-14">
-            <Calendar className="h-6 w-6" aria-hidden="true" />
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="tbo-eyebrow dashboard-glass-accent block">{calendarCopy.eyebrow}</span>
-            <span className="tbo-card-title mt-1 block">{calendarCopy.calendarCta}</span>
-            <span className="tbo-supporting mt-0.5 block text-muted-foreground">{calendarCopy.calendarCtaHint}</span>
-          </span>
-          <span className="dashboard-glass-arrow grid h-10 w-10 shrink-0 place-items-center rounded-full">
-            <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </span>
-        </div>
-      </button>
-
-      {/* Quick Stats Grid */}
-      <div className="dashboard-stats">
-        <div className="dashboard-stats__grid">
-          {[
-            {
-              id: 'devotionals',
-              label: tr("Devotionals Read"),
-              value: devotionalCompletedCount,
-              sub: tr('{count} day streak', { count: devotionalStreakValue }),
-              icon: Calendar,
-              onClick: () => onNavigate?.('devotions'),
-              completed: devotionalStreakValue,
-              total: 30,
-            },
-            {
-              id: 'journal',
-              label: t.dashboard.journalEntries,
-              value: sharedJournalEntries,
-              sub: t.dashboard.shared,
-              icon: BookHeart,
-              onClick: () => onNavigate?.('journal'),
-              completed: sharedJournalEntries,
-              total: 50,
-            },
-            {
-              id: 'prayer',
-              label: t.dashboard.prayers,
-              value: `${answeredPrayers}/${totalPrayers}`,
-              sub: t.dashboard.answered,
-              icon: HandHeart,
-              onClick: () => onNavigate?.('prayer'),
-              completed: answeredPrayers,
-              total: totalPrayers,
-            },
-            {
-              id: 'questions',
-              label: t.dashboard.questions,
-              value: `${questionsAnswered}/${totalQuestionsCount}`,
-              sub: t.dashboard.answered,
-              icon: MessageCircleHeart,
-              onClick: () => onScreenNavigate?.('category-selection'),
-              completed: questionsAnswered,
-              total: totalQuestionsCount,
-            },
-          ].map(({ id, label, value, sub, icon: Icon, onClick, completed, total }) => (
-            <button
-              key={id}
-              type="button"
-              data-stat={id}
-              onClick={onClick}
-              className="tbo-glass dashboard-stat"
-            >
-              <Icon className="dashboard-stat__icon" strokeWidth={1.25} aria-hidden="true" />
-              <span className="dashboard-stat__value">{value}</span>
-              <span className="dashboard-stat__name tbo-card-title">{label}</span>
-              <span className="dashboard-stat__status tbo-supporting">{sub}</span>
-              <span className="dashboard-stat__track" aria-hidden="true">
-                <span
-                  className="dashboard-stat__fill"
-                  style={{ width: `${total > 0 ? Math.min(100, Math.max(0, completed / total * 100)) : 0}%` }}
-                />
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
-
       {/* Daily Bible Verse */}
       <Card 
         className="tbo-glass dashboard-verse overflow-hidden"
-        onClick={() => setIsBibleReaderOpen(true)}
+        onClick={() => {
+          setReaderReference(undefined);
+          setIsBibleReaderOpen(true);
+        }}
       >
         <CardHeader className="p-5 pb-3">
           <CardTitle className="tbo-card-title flex items-center gap-3">
@@ -772,6 +679,7 @@ export function CoupleDashboard({
                 className="tbo-action w-full"
                 onClick={(e) => {
                   e.stopPropagation();
+                  setReaderReference(undefined);
                   setIsBibleReaderOpen(true);
                 }}
               >
@@ -787,12 +695,12 @@ export function CoupleDashboard({
       </Card>
 
       {/* Bible Reader Dialog */}
-      {dailyVerse && (
+      {(dailyVerse || readerReference) && (
         <ComprehensiveBibleReader
           isOpen={isBibleReaderOpen}
           onClose={() => setIsBibleReaderOpen(false)}
-          reference={dailyVerse.reference}
-          verse={dailyVerse.text}
+          reference={readerReference || dailyVerse?.reference || 'Ecclesiastes 4:9'}
+          verse={readerReference ? 'Two are better than one; because they have a good reward for their labour.' : dailyVerse?.text || ''}
           partnerName={partner?.name}
           onSaveHighlight={async (data) => {
             try {
