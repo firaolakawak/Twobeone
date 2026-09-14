@@ -23,7 +23,7 @@ import { LearningModulesCard } from './LearningModulesCard';
 import { PushNotificationSetup } from './PushNotificationSetup';
 import { DistanceConnector } from './DistanceConnector';
 import { DailyMoodCheckIn } from './DailyMoodCheckIn';
-import { CoupleHeroHeading } from './CoupleMoodHeading';
+import { CoupleHeroHeading, PartnerMoodEmoji } from './CoupleMoodHeading';
 import { RelationshipSummary } from './RelationshipJourney';
 import { DashboardFeatureSection } from './DashboardFeatureSection';
 import { CoupleAvatarStack } from './CoupleAvatarStack';
@@ -151,7 +151,14 @@ export function CoupleDashboard({
   const [isBibleReaderOpen, setIsBibleReaderOpen] = useState(false);
   const [readerReference, setReaderReference] = useState<string>();
   const [verseLanguage, setVerseLanguage] = useState<'en' | 'am'>(() => language === 'am' ? 'am' : 'en');
-  const { userMood, loaded: moodsLoaded, saveMood } = useDailyMoods(partner ? profile?.id : undefined, partner?.id);
+  const { userMood, partnerMood, loaded: moodsLoaded, saveMood } = useDailyMoods(partner ? profile?.id : undefined, partner?.id);
+  const partnerMoodIndicator = partner && partnerMood ? (
+    <PartnerMoodEmoji
+      partnerName={partner.name || t.mood.partner}
+      partnerId={partner.id}
+      partnerMood={partnerMood}
+    />
+  ) : null;
   const [totalQuestionsCount, setTotalQuestionsCount] = useState(0);
   const [spotlightQuestions, setSpotlightQuestions] = useState<DashboardQuestion[]>([]);
   const [spotlightKind, setSpotlightKind] = useState<HomeSpotlightKind>(() => pickRandomHomeSpotlight());
@@ -499,6 +506,7 @@ export function CoupleDashboard({
               partnerId={partner.id}
               partnerName={partner.name || t.mood.partner}
               partnerAvatar={partner.profilePicture}
+              partnerMood={partnerMoodIndicator}
               accessToken={accessToken}
               userOnline={userOnline}
               partnerOnline={partnerOnline}
@@ -510,6 +518,7 @@ export function CoupleDashboard({
                 <CoupleHeroHeading
                   userName={profile?.name || t.mood.you}
                   partnerName={partner?.name || t.mood.partner}
+                  partnerMood={partnerMoodIndicator}
                 />
                 <CoupleAvatarStack
                   userName={profile?.name || t.mood.you}

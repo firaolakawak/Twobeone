@@ -40,12 +40,18 @@ function createUser(id: string, name: string) {
   };
 }
 
-async function renderDashboard(onScreenNavigate?: (screen: string) => void, coverPicture?: string) {
+async function renderDashboard(
+  onScreenNavigate?: (screen: string) => void,
+  coverPicture?: string,
+  { viewer = 'firaol', withAccessToken = true }: { viewer?: 'firaol' | 'keti'; withAccessToken?: boolean } = {},
+) {
+  const currentUser = createUser(viewer, viewer === 'firaol' ? 'Firaol Akawak' : 'Keti Abira');
+  const currentPartner = viewer === 'firaol' ? createUser('keti', 'Keti Abira') : createUser('firaol', 'Firaol Akawak');
   const view = render(
     <CoupleDashboard
-      profile={{ ...createUser('firaol', 'Firaol Akawak'), coverPicture }}
-      partner={createUser('keti', 'Keti Abira')}
-      accessToken="signed-in-token"
+      profile={{ ...currentUser, coverPicture }}
+      partner={currentPartner}
+      accessToken={withAccessToken ? 'signed-in-token' : undefined}
       userOnline
       partnerOnline
       journalEntries={[]}
@@ -121,8 +127,7 @@ describe('couple dashboard journey', () => {
     expect(journey.getByRole('img', { name: 'Firaol Akawak: online' })).toHaveAttribute('data-online', 'true');
     expect(journey.getByRole('img', { name: 'Keti Abira: online' })).toHaveAttribute('data-online', 'true');
 
-    expect(heading).toHaveTextContent(/^Firaol & Keti$/);
-    expect(journey.queryByRole('img', { name: /^Keti Abira:.*Today$/ })).not.toBeInTheDocument();
+    expect(within(heading).getByRole('img', { name: /^Keti Abira: Good.*Today$/ })).toBeVisible();
     expect(screen.getByRole('region', { name: 'Growth Stage' })).toBeVisible();
     expect(journey.queryByRole('region', { name: 'Growth Stage' })).not.toBeInTheDocument();
     expect(journey.queryByText(nextMilestoneTitle)).not.toBeInTheDocument();
@@ -137,6 +142,30 @@ describe('couple dashboard journey', () => {
     expect(document.querySelector('.couple-hero-backdrop img')).not.toBeInTheDocument();
     expect(journey.queryByRole('button', { name: 'Edit cover' })).not.toBeInTheDocument();
     expect(journey.getByRole('button', { name: /Location settings:.*km apart/ })).toBeVisible();
+  });
+
+  it.each([
+    { viewer: 'firaol' as const, withAccessToken: true },
+    { viewer: 'keti' as const, withAccessToken: true },
+    { viewer: 'firaol' as const, withAccessToken: false },
+    { viewer: 'keti' as const, withAccessToken: false },
+  ])('shows the other partner\'s mood for $viewer with access token $withAccessToken', async ({ viewer, withAccessToken }) => {
+    const partnerId = viewer === 'firaol' ? 'keti' : 'firaol';
+    const partnerName = viewer === 'firaol' ? 'Keti Abira' : 'Firaol Akawak';
+    vi.mocked(useDailyMoods).mockReturnValue({
+      userMood: { userId: viewer, mood: 'great', createdAt: now.toISOString() },
+      partnerMood: { userId: partnerId, mood: 'good', createdAt: now.toISOString() },
+      loaded: true,
+      saveMood: vi.fn().mockResolvedValue(undefined),
+    });
+    const journey = await renderDashboard(undefined, undefined, { viewer, withAccessToken });
+    const heading = journey.getByRole('heading', { level: 2 });
+    const emoji = within(heading).getByRole('img', { name: new RegExp(`^${partnerName}: Good.*Today$`) });
+
+    expect(emoji).toBeVisible();
+    expect(emoji.parentElement?.parentElement).toHaveTextContent(partnerName.split(' ')[0]);
+    expect(within(heading).getAllByRole('img')).toHaveLength(1);
+    expect(useDailyMoods).toHaveBeenCalledWith(viewer, partnerId);
   });
 
   it('loads the saved personal cover and restores the gradient when the image cannot load', async () => {
