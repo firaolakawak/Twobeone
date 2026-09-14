@@ -1,5 +1,5 @@
-import { memo, useEffect, useId, useState } from 'react';
-import { Clock, Globe, Heart } from 'lucide-react';
+import { memo, useEffect, useId, useState, type MouseEventHandler } from 'react';
+import { Clock, MapPin, Heart } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import '../styles/relationship-journey.css';
 import {
@@ -32,15 +32,21 @@ function useCurrentTime(refreshMs: number) {
 export const RelationshipSummary = memo(function RelationshipSummary({
   startDate,
   distanceKm,
+  onLocationClick,
 }: {
   startDate?: string;
   distanceKm?: number | null;
+  onLocationClick?: MouseEventHandler<HTMLButtonElement>;
 }) {
   const { t } = useLanguage();
   const heartGradient = useId();
   const now = useCurrentTime(1_000);
   const time = getElapsedRelationshipTime(startDate, now);
   const hasDistance = typeof distanceKm === 'number' && Number.isFinite(distanceKm) && distanceKm >= 0;
+  const distanceLabel = hasDistance
+    ? `${distanceKm < 10 ? distanceKm.toFixed(1) : Math.round(distanceKm)} km ${t.dashboard.distanceApart}`
+    : t.dashboard.shareLocation;
+  const locationContent = <><MapPin aria-hidden="true" /><span>{distanceLabel}</span></>;
   const clock = [time.hours, time.minutes, time.seconds].map(value => String(value).padStart(2, '0')).join(':');
 
   return (
@@ -68,16 +74,23 @@ export const RelationshipSummary = memo(function RelationshipSummary({
         </div>
       </div>
       <div className="relationship-summary-context">
-        {hasDistance && (
+        {(hasDistance || onLocationClick) && (
           <>
-            <div className="tbo-caption relationship-summary-distance">
-              <Globe aria-hidden="true" />
-              <span>{distanceKm < 10 ? distanceKm.toFixed(1) : Math.round(distanceKm)} km {t.dashboard.distanceApart}</span>
-            </div>
+            {onLocationClick ? (
+              <button
+                type="button"
+                className="tbo-caption relationship-summary-distance"
+                onClick={onLocationClick}
+                aria-label={`${t.dashboard.locationSettings}: ${distanceLabel}`}
+                aria-haspopup="dialog"
+                title={t.dashboard.locationSettings}
+                data-relationship-location
+              >{locationContent}</button>
+            ) : <div className="tbo-caption relationship-summary-distance">{locationContent}</div>}
             <span className="relationship-summary-context-divider" aria-hidden="true" />
           </>
         )}
-        <p className="relationship-summary-tagline">{t.dashboard.growingTogetherInFaith}</p>
+        <p className="tbo-caption relationship-summary-tagline">{t.dashboard.growingTogetherInFaith}</p>
       </div>
     </div>
   );

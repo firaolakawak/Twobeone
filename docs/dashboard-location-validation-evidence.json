@@ -1,0 +1,144 @@
+{
+  "scope": "Dashboard distance pill is the Location Settings entry with MapPin; hero gear and cover toolbar removed. Cover editor is validated separately on direct-load Profile.",
+  "checkedAt": "2026-09-14T18:20:14.963Z",
+  "browser": "Edg/153.0.4234.32",
+  "fixture": "Actual CoupleDashboard, LanguageProvider, header/navigation and Toaster with local populated relationship/location fixtures. No live location or cover writes.",
+  "matrix": {
+    "widths": [
+      320,
+      390,
+      510
+    ],
+    "languages": [
+      "en",
+      "am",
+      "om"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "rootTextScales": [
+      1,
+      2
+    ],
+    "longNamesAt200Percent": true,
+    "cases": 36,
+    "pageOverflow": 0,
+    "functionalOverflow": 0,
+    "offscreenText": 0,
+    "textBelow12px": 0,
+    "remainingHeroToolbarElements": 0,
+    "invalidDistanceButtons": 0,
+    "targetsBelow44px": 0
+  },
+  "targets": {
+    "scope": "510px at100%/125% and676px at125%, both themes.",
+    "cases": 6,
+    "pageOverflow": 0,
+    "functionalOverflow": 0,
+    "offscreenText": 0,
+    "textBelow12px": 0,
+    "remainingHeroToolbarElements": 0,
+    "invalidDistanceButtons": 0,
+    "targetsBelow44px": 0
+  },
+  "functionalChecks": [
+    {
+      "check": "distance is an accessible MapPin button",
+      "pass": true,
+      "tag": "BUTTON",
+      "label": "Location settings: 2386 km apart",
+      "popup": "dialog",
+      "mapPin": true
+    },
+    {
+      "check": "distance click opens Location Settings",
+      "pass": true,
+      "title": "Location Settings"
+    },
+    {
+      "check": "cancel restores distance pill focus",
+      "pass": true,
+      "restored": true
+    },
+    {
+      "check": "distance keyboard focus",
+      "focused": true,
+      "focusVisible": true,
+      "outline": "solid",
+      "width": "3px",
+      "shadow": "rgb(109, 53, 189) 0px 0px 0px 1px inset",
+      "pass": true
+    },
+    {
+      "check": "manual save returns focus to distance pill",
+      "pass": true,
+      "restored": true,
+      "pillText": "2509 km apart",
+      "writes": [
+        {
+          "method": "POST",
+          "payload": {
+            "location": {
+              "latitude": 25.2048,
+              "longitude": 55.2708,
+              "city": "Dubai",
+              "country": "United Arab Emirates"
+            },
+            "locationType": "manual"
+          }
+        }
+      ]
+    },
+    {
+      "check": "missing location retains actionable pill",
+      "pass": true,
+      "text": "Share your location",
+      "tag": "BUTTON",
+      "label": "Location settings: Share your location"
+    },
+    {
+      "check": "missing location opens dialog and cancel restores focus",
+      "pass": true,
+      "restored": true
+    },
+    {
+      "check": "hero toolbar removed",
+      "pass": true,
+      "count": 0
+    }
+  ],
+  "network": {
+    "liveWrites": 0,
+    "externalRequests": 0,
+    "mocks": [
+      "GET /couple-locations returns local partner coordinates",
+      "Nominatim city search returns a local Dubai fixture",
+      "POST /update-location updates the in-browser location fixture and returns success"
+    ],
+    "savedLocationCheck": "Displayed distance changed from2386km to2509km after the mocked save, and focus returned to the same distance button."
+  },
+  "errors": {
+    "applicationRuntime": [],
+    "developmentConsole": "Vite HMR WebSocket local-network warnings only."
+  },
+  "finalPreviewPaths": {
+    "combinedLight": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\distance-pill\\after-en-light-676-1.25x-normal.png",
+    "combinedDark": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\distance-pill\\after-en-dark-676-1.25x-normal.png",
+    "heroLight": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\distance-pill\\hero-only-light-676-1.25x.png",
+    "heroDark": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\distance-pill\\hero-only-dark-676-1.25x.png",
+    "reference510": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\distance-pill\\after-en-light-510-1x-normal.png"
+  },
+  "limitations": [
+    "The decorative active Growth orb ring is excluded from functional overflow totals.",
+    "CSS root text scaling does not assert native browser zoom equivalence.",
+    "Fixed header/navigation are hidden only for dashboard screenshots.",
+    "Physical mobile devices, actual geolocation permissions, live API responses and native-speaker translation review were not exercised."
+  ],
+  "temporaryReports": {
+    "matrix": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\distance-pill\\distancematrix-report.json",
+    "targets": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\distance-pill\\after-report.json",
+    "interactions": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\distance-pill\\distanceflow-report.json"
+  }
+}

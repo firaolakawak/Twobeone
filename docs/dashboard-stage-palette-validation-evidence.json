@@ -1,0 +1,368 @@
+{
+  "scope": "Pale hero matched to the Growth Stage surface, compact left-aligned counter with distance/tagline grouped underneath, and a normal-flow settings/cover toolbar with smaller visible icons and retained touch targets.",
+  "checkedAt": "2026-09-14T18:07:24.186Z",
+  "browser": "Edg/153.0.4234.32",
+  "fixture": "Actual CoupleDashboard and shared language/header/navigation/Toaster components with local 103-day relationship data and initials portraits. Optional cover fixtures use the local Scripture landscape WebP or a white SVG. API calls are mocked.",
+  "matrix": {
+    "widths": [
+      320,
+      390,
+      510,
+      676
+    ],
+    "languages": [
+      "en",
+      "am",
+      "om"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "rootTextScales": [
+      1,
+      2
+    ],
+    "longNamesAtScale2": true,
+    "cases": 48,
+    "pageOverflow": 0,
+    "functionalOverflow": 0,
+    "offscreenText": 0,
+    "textBelow12px": 0,
+    "unloadedImages": 0,
+    "toolbarOverflow": 0,
+    "avatarControlIntersections": 0,
+    "targetsBelow44px": 0,
+    "counterContextMisalignment": 0
+  },
+  "targetPreviews": {
+    "scope": "510px at 100% and125% root text;676px at125%; both themes. These supplemental captures overlap some matrix cases.",
+    "cases": 6,
+    "pageOverflow": 0,
+    "functionalOverflow": 0,
+    "offscreenText": 0,
+    "textBelow12px": 0,
+    "unloadedImages": 0,
+    "toolbarOverflow": 0,
+    "avatarControlIntersections": 0,
+    "targetsBelow44px": 0,
+    "counterContextMisalignment": 0
+  },
+  "surfaceMatching": {
+    "checkedCases": 48,
+    "gradientPaintMismatches": 0,
+    "foregroundMismatches": 0,
+    "samples": [
+      {
+        "theme": "light",
+        "heroBackdropPaint": "radial-gradient(at 12% 2%, rgba(216, 199, 255, 0.3), rgba(0, 0, 0, 0) 47%), radial-gradient(at 94% 78%, rgba(255, 218, 246, 0.18), rgba(0, 0, 0, 0) 60%), linear-gradient(125deg, rgba(255, 255, 255, 0.92), rgba(252, 248, 255, 0.83))",
+        "growthPaint": "radial-gradient(at 12% 2%, rgba(216, 199, 255, 0.3), rgba(0, 0, 0, 0) 47%), radial-gradient(at 94% 78%, rgba(255, 218, 246, 0.18), rgba(0, 0, 0, 0) 60%), linear-gradient(125deg, rgba(255, 255, 255, 0.92), rgba(252, 248, 255, 0.83))",
+        "heroForeground": "rgb(25, 43, 120)",
+        "growthForeground": "rgb(25, 43, 120)"
+      },
+      {
+        "theme": "dark",
+        "heroBackdropPaint": "radial-gradient(at 12% 2%, rgba(151, 93, 233, 0.16), rgba(0, 0, 0, 0) 47%), linear-gradient(125deg, rgba(51, 39, 72, 0.92), rgba(40, 29, 57, 0.94))",
+        "growthPaint": "radial-gradient(at 12% 2%, rgba(151, 93, 233, 0.16), rgba(0, 0, 0, 0) 47%), linear-gradient(125deg, rgba(51, 39, 72, 0.92), rgba(40, 29, 57, 0.94))",
+        "heroForeground": "rgb(242, 237, 255)",
+        "growthForeground": "rgb(242, 237, 255)"
+      }
+    ]
+  },
+  "counterAndToolbar": {
+    "contextAlignedBelowCounter": true,
+    "counterAndClockTextOverflow": 0,
+    "touchTargetsAtLeast44px": true,
+    "avatarIntersections": 0,
+    "measuredNormalTextControls": [
+      {
+        "label": "Location settings",
+        "touch": {
+          "width": 44,
+          "height": 44
+        },
+        "icon": {
+          "width": 16,
+          "height": 16
+        },
+        "visibleCircle": {
+          "width": "32px",
+          "height": "32px"
+        }
+      },
+      {
+        "label": "Edit cover",
+        "touch": {
+          "width": 44,
+          "height": 44
+        },
+        "icon": {
+          "width": 16,
+          "height": 16
+        },
+        "visibleCircle": {
+          "width": "32px",
+          "height": "32px"
+        }
+      }
+    ]
+  },
+  "functionalChecks": [
+    {
+      "check": "settings opens and draft survives language switch",
+      "pass": true,
+      "city": "Unsubmitted city",
+      "lang": "am"
+    },
+    {
+      "check": "settings toolbar focus returns",
+      "pass": true,
+      "restored": true
+    },
+    {
+      "check": "toolbar upload applies photo state",
+      "pass": true
+    },
+    {
+      "check": "toolbar remove restores default surface",
+      "pass": true
+    }
+  ],
+  "keyboardChecks": [
+    {
+      "check": "cover control keyboard focus",
+      "theme": "light",
+      "focused": true,
+      "visible": true,
+      "outline": "solid",
+      "width": "3px",
+      "color": "rgb(109, 53, 189)",
+      "pass": true
+    },
+    {
+      "check": "cover focus restored",
+      "theme": "light",
+      "restored": true,
+      "pass": true
+    },
+    {
+      "check": "cover control keyboard focus",
+      "theme": "dark",
+      "focused": true,
+      "visible": true,
+      "outline": "solid",
+      "width": "3px",
+      "color": "rgb(109, 53, 189)",
+      "pass": true
+    },
+    {
+      "check": "cover focus restored",
+      "theme": "dark",
+      "restored": true,
+      "pass": true
+    }
+  ],
+  "photoChecks": {
+    "cases": 4,
+    "pageOverflow": 0,
+    "functionalOverflow": 0,
+    "offscreenText": 0,
+    "textBelow12px": 0,
+    "unloadedImages": 0,
+    "toolbarOverflow": 0,
+    "avatarControlIntersections": 0,
+    "targetsBelow44px": 0,
+    "counterContextMisalignment": 0,
+    "fixtures": [
+      "local landscape",
+      "all-white image"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "width": 676,
+    "rootTextScale": 1.25,
+    "whiteNameColors": [
+      {
+        "theme": "light",
+        "color": "rgb(255, 255, 255)"
+      },
+      {
+        "theme": "dark",
+        "color": "rgb(255, 255, 255)"
+      },
+      {
+        "theme": "light",
+        "color": "rgb(255, 255, 255)"
+      },
+      {
+        "theme": "dark",
+        "color": "rgb(255, 255, 255)"
+      }
+    ],
+    "visualResult": "White-cover and dark-photo previews retain readable white foreground and a compact counter. Controls remain below the content, clear of portraits."
+  },
+  "coverDialog": {
+    "width": 390,
+    "language": "en",
+    "theme": "light",
+    "rootTextScale": 1,
+    "thumbnailLoaded": true,
+    "screenshot": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pale-hero\\dialog-en-light-390-1x.png"
+  },
+  "beforeAfter": {
+    "note": "The new toolbar markup had already landed when the baseline was captured. These compare the earlier dark-lavender style with the completed pale style; the prior optional-cover evidence preserves the older original toolbar layout.",
+    "cases": [
+      {
+        "width": 510,
+        "rootTextScale": 1,
+        "heroHeight": {
+          "before": 394.375,
+          "after": 334.78125
+        },
+        "counterWidth": {
+          "before": 274.8125,
+          "after": 256
+        },
+        "nameColor": {
+          "before": "rgb(255, 255, 255)",
+          "after": "rgb(25, 43, 120)"
+        }
+      },
+      {
+        "width": 510,
+        "rootTextScale": 1.25,
+        "heroHeight": {
+          "before": 445,
+          "after": 386
+        },
+        "counterWidth": {
+          "before": 450,
+          "after": 320
+        },
+        "nameColor": {
+          "before": "rgb(255, 255, 255)",
+          "after": "rgb(25, 43, 120)"
+        }
+      },
+      {
+        "width": 676,
+        "rootTextScale": 1.25,
+        "heroHeight": {
+          "before": 486,
+          "after": 423.5
+        },
+        "counterWidth": {
+          "before": 369.6875,
+          "after": 320
+        },
+        "nameColor": {
+          "before": "rgb(255, 255, 255)",
+          "after": "rgb(25, 43, 120)"
+        }
+      }
+    ]
+  },
+  "network": {
+    "liveWrites": 0,
+    "externalRequests": 0,
+    "mockedRoutes": [
+      "POST /profile/upload-cover",
+      "DELETE /profile/delete-cover"
+    ],
+    "response": "Successful uploads return the local fixture data URL; removal returns success. Calls are intercepted by window.fetch before network access.",
+    "requestMetadata": [
+      {
+        "method": "POST",
+        "route": "upload-cover",
+        "fileName": "glass-scripture-landscape.webp",
+        "contentType": "image/webp",
+        "imageDataPresent": true
+      },
+      {
+        "method": "DELETE",
+        "route": "delete-cover",
+        "imageDataPresent": false
+      }
+    ]
+  },
+  "errors": {
+    "applicationRuntime": [],
+    "developmentConsole": "Only Vite HMR WebSocket local-network warnings."
+  },
+  "limitations": [
+    "CSS root text scaling does not assert native browser zoom equivalence.",
+    "The active Growth orb decorative ring is excluded from functional overflow counts.",
+    "Matching gradient paint uses the same tokens; different underlying layout/backdrop filtering can affect composited pixels.",
+    "Fixed header/navigation are hidden only during dashboard screenshot capture.",
+    "Live uploads/storage, physical mobile devices, real portrait images and native-speaker translation review were not exercised."
+  ],
+  "finalPreviewPaths": {
+    "combinedLight": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pale-hero\\after-en-light-676-1.25x-normal.png",
+    "combinedDark": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pale-hero\\after-en-dark-676-1.25x-normal.png",
+    "heroLight": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pale-hero\\hero-only-light-676-1.25x.png",
+    "heroDark": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pale-hero\\hero-only-dark-676-1.25x.png",
+    "target510": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pale-hero\\after-en-light-510-1x-normal.png",
+    "target510Enlarged": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pale-hero\\after-en-light-510-1.25x-normal.png",
+    "coverDialog": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pale-hero\\dialog-en-light-390-1x.png",
+    "whiteCover": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pale-hero\\white-en-light-676-1.25x-normal.png",
+    "darkPhotoCover": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pale-hero\\photo-en-dark-676-1.25x-normal.png"
+  },
+  "temporaryReports": {
+    "before": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pale-hero\\before-report.json",
+    "after": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pale-hero\\after-report.json",
+    "palematrix": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pale-hero\\palematrix-report.json",
+    "toolbarflow": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pale-hero\\toolbarflow-report.json",
+    "photo": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pale-hero\\photo-report.json",
+    "white": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pale-hero\\white-report.json",
+    "coverfocus": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pale-hero\\coverfocus-report.json",
+    "dialogpreview": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\pale-hero\\dialogpreview-report.json",
+    "spacing": "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-glass-qa/pale-hero/spacing-report.json"
+  },
+  "spacingRecheck": {
+    "scope": "Restored approved name margin and top padding. Six target previews refreshed after this final vertical-only adjustment; one320px Amharic200% long-name case rechecked without repeating the48-case matrix.",
+    "targetCases": 6,
+    "targetFunctionalOverflow": 0,
+    "narrowCases": 1,
+    "narrowFunctionalOverflow": 0,
+    "offscreenText": 0,
+    "smallText": 0,
+    "avatarIntersections": 0,
+    "reachability": [
+      {
+        "check": "control reachable after spacing adjustment",
+        "selector": ".couple-hero-settings",
+        "bounds": {
+          "x": 104,
+          "y": 505.890625,
+          "width": 88,
+          "height": 88,
+          "top": 505.890625,
+          "right": 192,
+          "bottom": 593.890625,
+          "left": 104
+        },
+        "insideViewport": true,
+        "hitTarget": true
+      },
+      {
+        "check": "control reachable after spacing adjustment",
+        "selector": ".couple-hero-cover-button",
+        "bounds": {
+          "x": 200,
+          "y": 505.890625,
+          "width": 88,
+          "height": 88,
+          "top": 505.890625,
+          "right": 288,
+          "bottom": 593.890625,
+          "left": 200
+        },
+        "insideViewport": true,
+        "hitTarget": true
+      }
+    ],
+    "runtimeErrors": []
+  }
+}

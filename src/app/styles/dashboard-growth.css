@@ -1,7 +1,7 @@
 .dashboard-growth {
-  --growth-ink: #192b78;
-  --growth-muted: #5862a2;
-  --growth-pink: #d72d9f;
+  --growth-ink: var(--glass-journey-ink);
+  --growth-muted: var(--glass-journey-muted);
+  --growth-pink: var(--glass-journey-pink);
   --growth-orb-size: 3.625rem;
   --growth-orb-surface: linear-gradient(140deg, rgb(255 255 255 / .96), rgb(247 244 255 / .85) 58%, rgb(233 226 255 / .78));
   position: relative;
@@ -11,7 +11,7 @@
   border: 1.5px solid rgb(255 255 255 / .95);
   border-radius: 1.875rem;
   color: var(--growth-ink);
-  background: radial-gradient(ellipse at 12% 2%, rgb(216 199 255 / .3), transparent 47%), radial-gradient(ellipse at 94% 78%, rgb(255 218 246 / .18), transparent 60%), linear-gradient(125deg, rgb(255 255 255 / .92), rgb(252 248 255 / .83));
+  background: var(--glass-journey-surface);
   box-shadow: inset 0 1px 0 #fff, 0 12px 28px -15px rgb(112 73 174 / .18);
   backdrop-filter: blur(24px) saturate(1.15);
   -webkit-backdrop-filter: blur(24px) saturate(1.15);
@@ -211,12 +211,8 @@
 }
 
 .dark .dashboard-growth {
-  --growth-ink: #f2edff;
-  --growth-muted: #c4b9e4;
-  --growth-pink: #ff9ad8;
   --growth-orb-surface: linear-gradient(140deg, #544270, #352746);
   border-color: rgb(242 222 255 / .28);
-  background: radial-gradient(ellipse at 12% 2%, rgb(151 93 233 / .16), transparent 47%), linear-gradient(125deg, rgb(51 39 72 / .92), rgb(40 29 57 / .94));
   box-shadow: inset 0 1px 0 rgb(255 255 255 / .15), 0 12px 28px -12px rgb(0 0 0 / .38);
 }
 

@@ -1,0 +1,217 @@
+{
+    "scope":  "Cover editor moved to the active Profile SettingsScreen; shared cover changes reflected in the actual CoupleDashboard.",
+    "browser":  "Edg/153.0.4234.32",
+    "origin":  "http://127.0.0.1:5173",
+    "components":  [
+                       "SettingsScreen",
+                       "CoupleHeroCoverEditor",
+                       "CoupleDashboard"
+                   ],
+    "setup":  "Profile was mounted directly before any Dashboard module or Dashboard stylesheet was imported. Dashboard was imported later to verify shared cover persistence.",
+    "headerLayouts":  {
+                          "count":  36,
+                          "widthsCssPx":  [
+                                              320,
+                                              390,
+                                              510
+                                          ],
+                          "languages":  [
+                                            "en",
+                                            "am",
+                                            "om"
+                                        ],
+                          "themes":  [
+                                         "light",
+                                         "dark"
+                                     ],
+                          "rootTextScales":  [
+                                                 1,
+                                                 2
+                                             ],
+                          "longNamesAt200Percent":  true,
+                          "failures":  0,
+                          "pageOverflowCases":  0,
+                          "controlBadgeAvatarIntersectionCases":  0,
+                          "overflowingContentCases":  0,
+                          "offscreenContentCases":  0,
+                          "functionalTextBelow12PxCases":  0,
+                          "editButtonCssPxAt100Percent":  [
+                                                              44,
+                                                              44
+                                                          ],
+                          "editButtonCssPxAt200Percent":  [
+                                                              88,
+                                                              88
+                                                          ]
+                      },
+    "editorLayouts":  {
+                          "count":  12,
+                          "combinations":  [
+                                               "390px at 100% root text",
+                                               "320px at 200% root text"
+                                           ],
+                          "languages":  [
+                                            "en",
+                                            "am",
+                                            "om"
+                                        ],
+                          "themes":  [
+                                         "light",
+                                         "dark"
+                                     ],
+                          "failures":  0,
+                          "footerReachableInAllCases":  true,
+                          "loadedPreviewInAllCases":  true,
+                          "functionalTextBelow12PxCases":  0
+                      },
+    "interactionChecks":  {
+                              "count":  22,
+                              "passed":  22,
+                              "failed":  0,
+                              "checks":  [
+                                             {
+                                                 "name":  "Profile direct-load has independent cover styles",
+                                                 "pass":  true
+                                             },
+                                             {
+                                                 "name":  "default Profile gradient",
+                                                 "pass":  true
+                                             },
+                                             {
+                                                 "name":  "avatar remains a separate picture menu",
+                                                 "pass":  true
+                                             },
+                                             {
+                                                 "name":  "avatar menu returns keyboard focus",
+                                                 "pass":  true
+                                             },
+                                             {
+                                                 "name":  "local thumbnail before upload",
+                                                 "pass":  true
+                                             },
+                                             {
+                                                 "name":  "draft survives language switch",
+                                                 "pass":  true
+                                             },
+                                             {
+                                                 "name":  "cancel preserves cover and returns focus",
+                                                 "pass":  true
+                                             },
+                                             {
+                                                 "name":  "pending upload disables actions and blocks close",
+                                                 "pass":  true
+                                             },
+                                             {
+                                                 "name":  "save applies image and refreshes shared Profile",
+                                                 "pass":  true
+                                             },
+                                             {
+                                                 "name":  "save restores cover button focus",
+                                                 "pass":  true
+                                             },
+                                             {
+                                                 "name":  "failed upload preserves photo and draft",
+                                                 "pass":  true
+                                             },
+                                             {
+                                                 "name":  "failed removal preserves photo",
+                                                 "pass":  true
+                                             },
+                                             {
+                                                 "name":  "saved Profile photo appears on deferred Dashboard mount",
+                                                 "pass":  true
+                                             },
+                                             {
+                                                 "name":  "Dashboard retains saved cover after shared refresh",
+                                                 "pass":  true
+                                             },
+                                             {
+                                                 "name":  "successful removal restores Profile gradient",
+                                                 "pass":  true
+                                             },
+                                             {
+                                                 "name":  "removed cover restores Dashboard gradient",
+                                                 "pass":  true
+                                             },
+                                             {
+                                                 "name":  "invalid stored photo falls back to Profile gradient",
+                                                 "pass":  true
+                                             },
+                                             {
+                                                 "name":  "invalid stored photo remains removable",
+                                                 "pass":  true
+                                             },
+                                             {
+                                                 "name":  "visible keyboard focus light",
+                                                 "pass":  true
+                                             },
+                                             {
+                                                 "name":  "focus restored light",
+                                                 "pass":  true
+                                             },
+                                             {
+                                                 "name":  "visible keyboard focus dark",
+                                                 "pass":  true
+                                             },
+                                             {
+                                                 "name":  "focus restored dark",
+                                                 "pass":  true
+                                             }
+                                         ]
+                          },
+    "network":  {
+                    "mode":  "All API requests mocked in the browser with local fixtures; no live writes.",
+                    "externalRequests":  0,
+                    "coverRequests":  [
+                                          {
+                                              "route":  "upload-cover",
+                                              "method":  "POST",
+                                              "fileName":  "glass-scripture-landscape.webp",
+                                              "contentType":  "image/webp",
+                                              "imageDataPresent":  true
+                                          },
+                                          {
+                                              "route":  "upload-cover",
+                                              "method":  "POST",
+                                              "fileName":  "glass-scripture-landscape.webp",
+                                              "contentType":  "image/webp",
+                                              "imageDataPresent":  true
+                                          },
+                                          {
+                                              "route":  "delete-cover",
+                                              "method":  "DELETE",
+                                              "imageDataPresent":  false
+                                          },
+                                          {
+                                              "route":  "delete-cover",
+                                              "method":  "DELETE",
+                                              "imageDataPresent":  false
+                                          }
+                                      ],
+                    "scenarios":  [
+                                      "successful upload",
+                                      "failed upload",
+                                      "failed deletion",
+                                      "successful deletion"
+                                  ],
+                    "fixture":  "Local glass-scripture-landscape.webp; local object URL preview and fixture response image."
+                },
+    "errors":  {
+                   "applicationPageErrors":  0,
+                   "consoleNotes":  [
+                                        "Three local Vite HMR WebSocket connection warnings; no application errors."
+                                    ],
+                   "intentionalBadImage":  "Invalid stored photo tested with gradient fallback and removal available."
+               },
+    "resolvedFinding":  "The Edit cover control initially measured 36 by 44 CSS px because Radix changed data-slot. The selector was corrected; the final run measures 44 by 44 at 100% and 88 by 88 at 200% in every header case.",
+    "previews":  [
+                     "docs/profile-cover-reference.png",
+                     "docs/profile-cover-reference-dark.png",
+                     "docs/couple-cover-editor-reference.png"
+                 ],
+    "rawReport":  "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-glass-qa/profile-cover-move/profile-cover-report.json",
+    "limitations":  [
+                        "Text enlargement used CSS root font scaling; native browser zoom was not independently exercised.",
+                        "Persistence was verified through mocked shared profile refresh and a subsequent actual Dashboard mount; no production account or storage service was modified."
+                    ]
+}

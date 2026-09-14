@@ -1424,16 +1424,13 @@ app.post('/make-server-6d579fee/profile/upload-cover', async (c) => {
       if (bucketError) return c.json({ error: bucketError.message }, 500);
     }
 
-    if (profile.coverPicture) {
-      const oldFileName = profile.coverPicture.split('/').pop()?.split('?')[0];
-      if (oldFileName) await supabase.storage.from(bucketName).remove([`${userId}/${oldFileName}`]);
-    }
-
-    const fileName = `cover-${Date.now()}.${allowedTypes[contentType]}`;
+    const oldFileName = profile.coverPicture?.split('/').pop()?.split('?')[0];
+    // A replacement must never overwrite the object still referenced by the profile.
+    const fileName = `cover-${Date.now()}-${crypto.randomUUID()}.${allowedTypes[contentType]}`;
     const filePath = `${userId}/${fileName}`;
     const { error: uploadError } = await supabase.storage
       .from(bucketName)
-      .upload(filePath, buffer, { contentType, upsert: true });
+      .upload(filePath, buffer, { contentType, upsert: false });
     if (uploadError) return c.json({ error: uploadError.message }, 500);
 
     const { data: signedUrlData, error: signedUrlError } = await supabase.storage
@@ -1444,10 +1441,26 @@ app.post('/make-server-6d579fee/profile/upload-cover', async (c) => {
       return c.json({ error: 'Failed to generate cover URL' }, 500);
     }
 
-    profile.coverPicture = signedUrlData.signedUrl;
-    profile.updatedAt = new Date().toISOString();
-    await kv.set(`user:${userId}`, profile);
-    return c.json({ success: true, imageUrl: profile.coverPicture, profile });
+    const updatedProfile = {
+      ...profile,
+      coverPicture: signedUrlData.signedUrl,
+      updatedAt: new Date().toISOString(),
+    };
+    // Keep both objects if persistence fails: the write may have committed before
+    // its response was lost, so removing either cover here could break the profile.
+    await kv.set(`user:${userId}`, updatedProfile);
+
+    if (oldFileName && `${userId}/${oldFileName}` !== filePath) {
+      try {
+        const { error: cleanupError } = await supabase.storage
+          .from(bucketName)
+          .remove([`${userId}/${oldFileName}`]);
+        if (cleanupError) console.error('[POST /profile/upload-cover] Old cover cleanup failed:', cleanupError);
+      } catch (cleanupError) {
+        console.error('[POST /profile/upload-cover] Old cover cleanup failed:', cleanupError);
+      }
+    }
+    return c.json({ success: true, imageUrl: updatedProfile.coverPicture, profile: updatedProfile });
   } catch (error: any) {
     console.error('[POST /profile/upload-cover] Error:', error);
     return c.json({ error: error.message || 'Failed to upload cover picture' }, 500);
@@ -1470,17 +1483,26 @@ app.delete('/make-server-6d579fee/profile/delete-cover', async (c) => {
     );
     const bucketName = 'make-6d579fee-profile-covers';
     const fileName = profile.coverPicture.split('/').pop()?.split('?')[0];
-    if (fileName) {
-      const { error: deleteError } = await supabase.storage
-        .from(bucketName)
-        .remove([`${userId}/${fileName}`]);
-      if (deleteError) console.error('[DELETE /profile/delete-cover] Storage cleanup failed:', deleteError);
-    }
+    const updatedProfile = {
+      ...profile,
+      coverPicture: null,
+      updatedAt: new Date().toISOString(),
+    };
+    // Persist the gradient fallback before deleting the object, so a failed
+    // profile write cannot leave the existing cover URL pointing at a missing file.
+    await kv.set(`user:${userId}`, updatedProfile);
 
-    profile.coverPicture = null;
-    profile.updatedAt = new Date().toISOString();
-    await kv.set(`user:${userId}`, profile);
-    return c.json({ success: true, profile });
+    if (fileName) {
+      try {
+        const { error: deleteError } = await supabase.storage
+          .from(bucketName)
+          .remove([`${userId}/${fileName}`]);
+        if (deleteError) console.error('[DELETE /profile/delete-cover] Storage cleanup failed:', deleteError);
+      } catch (deleteError) {
+        console.error('[DELETE /profile/delete-cover] Storage cleanup failed:', deleteError);
+      }
+    }
+    return c.json({ success: true, profile: updatedProfile });
   } catch (error: any) {
     console.error('[DELETE /profile/delete-cover] Error:', error);
     return c.json({ error: error.message || 'Failed to delete cover picture' }, 500);

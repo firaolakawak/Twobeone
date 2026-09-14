@@ -1,16 +1,23 @@
-import { act, cleanup, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LanguageProvider } from '../../contexts/LanguageContext';
 import { SettingsScreen } from '../SettingsScreen';
 import { setCurrentLanguage } from '../../utils/languageStore';
 
+const NativeURL = URL;
+
 describe('SettingsScreen', () => {
   beforeEach(() => {
+    setCurrentLanguage('en');
     vi.stubGlobal('ResizeObserver', class ResizeObserver {
       observe() {}
       unobserve() {}
       disconnect() {}
+    });
+    vi.stubGlobal('URL', class extends NativeURL {
+      static createObjectURL = vi.fn(() => 'blob:profile-cover-selection');
+      static revokeObjectURL = vi.fn();
     });
   });
 
@@ -48,16 +55,65 @@ describe('SettingsScreen', () => {
     expect(screen.queryByText('Debug Responses')).not.toBeInTheDocument();
     expect(screen.queryByText('Testing Dashboard')).not.toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole('button', { name: 'Cover picture options' }));
-    expect(screen.getByRole('menuitem', { name: 'Change Cover' })).toBeInTheDocument();
-    expect(screen.getByRole('menuitem', { name: 'Delete Cover' })).toBeInTheDocument();
+    const editCover = screen.getByRole('button', { name: 'Edit cover' });
+    expect(editCover).toHaveClass('profile-cover-edit-button');
+    expect(editCover.closest('[data-profile-cover]')).not.toBeNull();
+    expect(screen.queryByRole('button', { name: 'Cover picture options' })).not.toBeInTheDocument();
+    await userEvent.click(editCover);
+    expect(screen.getByRole('dialog', { name: 'Edit cover' })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Current cover preview' })).toHaveAttribute('src', 'https://example.com/cover.jpg');
+    expect(screen.getByRole('button', { name: 'Remove cover' })).toBeInTheDocument();
     await userEvent.keyboard('{Escape}');
+    expect(editCover).toHaveFocus();
 
     await userEvent.click(screen.getByRole('button', { name: 'Profile picture options' }));
     expect(screen.getByRole('menuitem', { name: 'Change Picture' })).toBeInTheDocument();
     expect(screen.getByRole('menuitem', { name: 'Delete Picture' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Change profile picture' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Delete profile picture' })).not.toBeInTheDocument();
+  });
+
+  it('previews, saves and removes the Profile header cover immediately, then syncs a refreshed cover', async () => {
+    const previousCover = 'https://example.com/previous-cover.webp';
+    const savedCover = 'https://example.com/saved-cover.webp';
+    const refreshedCover = 'https://example.com/refreshed-cover.webp';
+    const onRefresh = vi.fn().mockResolvedValue(undefined);
+    const fetchMock = vi.fn(async (url: string) => ({
+      ok: true,
+      json: async () => url.endsWith('/profile/upload-cover') ? { success: true, imageUrl: savedCover } : { success: true },
+    } as Response));
+    vi.stubGlobal('fetch', fetchMock);
+    const profile = { id: 'u1', name: 'Keti', email: 'keti@example.com', coverPicture: previousCover } as any;
+    const props = { onSignOut: vi.fn(), onUpdateProfile: vi.fn(), accessToken: 'fixture-token', onRefresh };
+    const { container, rerender } = render(<LanguageProvider><SettingsScreen profile={profile} {...props} /></LanguageProvider>);
+    const headerImage = () => container.querySelector('[data-profile-cover-image]');
+    const editCover = screen.getByRole('button', { name: 'Edit cover' });
+    expect(headerImage()).toHaveAttribute('src', previousCover);
+
+    await userEvent.click(editCover);
+    fireEvent.change(screen.getByLabelText('Choose cover photo'), { target: { files: [new File(['image'], 'cover.png', { type: 'image/png' })] } });
+    const preview = screen.getByRole('img', { name: 'Selected cover preview' });
+    expect(preview).toHaveAttribute('src', 'blob:profile-cover-selection');
+    expect(headerImage()).toHaveAttribute('src', previousCover);
+    expect(fetchMock).not.toHaveBeenCalled();
+    fireEvent.load(preview);
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(headerImage()).toHaveAttribute('src', savedCover));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(onRefresh).toHaveBeenCalledOnce();
+    expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining('/profile/upload-cover'), expect.objectContaining({ method: 'POST' }));
+
+    await userEvent.click(editCover);
+    expect(screen.getByRole('img', { name: 'Current cover preview' })).toHaveAttribute('src', savedCover);
+    await userEvent.click(screen.getByRole('button', { name: 'Remove cover' }));
+    await waitFor(() => expect(headerImage()).toBeNull());
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(onRefresh).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining('/profile/delete-cover'), expect.objectContaining({ method: 'DELETE' }));
+    await waitFor(() => expect(editCover).toHaveFocus());
+
+    rerender(<LanguageProvider><SettingsScreen profile={{ ...profile, coverPicture: refreshedCover }} {...props} /></LanguageProvider>);
+    expect(headerImage()).toHaveAttribute('src', refreshedCover);
   });
 
   it('changes an open contact dialog language while preserving the message draft', async () => {

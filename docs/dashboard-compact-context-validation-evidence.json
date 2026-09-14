@@ -1,0 +1,251 @@
+{
+  "scope": "Compact dashboard location pill and Growing together in faith caption; no Profile or cover behavior retesting.",
+  "browser": "Edg/153.0.4234.32",
+  "origin": "http://127.0.0.1:5173",
+  "layout": {
+    "count": 30,
+    "narrow": {
+      "count": 24,
+      "widthsCssPx": [
+        320,
+        390
+      ],
+      "rootTextScales": [
+        1,
+        2
+      ],
+      "longNamesAt200Percent": true
+    },
+    "reference": {
+      "count": 6,
+      "widthCssPx": 446,
+      "rootTextScale": 1.25
+    },
+    "languages": [
+      "en",
+      "am",
+      "om"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "failures": {
+      "pageOverflow": 0,
+      "functionalOverflow": 0,
+      "offscreenText": 0,
+      "smallText": 0,
+      "undersizedTargets": 0,
+      "incorrectFonts": 0,
+      "incorrectPinSize": 0,
+      "interaction": 0
+    },
+    "decorativeExclusion": "Existing dashboard-growth-orb decorative ring reports one scrollWidth flag in each case; only that class was excluded from functional overflow."
+  },
+  "sizeMeasurements": {
+    "normal": {
+      "width": 320,
+      "scale": 1,
+      "language": "en",
+      "theme": "light",
+      "buttonHeight": 44,
+      "visiblePillHeight": 30,
+      "distanceFont": 12,
+      "taglineFont": 12,
+      "taglineWeight": "500",
+      "pinSize": 14
+    },
+    "reference": {
+      "width": 446,
+      "scale": 1.25,
+      "language": "en",
+      "theme": "light",
+      "buttonHeight": 55,
+      "visiblePillHeight": 38,
+      "distanceFont": 15,
+      "taglineFont": 15,
+      "taglineWeight": "500",
+      "pinSize": 17.5
+    },
+    "enlarged": {
+      "width": 320,
+      "scale": 2,
+      "language": "en",
+      "theme": "light",
+      "buttonHeight": 88,
+      "visiblePillHeight": 62,
+      "distanceFont": 24,
+      "taglineFont": 24,
+      "taglineWeight": "500",
+      "pinSize": 28
+    }
+  },
+  "interactions": {
+    "count": 8,
+    "passed": 8,
+    "checks": [
+      {
+        "check": "distance is an accessible MapPin button",
+        "pass": true,
+        "tag": "BUTTON",
+        "label": "Location settings: 2386 km apart",
+        "popup": "dialog",
+        "mapPin": true
+      },
+      {
+        "check": "distance click opens Location Settings",
+        "pass": true,
+        "title": "Location Settings"
+      },
+      {
+        "check": "cancel restores distance pill focus",
+        "pass": true,
+        "restored": true
+      },
+      {
+        "check": "distance keyboard focus",
+        "focused": true,
+        "focusVisible": true,
+        "outline": "solid",
+        "width": "3px",
+        "shadow": "none",
+        "pass": true
+      },
+      {
+        "check": "manual save returns focus to distance pill",
+        "pass": true,
+        "restored": true,
+        "pillText": "2509 km apart",
+        "writes": [
+          {
+            "method": "POST",
+            "payload": {
+              "location": {
+                "latitude": 25.2048,
+                "longitude": 55.2708,
+                "city": "Dubai",
+                "country": "United Arab Emirates"
+              },
+              "locationType": "manual"
+            }
+          }
+        ]
+      },
+      {
+        "check": "missing location retains actionable pill",
+        "pass": true,
+        "text": "Share your location",
+        "tag": "BUTTON",
+        "label": "Location settings: Share your location"
+      },
+      {
+        "check": "missing location opens dialog and cancel restores focus",
+        "pass": true,
+        "restored": true
+      },
+      {
+        "check": "hero toolbar removed",
+        "pass": true,
+        "count": 0
+      }
+    ]
+  },
+  "media": {
+    "count": 4,
+    "checks": [
+      {
+        "check": "forced-colors",
+        "theme": "light",
+        "active": true,
+        "button": {
+          "width": 114.953125,
+          "height": 44,
+          "color": "rgb(0, 0, 0)",
+          "background": "rgba(255, 255, 255, 0)"
+        },
+        "surface": {
+          "background": "rgb(255, 255, 255)",
+          "paint": "none",
+          "border": "rgb(0, 0, 0)",
+          "borderWidth": "1px",
+          "height": "30px",
+          "backdrop": "none"
+        }
+      },
+      {
+        "check": "prefers-reduced-transparency",
+        "theme": "light",
+        "active": true,
+        "button": {
+          "width": 114.953125,
+          "height": 44,
+          "color": "rgb(88, 98, 162)",
+          "background": "rgba(0, 0, 0, 0)"
+        },
+        "surface": {
+          "background": "rgb(248, 242, 255)",
+          "paint": "none",
+          "border": "rgb(88, 98, 162)",
+          "borderWidth": "0px",
+          "height": "30px",
+          "backdrop": "none"
+        }
+      },
+      {
+        "check": "forced-colors",
+        "theme": "dark",
+        "active": true,
+        "button": {
+          "width": 114.953125,
+          "height": 44,
+          "color": "rgb(0, 0, 0)",
+          "background": "rgba(255, 255, 255, 0)"
+        },
+        "surface": {
+          "background": "rgb(255, 255, 255)",
+          "paint": "none",
+          "border": "rgb(0, 0, 0)",
+          "borderWidth": "1px",
+          "height": "30px",
+          "backdrop": "none"
+        }
+      },
+      {
+        "check": "prefers-reduced-transparency",
+        "theme": "dark",
+        "active": true,
+        "button": {
+          "width": 114.953125,
+          "height": 44,
+          "color": "rgb(196, 185, 228)",
+          "background": "rgba(0, 0, 0, 0)"
+        },
+        "surface": {
+          "background": "rgb(48, 34, 63)",
+          "paint": "none",
+          "border": "rgb(196, 185, 228)",
+          "borderWidth": "0px",
+          "height": "30px",
+          "backdrop": "none"
+        }
+      }
+    ]
+  },
+  "errors": {
+    "applicationErrors": 0,
+    "externalRequests": 0,
+    "console": "Only expected local Vite HMR WebSocket connection warnings."
+  },
+  "network": "Actual components mounted using local fixtures. All external API reads and the one manual-location POST were mocked; no live writes.",
+  "preview": "docs/couple-hero-responsive-reference.png",
+  "rawReports": [
+    "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-glass-qa/compact-context/distancematrix-report.json",
+    "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-glass-qa/compact-context/after-report.json",
+    "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-glass-qa/compact-context/distanceflow-report.json",
+    "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-glass-qa/compact-context/contextmedia-report.json"
+  ],
+  "limitations": [
+    "Text enlargement used CSS root font scaling; native browser zoom was not independently exercised.",
+    "Reference preview uses fixture initials instead of private profile photos."
+  ]
+}

@@ -40,10 +40,10 @@ function createUser(id: string, name: string) {
   };
 }
 
-async function renderDashboard(onScreenNavigate?: (screen: string) => void) {
+async function renderDashboard(onScreenNavigate?: (screen: string) => void, coverPicture?: string) {
   const view = render(
     <CoupleDashboard
-      profile={createUser('firaol', 'Firaol Akawak')}
+      profile={{ ...createUser('firaol', 'Firaol Akawak'), coverPicture }}
       partner={createUser('keti', 'Keti Abira')}
       accessToken="signed-in-token"
       userOnline
@@ -134,6 +134,32 @@ describe('couple dashboard journey', () => {
     expect(journey.queryByRole('button', { name: "Today's Mood" })).not.toBeInTheDocument();
     expect(onScreenNavigate).not.toHaveBeenCalled();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(document.querySelector('.couple-hero-backdrop img')).not.toBeInTheDocument();
+    expect(journey.queryByRole('button', { name: 'Edit cover' })).not.toBeInTheDocument();
+    expect(journey.getByRole('button', { name: /Location settings:.*km apart/ })).toBeVisible();
+  });
+
+  it('loads the saved personal cover and restores the gradient when the image cannot load', async () => {
+    const journey = await renderDashboard(undefined, 'https://example.com/my-cover.webp');
+    const cover = document.querySelector('.couple-hero-backdrop img')!;
+    expect(cover).toHaveAttribute('src', 'https://example.com/my-cover.webp');
+    fireEvent.error(cover);
+    expect(document.querySelector('.couple-hero-backdrop img')).not.toBeInTheDocument();
+    expect(document.querySelector('.couple-hero-backdrop')).not.toHaveClass('couple-hero-backdrop--photo');
+    expect(journey.queryByRole('button', { name: 'Edit cover' })).not.toBeInTheDocument();
+  });
+
+  it('opens location settings from the distance pin and returns focus to the pill', async () => {
+    const journey = await renderDashboard();
+    const locationButton = journey.getByRole('button', { name: /Location settings:.*km apart/ });
+    fireEvent.click(locationButton.querySelector('svg')!);
+    expect(screen.getByRole('dialog', { name: 'Location Settings' })).toBeVisible();
+    expect(screen.getByPlaceholderText('e.g., Abu Dhabi, UAE')).toBeVisible();
+    fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
+    await act(async () => vi.advanceTimersByTimeAsync(250));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(locationButton).toHaveFocus();
+    expect(journey.queryByRole('button', { name: 'Location settings', exact: true })).not.toBeInTheDocument();
   });
 
   it.each([

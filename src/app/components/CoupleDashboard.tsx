@@ -36,7 +36,6 @@ import { moods as moodsApi, questions as questionsApi } from '../utils/api';
 import { fetchAmharicChapter, getAmharicBookName } from '../utils/amharicBibleApi';
 import { ChampionsCard } from './ChampionsCard';
 import '../styles/dashboard-glass.css';
-import heroLandscape from '../../assets/couple-garden-reference.webp';
 
 export interface CoupleDashboardProps {
   profile?: User & {
@@ -141,6 +140,9 @@ export function CoupleDashboard({
 }: CoupleDashboardProps) {
   const tr = useUiCopy(coupleUiMessages);
   const { t, language } = useLanguage();
+  const heroCover = profile?.coverPicture || undefined;
+  const [failedCover, setFailedCover] = useState<string>();
+  const showHeroCover = heroCover && heroCover !== failedCover;
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [coupleData, setCoupleData] = useState<CoupleData>({});
@@ -483,9 +485,9 @@ export function CoupleDashboard({
   return (
     <div className="couple-dashboard">
       {/* Couple profile and shared journey */}
-      <Card className="tbo-glass couple-glass-hero relative overflow-hidden" data-couple-journey>
-        <div className="couple-hero-backdrop" aria-hidden="true">
-          <img src={heroLandscape} alt="" />
+      <Card className={`tbo-glass couple-glass-hero relative overflow-hidden${showHeroCover ? ' couple-glass-hero--photo' : ''}`} data-couple-journey>
+        <div className={`couple-hero-backdrop${showHeroCover ? ' couple-hero-backdrop--photo' : ''}`} aria-hidden="true">
+          {showHeroCover && <img key={heroCover} src={heroCover} alt="" onError={() => setFailedCover(heroCover)} />}
         </div>
         <CardContent className="couple-hero-content relative">
           {partner && profile?.id && accessToken ? (
@@ -500,7 +502,7 @@ export function CoupleDashboard({
               accessToken={accessToken}
               userOnline={userOnline}
               partnerOnline={partnerOnline}
-              summaryContent={(distanceKm) => <RelationshipSummary startDate={relationshipStart} distanceKm={distanceKm} />}
+              summaryContent={(distanceKm, openLocationSettings) => <RelationshipSummary startDate={relationshipStart} distanceKm={distanceKm} onLocationClick={openLocationSettings} />}
             />
           ) : (
             <div className="couple-hero-layout">

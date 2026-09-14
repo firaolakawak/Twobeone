@@ -1,7 +1,7 @@
 import { useUiCopy } from '../utils/uiTranslation';
 import { LoadingMark } from './BrandLoader';
 import { profileUiMessages } from '../locales/profileUi';
-import { useState, useEffect, useRef, type MouseEvent, type ReactNode } from "react";
+import { useState, useEffect, useRef, type MouseEvent, type MouseEventHandler, type ReactNode } from "react";
 import {
   Avatar,
   AvatarImage,
@@ -53,7 +53,7 @@ interface DistanceConnectorProps {
   userOnline?: boolean;
   partnerOnline?: boolean;
   embedded?: boolean;
-  summaryContent?: (distanceKm: number | null) => ReactNode;
+  summaryContent?: (distanceKm: number | null, onLocationClick: MouseEventHandler<HTMLButtonElement>) => ReactNode;
   partnerMood?: ReactNode;
 }
 
@@ -374,16 +374,6 @@ export function DistanceConnector({
 
       {embedded ? (
         <div className="couple-hero-layout relative">
-          <button
-            type="button"
-            onClick={openSettings}
-            aria-label={t.dashboard.locationSettings}
-            title={t.dashboard.locationSettings}
-            className="couple-hero-settings absolute z-30 flex h-11 w-11 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
-          >
-            <Settings className="h-5 w-5" />
-          </button>
-
           <div className="couple-hero-intro">
             <CoupleHeroHeading userName={userName} partnerName={partnerName} partnerMood={partnerMood} />
             <CoupleAvatarStack
@@ -396,19 +386,21 @@ export function DistanceConnector({
             />
           </div>
 
-          {summaryContent ? summaryContent(distance) : embeddedDistanceLabel && (
-            <p className="tbo-supporting mt-5 text-muted-foreground">{embeddedDistanceLabel}</p>
+          {summaryContent ? summaryContent(distance, openSettings) : (
+            <div className="couple-hero-location-prompt mt-3 flex items-center">
+            <button
+              type="button"
+              onClick={openSettings}
+              aria-label={t.dashboard.locationSettings}
+              title={t.dashboard.locationSettings}
+              className="tbo-caption relationship-summary-distance"
+              aria-haspopup="dialog"
+            >
+              <MapPin aria-hidden="true" />
+              <span>{embeddedDistanceLabel || t.dashboard.shareLocation}</span>
+            </button>
+            </div>
           )}
-
-          {(!userLocation?.location || distance === null) && <div className="couple-hero-location-prompt mt-3 flex items-center">
-            {!userLocation?.location ? (
-              <Button size="sm" variant="glass" onClick={openSettings} className="h-auto min-h-9 whitespace-normal rounded-xl px-4 py-2">
-                <MapPin className="mr-1.5 h-3.5 w-3.5 text-rose-500" /> {t.dashboard.shareLocation}
-              </Button>
-            ) : distance === null ? (
-              <span className="tbo-caption italic text-muted-foreground">{t.dashboard.waitingForPartnerLocation}</span>
-            ) : null}
-          </div>}
         </div>
       ) : (
       <div

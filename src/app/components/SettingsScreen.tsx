@@ -40,6 +40,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Textarea } from './ui/textarea';
 import { PartnerDisconnectDialog } from './PartnerDisconnectDialog';
+import { CoupleHeroCoverEditor } from './CoupleHeroCoverEditor';
 import { useLanguage } from '../contexts/LanguageContext';
 import { languages } from '../utils/i18n';
 import { PWAStatus } from './PWAStatus';
@@ -95,6 +96,13 @@ export function SettingsScreen({
   const [phone, setPhone] = useState(profile?.phone ?? '');
   const [location, setLocation] = useState(profile?.location ?? '');
   const [relationshipStart, setRelationshipStart] = useState(profile?.relationshipStart ?? '');
+  const [coverPicture, setCoverPicture] = useState<string | undefined>(profile?.coverPicture || undefined);
+  const [failedCoverPicture, setFailedCoverPicture] = useState<string | undefined>();
+
+  useEffect(() => {
+    setCoverPicture(profile?.coverPicture || undefined);
+    setFailedCoverPicture(undefined);
+  }, [profile?.id, profile?.coverPicture]);
   
   // Sync saved field changes; a language-only refresh must preserve draft edits.
   useEffect(() => {
@@ -193,7 +201,6 @@ export function SettingsScreen({
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUploadingPicture, setIsUploadingPicture] = useState(false);
-  const [isUploadingCover, setIsUploadingCover] = useState(false);
   const [showHelpDialog, setShowHelpDialog] = useState(false);
   const [showContactDialog, setShowContactDialog] = useState(false);
   const [showDisconnectDialog, setShowDisconnectDialog] = useState(false);
@@ -301,70 +308,6 @@ export function SettingsScreen({
     } catch (error) {
       console.error('Failed to delete profile picture:', error);
       toast.error(tr("Failed to delete profile picture"));
-    }
-  };
-
-  const handleUploadCoverPicture = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    e.target.value = '';
-
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error(tr("Cover image must be smaller than 10MB"));
-      return;
-    }
-    if (!file.type.startsWith('image/')) {
-      toast.error(tr("Please select an image file"));
-      return;
-    }
-
-    setIsUploadingCover(true);
-    try {
-      const imageData = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = () => reject(new Error('Failed to read image file'));
-        reader.readAsDataURL(file);
-      });
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/profile/upload-cover`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ imageData, fileName: file.name, contentType: file.type })
-        }
-      );
-      const result = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(result.error || 'Failed to upload cover picture');
-      toast.success(tr("Cover picture updated!"));
-      await onRefresh?.();
-    } catch (error) {
-      console.error('Failed to upload cover picture:', error);
-      toast.error(error instanceof Error ? error.message : tr("Failed to upload cover picture"));
-    } finally {
-      setIsUploadingCover(false);
-    }
-  };
-
-  const handleDeleteCoverPicture = async () => {
-    setIsUploadingCover(true);
-    try {
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/profile/delete-cover`,
-        { method: 'DELETE', headers: { 'Authorization': `Bearer ${accessToken}` } }
-      );
-      const result = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(result.error || 'Failed to delete cover picture');
-      toast.success(tr("Cover picture deleted!"));
-      await onRefresh?.();
-    } catch (error) {
-      console.error('Failed to delete cover picture:', error);
-      toast.error(error instanceof Error ? error.message : tr("Failed to delete cover picture"));
-    } finally {
-      setIsUploadingCover(false);
     }
   };
 
@@ -683,24 +626,23 @@ export function SettingsScreen({
     <div className="min-h-screen bg-slate-50/50 text-slate-900 [overflow-wrap:anywhere]">
       <div className="mx-auto w-full max-w-3xl space-y-7 pb-28">
         <Card className="relative isolate overflow-hidden rounded-[2rem] border-rose-100 bg-gradient-to-br from-rose-50 via-white to-amber-50 shadow-[0_18px_55px_-38px_rgba(190,24,93,0.45)]">
-          <input type="file" id="cover-picture-upload" className="hidden" accept="image/*" onChange={handleUploadCoverPicture} disabled={isUploadingCover} />
-          <div className="relative h-40 overflow-hidden bg-[linear-gradient(135deg,#FF3366_0%,#ff6b8f_52%,#fff0d6_100%)] sm:h-44">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button type="button" disabled={isUploadingCover} className="group absolute inset-0 h-full w-full overflow-hidden text-left outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-rose-300 disabled:cursor-wait" aria-label={tr("Cover picture options")}>
-                  {profile?.coverPicture && <img src={profile.coverPicture} alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]" />}
-                  <span className={`absolute inset-0 transition-colors ${profile?.coverPicture ? 'bg-gradient-to-t from-slate-950/30 via-transparent to-white/10 group-hover:bg-slate-950/10' : 'bg-[radial-gradient(circle_at_82%_8%,rgba(255,255,255,0.38),transparent_42%)] group-hover:bg-white/5'}`} aria-hidden="true" />
-                  {isUploadingCover && <span className="absolute inset-0 flex items-center justify-center bg-white/70"><LoadingMark className="h-6 w-6  text-rose-600" /></span>}
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" sideOffset={8} className="w-48 rounded-2xl border-rose-100 p-1.5 shadow-xl">
-                <DropdownMenuItem onSelect={() => document.getElementById('cover-picture-upload')?.click()} className="tbo-action min-h-10 whitespace-normal rounded-xl px-3 text-slate-700 focus:bg-rose-50 focus:text-rose-700">{tr("Change Cover")}</DropdownMenuItem>
-                <DropdownMenuItem variant="destructive" disabled={!profile?.coverPicture} onSelect={() => void handleDeleteCoverPicture()} className="tbo-action min-h-10 whitespace-normal rounded-xl px-3">{tr("Delete Cover")}</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <div className="tbo-eyebrow pointer-events-none absolute left-6 top-6 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1.5 text-rose-700 shadow-sm ring-1 ring-rose-100 backdrop-blur-sm sm:left-9">
-              <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" aria-hidden="true" />
-               {tr("Your shared journey")} </div>
+          <div className="profile-cover-header" data-profile-cover>
+            {coverPicture && coverPicture !== failedCoverPicture && <img src={coverPicture} alt="" className="profile-cover-image" data-profile-cover-image onError={() => setFailedCoverPicture(coverPicture)} />}
+            <div className="profile-cover-toolbar">
+              <div className="tbo-eyebrow profile-cover-badge">
+                <Heart aria-hidden="true" />
+                <span>{tr("Your shared journey")}</span>
+              </div>
+              <CoupleHeroCoverEditor
+                coverPicture={coverPicture}
+                accessToken={accessToken}
+                onCoverChange={nextCover => {
+                  setCoverPicture(nextCover);
+                  setFailedCoverPicture(undefined);
+                }}
+                onRefresh={onRefresh}
+              />
+            </div>
           </div>
           <CardContent className="relative px-6 pb-7 sm:px-9 sm:pb-9">
             <div className="flex -mt-11 flex-col gap-5 sm:flex-row sm:items-end">

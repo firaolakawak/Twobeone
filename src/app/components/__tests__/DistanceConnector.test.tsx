@@ -1,6 +1,8 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DistanceConnector } from '../DistanceConnector';
+import { RelationshipSummary } from '../RelationshipJourney';
+import type { MouseEventHandler } from 'react';
 import { LanguageProvider } from '../../contexts/LanguageContext';
 
 describe('embedded distance connector', () => {
@@ -76,7 +78,7 @@ describe('embedded distance connector', () => {
     );
 
     expect(await screen.findByText('111.2 km apart')).toBeInTheDocument();
-    expect(summary).toHaveBeenLastCalledWith(111.2);
+    expect(summary).toHaveBeenLastCalledWith(111.2, expect.any(Function));
     expect(screen.queryByText('111 km')).not.toBeInTheDocument();
     const heading = screen.getByRole('heading', { level: 2 });
     expect(heading).toHaveTextContent(/^Firaol & Keti/);
@@ -90,7 +92,10 @@ describe('embedded distance connector', () => {
       ok: true,
       json: async () => ({ userLocation: null, partnerLocation: null }),
     }));
-    const summary = vi.fn(() => <p>102 Days Together</p>);
+    const startDate = new Date(Date.now() - 102 * 86_400_000).toISOString();
+    const summary = vi.fn((distanceKm: number | null, onLocationClick: MouseEventHandler<HTMLButtonElement>) => (
+      <RelationshipSummary startDate={startDate} distanceKm={distanceKm} onLocationClick={onLocationClick} />
+    ));
 
     render(
       <LanguageProvider>
@@ -109,14 +114,14 @@ describe('embedded distance connector', () => {
     );
 
     await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
-    expect(summary).toHaveBeenLastCalledWith(null);
-    expect(screen.getByText('102 Days Together')).toBeInTheDocument();
+    expect(summary).toHaveBeenLastCalledWith(null, expect.any(Function));
+    expect(document.querySelector('[data-relationship-counter]')).toHaveTextContent('102 Days Together');
     expect(screen.queryByText(/\(UAE\)|\(ETH\)/)).not.toBeInTheDocument();
     expect(within(screen.getByRole('heading', { name: 'Firaol & Keti', level: 2 })).queryByRole('img')).not.toBeInTheDocument();
     expect(screen.queryByText(/km apart/)).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: /share.*location/i })).toBeInTheDocument();
 
-    const settingsButton = screen.getByRole('button', { name: 'Location settings' });
+    const settingsButton = screen.getByRole('button', { name: /Location settings:.*share.*location/i });
     fireEvent.click(settingsButton);
     expect(await screen.findByRole('dialog', { name: 'Location Settings' })).toBeInTheDocument();
     expect(screen.getByPlaceholderText('e.g., Abu Dhabi, UAE')).toBeInTheDocument();

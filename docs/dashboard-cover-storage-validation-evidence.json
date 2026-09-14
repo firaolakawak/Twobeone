@@ -1,0 +1,90 @@
+{
+  "checkedAt": "2026-09-14T17:50:01.516Z",
+  "source": "supabase/functions/server/index.tsx",
+  "method": "Extracted actual TypeScript route handlers, transpiled with TypeScript, and executed with mocked authentication, profile persistence, and storage.",
+  "liveStorageWrites": false,
+  "deployed": false,
+  "totalPassed": 16,
+  "scenarios": [
+    {
+      "route": "POST /profile/upload-cover",
+      "scenario": "success",
+      "passed": true
+    },
+    {
+      "route": "POST /profile/upload-cover",
+      "scenario": "upload_failure",
+      "passed": true
+    },
+    {
+      "route": "POST /profile/upload-cover",
+      "scenario": "signing_failure",
+      "passed": true
+    },
+    {
+      "route": "POST /profile/upload-cover",
+      "scenario": "signing_throw",
+      "passed": true
+    },
+    {
+      "route": "POST /profile/upload-cover",
+      "scenario": "persistence_failure",
+      "passed": true
+    },
+    {
+      "route": "POST /profile/upload-cover",
+      "scenario": "persistence_response_lost",
+      "passed": true
+    },
+    {
+      "route": "POST /profile/upload-cover",
+      "scenario": "cleanup_failure",
+      "passed": true
+    },
+    {
+      "route": "POST /profile/upload-cover",
+      "scenario": "cleanup_throw",
+      "passed": true
+    },
+    {
+      "route": "POST /profile/upload-cover",
+      "scenario": "unauthorized",
+      "passed": true
+    },
+    {
+      "route": "DELETE /profile/delete-cover",
+      "scenario": "success",
+      "passed": true
+    },
+    {
+      "route": "DELETE /profile/delete-cover",
+      "scenario": "persistence_failure",
+      "passed": true
+    },
+    {
+      "route": "DELETE /profile/delete-cover",
+      "scenario": "persistence_response_lost",
+      "passed": true
+    },
+    {
+      "route": "DELETE /profile/delete-cover",
+      "scenario": "unauthorized",
+      "passed": true
+    },
+    {
+      "route": "DELETE /profile/delete-cover",
+      "scenario": "cleanup_failure",
+      "passed": true
+    },
+    {
+      "route": "DELETE /profile/delete-cover",
+      "scenario": "cleanup_throw",
+      "passed": true
+    },
+    {
+      "route": "DELETE /profile/delete-cover",
+      "scenario": "no_cover",
+      "passed": true
+    }
+  ]
+}

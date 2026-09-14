@@ -8,21 +8,27 @@
 }
 
 .couple-glass-hero {
-  --foreground: #fff;
-  --muted-foreground: #eee6fa;
-  --glass-foreground: #fff;
-  --glass-muted: #eee6fa;
-  --glass-accent: #fff;
-  --glass-solid: #5b639a;
+  --couple-default-cover: var(--glass-journey-surface);
+}
+
+.couple-glass-hero {
+  --foreground: var(--glass-journey-ink);
+  --muted-foreground: var(--glass-journey-muted);
+  --glass-foreground: var(--glass-journey-ink);
+  --glass-muted: var(--glass-journey-muted);
+  --glass-solid: var(--glass-journey-solid);
   --glass-surface: none;
   --glass-tint: transparent;
-  --hero-panel: linear-gradient(175deg, rgb(255 255 255 / .26), rgb(235 225 255 / .1) 32%, transparent 60%), linear-gradient(115deg, rgb(70 84 153 / .67), rgb(111 97 165 / .62));
-  --hero-solid: #566192;
-  --hero-rim: rgb(233 201 255 / .92);
-  --hero-muted: #fff6ff;
-  --hero-clock: #ffb2e3;
+  --hero-panel: linear-gradient(175deg, rgb(255 255 255 / .72), transparent 65%), linear-gradient(115deg, rgb(226 215 251 / .84), rgb(248 232 248 / .84));
+  --hero-solid: var(--glass-journey-solid);
+  --hero-rim: rgb(255 255 255 / .95);
+  --hero-muted: var(--glass-journey-muted);
+  --hero-clock: #a72d86;
   --hero-heart: #ff73c7;
-  --hero-chip: rgb(91 76 145 / .46);
+  --hero-chip: rgb(217 202 245 / .52);
+  --hero-photo-veil-start: rgb(67 76 151 / .84);
+  --hero-photo-veil-mid: rgb(89 72 148 / .84);
+  --hero-photo-veil-end: rgb(255 192 220 / .14);
   z-index: 1;
   border-inline: 0;
   border-top: 0;
@@ -39,6 +45,7 @@
   inset: 0;
   overflow: hidden;
   pointer-events: none;
+  background: var(--couple-default-cover);
   mask-image: linear-gradient(#000 calc(100% - 5rem), rgb(0 0 0 / .96) calc(100% - 3rem), transparent);
 }
 
@@ -50,11 +57,16 @@
   filter: saturate(1.25);
 }
 
-.couple-hero-backdrop::after {
+.couple-hero-backdrop--photo::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(100deg, rgb(62 77 169 / .48), rgb(157 102 198 / .24) 60%, rgb(255 192 220 / .14)), linear-gradient(0deg, rgb(204 181 242 / .5), rgb(224 183 230 / .08) 38%, transparent 58%);
+  background: linear-gradient(90deg, var(--hero-photo-veil-start), var(--hero-photo-veil-mid) 62%, var(--hero-photo-veil-end)), linear-gradient(0deg, rgb(204 181 242 / .5), rgb(224 183 230 / .08) 38%, transparent 58%);
+}
+
+/* White text remains readable even when a personal cover is mostly white. */
+@container (max-width: 30rem) {
+  .couple-hero-backdrop--photo::after { background: linear-gradient(110deg, var(--hero-photo-veil-start), var(--hero-photo-veil-mid)); }
 }
 
 .couple-glass-hero > .couple-hero-content {
@@ -71,7 +83,7 @@
 }
 
 .couple-hero-name-group { display: grid; justify-items: start; gap: .625rem; min-width: 0; max-width: 100%; }
-.couple-hero-name-group [data-couple-name] { width: 100%; max-width: 100%; margin-top: 1.75rem; overflow-wrap: anywhere; text-shadow: 0 2px 12px rgb(42 53 108 / .22); }
+.couple-hero-name-group [data-couple-name] { width: 100%; max-width: 100%; margin-top: 1.75rem; overflow-wrap: anywhere; }
 
 .couple-hero-journey-badge {
   display: inline-flex;
@@ -82,15 +94,11 @@
   border: 1px solid rgb(243 225 255 / .55);
   border-radius: 999px;
   background: linear-gradient(135deg, rgb(205 195 255 / .36), rgb(229 184 238 / .3));
-  color: #fff;
+  color: var(--glass-journey-ink);
   box-shadow: inset 0 1px 5px rgb(255 255 255 / .18), 0 3px 12px rgb(31 20 59 / .12);
 }
 
-.couple-hero-journey-badge svg { width: .875rem; height: .875rem; flex-shrink: 0; fill: #ffb4e4; color: #ffb4e4; }
-
-.couple-hero-settings { top: -.875rem; right: -.25rem; color: #634198; background: rgb(243 232 255 / .76); border: 1px solid rgb(255 255 255 / .72); border-radius: 50%; box-shadow: inset 0 1px 3px rgb(255 255 255 / .3); }
-.couple-hero-settings:hover { color: #503179; background: rgb(246 237 255 / .88); }
-.couple-hero-settings:focus-visible { outline: 3px solid #6d35bd; outline-offset: 3px; }
+.couple-hero-journey-badge svg { width: .875rem; height: .875rem; flex-shrink: 0; fill: #ec59bd; color: #ec59bd; }
 
 .couple-glass-hero [data-couple-avatars] {
   width: 6.375rem;
@@ -126,7 +134,34 @@
   border-color: #fff;
 }
 
-.couple-glass-hero .relationship-summary { margin-top: 1.25rem; }
+.couple-glass-hero .relationship-summary { max-width: 22rem; margin-top: .875rem; }
+.couple-glass-hero .relationship-summary-panel { container: relationship-panel / inline-size; width: min(100%, 16rem); padding: .5rem; gap: .5rem; grid-template-columns: minmax(0, 1.15fr) auto minmax(0, 1fr); }
+.couple-glass-hero .relationship-summary-count-group { gap: .5rem; }
+.couple-glass-hero .relationship-summary-heart { width: 1.5rem; height: 1.5rem; }
+.couple-glass-hero .relationship-summary-clock-group { gap: .25rem; }
+.couple-glass-hero .relationship-summary-context { margin-top: .625rem; gap: .5rem; }
+.couple-glass-hero .relationship-summary-context:has(.relationship-summary-distance) { grid-template-columns: auto auto minmax(0, 1fr); }
+.couple-glass-hero .relationship-summary-distance { padding: .25rem .5rem; gap: .25rem; }
+.couple-glass-hero .relationship-summary-distance svg { width: .875rem; height: .875rem; }
+/* Draw a compact pill inside the full-size location touch target. */
+.couple-glass-hero button.relationship-summary-distance { position: relative; isolation: isolate; background: transparent; box-shadow: none; }
+.couple-glass-hero button.relationship-summary-distance::before { content: ''; position: absolute; z-index: -1; inset: .375rem 0; border-radius: inherit; background: var(--hero-chip); box-shadow: inset 0 1px 0 rgb(255 255 255 / .12); }
+.couple-glass-hero button.relationship-summary-distance:hover::before { box-shadow: inset 0 0 0 1px var(--glass-accent); }
+.couple-glass-hero .relationship-summary-context-divider { height: 1.25rem; }
+
+@media (forced-colors: active) {
+  .couple-glass-hero button.relationship-summary-distance { border-color: transparent; }
+  .couple-glass-hero button.relationship-summary-distance::before { background: Canvas; border: 1px solid CanvasText; box-shadow: none; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .couple-glass-hero button.relationship-summary-distance::before { background: var(--hero-solid, var(--card)); }
+}
+
+@container relationship-summary (max-width: 16rem) {
+  .couple-glass-hero .relationship-summary-panel { grid-template-columns: minmax(0, 1fr); }
+  .couple-glass-hero .relationship-summary-context:has(.relationship-summary-distance) { display: flex; }
+}
 
 /* The reference portraits share the name and duration rows at wider widths. */
 @container (min-width: 30rem) {
@@ -136,7 +171,7 @@
     grid-template-columns: minmax(0, 1fr) var(--hero-portrait-width);
     grid-template-areas: 'names portraits' 'duration portraits';
     column-gap: 1.5rem;
-    row-gap: 1.5rem;
+    row-gap: .875rem;
     align-items: start;
   }
   .couple-hero-layout .couple-hero-intro { display: contents; }
@@ -161,14 +196,30 @@
 }
 
 .dark .couple-glass-hero {
-  --glass-solid: #252039;
-  --glass-surface: linear-gradient(125deg, #322a4c, #50344c);
-  --hero-panel: rgb(20 17 45 / .48);
-  --hero-solid: #322943;
+  --hero-panel: linear-gradient(135deg, rgb(84 66 112 / .8), rgb(53 39 70 / .9));
+  --hero-clock: #ff9ad8;
+  --hero-chip: rgb(111 84 145 / .4);
+  --hero-rim: rgb(242 222 255 / .28);
+  --hero-photo-veil-start: rgb(38 36 82 / .84);
+  --hero-photo-veil-mid: rgb(53 38 90 / .84);
+  --hero-photo-veil-end: rgb(75 46 92 / .35);
   box-shadow: none;
 }
 
-.dark .couple-hero-backdrop::after { background: linear-gradient(100deg, rgb(38 36 82 / .68), rgb(53 38 90 / .35) 60%, rgb(75 46 92 / .22)); }
+.couple-glass-hero--photo,
+.dark .couple-glass-hero--photo {
+  --foreground: #fff;
+  --muted-foreground: #eee6fa;
+  --glass-foreground: #fff;
+  --glass-muted: #eee6fa;
+  --glass-accent: #fff;
+  --hero-muted: #fff6ff;
+  --hero-clock: #ffb2e3;
+  --hero-panel: linear-gradient(175deg, rgb(255 255 255 / .26), transparent 60%), linear-gradient(115deg, rgb(70 84 153 / .67), rgb(111 97 165 / .62));
+  --hero-chip: rgb(91 76 145 / .46);
+  --hero-solid: #566192;
+}
+.couple-glass-hero--photo .couple-hero-journey-badge { color: #fff; }
 
 @media (min-width: 40rem) {
   .couple-glass-hero [data-couple-avatars] { width: 7.4375rem; height: 6.375rem; }
@@ -233,13 +284,13 @@
 @media (prefers-reduced-transparency: reduce) {
   .couple-hero-backdrop { display: none; }
   .couple-glass-hero { background: var(--hero-solid); }
-  .couple-hero-journey-badge { background: #55476f; }
+  .couple-hero-journey-badge { background: var(--glass-journey-solid); }
+  .couple-glass-hero--photo .couple-hero-journey-badge { background: #55476f; }
 }
 
 @media (forced-colors: active) {
   .couple-hero-backdrop { display: none; }
-  .couple-hero-journey-badge,
-  .couple-hero-settings { color: CanvasText; background: Canvas; border: 1px solid CanvasText; box-shadow: none; }
+  .couple-hero-journey-badge { color: CanvasText; background: Canvas; border: 1px solid CanvasText; box-shadow: none; }
   .couple-hero-journey-badge svg { color: CanvasText; fill: CanvasText; }
   .couple-glass-hero [data-couple-avatars] [data-slot='avatar'],
   .couple-glass-hero [data-couple-avatars] [data-online] { border-color: CanvasText; box-shadow: none; }

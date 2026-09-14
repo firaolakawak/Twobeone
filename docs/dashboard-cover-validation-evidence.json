@@ -1,0 +1,380 @@
+{
+  "scope": "Optional own-cover upload for the actual couple dashboard: default gradient with no fixed scene, local thumbnail selection, mocked save/remove, cancellation/failure preservation, invalid-image fallback, translated dialog layout and keyboard focus.",
+  "checkedAt": "2026-09-14T17:57:38.941Z",
+  "browser": "Edg/153.0.4234.32",
+  "fixture": "Actual CoupleDashboard, LanguageProvider, shared header/navigation and Toaster mounted with local 103-day relationship data and initials avatars. Upload selection uses src/assets/glass-scripture-landscape.webp. The white-cover test supplies a local all-white SVG through coverPicture.",
+  "network": {
+    "liveWrites": 0,
+    "externalRequests": 0,
+    "mockedRoutes": [
+      {
+        "method": "POST",
+        "path": "/profile/upload-cover",
+        "request": "JSON imageData, fileName and contentType",
+        "response": "{success:true,imageUrl:localDataURL}",
+        "failure": "HTTP500 with success:false"
+      },
+      {
+        "method": "DELETE",
+        "path": "/profile/delete-cover",
+        "response": "{success:true,imageUrl:null}",
+        "failure": "HTTP500 with success:false"
+      }
+    ],
+    "isolation": "The browser fetch wrapper intercepts both routes before any network request. Other API reads are mocked; remaining external requests are blocked.",
+    "recordedSuccessfulRequestMetadata": [
+      {
+        "method": "POST",
+        "route": "upload-cover",
+        "fileName": "glass-scripture-landscape.webp",
+        "contentType": "image/webp",
+        "imageDataPresent": true
+      },
+      {
+        "method": "DELETE",
+        "route": "delete-cover",
+        "imageDataPresent": false
+      }
+    ]
+  },
+  "referenceTargets": {
+    "width": 676,
+    "rootTextScale": 1.25,
+    "rootSize": "20px",
+    "fixtures": [
+      {
+        "fixture": "default gradient",
+        "cases": 2,
+        "pageOverflow": 0,
+        "functionalOverflow": 0,
+        "offscreenText": 0,
+        "textBelow12px": 0,
+        "unexpectedUnloadedImages": 0,
+        "themes": [
+          {
+            "theme": "light",
+            "hasHeroImage": false,
+            "photoClass": false,
+            "editBounds": {
+              "x": 591,
+              "y": 427,
+              "width": 55,
+              "height": 55,
+              "top": 427,
+              "right": 646,
+              "bottom": 482,
+              "left": 591
+            },
+            "heroBounds": {
+              "x": 0,
+              "y": 81,
+              "width": 676,
+              "height": 401,
+              "top": 81,
+              "right": 676,
+              "bottom": 482,
+              "left": 0
+            }
+          },
+          {
+            "theme": "dark",
+            "hasHeroImage": false,
+            "photoClass": false,
+            "editBounds": {
+              "x": 591,
+              "y": 427,
+              "width": 55,
+              "height": 55,
+              "top": 427,
+              "right": 646,
+              "bottom": 482,
+              "left": 591
+            },
+            "heroBounds": {
+              "x": 0,
+              "y": 81,
+              "width": 676,
+              "height": 401,
+              "top": 81,
+              "right": 676,
+              "bottom": 482,
+              "left": 0
+            }
+          }
+        ]
+      },
+      {
+        "fixture": "white cover",
+        "cases": 2,
+        "pageOverflow": 0,
+        "functionalOverflow": 0,
+        "offscreenText": 0,
+        "textBelow12px": 0,
+        "unexpectedUnloadedImages": 0,
+        "themes": [
+          {
+            "theme": "light",
+            "hasHeroImage": true,
+            "photoClass": true,
+            "editBounds": {
+              "x": 591,
+              "y": 427,
+              "width": 55,
+              "height": 55,
+              "top": 427,
+              "right": 646,
+              "bottom": 482,
+              "left": 591
+            },
+            "heroBounds": {
+              "x": 0,
+              "y": 81,
+              "width": 676,
+              "height": 401,
+              "top": 81,
+              "right": 676,
+              "bottom": 482,
+              "left": 0
+            }
+          },
+          {
+            "theme": "dark",
+            "hasHeroImage": true,
+            "photoClass": true,
+            "editBounds": {
+              "x": 591,
+              "y": 427,
+              "width": 55,
+              "height": 55,
+              "top": 427,
+              "right": 646,
+              "bottom": 482,
+              "left": 591
+            },
+            "heroBounds": {
+              "x": 0,
+              "y": 81,
+              "width": 676,
+              "height": 401,
+              "top": 81,
+              "right": 676,
+              "bottom": 482,
+              "left": 0
+            }
+          }
+        ]
+      },
+      {
+        "fixture": "local landscape cover",
+        "cases": 2,
+        "pageOverflow": 0,
+        "functionalOverflow": 0,
+        "offscreenText": 0,
+        "textBelow12px": 0,
+        "unexpectedUnloadedImages": 0,
+        "themes": [
+          {
+            "theme": "light",
+            "hasHeroImage": true,
+            "photoClass": true,
+            "editBounds": {
+              "x": 591,
+              "y": 427,
+              "width": 55,
+              "height": 55,
+              "top": 427,
+              "right": 646,
+              "bottom": 482,
+              "left": 591
+            },
+            "heroBounds": {
+              "x": 0,
+              "y": 81,
+              "width": 676,
+              "height": 401,
+              "top": 81,
+              "right": 676,
+              "bottom": 482,
+              "left": 0
+            }
+          },
+          {
+            "theme": "dark",
+            "hasHeroImage": true,
+            "photoClass": true,
+            "editBounds": {
+              "x": 591,
+              "y": 427,
+              "width": 55,
+              "height": 55,
+              "top": 427,
+              "right": 646,
+              "bottom": 482,
+              "left": 591
+            },
+            "heroBounds": {
+              "x": 0,
+              "y": 81,
+              "width": 676,
+              "height": 401,
+              "top": 81,
+              "right": 676,
+              "bottom": 482,
+              "left": 0
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "narrowHero": {
+    "scope": "320/390px ? English/Amharic/Afaan Oromo ? light/dark ?100%/200% root text, with long names at200%.",
+    "cases": 24,
+    "pageOverflow": 0,
+    "functionalOverflow": 0,
+    "offscreenText": 0,
+    "textBelow12px": 0,
+    "unexpectedUnloadedImages": 0,
+    "controlTextOrSettingsIntersections": []
+  },
+  "translatedDialog": {
+    "cases": 24,
+    "scope": "Same24 viewport/language/theme/text combinations; selected local thumbnail shown before save.",
+    "horizontalOverflow": 0,
+    "textBelow12px": 0,
+    "dialogOutsideViewport": 0,
+    "loadedThumbnailCases": 24,
+    "scrollingCases": 12
+  },
+  "workflowChecks": [
+    {
+      "check": "default uses gradient",
+      "pass": true
+    },
+    {
+      "check": "local preview before save",
+      "pass": true
+    },
+    {
+      "check": "draft survives dialog language switch",
+      "pass": true
+    },
+    {
+      "check": "cancel leaves gradient and returns focus",
+      "pass": true,
+      "focusReturned": true
+    },
+    {
+      "check": "pending upload blocks close and disables actions",
+      "pass": true
+    },
+    {
+      "check": "save immediately applies uploaded cover",
+      "pass": true
+    },
+    {
+      "check": "failed save preserves current hero and draft",
+      "pass": true
+    },
+    {
+      "check": "failed remove preserves cover",
+      "pass": true
+    },
+    {
+      "check": "successful remove restores gradient",
+      "pass": true
+    }
+  ],
+  "reliabilityChecks": [
+    {
+      "check": "invalid image after save/remove",
+      "pass": true
+    },
+    {
+      "check": "broken stored image",
+      "pass": true
+    },
+    {
+      "check": "broken stored editor preview",
+      "pass": true
+    }
+  ],
+  "keyboardChecks": [
+    {
+      "check": "cover control keyboard focus",
+      "theme": "light",
+      "focused": true,
+      "visible": true,
+      "outline": "solid",
+      "width": "3px",
+      "color": "rgb(109, 53, 189)",
+      "pass": true
+    },
+    {
+      "check": "cover focus restored",
+      "theme": "light",
+      "restored": true,
+      "pass": true
+    },
+    {
+      "check": "cover control keyboard focus",
+      "theme": "dark",
+      "focused": true,
+      "visible": true,
+      "outline": "solid",
+      "width": "3px",
+      "color": "rgb(109, 53, 189)",
+      "pass": true
+    },
+    {
+      "check": "cover focus restored",
+      "theme": "dark",
+      "restored": true,
+      "pass": true
+    }
+  ],
+  "resolvedFindings": [
+    {
+      "issue": "White uploaded image left the name and tagline on a pale background.",
+      "resolution": "Strengthened photo overlay; refreshed light/dark white and landscape previews. White text is visibly readable in the reviewed fixtures."
+    },
+    {
+      "issue": "The first end-to-end run timed out waiting for an invalid image to disappear after save/remove.",
+      "resolution": "Hero error state now tracks the failed source URL. Targeted initial-invalid and save/remove/invalid sequences pass."
+    }
+  ],
+  "errors": {
+    "applicationRuntime": [],
+    "intentionalBadImage": "Invalid PNG data URLs were supplied to exercise onError; final hero and editor return to the gradient with no broken image element.",
+    "intentionalApiFailures": "POST and DELETE each received a mocked HTTP500; the saved cover remained unchanged and the editor stayed open.",
+    "developmentConsole": "Vite HMR WebSocket local-network warnings only."
+  },
+  "finalPreviewPaths": {
+    "combinedLight": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\optional-cover\\final-en-light-676-1.25x-normal.png",
+    "combinedDark": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\optional-cover\\final-en-dark-676-1.25x-normal.png",
+    "heroLight": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\optional-cover\\hero-only-light-676-1.25x.png",
+    "heroDark": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\optional-cover\\hero-only-dark-676-1.25x.png",
+    "whiteLight": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\optional-cover\\white-en-light-676-1.25x-normal.png",
+    "whiteDark": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\optional-cover\\white-en-dark-676-1.25x-normal.png",
+    "photoLight": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\optional-cover\\photo-en-light-676-1.25x-normal.png",
+    "photoDark": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\optional-cover\\photo-en-dark-676-1.25x-normal.png",
+    "translatedDialog": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\optional-cover\\dialog-am-light-320-2x.png"
+  },
+  "limitations": [
+    "Root text scaling is not a claim of native browser zoom equivalence.",
+    "The active Growth orb decorative ring is excluded from functional overflow counts.",
+    "Long dialogs scroll vertically; translated text remains at its shared role size.",
+    "Fixed header/navigation are hidden only for dashboard artifact capture.",
+    "No live account upload/storage operations, native mobile rendering, real uploaded portraits or native-speaker translation review were exercised."
+  ],
+  "temporaryReports": {
+    "final": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\optional-cover\\final-report.json",
+    "white": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\optional-cover\\white-report.json",
+    "photo": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\optional-cover\\photo-report.json",
+    "dialogmatrix": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\optional-cover\\dialogmatrix-report.json",
+    "coverflow": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\optional-cover\\coverflow-report.json",
+    "sequencebroken": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\optional-cover\\sequencebroken-report.json",
+    "brokeninitial": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\optional-cover\\brokeninitial-report.json",
+    "coverfocus": "C:\\Users\\FIRAOL\\AppData\\Local\\Temp\\twobeone-glass-qa\\optional-cover\\coverfocus-report.json"
+  }
+}

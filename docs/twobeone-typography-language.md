@@ -1,6 +1,6 @@
 # TwoBeOne Typography Language
 
-Version 1.3 - Compact couple-hero counter updated at the user's request, 14 September 2026
+Version 1.4 - Compact couple-hero context captions updated at the user's request, 14 September 2026
 
 This is the canonical typography standard for TwoBeOne's active web application. It applies to public pages, authentication, onboarding, couple features, shared controls, notifications, and administration. Use the same text role for the same purpose across screens. The original audit is a historical baseline, not the current specification.
 
@@ -83,7 +83,7 @@ Raw HTML also receives predictable base typography. Shared components provide th
 
 ## Preserved exceptions
 
-- **Couple hero:** first-name heading at 28px / 32px, weight 700; the user's latest compact rectangular counter uses `--type-journey-days-size: 1.75rem` (28px), weight 700 with tabular numbers. Compact relationship labels and a strong 14px tagline retain their hierarchy. The rose clock uses `--type-journey-clock-size: clamp(.875rem, 6.25cqi, 1.625rem)`, with weight 700 and line height 1.1. It grows from 14px to 26px with panel width at normal text size and scales with enlarged text. Preserve the user's approved positioning and the relationship component's local line heights. Do not apply the hero display sizes to ordinary card titles or clocks elsewhere.
+- **Couple hero:** first-name heading at 28px / 32px, weight 700; the user's latest compact rectangular counter uses `--type-journey-days-size: 1.75rem` (28px), weight 700 with tabular numbers. Relationship labels, distance, and the faith tagline use the shared 12px / 500 caption role. The compact location pill has a 14px pin inside a 44px minimum touch target. The rose clock uses `--type-journey-clock-size: clamp(.875rem, 6.25cqi, 1.625rem)`, with weight 700 and line height 1.1. It grows from 14px to 26px with panel width at normal text size and scales with enlarged text. Preserve the user's approved positioning and the relationship component's local line heights. Do not apply the hero display sizes to ordinary card titles or clocks elsewhere.
 - **Dashboard statistics:** the four activity cards use a number-first display role, requested on 13 September 2026: responsive 25.6–57.6px tabular numbers at weight 700, followed by the shared card-title and supporting-copy roles. The metric scale is reduced by 20% at the user's request, using `clamp(1.6rem, 22.4cqi, 3.6rem)`. Use the same metric scale for all four cards; allow the grid to reflow when text is enlarged. This exception does not change titles or numbers elsewhere.
 - **Wordmark:** weight 800 is intentional. The shared `tbo-wordmark` is 16px, line height 1.4, tracking `-.025em`; existing public/auth brand compositions can retain their approved brand size. This does not authorize weight 800 or 900 for ordinary controls.
 - **Reading:** scripture quotations and dedicated reading views may retain explicit serif typography, comfortable reading leading, or user-controlled text sizing. Application headings, navigation, and form controls still use the shared UI roles.
