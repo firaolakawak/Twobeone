@@ -207,4 +207,56 @@ describe('daily Together in Faith card', () => {
     expect(dailyFaithChallengeApi.submit).not.toHaveBeenCalled();
     expect(screen.getByRole('button', { name: 'Open today’s challenge' })).toBeVisible();
   });
+
+  it('shows the practised virtue and waits for both completions before reporting a house block', async () => {
+    const onOpenHouse = vi.fn();
+    remote = { ...initial(), bothSubmitted: true,
+      own: { choice: 0, guess: 1, submittedAt: '2026-09-17T10:00:00Z', completedAt: '2026-09-17T11:00:00Z' },
+      partner: { submitted: true, choice: 1, guess: 0, completed: false },
+      house: { configured: true, homeType: 'house', bedrooms: 3, completedDays: 14, totalDays: 365, todayContributed: false, lastBlockDate: '2026-09-16' },
+    };
+    render(<DailyFaithChallenge {...props()} onOpenHouse={onOpenHouse} />);
+    await advance(); click('Open today’s challenge'); await advance();
+    expect(screen.getByText('Practised: Love')).toBeVisible();
+    expect(screen.getByText('Waiting for your partner to complete the activity.')).toBeVisible();
+    expect(screen.queryByText('+1 shared block')).not.toBeInTheDocument();
+    expect(screen.getByText('14 / 365 blocks')).toBeVisible();
+
+    remote = { ...remote, partner: { ...remote.partner, completed: true },
+      house: { ...remote.house!, completedDays: 15, todayContributed: true, lastBlockDate: remote.day } };
+    await advance(30_000);
+    expect(screen.getByText('+1 shared block')).toBeVisible();
+    expect(screen.getByText('15 / 365 blocks')).toBeVisible();
+    click('View our house'); await advance(0);
+    expect(onOpenHouse).toHaveBeenCalledOnce();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(dailyFaithChallengeApi.complete).not.toHaveBeenCalled();
+  });
+
+  it('offers house setup after completing a challenge without claiming an unearned block', async () => {
+    const onOpenHouse = vi.fn();
+    remote = { ...initial(), bothSubmitted: true, house: null,
+      own: { choice: 0, guess: 1, submittedAt: '2026-09-17T10:00:00Z', completedAt: '2026-09-17T11:00:00Z' },
+      partner: { submitted: true, choice: 1, guess: 0, completed: true },
+    };
+    render(<DailyFaithChallenge {...props()} onOpenHouse={onOpenHouse} />);
+    await advance(); click('Open today’s challenge'); await advance();
+    expect(screen.getByText('Start your house to turn daily challenges into building progress.')).toBeVisible();
+    expect(screen.queryByText('+1 shared block')).not.toBeInTheDocument();
+    click('Start our house');
+    expect(onOpenHouse).toHaveBeenCalledOnce();
+  });
+
+  it('celebrates a finished house without promising progress beyond its goal', async () => {
+    remote = { ...initial(), bothSubmitted: true,
+      own: { choice: 0, guess: 1, submittedAt: '2026-09-17T10:00:00Z', completedAt: '2026-09-17T11:00:00Z' },
+      partner: { submitted: true, choice: 1, guess: 0, completed: true },
+      house: { configured: true, homeType: 'villa', bedrooms: 4, completedDays: 365, totalDays: 365, todayContributed: true, lastBlockDate: '2026-09-17' },
+    };
+    render(<DailyFaithChallenge {...props()} />);
+    await advance(); click('Open today’s challenge'); await advance();
+    expect(screen.getByText('Your house is complete')).toBeVisible();
+    expect(screen.getByText('365 / 365 blocks')).toBeVisible();
+    expect(screen.queryByText('+1 shared block')).not.toBeInTheDocument();
+  });
 });

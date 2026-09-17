@@ -1,6 +1,7 @@
 import { getAccessToken } from './api';
 import { projectId } from './supabase/info';
 import { getFaithQuestMission } from '../data/faithQuest';
+import { dailyCharacterHouseIsValid, type DailyCharacterHouse } from './characterHouseApi';
 
 export interface DailyFaithChallengeState {
   day: string;
@@ -9,6 +10,7 @@ export interface DailyFaithChallengeState {
   own: { choice: number; guess?: number | null; submittedAt: string; completedAt?: string | null } | null;
   partner: { submitted: boolean; choice?: number; guess?: number | null; submittedAt?: string; completed: boolean };
   bothSubmitted: boolean;
+  house?: DailyCharacterHouse | null;
 }
 export interface DailyFaithSubmission {
   day: string;
@@ -40,7 +42,9 @@ function parseChallenge(value: unknown): DailyFaithChallengeState {
     || bothSubmitted !== (own !== null && partner.submitted)
     || (partner.submittedAt !== undefined && !timestampIsValid(partner.submittedAt))
     || (bothSubmitted && (!choiceIsValid(partner.choice)
-      || (mission.mode === 'heart' ? !choiceIsValid(partner.guess) : !optionalGuessIsValid(partner.guess))))) {
+      || (mission.mode === 'heart' ? !choiceIsValid(partner.guess) : !optionalGuessIsValid(partner.guess))))
+    || (value.house !== undefined && value.house !== null && (!dailyCharacterHouseIsValid(value.house)
+      || (value.house.todayContributed && value.house.lastBlockDate !== value.day)))) {
     throw new DailyFaithChallengeError('invalid_response');
   }
   return value as unknown as DailyFaithChallengeState;

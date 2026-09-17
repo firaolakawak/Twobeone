@@ -1,6 +1,7 @@
 import { useUiCopy } from '../utils/uiTranslation';
 import { BrandLoader } from './BrandLoader';
 import { coupleUiMessages } from '../locales/coupleUi';
+import { dailyFaithHouseMessages } from '../locales/dailyFaithHouse';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
@@ -16,7 +17,7 @@ import {
   ArrowRight,
   Brain,
   RefreshCw,
-  Hammer,
+  House,
 } from 'lucide-react';
 import { ComprehensiveBibleReader } from './ComprehensiveBibleReader';
 import { LearningModulesCard } from './LearningModulesCard';
@@ -37,6 +38,8 @@ import { moods as moodsApi, questions as questionsApi } from '../utils/api';
 import { fetchAmharicChapter, getAmharicBookName } from '../utils/amharicBibleApi';
 import { ChampionsCard } from './ChampionsCard';
 import '../styles/dashboard-glass.css';
+
+const dashboardMessages = { ...coupleUiMessages, ...dailyFaithHouseMessages };
 
 export interface CoupleDashboardProps {
   profile?: User & {
@@ -143,7 +146,7 @@ export function CoupleDashboard({
   dailyChallengeRequest,
   onDailyChallengeRequestConsumed,
 }: CoupleDashboardProps) {
-  const tr = useUiCopy(coupleUiMessages);
+  const tr = useUiCopy(dashboardMessages);
   const [moodOpenRequest, setMoodOpenRequest] = useState(0);
   const { t, language } = useLanguage();
   const heroCover = profile?.coverPicture || undefined;
@@ -603,10 +606,10 @@ export function CoupleDashboard({
           <h2 id="home-spotlight-title" className="tbo-section-title mt-5 text-foreground">{spotlight.title}</h2>
           <p className="tbo-supporting mt-2 line-clamp-3 text-muted-foreground">{spotlight.description}</p>
 
-          <button type="button" onClick={openSpotlight} className="tbo-action tbo-glass-primary group mt-5 w-full sm:w-auto">
-            {spotlight.actionLabel}
+          <Button type="button" variant="ghost" onClick={openSpotlight} className="tbo-action dashboard-spotlight-action mt-3">
+            <span>{spotlight.actionLabel}</span>
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </button>
+          </Button>
         </div>
       </section>
 
@@ -836,7 +839,8 @@ export function CoupleDashboard({
       <DailyFaithChallenge userId={profile?.id} partnerId={partner?.id} userName={profile?.name} partnerName={partner?.name}
         authenticated={Boolean(accessToken)} moodReady={moodsLoaded} hasMood={Boolean(userMood)}
         openRequest={dailyChallengeRequest} onRequestConsumed={onDailyChallengeRequestConsumed}
-        onRequestMood={() => setMoodOpenRequest(value => value + 1)} onConnect={() => onNavigate?.('profile')} />
+        onRequestMood={() => setMoodOpenRequest(value => value + 1)} onConnect={() => onNavigate?.('profile')}
+        onOpenHouse={() => onScreenNavigate?.('character-house')} />
 
       {/* Character Development House */}
       <Card
@@ -852,17 +856,12 @@ export function CoupleDashboard({
         onClick={() => onScreenNavigate?.('character-house')}
       >
         <CardContent className="dashboard-house-content flex items-center gap-4 p-5">
-          <div className="relative grid h-20 w-24 shrink-0 place-items-end overflow-hidden rounded-2xl border border-amber-200 bg-gradient-to-b from-sky-100 to-emerald-50 p-3">
-            <div className="absolute bottom-2 h-8 w-16 border-2 border-stone-500 bg-stone-200 shadow-sm" />
-            <div className="absolute bottom-10 h-10 w-10 rotate-45 border-l-2 border-t-2 border-rose-900/30 bg-gradient-to-br from-rose-600 to-amber-700" />
-            <div className="absolute bottom-2 left-1/2 h-6 w-3 -translate-x-1/2 rounded-t bg-amber-900" />
-            <span className="absolute right-2 top-2 grid h-6 w-6 place-items-center rounded-full bg-amber-500 text-white shadow"><Hammer className="h-3.5 w-3.5" /></span>
-          </div>
+          <span className="tbo-glass-orb grid h-16 w-16 shrink-0 place-items-center rounded-2xl"><House aria-hidden="true" className="h-8 w-8" /></span>
           <div className="min-w-0 flex-1">
-            <p className="tbo-eyebrow dashboard-glass-accent">{tr("365-day character journey")}</p>
+            <p className="tbo-eyebrow dashboard-glass-accent">{tr("One shared goal")}</p>
             <h3 className="tbo-card-title mt-1">{tr("Build the House That Honors God")}</h3>
-            <p className="tbo-caption mt-1 text-muted-foreground">{tr("Choose your dream home, design its rooms, and place one character-building block each day.")}</p>
-            <span className="tbo-caption dashboard-glass-accent mt-3 inline-flex items-center">{tr("Open house builder")} <ArrowRight className="ml-1 h-3.5 w-3.5" /></span>
+            <p className="tbo-supporting mt-1 text-muted-foreground">{tr("Choose a house and bedrooms. Build it through daily challenges together.")}</p>
+            <span className="tbo-action dashboard-glass-accent mt-3 inline-flex items-center">{tr("View our house")} <ArrowRight aria-hidden="true" className="ml-1 h-4 w-4 shrink-0" /></span>
           </div>
         </CardContent>
       </Card>

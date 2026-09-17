@@ -7,6 +7,20 @@
   padding-bottom: 1.5rem;
 }
 
+.dashboard-spotlight-action,
+.dashboard-quest-action {
+  width: fit-content;
+  min-height: 2.75rem;
+  padding-inline: 0;
+  justify-content: flex-start;
+  text-align: start;
+  color: var(--glass-accent);
+}
+
+:is(.dashboard-spotlight-action, .dashboard-quest-action) > span { min-width: 0; }
+:is(.dashboard-spotlight-action, .dashboard-quest-action):hover { background: transparent; }
+:is(.dashboard-spotlight-action, .dashboard-quest-action):hover > span { text-decoration: underline; text-underline-offset: .2em; }
+
 .couple-glass-hero {
   --couple-default-cover: var(--glass-journey-surface);
 }
@@ -258,8 +272,7 @@
 .dashboard-quest-icon { grid-area: icon; }
 .dashboard-quest-heading { grid-area: heading; }
 .dashboard-quest-description { grid-area: description; min-width: 0; }
-.dashboard-quest-action { grid-area: action; width: 100%; height: auto; }
-.dashboard-quest-action > span { min-width: 0; }
+.dashboard-quest-action { grid-area: action; justify-self: start; height: auto; }
 
 @container couple-dashboard (min-width: 48rem) {
   .dashboard-quest-content {
@@ -274,7 +287,6 @@
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas: 'icon' 'heading' 'description' 'action';
   }
-  .dashboard-quest-action > svg { display: none; }
 }
 
 /* Preserve the approved hero placement while allowing unusually long names to wrap. */

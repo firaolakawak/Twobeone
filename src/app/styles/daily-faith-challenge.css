@@ -5,3 +5,6 @@
 .daily-faith-error { padding: .75rem; border: 1px solid var(--glass-border); border-radius: 1rem; color: var(--glass-foreground); background: var(--glass-inset-surface); }
 .daily-faith-mood-hint { grid-column: 1 / -1; color: var(--glass-muted); }
 .daily-faith-dialog .quest-options:disabled { opacity: .7; }
+.daily-faith-purpose { color: var(--glass-accent); margin-block: .25rem; }
+.daily-faith-result { display: grid; gap: .65rem; padding: 1rem; color: var(--glass-foreground); overflow-wrap: anywhere; }
+.daily-faith-result .tbo-caption { color: var(--glass-muted); }

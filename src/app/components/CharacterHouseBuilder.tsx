@@ -1,483 +1,162 @@
-import { formatUiDate } from '../utils/uiDateTime';
-import { useCurrentLanguage } from '../utils/languageStore';
-import { BrandLoader, LoadingMark } from './BrandLoader';
-import { UI_LOCALES, useUiCopy } from '../utils/uiTranslation';
-import { guidanceMessages, guidanceLabel } from '../locales/guidance';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { ArrowRight, Check, LockKeyhole, RefreshCw } from 'lucide-react';
 import { BackButton } from './BackButton';
-import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  Bath,
-  BedDouble,
-  Building2,
-  Check,
-  CalendarDays,
-  Clock3,
-  Hammer,
-  HeartHandshake,
-  Home,
-  Layers3,
-  Minus,
-  Paintbrush,
-  Plus,
-  RefreshCw,
-  Scan,
-  ShieldCheck,
-  Sparkles,
-  LockKeyhole,
-} from 'lucide-react';
-import { toast } from 'sonner';
+import { BrandLoader, LoadingMark } from './BrandLoader';
 import { Button } from './ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Progress } from './ui/progress';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './ui/alert-dialog';
+import { CharacterHouseIllustration } from './CharacterHouseIllustration';
+import { CHARACTER_HOUSE_GOAL, CHARACTER_HOUSE_STAGES, getHouseJourneyStage, safeHouseBlocks, SIMPLE_HOUSE_OPTIONS } from '../data/characterHouseJourney';
+import { HOME_DEFINITIONS, type HomeType } from '../data/legacyCharacterHouse';
+import { simpleCharacterHouseMessages } from '../locales/simpleCharacterHouse';
+import { useUiCopy } from '../utils/uiTranslation';
 import api from '../utils/api';
+import '../styles/simple-character-house.css';
 
-export type HomeType = 'house' | 'villa' | 'townhouse' | 'apartment' | 'duplex' | 'penthouse';
-export type InteriorStyle = 'warm-modern' | 'ethiopian-heritage' | 'peaceful-minimalist';
-type ViewerMode = 'current' | 'blueprint';
-type SceneView = 'house' | 'room';
-
-export interface HouseFinishes {
-  wallPaint: string;
-  sofaFabric: string;
-  livingAccent: string;
-  diningWood: string;
-  kitchenCabinet: string;
-  bathroomTile: string;
-  masterBedding: string;
-  guestBedding: string;
-}
-
-interface HomeDefinition {
-  id: HomeType;
-  name: string;
-  description: string;
-  floorRange: [number, number];
-  bedroomRange: [number, number];
-  bathroomRange: [number, number];
-  defaults: Pick<HouseConfig, 'floors' | 'bedrooms' | 'bathrooms'>;
-  shape: 'pitched' | 'villa' | 'narrow' | 'tower' | 'split' | 'terrace';
-}
-
-interface HouseConfig {
-  homeType: HomeType;
-  floors: number;
-  bedrooms: number;
-  bathrooms: number;
-  interiorStyle: InteriorStyle;
-  homeName: string;
-  completedDays: number;
-  finishes: HouseFinishes;
-  lastBlockDate?: string;
-  blueprintStatus: 'draft' | 'pending' | 'active';
-  blueprintSubmittedAt?: string;
-  blueprintApprovedAt?: string;
-  challengeStartedAt?: string;
-  submittedBy?: string;
-  submittedByName?: string;
-  approvedBy?: string;
-  approvedByName?: string;
-}
-
-export interface Room {
-  id: string;
-  name: string;
-  meaning: string;
-  kind: 'living' | 'bedroom' | 'service' | 'faith' | 'outdoor';
-  span?: number;
-}
-
-const CharacterHouse3D = lazy(() => import('./CharacterHouse3D').then(module => ({ default: module.CharacterHouse3D })));
-
-export const HOME_DEFINITIONS: HomeDefinition[] = [
-  { id: 'house', name: 'House', description: 'Warm and welcoming', floorRange: [1, 2], bedroomRange: [1, 5], bathroomRange: [1, 4], defaults: { floors: 2, bedrooms: 3, bathrooms: 2 }, shape: 'pitched' },
-  { id: 'villa', name: 'Villa', description: 'Spacious and hospitable', floorRange: [1, 3], bedroomRange: [3, 7], bathroomRange: [2, 6], defaults: { floors: 2, bedrooms: 5, bathrooms: 4 }, shape: 'villa' },
-  { id: 'townhouse', name: 'Townhouse', description: 'Compact vertical living', floorRange: [2, 3], bedroomRange: [2, 5], bathroomRange: [2, 4], defaults: { floors: 3, bedrooms: 3, bathrooms: 2 }, shape: 'narrow' },
-  { id: 'apartment', name: 'Apartment', description: 'Peaceful urban home', floorRange: [1, 1], bedroomRange: [1, 4], bathroomRange: [1, 3], defaults: { floors: 1, bedrooms: 2, bathrooms: 2 }, shape: 'tower' },
-  { id: 'duplex', name: 'Duplex', description: 'Two lives, one home', floorRange: [2, 3], bedroomRange: [3, 6], bathroomRange: [2, 5], defaults: { floors: 2, bedrooms: 4, bathrooms: 3 }, shape: 'split' },
-  { id: 'penthouse', name: 'Penthouse', description: 'Light-filled rooftop home', floorRange: [1, 2], bedroomRange: [2, 5], bathroomRange: [2, 5], defaults: { floors: 1, bedrooms: 3, bathrooms: 3 }, shape: 'terrace' },
-];
-
-const INTERIOR_STYLES: Array<{ id: InteriorStyle; name: string; colors: string[] }> = [
-  { id: 'warm-modern', name: 'Warm Modern', colors: ['#e8d8c2', '#c69b6d', '#7a5135', '#6e846a'] },
-  { id: 'ethiopian-heritage', name: 'Ethiopian Heritage', colors: ['#d7a05d', '#a64f32', '#695044', '#d6c1a4'] },
-  { id: 'peaceful-minimalist', name: 'Peaceful Minimalist', colors: ['#eeeae2', '#c8c2b7', '#8f9692', '#4d5b58'] },
-];
-
-export const FINISH_PRESETS: Record<InteriorStyle, HouseFinishes> = {
-  'warm-modern': { wallPaint: '#fff8e9', sofaFabric: '#9b5960', livingAccent: '#d3a65f', diningWood: '#87532f', kitchenCabinet: '#72836d', bathroomTile: '#c9e0df', masterBedding: '#b87979', guestBedding: '#7c8e73' },
-  'ethiopian-heritage': { wallPaint: '#fff1d2', sofaFabric: '#9d4432', livingAccent: '#d9a227', diningWood: '#6e3b22', kitchenCabinet: '#a85a31', bathroomTile: '#d8c0a0', masterBedding: '#b64a35', guestBedding: '#d4a43b' },
-  'peaceful-minimalist': { wallPaint: '#f3f0e8', sofaFabric: '#788580', livingAccent: '#b7ab98', diningWood: '#817563', kitchenCabinet: '#a5aaa2', bathroomTile: '#dce5e2', masterBedding: '#8b9791', guestBedding: '#b1a99d' },
-};
-
-const FINISH_FIELDS: Array<{ key: keyof HouseFinishes; label: string }> = [
-  { key: 'wallPaint', label: 'Wall paint' }, { key: 'sofaFabric', label: 'Sofas' },
-  { key: 'livingAccent', label: 'Living room' }, { key: 'diningWood', label: 'Dining table' },
-  { key: 'kitchenCabinet', label: 'Kitchen' }, { key: 'bathroomTile', label: 'Bathroom' },
-  { key: 'masterBedding', label: 'Master bedroom' }, { key: 'guestBedding', label: 'Guest room' },
-];
-
-const STAGES = [
-  { end: 40, name: 'Foundation', verse: 'Psalm 127:1' },
-  { end: 70, name: 'Floors', verse: 'Luke 6:48' },
-  { end: 115, name: 'Framework', verse: 'Proverbs 24:3' },
-  { end: 170, name: 'Walls', verse: 'Nehemiah 2:18' },
-  { end: 200, name: 'Doors & Windows', verse: 'Colossians 4:3' },
-  { end: 240, name: 'Roof', verse: 'Psalm 91:1' },
-  { end: 295, name: 'Rooms', verse: 'Romans 12:10' },
-  { end: 325, name: 'Light & Water', verse: 'Matthew 5:14' },
-  { end: 350, name: 'Interior & Garden', verse: 'Galatians 5:22–23' },
-  { end: 365, name: 'Dedication', verse: 'Joshua 24:15' },
-] as const;
-
-const STORAGE_KEY = 'twobeone_character_house_prototype_v1';
-
-const DEFAULT_CONFIG: HouseConfig = {
-  homeType: 'villa',
-  floors: 2,
-  bedrooms: 4,
-  bathrooms: 3,
-  interiorStyle: 'warm-modern',
-  homeName: 'House of Grace',
-  completedDays: 0,
-  finishes: FINISH_PRESETS['warm-modern'],
-  blueprintStatus: 'draft',
-};
-
-const DAILY_CHALLENGES = [
-  { title: 'Excavate and Lay the Foundation', scripture: 'Psalm 127:1', action: 'Read the verse together, pray over the home you are building, and agree that God’s Word will be the foundation of your relationship.' },
-  { title: 'Build on God’s Word', scripture: 'Matthew 7:24–25', action: 'Choose one biblical value that you want this home and relationship to demonstrate.' },
-  { title: 'Speak with Grace', scripture: 'Colossians 4:6', action: 'Give your partner one sincere, specific word of encouragement.' },
-  { title: 'Listen Before Speaking', scripture: 'James 1:19', action: 'Give each partner three uninterrupted minutes to share about their day.' },
-  { title: 'Practice Practical Love', scripture: '1 Corinthians 13:4–7', action: 'Complete one small act of service requested by your partner.' },
-  { title: 'Choose Integrity', scripture: 'Psalm 15:1–2', action: 'Share one honest feeling gently, without blame or accusation.' },
-  { title: 'Pray as One', scripture: 'Colossians 4:2', action: 'Each partner prays aloud for one need the other person shared.' },
-];
-
-export function isBlueprintNameReady(name: string) {
-  return name.trim().length >= 3;
-}
-
-export function canUserApproveBlueprint(status: HouseConfig['blueprintStatus'], submittedBy: string | undefined, currentUserId: string | undefined, partnerId: string | undefined) {
-  return status === 'pending' && Boolean(submittedBy && currentUserId && partnerId && submittedBy === partnerId && submittedBy !== currentUserId);
-}
-
-export function clampToRange(value: number, range: [number, number]) {
-  return Math.min(range[1], Math.max(range[0], value));
-}
-
-export function getConstructionStage(completedDays: number) {
-  const safeDays = Math.min(365, Math.max(0, Math.floor(completedDays)));
-  const index = STAGES.findIndex(stage => safeDays < stage.end);
-  return STAGES[index === -1 ? STAGES.length - 1 : index];
-}
-
-export function createFloorRooms(config: Pick<HouseConfig, 'floors' | 'bedrooms' | 'bathrooms' | 'homeType'>): Room[][] {
-  const floors = Array.from({ length: config.floors }, () => [] as Room[]);
-  const add = (floor: number, room: Room) => floors[Math.min(floors.length - 1, floor)].push(room);
-
-  add(0, { id: 'living', name: 'Living Room', meaning: 'Fellowship and communication', kind: 'living', span: 2 });
-  add(0, { id: 'dining', name: 'Dining Room', meaning: 'Gratitude and hospitality', kind: 'living' });
-  add(0, { id: 'kitchen', name: 'Kitchen', meaning: 'Service and daily provision', kind: 'service' });
-  add(0, { id: 'prayer', name: config.homeType === 'apartment' ? 'Prayer Corner' : 'Prayer Room', meaning: 'Worship and dependence on God', kind: 'faith' });
-  if (config.homeType !== 'apartment') add(0, { id: 'entry', name: 'Welcome', meaning: 'Hospitality and openness', kind: 'outdoor' });
-
-  for (let index = 0; index < config.bedrooms; index += 1) {
-    const floor = config.floors === 1 ? 0 : 1 + (index % (config.floors - 1));
-    add(floor, { id: `bed-${index}`, name: index === 0 ? 'Master Bedroom' : index === 1 ? 'Guest Room' : `Bedroom ${index + 1}`, meaning: 'Trust, rest, and care', kind: 'bedroom' });
-  }
-  for (let index = 0; index < config.bathrooms; index += 1) {
-    const floor = index % config.floors;
-    add(floor, { id: `bath-${index}`, name: index === 0 ? 'Bathroom' : `Bathroom ${index + 1}`, meaning: 'Renewal and healthy care', kind: 'service' });
-  }
-  if (config.homeType === 'villa' || config.homeType === 'penthouse') {
-    add(config.floors - 1, { id: 'terrace', name: 'Terrace', meaning: 'Vision and shared dreams', kind: 'outdoor', span: 2 });
-  }
-  if (config.homeType === 'duplex') {
-    add(0, { id: 'family', name: 'Family Room', meaning: 'Unity across generations', kind: 'living' });
-  }
-  return floors;
-}
-
-function todayKey() {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-}
-
-function normalizeConfig(parsed: any): HouseConfig {
-  if (!parsed || !HOME_DEFINITIONS.some(home => home.id === parsed.homeType)) return DEFAULT_CONFIG;
-  const mutuallyApproved = Boolean(parsed.submittedBy && parsed.approvedBy && parsed.submittedBy !== parsed.approvedBy);
-  const blueprintStatus = parsed.blueprintStatus === 'active' && mutuallyApproved ? 'active' : parsed.blueprintStatus === 'pending' && parsed.submittedBy ? 'pending' : 'draft';
-  return {
-    ...DEFAULT_CONFIG,
-    ...parsed,
-    blueprintStatus,
-    finishes: { ...DEFAULT_CONFIG.finishes, ...(parsed.finishes || {}) },
-    completedDays: clampToRange(Number(parsed.completedDays) || 0, [0, 365]),
-  };
-}
-
-function loadConfig(): HouseConfig {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-    return normalizeConfig(parsed);
-  } catch {
-    return DEFAULT_CONFIG;
-  }
-}
-
-function MiniHome({ home, selected }: { home: HomeDefinition; selected: boolean }) {
-  const isFlat = home.shape === 'tower' || home.shape === 'terrace';
-  const isNarrow = home.shape === 'narrow';
-  const isSplit = home.shape === 'split';
-  return (
-    <div className="relative mx-auto h-24 w-full max-w-[9rem]" aria-hidden="true">
-      <div className="absolute inset-x-2 bottom-1 h-4 rounded-[50%] bg-emerald-900/10 blur-sm" />
-      {home.shape === 'tower' && <div className="absolute bottom-3 left-1/2 h-[4.6rem] w-[6.5rem] -translate-x-1/2 rounded-t-lg border border-stone-300 bg-stone-100 shadow-lg" />}
-      <div className={`absolute bottom-3 left-1/2 -translate-x-1/2 border border-stone-300 bg-gradient-to-br from-amber-50 to-stone-200 shadow-lg ${isNarrow ? 'h-16 w-14' : isSplit ? 'h-12 w-28' : 'h-14 w-24'} ${isFlat ? 'rounded-t-md' : ''}`}>
-        <div className="grid h-full grid-cols-3 gap-1 p-2">
-          {Array.from({ length: isNarrow ? 6 : 5 }).map((_, index) => <span key={index} className={`rounded-sm ${selected ? 'bg-amber-300/80' : 'bg-sky-200/80'}`} />)}
-        </div>
-      </div>
-      {!isFlat && <div className={`absolute left-1/2 -translate-x-1/2 rotate-45 border-l border-t border-rose-900/20 bg-gradient-to-br from-rose-700 to-amber-700 ${isNarrow ? 'bottom-[4.15rem] h-10 w-10' : isSplit ? 'bottom-[3.45rem] h-11 w-20' : 'bottom-[3.8rem] h-14 w-14'}`} />}
-      {home.shape === 'terrace' && <div className="absolute bottom-[4.3rem] left-1/2 h-3 w-24 -translate-x-1/2 rounded-sm border border-emerald-800/20 bg-emerald-300" />}
-      {home.shape === 'villa' && <div className="absolute bottom-3 left-1/2 h-7 w-4 -translate-x-1/2 rounded-t-full bg-amber-900/75" />}
-    </div>
-  );
-}
-
-function Counter({ label, icon: Icon, value, range, onChange }: { label: string; icon: typeof Layers3; value: number; range: [number, number]; onChange: (value: number) => void }) {
-  const tr = useUiCopy(guidanceMessages);
-  return (
-    <div className="flex items-center gap-3 rounded-2xl border border-stone-200 tbo-glass-inset p-3">
-      <span className="grid h-10 w-10 place-items-center rounded-xl bg-amber-50 text-amber-800"><Icon className="h-5 w-5" /></span>
-      <div className="min-w-0 flex-1"><p className="tbo-caption text-stone-500">{label}</p><p className="tbo-body text-stone-900">{value}</p></div>
-      <Button type="button" variant="outline" size="icon" className="tbo-action h-9 w-9 rounded-full" disabled={value <= range[0]} onClick={() => onChange(value - 1)} aria-label={tr("Decrease {label}", { label })}><Minus className="h-4 w-4" /></Button>
-      <Button type="button" variant="outline" size="icon" className="tbo-action h-9 w-9 rounded-full" disabled={value >= range[1]} onClick={() => onChange(value + 1)} aria-label={tr("Increase {label}", { label })}><Plus className="h-4 w-4" /></Button>
-    </div>
-  );
-}
+// Existing administration previews and saved 3D designs keep their domain helpers.
+export { HOME_DEFINITIONS, FINISH_PRESETS, canUserApproveBlueprint, clampToRange, createFloorRooms, getConstructionStage, isBlueprintNameReady } from '../data/legacyCharacterHouse';
+export type { HomeType, HouseFinishes, InteriorStyle, Room } from '../data/legacyCharacterHouse';
 
 interface CharacterHouseBuilderProps {
   onBack: () => void;
+  onOpenChallenge?: () => void;
+  onConnect?: () => void;
   currentUserId?: string;
   partnerId?: string;
   partnerName?: string;
 }
 
-export function CharacterHouseBuilder({ onBack, currentUserId, partnerId, partnerName }: CharacterHouseBuilderProps) {
-  const language = useCurrentLanguage();
-  const tr = useUiCopy(guidanceMessages);
-  const [config, setConfig] = useState<HouseConfig>(loadConfig);
-  const [floor, setFloor] = useState(() => Math.max(0, loadConfig().floors - 1));
-  const [showRoof, setShowRoof] = useState(false);
-  const [mode, setMode] = useState<ViewerMode>('blueprint');
-  const [sceneView, setSceneView] = useState<SceneView>('house');
-  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-  const [submitOpen, setSubmitOpen] = useState(false);
-  const [approvalOpen, setApprovalOpen] = useState(false);
-  const [syncing, setSyncing] = useState(false);
-  const selectedHome = HOME_DEFINITIONS.find(home => home.id === config.homeType) || HOME_DEFINITIONS[0];
-  const floors = useMemo(() => createFloorRooms(config), [config]);
-  const stage = getConstructionStage(config.completedDays);
-  const reveal = mode === 'blueprint' ? 1 : Math.min(1, config.completedDays / 295);
-  const alreadyPlacedToday = config.lastBlockDate === todayKey();
-  const challengeActive = config.blueprintStatus === 'active';
-  const blueprintPending = config.blueprintStatus === 'pending';
-  const submittedByCurrentUser = Boolean(currentUserId && config.submittedBy === currentUserId);
-  const canApprove = canUserApproveBlueprint(config.blueprintStatus, config.submittedBy, currentUserId, partnerId);
-  const todaysChallenge = DAILY_CHALLENGES[config.completedDays % DAILY_CHALLENGES.length];
+export function CharacterHouseBuilder(props: CharacterHouseBuilderProps) {
+  return <SharedCharacterHouse key={JSON.stringify([props.currentUserId, props.partnerId])} {...props} />;
+}
 
-  const refreshBlueprint = useCallback(async (announce = false) => {
-    if (!currentUserId || !partnerId) return;
-    setSyncing(true);
+function SharedCharacterHouse({ onBack, onOpenChallenge, onConnect, currentUserId, partnerId }: CharacterHouseBuilderProps) {
+  const tr = useUiCopy(simpleCharacterHouseMessages);
+  const [data, setData] = useState<Awaited<ReturnType<typeof api.characterHouse.get>> | null>(null);
+  const [homeType, setHomeType] = useState<HomeType>('house');
+  const [bedrooms, setBedrooms] = useState(3);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<'load' | 'save' | null>(null);
+  const initialized = useRef(false);
+  const sequence = useRef(0);
+  const mounted = useRef(true);
+  const writing = useRef(false);
+  const connected = Boolean(currentUserId && partnerId);
+  const active = data?.blueprint?.locked === true;
+  const blocks = active ? safeHouseBlocks(data?.progress?.completedDays) : 0;
+  const stage = getHouseJourneyStage(blocks);
+  const definition = HOME_DEFINITIONS.find(home => home.id === homeType) ?? HOME_DEFINITIONS[0];
+  const houseLabel = SIMPLE_HOUSE_OPTIONS.find(home => home.id === homeType)?.label ?? 'House';
+  const complete = blocks >= CHARACTER_HOUSE_GOAL;
+
+  const accept = useCallback((result: Awaited<ReturnType<typeof api.characterHouse.get>>) => {
+    setData(result);
+    if (!initialized.current || result.blueprint?.locked === true) {
+      const saved = result.blueprint;
+      const definition = HOME_DEFINITIONS.find(home => home.id === saved?.homeType);
+      if (definition) {
+        setHomeType(definition.id);
+        setBedrooms(saved?.locked ? saved.bedrooms : Math.max(definition.bedroomRange[0], Math.min(definition.bedroomRange[1], Number(saved?.bedrooms) || definition.defaults.bedrooms)));
+      }
+      initialized.current = true;
+    }
+  }, []);
+
+  const refresh = useCallback(async () => {
+    if (!connected || writing.current) return;
+    const request = ++sequence.current;
+    setLoading(true);
     try {
       const result = await api.characterHouse.get();
-      if (result.blueprint) {
-        const shared = normalizeConfig(result.blueprint);
-        setConfig(shared);
-        setFloor(Math.max(0, shared.floors - 1));
-        if (shared.blueprintStatus === 'active') setMode('current');
-        if (announce) toast.success(shared.blueprintStatus === 'active' ? tr("Your partner approved the blueprint. Day 1 has started!") : tr("Blueprint status updated."));
-      } else if (announce) {
-        toast.info(tr("No shared blueprint has been submitted yet."));
-      }
-    } catch (error: any) {
-      if (announce) toast.error(error.message || tr("Could not refresh the blueprint."));
+      if (!mounted.current || request !== sequence.current) return;
+      accept(result); setError(null);
+    } catch {
+      if (mounted.current && request === sequence.current) setError('load');
     } finally {
-      setSyncing(false);
+      if (mounted.current && request === sequence.current) setLoading(false);
     }
-  }, [currentUserId, partnerId]);
+  }, [connected, accept]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
-  }, [config]);
+    mounted.current = true;
+    if (!connected) { setLoading(false); return () => { mounted.current = false; }; }
+    void refresh();
+    const foregroundRefresh = () => { if (document.visibilityState === 'visible') void refresh(); };
+    const interval = window.setInterval(foregroundRefresh, 30000);
+    window.addEventListener('focus', foregroundRefresh);
+    document.addEventListener('visibilitychange', foregroundRefresh);
+    return () => {
+      mounted.current = false; sequence.current += 1;
+      window.clearInterval(interval);
+      window.removeEventListener('focus', foregroundRefresh);
+      document.removeEventListener('visibilitychange', foregroundRefresh);
+    };
+  }, [connected, refresh]);
 
-  useEffect(() => {
-    if (!currentUserId || !partnerId) return;
-    void refreshBlueprint(false);
-    if (!blueprintPending) return;
-    const interval = window.setInterval(() => void refreshBlueprint(false), 15000);
-    return () => window.clearInterval(interval);
-  }, [blueprintPending, currentUserId, partnerId, refreshBlueprint]);
-
-  useEffect(() => {
-    if (floor >= config.floors) setFloor(config.floors - 1);
-  }, [config.floors, floor]);
-
-  const updateHome = (home: HomeDefinition) => {
-    setConfig(current => ({ ...current, homeType: home.id, ...home.defaults }));
-    setFloor(home.defaults.floors - 1);
-    setSelectedRoom(null);
-    setSceneView('house');
-  };
-
-  const placeBlock = () => {
-    if (!challengeActive || alreadyPlacedToday) return;
-    setConfig(current => ({ ...current, completedDays: Math.min(365, current.completedDays + 1), lastBlockDate: todayKey() }));
-    setMode('current');
-    toast.success(tr("Today’s block has been placed. Keep building together!"));
-  };
-
-  const submitBlueprint = async () => {
-    if (!isBlueprintNameReady(config.homeName)) return;
-    if (!partnerId) {
-      toast.error(tr("Connect with your partner before submitting a blueprint."));
-      return;
-    }
-    setSyncing(true);
+  const start = async () => {
+    if (writing.current || !connected || active || !data) return;
+    writing.current = true; const request = ++sequence.current;
+    setSaving(true); setError(null);
     try {
-      const result = await api.characterHouse.submit(config);
-      setConfig(normalizeConfig(result.blueprint));
-      setMode('blueprint');
-      setSceneView('house');
-      setSubmitOpen(false);
-      toast.success(tr('Blueprint sent to {name} for approval.', { name: partnerName || tr('your partner') }));
-    } catch (error: any) {
-      toast.error(error.message || tr("Could not submit the blueprint."));
+      const result = await api.characterHouse.start({ homeType, bedrooms });
+      if (!mounted.current || request !== sequence.current) return;
+      accept(result);
+    } catch {
+      if (mounted.current && request === sequence.current) setError('save');
     } finally {
-      setSyncing(false);
+      writing.current = false;
+      if (mounted.current && request === sequence.current) { setSaving(false); setLoading(false); }
     }
   };
 
-  const approveBlueprint = async () => {
-    if (!canApprove) return;
-    setSyncing(true);
-    try {
-      const result = await api.characterHouse.approve();
-      setConfig(normalizeConfig(result.blueprint));
-      setMode('current');
-      setSceneView('house');
-      setApprovalOpen(false);
-      toast.success(tr("Blueprint approved. Day 1: excavate and lay the foundation!"));
-    } catch (error: any) {
-      toast.error(error.message || tr("Could not approve the blueprint."));
-    } finally {
-      setSyncing(false);
-    }
-  };
+  return <div className="simple-character-house">
+    <header className="simple-house-heading">
+      <BackButton label={tr('Back to dashboard')} onClick={onBack} />
+      <div><p className="tbo-eyebrow">{tr('Together in Faith')}</p><h1 className="tbo-page-title">{tr('Our character house')}</h1></div>
+    </header>
 
-  return (
-    <div className="space-y-5 pb-8">
-      <div className="flex items-center gap-3">
-        <BackButton label={tr("Back to dashboard")} onClick={onBack} />
-        <div><p className="tbo-eyebrow text-[var(--glass-accent)]">{tr("Character development")}</p><h1 className="tbo-page-title text-foreground">{tr("Build the House That Honors God")}</h1></div>
-      </div>
+    {!connected ? <section className="tbo-glass simple-house-panel simple-house-empty">
+      <span className="simple-house-emoji" aria-hidden="true">🏡</span>
+      <h2 className="tbo-section-title">{tr('Build a home together')}</h2>
+      <p className="tbo-supporting">{tr('Connect with your partner to choose your house and start building.')}</p>
+      {onConnect && <Button variant="glass-primary" onClick={onConnect}>{tr('Connect your partner')}</Button>}
+    </section> : loading && !data ? <BrandLoader label={tr('Loading your house…')} className="simple-house-loading" /> : <>
+      {error && <div className="tbo-glass-inset simple-house-error" role="alert"><p className="tbo-supporting">{tr(error === 'save' ? 'Your house could not be saved. Your choices are still here.' : 'We could not refresh your house. Please try again.')}</p>{error === 'load' && <Button variant="glass" disabled={loading} onClick={() => void refresh()}><RefreshCw aria-hidden="true" />{tr('Retry')}</Button>}</div>}
 
-      {config.blueprintStatus === 'draft' && <>
-      <Card className="tbo-glass overflow-hidden rounded-[2rem] border-[var(--glass-border)] shadow-xl shadow-amber-900/5">
-        <CardHeader className="pb-3"><CardTitle className="tbo-card-title flex items-center gap-2"><Home className="h-5 w-5 text-[var(--glass-accent)]" />{tr("Choose your home")}</CardTitle></CardHeader>
-        <CardContent className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {HOME_DEFINITIONS.map(home => {
-            const selected = config.homeType === home.id;
-            return <button key={home.id} type="button" onClick={() => updateHome(home)} aria-pressed={selected} className={`relative rounded-2xl border p-2 text-left transition-all ${selected ? 'border-amber-500 bg-[var(--glass-inset-surface)] shadow-lg ring-2 ring-amber-300' : 'border-[var(--glass-border)] bg-[var(--glass-inset-surface)] hover:-translate-y-0.5 hover:bg-[var(--glass-inset-surface)]'}`}>
-              {selected && <span className="absolute right-2 top-2 z-10 grid h-6 w-6 place-items-center rounded-full bg-amber-500 text-white"><Check className="h-4 w-4" /></span>}
-              <MiniHome home={home} selected={selected} /><p className="tbo-card-title text-foreground">{tr(home.name)}</p><p className="tbo-caption text-muted-foreground">{tr(home.description)}</p>
-            </button>;
-          })}
-        </CardContent>
-      </Card>
+      {data && !active && <section className="tbo-glass simple-house-panel simple-house-setup">
+        <div className="simple-house-intro"><span className="simple-house-emoji" aria-hidden="true">🏡</span><h2 className="tbo-section-title">{tr('Let’s build your home')}</h2><p className="tbo-supporting">{tr('Two choices. One shared goal.')}</p></div>
+        <fieldset disabled={saving} className="simple-house-fieldset"><legend className="tbo-card-title">{tr('1. What kind of house?')}</legend><div className="simple-house-options">
+          {SIMPLE_HOUSE_OPTIONS.map(home => <button type="button" key={home.id} aria-pressed={homeType === home.id} className={`tbo-glass-inset simple-house-option ${homeType === home.id ? 'is-selected' : ''}`} onClick={() => {
+            const definition = HOME_DEFINITIONS.find(item => item.id === home.id)!;
+            setHomeType(home.id); setBedrooms(value => Math.max(definition.bedroomRange[0], Math.min(definition.bedroomRange[1], value)));
+          }}><span aria-hidden="true">{home.emoji}</span><span className="tbo-label">{tr(home.label)}</span>{homeType === home.id && <Check className="simple-house-selection" aria-hidden="true" />}</button>)}
+        </div></fieldset>
+        <fieldset disabled={saving} className="simple-house-fieldset"><legend className="tbo-card-title">{tr('2. How many bedrooms?')}</legend><div className="simple-house-bedrooms">
+          {Array.from({ length: definition.bedroomRange[1] - definition.bedroomRange[0] + 1 }, (_, index) => definition.bedroomRange[0] + index).map(number => <button key={number} type="button" aria-label={tr('{count} bedrooms', { count: number })} aria-pressed={bedrooms === number} onClick={() => setBedrooms(number)} className={`tbo-label tbo-glass-inset simple-house-bedroom ${bedrooms === number ? 'is-selected' : ''}`}><span aria-hidden="true">🛏️</span>{number}</button>)}
+        </div></fieldset>
+        <div className="tbo-glass-inset simple-house-promise"><span aria-hidden="true">🧱</span><p className="tbo-supporting">{tr('When you both finish the daily challenge, one block builds your house. Goal: 365 blocks.')}</p></div>
+        <Button variant="glass-primary" className="simple-house-primary" disabled={saving} onClick={() => void start()}>{saving ? <LoadingMark /> : <LockKeyhole aria-hidden="true" />}{tr(saving ? 'Saving your house…' : 'Lock & start building')}</Button>
+        <p className="tbo-caption simple-house-note">{tr('This saves your shared design. It stays locked while you build.')}</p>
+      </section>}
 
-      <Card className="tbo-glass rounded-[2rem] border-[var(--glass-border)] shadow-sm">
-        <CardHeader className="pb-3"><CardTitle className="tbo-card-title flex items-center gap-2"><Building2 className="h-5 w-5 text-[var(--glass-accent)]" />{tr("Design your {home}", { home: tr(selectedHome.name) })}</CardTitle></CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-3 sm:grid-cols-3">
-            <Counter label={tr("Floors")} icon={Layers3} value={config.floors} range={selectedHome.floorRange} onChange={value => { setConfig(current => ({ ...current, floors: value })); setFloor(value - 1); }} />
-            <Counter label={tr("Bedrooms")} icon={BedDouble} value={config.bedrooms} range={selectedHome.bedroomRange} onChange={value => setConfig(current => ({ ...current, bedrooms: value }))} />
-            <Counter label={tr("Bathrooms")} icon={Bath} value={config.bathrooms} range={selectedHome.bathroomRange} onChange={value => setConfig(current => ({ ...current, bathrooms: value }))} />
-          </div>
-          <div><p className="tbo-supporting mb-2 text-foreground">{tr("Interior design")}</p><div className="grid gap-2 sm:grid-cols-3">{INTERIOR_STYLES.map(style => <button key={style.id} type="button" onClick={() => setConfig(current => ({ ...current, interiorStyle: style.id, finishes: FINISH_PRESETS[style.id] }))} className={`rounded-2xl border p-3 text-left ${config.interiorStyle === style.id ? 'border-amber-500 bg-amber-50 ring-2 ring-amber-200' : 'border-[var(--glass-border)]'}`}><div className="mb-2 flex gap-1">{style.colors.map(color => <span key={color} className="h-6 flex-1 rounded-md" style={{ backgroundColor: color }} />)}</div><span className="tbo-caption text-foreground">{tr(style.name)}</span></button>)}</div></div>
-          <div className="rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-inset-surface)]/75 p-4">
-            <p className="tbo-supporting mb-3 flex items-center gap-2 text-foreground"><Paintbrush className="h-4 w-4 text-[var(--glass-accent)]" />{tr("Customize colors")}</p>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{FINISH_FIELDS.map(field => <label key={field.key} className="tbo-label flex cursor-pointer items-center gap-2 rounded-xl border border-[var(--glass-border)] bg-[var(--glass-inset-surface)] p-2.5 shadow-sm"><input type="color" value={config.finishes[field.key]} onChange={event => setConfig(current => ({ ...current, finishes: { ...current.finishes, [field.key]: event.target.value } }))} className="tbo-field h-9 w-9 cursor-pointer rounded-lg border-0 bg-transparent p-0" aria-label={tr("{field} color", { field: tr(field.label) })} /><span className="tbo-caption text-foreground">{tr(field.label)}</span></label>)}</div>
-          </div>
-          <div className="rounded-2xl border border-amber-300 tbo-glass-inset p-4">
-            <label className="tbo-label block"><span className="tbo-eyebrow mb-1.5 block text-[var(--glass-accent)]">{tr("Name your home")}</span><input value={config.homeName} onChange={event => setConfig(current => ({ ...current, homeName: event.target.value }))} maxLength={48} placeholder={tr("House of Grace")} className="tbo-field h-12 w-full rounded-xl border border-amber-200 bg-[var(--glass-inset-surface)] px-4 text-foreground outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-200" /></label>
-            <div className="mt-4 flex items-start gap-3 rounded-xl border border-white tbo-glass-inset p-3"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-[var(--glass-accent)]" /><span><strong className="tbo-label block text-foreground">{tr("Your partner must approve this design")}</strong><small className="tbo-supporting mt-0.5 block text-muted-foreground">{tr("Submitting sends a locked review copy to {name}. The challenge will not start until they approve it.", { name: partnerName || tr("your linked partner") })}</small></span></div>
-            <Button type="button" onClick={() => setSubmitOpen(true)} disabled={syncing || !partnerId || !isBlueprintNameReady(config.homeName)} className="tbo-action mt-4 min-h-14 h-auto whitespace-normal w-full rounded-xl"><HeartHandshake className="mr-2 h-5 w-5" /> {partnerId ? tr("Submit Blueprint for Approval") : tr("Connect a Partner to Submit")}</Button>
-          </div>
-        </CardContent>
-      </Card>
+      {data && active && <>
+        <section className="tbo-glass simple-house-panel simple-house-build">
+          <div className="simple-house-build-heading"><div><p className="tbo-eyebrow">{tr(complete ? 'Built together' : 'One shared goal')}</p><h2 className="tbo-section-title">{tr(complete ? 'Your home is complete!' : 'Growing in character, together')}</h2></div><span className="tbo-caption simple-house-locked"><LockKeyhole aria-hidden="true" />{tr('Design locked')}</span></div>
+          <CharacterHouseIllustration homeType={homeType} bedrooms={bedrooms} completedDays={blocks} />
+          <p className="tbo-supporting simple-house-design">{tr('{house} · {bedrooms} bedrooms', { house: tr(houseLabel), bedrooms })}</p>
+          <div className="simple-house-progress"><div className="simple-house-progress-label"><strong className="tbo-card-title">{tr('{count} / 365 blocks', { count: blocks })}</strong><span className="tbo-label">{Math.floor(blocks / CHARACTER_HOUSE_GOAL * 100)}%</span></div><Progress value={blocks / CHARACTER_HOUSE_GOAL * 100} aria-label={tr('House construction progress')} /></div>
+          <div className="tbo-glass-inset simple-house-purpose"><span className="simple-house-emoji" aria-hidden="true">{stage.emoji}</span><div><p className="tbo-caption">{tr('Building {stage}', { stage: tr(stage.name) })}</p><h3 className="tbo-card-title">{tr(stage.virtue)}</h3><p className="tbo-supporting">{tr(stage.purpose)}</p></div></div>
+          <div className="simple-house-today"><p className="tbo-label">{tr(complete ? 'Keep living what you have practised.' : data.progress.todayContributed ? 'Today’s shared block is in place!' : 'Today’s challenge → one shared block')}</p><p className="tbo-supporting">{tr(complete ? '365 shared blocks. Keep choosing love in everyday life.' : 'Finish the game and its activity together. Your block appears after both of you complete it.')}</p></div>
+          <Button variant="glass-primary" className="simple-house-primary" onClick={onOpenChallenge} disabled={!onOpenChallenge}>{tr('Open today’s challenge')}<ArrowRight aria-hidden="true" /></Button>
+          <p className="tbo-caption simple-house-note">{tr('One shared block per day. Missed days never remove progress.')}</p>
+        </section>
+
+        <section className="tbo-glass simple-house-panel"><h2 className="tbo-card-title">{tr('From a foundation to a home')}</h2><ol className="simple-house-milestones">{CHARACTER_HOUSE_STAGES.map(item => {
+          const done = blocks >= item.end;
+          const current = !complete && stage.id === item.id;
+          return <li key={item.id} className={`tbo-glass-inset ${current ? 'is-current' : ''} ${done ? 'is-done' : ''}`} aria-current={current ? 'step' : undefined}><span aria-hidden="true">{done ? '✅' : item.emoji}</span><div><span className="tbo-label">{tr(item.name)}</span><span className="tbo-caption">{tr(item.virtue)}</span></div></li>;
+        })}</ol><p className="tbo-caption simple-house-note">{tr('Your house records shared practice, not a score for your character.')}</p></section>
       </>}
-
-      {blueprintPending && <Card className="overflow-hidden rounded-[2rem] border-amber-300 tbo-glass shadow-lg"><CardContent className="p-5 sm:p-6"><div className="flex flex-wrap items-start gap-4"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-amber-600 text-white shadow"><Clock3 className="h-6 w-6" /></span><div className="min-w-0 flex-1"><p className="tbo-eyebrow text-[var(--glass-accent)]">{tr("Blueprint awaiting partner approval")}</p><h2 className="tbo-section-title mt-1 text-foreground">{config.homeName}</h2><p className="tbo-supporting mt-1 text-muted-foreground">{submittedByCurrentUser ? tr("{name} must review and approve this blueprint before construction can begin.", { name: partnerName || tr("Your partner") }) : tr("{name} submitted this blueprint for your review.", { name: config.submittedByName || partnerName || tr("Your partner") })}</p><p className="tbo-caption mt-2 text-muted-foreground">{tr(selectedHome.name)} · {tr("{floors} floors · {bedrooms} bedrooms · {bathrooms} bathrooms", { floors: config.floors, bedrooms: config.bedrooms, bathrooms: config.bathrooms })}</p></div>{canApprove ? <Button type="button" onClick={() => setApprovalOpen(true)} disabled={syncing} className="tbo-action h-12 rounded-xl bg-emerald-700 px-5 text-white hover:bg-emerald-800"><ShieldCheck className="mr-2 h-5 w-5" />{tr("Review & approve")}</Button> : <Button type="button" variant="outline" onClick={() => void refreshBlueprint(true)} disabled={syncing} className="tbo-action h-11 rounded-xl bg-[var(--glass-inset-surface)]">{syncing ? <LoadingMark className="mr-2" /> : <RefreshCw className="mr-2 h-4 w-4" />}{tr("Check status")}</Button>}</div></CardContent></Card>}
-
-      {challengeActive && <Card className="tbo-glass overflow-hidden rounded-[2rem] border-emerald-200  shadow-sm"><CardContent className="flex flex-wrap items-center gap-4 p-5"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-600 text-white shadow"><LockKeyhole className="h-6 w-6" /></span><div className="min-w-0 flex-1"><p className="tbo-eyebrow text-emerald-700 dark:text-emerald-300">{tr("Both partners approved · Challenge active")}</p><h2 className="tbo-section-title mt-1 text-foreground">{config.homeName}</h2><p className="tbo-caption mt-1 text-muted-foreground">{tr("Submitted by {submitter} · Approved by {approver}", { submitter: config.submittedByName || tr("one partner"), approver: config.approvedByName || tr("the other partner") })}</p></div><div className="rounded-xl bg-[var(--glass-inset-surface)] px-3 py-2 text-right"><p className="tbo-caption text-muted-foreground">{tr("Started")}</p><p className="tbo-supporting text-foreground">{config.challengeStartedAt ? formatUiDate(new Date(config.challengeStartedAt), UI_LOCALES[language]) : tr("Today")}</p></div></CardContent></Card>}
-
-      <Card className="tbo-glass overflow-hidden rounded-[2rem] border-amber-200 shadow-xl shadow-stone-900/5">
-        <CardHeader className="space-y-3 border-b border-[var(--glass-border)] bg-amber-50/45">
-          <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="tbo-eyebrow text-[var(--glass-accent)]">{tr(stage.name)} · {stage.verse}</p><CardTitle className="tbo-card-title mt-1">{config.homeName}</CardTitle></div><div className="flex rounded-xl bg-[var(--glass-inset-surface)] p-1"><button type="button" onClick={() => setMode('current')} className={`tbo-action rounded-lg px-3 py-2 ${mode === 'current' ? 'bg-[var(--glass-inset-surface)] text-foreground shadow-sm' : 'text-muted-foreground'}`}>{tr("Current build")}</button><button type="button" onClick={() => setMode('blueprint')} className={`tbo-action rounded-lg px-3 py-2 ${mode === 'blueprint' ? 'bg-[var(--glass-inset-surface)] text-foreground shadow-sm' : 'text-muted-foreground'}`}>{tr("Blueprint")}</button></div></div>
-          <div><div className="tbo-caption mb-1 flex justify-between text-muted-foreground"><span>{tr("{count} of 365 blocks", { count: config.completedDays })}</span><span>{Math.round(config.completedDays / 365 * 100)}%</span></div><Progress value={config.completedDays / 365 * 100} className="h-2.5" /></div>
-        </CardHeader>
-        <CardContent className="space-y-4 p-4 sm:p-5">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-1 rounded-xl border border-[var(--glass-border)] bg-[var(--glass-inset-surface)] p-1">{floors.map((_, index) => <button key={index} type="button" onClick={() => { setFloor(index); setSelectedRoom(null); setSceneView('house'); }} className={`tbo-action rounded-lg px-3 py-2 ${floor === index ? 'bg-stone-800 text-white shadow' : 'text-muted-foreground'}`}>{index === floors.length - 1 && floors.length > 1 ? tr("All {count} floors", { count: floors.length }) : tr("Through floor {count}", { count: index + 1 })}</button>)}</div>
-            <div className="flex flex-wrap gap-1"><Button type="button" variant="outline" className="tbo-action h-10 rounded-xl bg-[var(--glass-inset-surface)]" onClick={() => { setSceneView('house'); setSelectedRoom(null); }}><Home className="mr-1.5 h-4 w-4" />{tr("Full house")}</Button><Button type="button" variant="outline" disabled={!selectedRoom} className="tbo-action h-10 rounded-xl bg-[var(--glass-inset-surface)]" onClick={() => setSceneView('room')}><Scan className="mr-1.5 h-4 w-4" />{tr("Room detail")}</Button><Button type="button" variant="outline" className="tbo-action h-10 rounded-xl bg-[var(--glass-inset-surface)]" onClick={() => setShowRoof(value => !value)}>{showRoof ? tr("Remove roof") : tr("Show roof")}</Button></div>
-          </div>
-          <Suspense fallback={<BrandLoader label={tr("Preparing the 3D house…")} className="h-[34rem] rounded-[2rem] bg-[var(--glass-inset-surface)]" />}>
-            <CharacterHouse3D
-              homeType={config.homeType}
-              floors={floors}
-              activeFloor={floor}
-              interiorStyle={config.interiorStyle}
-              reveal={reveal}
-              showRoof={showRoof}
-              finishes={config.finishes}
-              viewMode={sceneView}
-              selectedRoom={selectedRoom?.id}
-              onRoomSelect={(room) => { setSelectedRoom(room); if (sceneView === 'room') setSceneView('room'); }}
-            />
-          </Suspense>
-          {selectedRoom && <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[var(--glass-inset-surface)] text-[var(--glass-accent)] shadow-sm"><Sparkles className="h-5 w-5" /></span><div className="min-w-0 flex-1"><p className="tbo-card-title text-foreground">{guidanceLabel(tr, selectedRoom.name)}</p><p className="tbo-supporting text-muted-foreground">{tr(selectedRoom.meaning)}</p></div><Button type="button" size="sm" onClick={() => setSceneView('room')} className="tbo-action rounded-xl bg-amber-700 hover:bg-amber-800"><Scan className="mr-1.5 h-4 w-4" />{tr("View room details")}</Button></div>}
-          {challengeActive && config.completedDays < 365 && <div className="rounded-2xl border border-[var(--glass-border)] tbo-glass-inset p-4"><div className="flex items-start gap-3"><span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-violet-700 font-bold text-white">{config.completedDays + 1}</span><div><p className="tbo-eyebrow text-[var(--glass-accent)]">{tr("Today’s character challenge ·")} {todaysChallenge.scripture}</p><h3 className="tbo-card-title mt-1 text-foreground">{tr(todaysChallenge.title)}</h3><p className="tbo-body mt-2 text-muted-foreground">{tr(todaysChallenge.action)}</p></div></div></div>}
-          {challengeActive && <Button type="button" onClick={placeBlock} disabled={alreadyPlacedToday || config.completedDays >= 365} className="tbo-action min-h-14 h-auto whitespace-normal w-full rounded-2xl to-amber-700 text-white shadow-lg shadow-rose-900/15 hover:to-amber-800">
-            {config.completedDays >= 365 ? <><Check className="mr-2 h-5 w-5" />{tr("House completed")}</> : alreadyPlacedToday ? <><Check className="mr-2 h-5 w-5" />{tr("Today’s block is placed")}</> : config.completedDays === 0 ? <><Hammer className="mr-2 h-5 w-5" />{tr("Complete Excavation & Place Foundation Block")}</> : <><Hammer className="mr-2 h-5 w-5" />{tr("Place Today’s Block")}</>}
-          </Button>}
-          <p className="tbo-caption text-center text-muted-foreground">{challengeActive ? tr("Complete one activity to earn one block. Missing a day never removes progress.") : blueprintPending ? tr("Construction remains locked until the other partner approves the blueprint.") : tr("Customize the design and submit it to your partner for approval.")}</p>
-        </CardContent>
-      </Card>
-
-      <AlertDialog open={submitOpen} onOpenChange={setSubmitOpen}>
-        <AlertDialogContent className="rounded-[1.75rem] border-amber-200">
-          <AlertDialogHeader>
-            <div className="mx-auto mb-2 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-amber-500 to-rose-600 text-white sm:mx-0"><HeartHandshake className="h-7 w-7" /></div>
-            <AlertDialogTitle className="tbo-dialog-title">{tr("Submit “{name}” for approval?", { name: config.homeName.trim() })}</AlertDialogTitle>
-            <AlertDialogDescription className="tbo-supporting" asChild><div className="space-y-3"><p className="tbo-body">{tr("This sends your completed blueprint to {name} for an independent review.", { name: partnerName || tr("your partner") })}</p><ul className="space-y-2 rounded-xl bg-amber-50 p-3 text-left text-foreground"><li className="flex gap-2"><LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-[var(--glass-accent)]" />{tr("The selected home, rooms, finishes, and colors become a locked review copy.")}</li><li className="flex gap-2"><Clock3 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--glass-accent)]" />{tr("Construction remains locked while approval is pending.")}</li><li className="flex gap-2"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[var(--glass-accent)]" />{tr("Only the other linked partner can approve and start the challenge.")}</li></ul></div></AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter><AlertDialogCancel>{tr("Keep editing")}</AlertDialogCancel><AlertDialogAction onClick={() => void submitBlueprint()} disabled={syncing} className="bg-gradient-to-r from-amber-700 to-rose-700 font-bold text-white hover:from-amber-800 hover:to-rose-800">{tr("Submit for partner approval")}</AlertDialogAction></AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <AlertDialog open={approvalOpen} onOpenChange={setApprovalOpen}>
-        <AlertDialogContent className="rounded-[1.75rem] border-emerald-200">
-          <AlertDialogHeader>
-            <div className="mx-auto mb-2 grid h-14 w-14 place-items-center rounded-2xl bg-emerald-700 text-white sm:mx-0"><ShieldCheck className="h-7 w-7" /></div>
-            <AlertDialogTitle className="tbo-dialog-title">{tr("Approve “{name}” and begin?", { name: config.homeName.trim() })}</AlertDialogTitle>
-            <AlertDialogDescription className="tbo-supporting" asChild><div className="space-y-3"><p className="tbo-body">{tr("By approving, you confirm the blueprint submitted by {name} as your shared Character House design.", { name: config.submittedByName || partnerName || tr("your partner") })}</p><ul className="space-y-2 rounded-xl bg-emerald-50 p-3 text-left text-foreground"><li className="flex gap-2"><CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" />{tr("The 365-day challenge starts immediately for both partners.")}</li><li className="flex gap-2"><Hammer className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" />{tr("Day 1 opens at the excavated site: lay the foundation on God’s Word.")}</li><li className="flex gap-2"><LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" />{tr("The approved blueprint remains locked during construction.")}</li></ul></div></AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter><AlertDialogCancel>{tr("Review again")}</AlertDialogCancel><AlertDialogAction onClick={() => void approveBlueprint()} disabled={syncing} className="bg-emerald-700 font-bold text-white hover:bg-emerald-800">{tr("Approve & start excavation")}</AlertDialogAction></AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
-  );
+    </>}
+  </div>;
 }

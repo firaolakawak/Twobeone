@@ -1734,6 +1734,8 @@ export default function App() {
                 selectedScreen === "character-house" && (
                   <CharacterHouseBuilder
                     onBack={() => setSelectedScreen("dashboard")}
+                    onOpenChallenge={openDailyChallenge}
+                    onConnect={() => setActiveTab("profile")}
                     currentUserId={profile?.id || user.id}
                     partnerId={partner?.id}
                     partnerName={partner?.name}

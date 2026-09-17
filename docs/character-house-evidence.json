@@ -1,0 +1,793 @@
+{
+  "verifiedAt": "2026-09-17T17:27:31.537Z",
+  "browser": "Edg/153.0.4234.32",
+  "pass": true,
+  "counts": {
+    "renderedStates": 39,
+    "behaviorChecks": 42
+  },
+  "scope": "Actual CharacterHouseBuilder, CoupleDashboard, DailyMoodCheckIn and DailyFaithChallenge components in an app shell. Auth mocked; all API fetches intercepted in memory and remaining external requests blocked. Browser assertions cover UI reactions to backend-shaped fixtures, not actual database deduplication or production delivery. No live users or writes.",
+  "conditions": {
+    "widths": [
+      320,
+      390,
+      1280
+    ],
+    "languages": [
+      "en",
+      "am",
+      "om"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "textScaling": "100% and 200% root font size; 200% cases: 320px Amharic light, 320px Oromo dark, 390px English dark, plus Amharic/Oromo completion results at320px.",
+    "matrixNote": "390px English/Amharic/Oromo in both themes;320px English and1280px English light. Four additional English390px setup/locked renders after final milestone refinement."
+  },
+  "layouts": [
+    {
+      "id": "en-390-light",
+      "phase": "two-question-setup",
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "en-390-light",
+      "phase": "locked-house",
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "en-390-dark",
+      "phase": "two-question-setup",
+      "width": 390,
+      "language": "en",
+      "theme": "dark",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "en-390-dark",
+      "phase": "locked-house",
+      "width": 390,
+      "language": "en",
+      "theme": "dark",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "am-390-light",
+      "phase": "two-question-setup",
+      "width": 390,
+      "language": "am",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "am-390-light",
+      "phase": "locked-house",
+      "width": 390,
+      "language": "am",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "am-390-dark",
+      "phase": "two-question-setup",
+      "width": 390,
+      "language": "am",
+      "theme": "dark",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "am-390-dark",
+      "phase": "locked-house",
+      "width": 390,
+      "language": "am",
+      "theme": "dark",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "om-390-light",
+      "phase": "two-question-setup",
+      "width": 390,
+      "language": "om",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "om-390-light",
+      "phase": "locked-house",
+      "width": 390,
+      "language": "om",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "om-390-dark",
+      "phase": "two-question-setup",
+      "width": 390,
+      "language": "om",
+      "theme": "dark",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "om-390-dark",
+      "phase": "locked-house",
+      "width": 390,
+      "language": "om",
+      "theme": "dark",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "en-320-light",
+      "phase": "two-question-setup",
+      "width": 320,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "en-320-light",
+      "phase": "locked-house",
+      "width": 320,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "en-1280-light",
+      "phase": "two-question-setup",
+      "width": 1280,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "en-1280-light",
+      "phase": "locked-house",
+      "width": 1280,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "am-320-200-light",
+      "phase": "two-question-setup",
+      "width": 320,
+      "language": "am",
+      "theme": "light",
+      "rootSize": "32px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "am-320-200-light",
+      "phase": "locked-house",
+      "width": 320,
+      "language": "am",
+      "theme": "light",
+      "rootSize": "32px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "om-320-200-dark",
+      "phase": "two-question-setup",
+      "width": 320,
+      "language": "om",
+      "theme": "dark",
+      "rootSize": "32px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "om-320-200-dark",
+      "phase": "locked-house",
+      "width": 320,
+      "language": "om",
+      "theme": "dark",
+      "rootSize": "32px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "en-390-200-dark",
+      "phase": "two-question-setup",
+      "width": 390,
+      "language": "en",
+      "theme": "dark",
+      "rootSize": "32px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "en-390-200-dark",
+      "phase": "locked-house",
+      "width": 390,
+      "language": "en",
+      "theme": "dark",
+      "rootSize": "32px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "setup-failure",
+      "phase": "am-preserved-input",
+      "width": 390,
+      "language": "am",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "setup-failure",
+      "phase": "om-preserved-input",
+      "width": 390,
+      "language": "om",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "house-flow",
+      "phase": "direct-game-purpose",
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "house-flow",
+      "phase": "first-partner-completed",
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "house-flow",
+      "phase": "shared-block-result",
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "am-320-200",
+      "phase": "translated-shared-block-result",
+      "width": 320,
+      "language": "am",
+      "theme": "light",
+      "rootSize": "32px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "om-320-200",
+      "phase": "translated-shared-block-result",
+      "width": 320,
+      "language": "om",
+      "theme": "light",
+      "rootSize": "32px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "stage-0",
+      "phase": "progress",
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "stage-30",
+      "phase": "progress",
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "stage-100",
+      "phase": "progress",
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "stage-180",
+      "phase": "progress",
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "stage-260",
+      "phase": "progress",
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "stage-365",
+      "phase": "progress",
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "final-en-390-light",
+      "phase": "two-question-setup",
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "final-en-390-light",
+      "phase": "locked-house",
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "final-en-390-dark",
+      "phase": "two-question-setup",
+      "width": 390,
+      "language": "en",
+      "theme": "dark",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    },
+    {
+      "id": "final-en-390-dark",
+      "phase": "locked-house",
+      "width": 390,
+      "language": "en",
+      "theme": "dark",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 0,
+      "pass": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "en-390-light-exactly-two-questions",
+      "pass": true
+    },
+    {
+      "name": "en-390-light-two-field-payload-and-locked",
+      "pass": true
+    },
+    {
+      "name": "en-390-dark-exactly-two-questions",
+      "pass": true
+    },
+    {
+      "name": "en-390-dark-two-field-payload-and-locked",
+      "pass": true
+    },
+    {
+      "name": "am-390-light-exactly-two-questions",
+      "pass": true
+    },
+    {
+      "name": "am-390-light-two-field-payload-and-locked",
+      "pass": true
+    },
+    {
+      "name": "am-390-dark-exactly-two-questions",
+      "pass": true
+    },
+    {
+      "name": "am-390-dark-two-field-payload-and-locked",
+      "pass": true
+    },
+    {
+      "name": "om-390-light-exactly-two-questions",
+      "pass": true
+    },
+    {
+      "name": "om-390-light-two-field-payload-and-locked",
+      "pass": true
+    },
+    {
+      "name": "om-390-dark-exactly-two-questions",
+      "pass": true
+    },
+    {
+      "name": "om-390-dark-two-field-payload-and-locked",
+      "pass": true
+    },
+    {
+      "name": "en-320-light-exactly-two-questions",
+      "pass": true
+    },
+    {
+      "name": "en-320-light-two-field-payload-and-locked",
+      "pass": true
+    },
+    {
+      "name": "en-1280-light-exactly-two-questions",
+      "pass": true
+    },
+    {
+      "name": "en-1280-light-two-field-payload-and-locked",
+      "pass": true
+    },
+    {
+      "name": "am-320-200-light-exactly-two-questions",
+      "pass": true
+    },
+    {
+      "name": "am-320-200-light-two-field-payload-and-locked",
+      "pass": true
+    },
+    {
+      "name": "om-320-200-dark-exactly-two-questions",
+      "pass": true
+    },
+    {
+      "name": "om-320-200-dark-two-field-payload-and-locked",
+      "pass": true
+    },
+    {
+      "name": "en-390-200-dark-exactly-two-questions",
+      "pass": true
+    },
+    {
+      "name": "en-390-200-dark-two-field-payload-and-locked",
+      "pass": true
+    },
+    {
+      "name": "failed-save-keeps-choices-unlocked-without-automatic-post-retry",
+      "pass": true
+    },
+    {
+      "name": "return-to-house-retains-server-design-and-lock",
+      "pass": true
+    },
+    {
+      "name": "house-cta-opens-mood-before-game",
+      "pass": true
+    },
+    {
+      "name": "house-game-waits-for-mood-save",
+      "pass": true
+    },
+    {
+      "name": "house-cta-opens-direct-game-with-purpose",
+      "pass": true
+    },
+    {
+      "name": "first-completion-does-not-award-shared-block",
+      "pass": true
+    },
+    {
+      "name": "actual-interval-refresh-shows-one-shared-block",
+      "pass": true,
+      "elapsedMs": 25500
+    },
+    {
+      "name": "repeated-refresh-keeps-single-day-contribution",
+      "pass": true
+    },
+    {
+      "name": "result-cta-opens-house-with-updated-progress",
+      "pass": true
+    },
+    {
+      "name": "same-day-reopen-keeps-completed-result-and-single-block",
+      "pass": true
+    },
+    {
+      "name": "stage-0-no-canvas-or-simulation",
+      "pass": true
+    },
+    {
+      "name": "stage-30-no-canvas-or-simulation",
+      "pass": true
+    },
+    {
+      "name": "stage-100-no-canvas-or-simulation",
+      "pass": true
+    },
+    {
+      "name": "stage-180-no-canvas-or-simulation",
+      "pass": true
+    },
+    {
+      "name": "stage-260-no-canvas-or-simulation",
+      "pass": true
+    },
+    {
+      "name": "stage-365-no-canvas-or-simulation",
+      "pass": true
+    },
+    {
+      "name": "final-en-390-light-exactly-two-questions",
+      "pass": true
+    },
+    {
+      "name": "final-en-390-light-two-field-payload-and-locked",
+      "pass": true
+    },
+    {
+      "name": "final-en-390-dark-exactly-two-questions",
+      "pass": true
+    },
+    {
+      "name": "final-en-390-dark-two-field-payload-and-locked",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "externalRequests": [],
+  "screenshots": [
+    "character-house-setup.png",
+    "character-house-progress.png",
+    "character-house-result.png",
+    "character-house-locked-dark.png",
+    "character-house-artwork-light.png",
+    "character-house-artwork-dark.png"
+  ],
+  "illustrationReview": {
+    "actualComponent": true,
+    "stylesLoaded": [
+      "src/styles/index.css",
+      "src/app/styles/simple-character-house.css"
+    ],
+    "homeTypes": [
+      "house",
+      "villa",
+      "townhouse",
+      "apartment",
+      "duplex",
+      "penthouse"
+    ],
+    "bedrooms": 7,
+    "progressStates": [
+      0,
+      30,
+      100,
+      180,
+      260,
+      365
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "visuallyInspected": true,
+    "notes": "Final artwork has no window/door overlap. House panels at390px have clear counters and milestones; dashed unbuilt artwork is decorative. No canvas, CharacterHouse3D, or react-three resource loaded on house states."
+  },
+  "limits": [
+    "Auth and backend responses are local fixtures. This browser evidence verifies UI behavior and DTO parsing, not database concurrency, actual server deduplication, or notification delivery.",
+    "No live user data read or written; other external network requests blocked.",
+    "Physical iOS/Android and native-speaker editorial review were not performed.",
+    "Component screenshots hide surrounding fixed navigation/header overlays only during capture; layout and interaction checks use the normal shell."
+  ]
+}

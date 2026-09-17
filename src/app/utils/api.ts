@@ -1,5 +1,6 @@
 import { createClient } from './supabase/client';
 import { projectId, publicAnonKey } from './supabase/info';
+import { characterHouseApi } from './characterHouseApi';
 
 const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee`;
 
@@ -715,21 +716,10 @@ export const partnerApi = {
   },
 };
 
-// Shared Character House blueprint and two-partner approval workflow
+// One locked shared goal; progress is derived from both partners' daily activity.
 export const characterHouse = {
-  get: async () =>
-    apiCall<{ blueprint: any | null }>('/character-house', {}, 2, 20000),
-
-  submit: async (blueprint: any) =>
-    apiCall<{ success: boolean; blueprint: any }>('/character-house/submit', {
-      method: 'POST',
-      body: JSON.stringify({ blueprint }),
-    }),
-
-  approve: async () =>
-    apiCall<{ success: boolean; blueprint: any }>('/character-house/approve', {
-      method: 'POST',
-    }),
+  get: (...args: Parameters<typeof characterHouseApi.get>) => characterHouseApi.get(...args),
+  start: (...args: Parameters<typeof characterHouseApi.start>) => characterHouseApi.start(...args),
 };
 
 // ── Overall (General) Compatibility ─────────────────────────────────────────

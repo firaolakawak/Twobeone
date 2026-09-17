@@ -1,0 +1,76 @@
+{
+  "browser": "Edg/153.0.4234.32",
+  "layouts": [
+    {
+      "id": "en-390-light",
+      "metric": {
+        "label": "Open today’s challenge",
+        "width": 172.03125,
+        "height": 44,
+        "background": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "shadow": "none",
+        "arrow": true,
+        "overflow": false,
+        "textFits": true,
+        "font": "14px"
+      },
+      "modal": {
+        "count": 1,
+        "game": true,
+        "navigation": 0
+      },
+      "pass": true
+    },
+    {
+      "id": "am-320-dark",
+      "metric": {
+        "label": "የዛሬውን ተግዳሮት ይክፈቱ",
+        "width": 180.9375,
+        "height": 44,
+        "background": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "shadow": "none",
+        "arrow": true,
+        "overflow": false,
+        "textFits": true,
+        "font": "14px"
+      },
+      "modal": {
+        "count": 1,
+        "game": true,
+        "navigation": 0
+      },
+      "pass": true
+    },
+    {
+      "id": "om-320-light-200",
+      "metric": {
+        "label": "Qormaata harʼaa banaa",
+        "width": 174,
+        "height": 149.5625,
+        "background": "rgba(0, 0, 0, 0)",
+        "backgroundImage": "none",
+        "shadow": "none",
+        "arrow": true,
+        "overflow": false,
+        "textFits": true,
+        "font": "28px"
+      },
+      "modal": {
+        "count": 1,
+        "game": true,
+        "navigation": 0
+      },
+      "pass": true
+    }
+  ],
+  "checks": [],
+  "errors": [],
+  "externalRequests": [],
+  "screenshots": [
+    "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-daily-label-qa/daily-challenge-label-action.png"
+  ],
+  "pass": true,
+  "scope": "Bounded actual DailyFaithChallenge dashboard CTA checks with intercepted local fixtures. No live requests or writes; no game-progress regression run."
+}

@@ -1,0 +1,304 @@
+{
+  "verifiedAt": "2026-09-17T17:33:13.182Z",
+  "browser": "Edg/153.0.4234.32",
+  "pass": true,
+  "cases": [
+    {
+      "id": "en-320-light",
+      "label": "Start Q&A",
+      "width": 88.078125,
+      "height": 44,
+      "font": "14px",
+      "checks": {
+        "semanticButton": true,
+        "compactLabel": true,
+        "clearSurface": true,
+        "minimumHitArea": true,
+        "textRole": true,
+        "fits": true,
+        "arrow": true,
+        "keyboardFocus": true,
+        "sameQuestionNavigation": true
+      },
+      "pass": true
+    },
+    {
+      "id": "en-390-light",
+      "label": "Start Q&A",
+      "width": 88.078125,
+      "height": 44,
+      "font": "14px",
+      "checks": {
+        "semanticButton": true,
+        "compactLabel": true,
+        "clearSurface": true,
+        "minimumHitArea": true,
+        "textRole": true,
+        "fits": true,
+        "arrow": true,
+        "keyboardFocus": true,
+        "sameQuestionNavigation": true
+      },
+      "pass": true
+    },
+    {
+      "id": "en-320-dark",
+      "label": "Start Q&A",
+      "width": 88.078125,
+      "height": 44,
+      "font": "14px",
+      "checks": {
+        "semanticButton": true,
+        "compactLabel": true,
+        "clearSurface": true,
+        "minimumHitArea": true,
+        "textRole": true,
+        "fits": true,
+        "arrow": true,
+        "keyboardFocus": true,
+        "sameQuestionNavigation": true
+      },
+      "pass": true
+    },
+    {
+      "id": "en-390-dark",
+      "label": "Start Q&A",
+      "width": 88.078125,
+      "height": 44,
+      "font": "14px",
+      "checks": {
+        "semanticButton": true,
+        "compactLabel": true,
+        "clearSurface": true,
+        "minimumHitArea": true,
+        "textRole": true,
+        "fits": true,
+        "arrow": true,
+        "keyboardFocus": true,
+        "sameQuestionNavigation": true
+      },
+      "pass": true
+    },
+    {
+      "id": "am-320-light",
+      "label": "ጥያቄና መልስ ጀምሩ",
+      "width": 146.484375,
+      "height": 44,
+      "font": "14px",
+      "checks": {
+        "semanticButton": true,
+        "compactLabel": true,
+        "clearSurface": true,
+        "minimumHitArea": true,
+        "textRole": true,
+        "fits": true,
+        "arrow": true,
+        "keyboardFocus": true,
+        "sameQuestionNavigation": true
+      },
+      "pass": true
+    },
+    {
+      "id": "am-390-light",
+      "label": "ጥያቄና መልስ ጀምሩ",
+      "width": 146.484375,
+      "height": 44,
+      "font": "14px",
+      "checks": {
+        "semanticButton": true,
+        "compactLabel": true,
+        "clearSurface": true,
+        "minimumHitArea": true,
+        "textRole": true,
+        "fits": true,
+        "arrow": true,
+        "keyboardFocus": true,
+        "sameQuestionNavigation": true
+      },
+      "pass": true
+    },
+    {
+      "id": "am-320-dark",
+      "label": "ጥያቄና መልስ ጀምሩ",
+      "width": 146.484375,
+      "height": 44,
+      "font": "14px",
+      "checks": {
+        "semanticButton": true,
+        "compactLabel": true,
+        "clearSurface": true,
+        "minimumHitArea": true,
+        "textRole": true,
+        "fits": true,
+        "arrow": true,
+        "keyboardFocus": true,
+        "sameQuestionNavigation": true
+      },
+      "pass": true
+    },
+    {
+      "id": "am-390-dark",
+      "label": "ጥያቄና መልስ ጀምሩ",
+      "width": 146.484375,
+      "height": 44,
+      "font": "14px",
+      "checks": {
+        "semanticButton": true,
+        "compactLabel": true,
+        "clearSurface": true,
+        "minimumHitArea": true,
+        "textRole": true,
+        "fits": true,
+        "arrow": true,
+        "keyboardFocus": true,
+        "sameQuestionNavigation": true
+      },
+      "pass": true
+    },
+    {
+      "id": "om-320-light",
+      "label": "Gaaffii fi deebii jalqabi",
+      "width": 166.90625,
+      "height": 44,
+      "font": "14px",
+      "checks": {
+        "semanticButton": true,
+        "compactLabel": true,
+        "clearSurface": true,
+        "minimumHitArea": true,
+        "textRole": true,
+        "fits": true,
+        "arrow": true,
+        "keyboardFocus": true,
+        "sameQuestionNavigation": true
+      },
+      "pass": true
+    },
+    {
+      "id": "om-390-light",
+      "label": "Gaaffii fi deebii jalqabi",
+      "width": 166.90625,
+      "height": 44,
+      "font": "14px",
+      "checks": {
+        "semanticButton": true,
+        "compactLabel": true,
+        "clearSurface": true,
+        "minimumHitArea": true,
+        "textRole": true,
+        "fits": true,
+        "arrow": true,
+        "keyboardFocus": true,
+        "sameQuestionNavigation": true
+      },
+      "pass": true
+    },
+    {
+      "id": "om-320-dark",
+      "label": "Gaaffii fi deebii jalqabi",
+      "width": 166.90625,
+      "height": 44,
+      "font": "14px",
+      "checks": {
+        "semanticButton": true,
+        "compactLabel": true,
+        "clearSurface": true,
+        "minimumHitArea": true,
+        "textRole": true,
+        "fits": true,
+        "arrow": true,
+        "keyboardFocus": true,
+        "sameQuestionNavigation": true
+      },
+      "pass": true
+    },
+    {
+      "id": "om-390-dark",
+      "label": "Gaaffii fi deebii jalqabi",
+      "width": 166.90625,
+      "height": 44,
+      "font": "14px",
+      "checks": {
+        "semanticButton": true,
+        "compactLabel": true,
+        "clearSurface": true,
+        "minimumHitArea": true,
+        "textRole": true,
+        "fits": true,
+        "arrow": true,
+        "keyboardFocus": true,
+        "sameQuestionNavigation": true
+      },
+      "pass": true
+    },
+    {
+      "id": "en-320-light-200",
+      "label": "Start Q&A",
+      "width": 174,
+      "height": 110.375,
+      "font": "28px",
+      "checks": {
+        "semanticButton": true,
+        "compactLabel": true,
+        "clearSurface": true,
+        "minimumHitArea": true,
+        "textRole": true,
+        "fits": true,
+        "arrow": true,
+        "keyboardFocus": true,
+        "sameQuestionNavigation": true
+      },
+      "pass": true
+    },
+    {
+      "id": "am-320-dark-200",
+      "label": "ጥያቄና መልስ ጀምሩ",
+      "width": 174,
+      "height": 149.5625,
+      "font": "28px",
+      "checks": {
+        "semanticButton": true,
+        "compactLabel": true,
+        "clearSurface": true,
+        "minimumHitArea": true,
+        "textRole": true,
+        "fits": true,
+        "arrow": true,
+        "keyboardFocus": true,
+        "sameQuestionNavigation": true
+      },
+      "pass": true
+    },
+    {
+      "id": "om-320-light-200",
+      "label": "Gaaffii fi deebii jalqabi",
+      "width": 174,
+      "height": 149.5625,
+      "font": "28px",
+      "checks": {
+        "semanticButton": true,
+        "compactLabel": true,
+        "clearSurface": true,
+        "minimumHitArea": true,
+        "textRole": true,
+        "fits": true,
+        "arrow": true,
+        "keyboardFocus": true,
+        "sameQuestionNavigation": true
+      },
+      "pass": true
+    }
+  ],
+  "scope": "Actual dashboard spotlight mounted with local API fixtures. Checked label-action layout and keyboard/mouse navigation only. No live account writes or external requests.",
+  "coverage": "320/390px; English, Amharic and Afaan Oromo; both themes. Representative200% root text cases at320px:English light,Amharic dark,Oromo light.",
+  "observations": [
+    "Idle label action is transparent, has no gradient/shadow, and includes the arrow.",
+    "Normal English label action is88pxwide with44pxhitheight.",
+    "Labels wrap without clipped text or page/card/button overflow at200% text.",
+    "Tab gives visible keyboard focus; Enter,Space and click each invoke the existing Q&A callback.",
+    "Screenshot shows the normal idle state; surrounding fixed navigation is hidden only for isolated card capture."
+  ],
+  "errors": [],
+  "externalRequests": [],
+  "screenshot": "dashboard-label-action.png"
+}

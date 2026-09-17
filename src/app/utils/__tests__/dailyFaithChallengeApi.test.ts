@@ -94,4 +94,16 @@ describe('daily challenge API boundary', () => {
     await expect(request).rejects.toMatchObject({ name: 'AbortError' });
     expect(fetchSignal.aborted).toBe(true);
   });
+
+  it('accepts optional house state and rejects forged or malformed progress', async () => {
+    const house = { configured: true, homeType: 'house', bedrooms: 2, completedDays: 1, totalDays: 365, todayContributed: true, lastBlockDate: valid.day };
+    for (const value of [undefined, null, house]) {
+      vi.mocked(fetch).mockResolvedValueOnce(respond({ challenge: { ...valid, house: value } }));
+      expect((await dailyFaithChallengeApi.today()).house).toEqual(value);
+    }
+    for (const value of [{ ...house, completedDays: 999 }, { ...house, lastBlockDate: '2026-09-16' }, { ...house, todayContributed: 'yes' }]) {
+      vi.mocked(fetch).mockResolvedValueOnce(respond({ challenge: { ...valid, house: value } }));
+      await expect(dailyFaithChallengeApi.today()).rejects.toMatchObject({ code: 'invalid_response' });
+    }
+  });
 });

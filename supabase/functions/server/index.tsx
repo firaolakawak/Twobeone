@@ -12,6 +12,7 @@ import landingRoutes from './landing_routes.tsx';
 import calendarRoutes from './calendar_routes.tsx';
 import { registerFaithChallengeRoutes } from './faith_challenge_routes.ts';
 import { sendFaithChallengePush } from './faith_challenge_push.ts';
+import { registerCharacterHouseRoutes } from './character_house_routes.ts';
 import { setupAdminRoutes } from './admin_routes.tsx';
 import { setupRecoveryRoutes } from './recovery_routes.tsx';
 import { migrateSeederFlags, seedAllCategoryQuestions } from './seed_questions.tsx';
@@ -85,6 +86,11 @@ registerFaithChallengeRoutes(app, {
   getUserFromToken,
   rpc: async (name, args) => await getSupabase().rpc(name, args),
   sendPush: sendFaithChallengePush,
+});
+
+registerCharacterHouseRoutes(app, {
+  getUserFromToken,
+  rpc: async (name, args) => await getSupabase().rpc(name, args),
 });
 
 // ============================================

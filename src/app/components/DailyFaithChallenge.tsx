@@ -1,23 +1,24 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { ArrowRight, Check, RefreshCw, Target } from 'lucide-react';
+import { ArrowRight, Check, House, RefreshCw, Target } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
 import { BrandLoader, LoadingMark } from './BrandLoader';
 import { useDailyFaithChallenge } from '../hooks/useDailyFaithChallenge';
-import { getFaithQuestMission } from '../data/faithQuest';
+import { FAITH_QUEST_CHAPTERS, getFaithQuestMission } from '../data/faithQuest';
 import { getFaithQuestVisuals } from '../data/faithQuestVisuals';
 import { getDailyFaithEncouragement } from '../data/dailyFaithEncouragement';
 import { faithQuestContentMessages } from '../locales/faithQuestContent';
 import { faithQuestVisualMessages } from '../locales/faithQuestVisuals';
 import { faithQuestUiMessages } from '../locales/faithQuestUi';
 import { dailyFaithChallengeMessages } from '../locales/dailyFaithChallenge';
+import { dailyFaithHouseMessages } from '../locales/dailyFaithHouse';
 import { useUiCopy } from '../utils/uiTranslation';
 import type { DailyFaithChallengeState } from '../utils/dailyFaithChallengeApi';
 import '../styles/faith-quest.css';
 import '../styles/daily-faith-challenge.css';
 
-const messages = { ...faithQuestContentMessages, ...faithQuestVisualMessages, ...faithQuestUiMessages, ...dailyFaithChallengeMessages };
+const messages = { ...faithQuestContentMessages, ...faithQuestVisualMessages, ...faithQuestUiMessages, ...dailyFaithChallengeMessages, ...dailyFaithHouseMessages };
 interface DailyFaithChallengeProps {
   userId?: string;
   partnerId?: string;
@@ -30,13 +31,14 @@ interface DailyFaithChallengeProps {
   onRequestConsumed?: () => void;
   onRequestMood: () => void;
   onConnect: () => void;
+  onOpenHouse?: () => void;
 }
 
 export function DailyFaithChallenge(props: DailyFaithChallengeProps) {
   return <DailyChallengeCard key={JSON.stringify([props.userId, props.partnerId])} {...props} />;
 }
 
-function DailyChallengeCard({ userId, partnerId, userName, partnerName, authenticated, moodReady, hasMood, openRequest = 0, onRequestConsumed, onRequestMood, onConnect }: DailyFaithChallengeProps) {
+function DailyChallengeCard({ userId, partnerId, userName, partnerName, authenticated, moodReady, hasMood, openRequest = 0, onRequestConsumed, onRequestMood, onConnect, onOpenHouse }: DailyFaithChallengeProps) {
   const tr = useUiCopy(messages);
   const enabled = Boolean(userId && partnerId && authenticated);
   const game = useDailyFaithChallenge(enabled);
@@ -129,7 +131,7 @@ function DailyChallengeCard({ userId, partnerId, userName, partnerName, authenti
         <span className="dashboard-quest-icon tbo-glass-orb grid h-14 w-14 shrink-0 place-items-center rounded-2xl"><Target aria-hidden="true" className="h-7 w-7" /></span>
         <div className="dashboard-quest-heading min-w-0"><p className="tbo-eyebrow text-[var(--glass-accent)]">{tr('Daily challenge')}</p><h3 className="tbo-card-title mt-1">{tr('Together in Faith')}</h3></div>
         <p className="dashboard-quest-description tbo-supporting text-muted-foreground">{tr(enabled ? cardStatus : 'Connect with your partner to play your daily challenge.')}</p>
-        <Button ref={launchRef} className="dashboard-quest-action min-h-11" onClick={launch}><span>{tr('Open today’s challenge')}</span><ArrowRight aria-hidden="true" /></Button>
+        <Button ref={launchRef} variant="ghost" className="tbo-action dashboard-quest-action" onClick={launch}><span>{tr('Open today’s challenge')}</span><ArrowRight aria-hidden="true" /></Button>
         {requested && !hasMood && <p className="daily-faith-mood-hint tbo-caption" role="status">{tr('Save your mood, then your challenge will open.')}</p>}
       </CardContent>
     </Card>
@@ -138,7 +140,7 @@ function DailyChallengeCard({ userId, partnerId, userName, partnerName, authenti
         onEscapeKeyDown={event => { if (game.saving) event.preventDefault(); }}
         onInteractOutside={event => { if (game.saving) event.preventDefault(); }}
         onCloseAutoFocus={event => { event.preventDefault(); launchRef.current?.focus(); }}>
-        {game.challenge ? <DailyChallengePlayer key={game.challenge.day} game={game} descriptionId={descriptionId} userName={userName || tr('You')} partnerName={partnerName || tr('Partner')} onClose={() => setOpen(false)} />
+        {game.challenge ? <DailyChallengePlayer key={game.challenge.day} game={game} descriptionId={descriptionId} userName={userName || tr('You')} partnerName={partnerName || tr('Partner')} onClose={() => setOpen(false)} onOpenHouse={onOpenHouse ? () => { setOpen(false); onOpenHouse(); } : undefined} />
           : <><DialogHeader><DialogTitle>{tr('Daily challenge')}</DialogTitle><DialogDescription id={descriptionId}>{tr('One small challenge. Together.')}</DialogDescription></DialogHeader>
             {game.error ? <div className="quest-player-body"><p role="alert" className="tbo-supporting">{tr(errorCopy)}</p><Button onClick={() => void game.refresh()} disabled={game.loading}>{game.loading && <LoadingMark />}{tr('Retry')}</Button></div> : <BrandLoader />}</>}
       </DialogContent>
@@ -146,13 +148,15 @@ function DailyChallengeCard({ userId, partnerId, userName, partnerName, authenti
   </>;
 }
 
-function DailyChallengePlayer({ game, userName, partnerName, descriptionId, onClose }: {
+function DailyChallengePlayer({ game, userName, partnerName, descriptionId, onClose, onOpenHouse }: {
   game: ReturnType<typeof useDailyFaithChallenge> & { challenge: DailyFaithChallengeState | null };
   userName: string; partnerName: string; descriptionId: string; onClose: () => void;
+  onOpenHouse?: () => void;
 }) {
   const tr = useUiCopy(messages);
   const state = game.challenge!;
   const mission = getFaithQuestMission(state.missionId)!;
+  const chapter = FAITH_QUEST_CHAPTERS.find(value => value.id === mission.chapterId)!;
   const visual = getFaithQuestVisuals(state.missionId)!;
   const encouragement = getDailyFaithEncouragement(state.missionId);
   const [choice, setChoice] = useState<number | null>(null);
@@ -190,6 +194,7 @@ function DailyChallengePlayer({ game, userName, partnerName, descriptionId, onCl
   return <>
     <DialogHeader className="quest-player-header">
       <div className="quest-player-eyebrow"><span className="quest-mission-number tbo-caption"><Target aria-hidden="true" />{tr('Daily challenge')}</span></div>
+      {choosing && <p className="daily-faith-purpose tbo-label"><span aria-hidden="true">{chapter.emoji}</span> {tr('Practise {virtue}', { virtue: tr(chapter.virtue) })}</p>}
       {choosing && step === 'choice' && <blockquote className="daily-faith-encouragement tbo-supporting"><span aria-hidden="true">{encouragement.emoji}</span><span><span className="sr-only">{tr('Today’s encouragement')}: </span>{tr(encouragement.text)}</span></blockquote>}
       <span className="quest-scene-emoji" aria-hidden="true">{completed ? '🏆' : waiting ? '💌' : ready ? '🎉' : step === 'reveal' ? '💞' : step === 'action' ? '🤝' : visual.emoji}</span>
       <DialogTitle className="tbo-section-title" ref={titleRef} tabIndex={-1}>{title}</DialogTitle>
@@ -203,13 +208,25 @@ function DailyChallengePlayer({ game, userName, partnerName, descriptionId, onCl
         <span className="quest-option-emoji" aria-hidden="true">{option.emoji}</span><span className="tbo-label" id={`${choiceId}-${index}`}>{tr(option.label)}</span><span id={`${choiceId}-${index}-full`} className="sr-only">{tr(mission.options[index])}</span>{selected === index && <Check className="quest-option-check" aria-hidden="true" />}
       </label>)}</fieldset>
       <Button className="quest-wide-button" onClick={confirm} disabled={selected === null || game.saving}>{game.saving ? <LoadingMark /> : <Check aria-hidden="true" />}{tr(step === 'guess' || mission.mode === 'grace' ? 'Save and notify partner' : 'Confirm')}</Button>
+      {state.house && state.house.completedDays < state.house.totalDays && <p className="daily-faith-day-note tbo-caption"><span aria-hidden="true">🧱 </span>{tr('Complete together to add one house block.')}</p>}
     </div>}
     {!state.own && step === 'kindness' && <div className="quest-player-body"><div className="quest-secret-card tbo-glass-inset"><span className="quest-option-emoji" aria-hidden="true">{visual.choices[choice!].emoji}</span><strong className="tbo-card-title">{tr(visual.choices[choice!].label)}</strong></div><p className="tbo-supporting">{tr(mission.action)}</p><label className="quest-confirm tbo-supporting"><input type="checkbox" checked={acknowledged} disabled={game.saving} onChange={event => setAcknowledged(event.target.checked)} />{tr('I tried this act of kindness.')}</label><Button className="quest-wide-button" disabled={!acknowledged || game.saving} onClick={() => void sendChoice()}>{game.saving && <LoadingMark />}{tr('Save and notify partner')}</Button></div>}
     {waiting && <div className="quest-player-body"><Button variant="glass" className="quest-wide-button" onClick={() => void game.refresh()} disabled={game.loading}>{game.loading ? <LoadingMark /> : <RefreshCw aria-hidden="true" />}{tr('Refresh')}</Button><Button variant="ghost" onClick={onClose}>{tr('Close')}</Button></div>}
     {ready && <Button className="quest-wide-button" onClick={() => transition('reveal')}>{tr('Reveal our cards')}<ArrowRight aria-hidden="true" /></Button>}
     {!completed && state.bothSubmitted && step === 'reveal' && <div className="quest-player-body"><div className="quest-reveal-cards">{[state.own!, state.partner].map((answer, index) => <div className={`quest-reveal-card quest-reveal-${index}`} key={index}><span className="tbo-caption">{index === 0 ? userName : partnerName}</span><span className="quest-option-emoji" aria-hidden="true">{visual.choices[answer.choice!].emoji}</span><strong className="tbo-card-title" title={tr(mission.options[answer.choice!])}>{tr(visual.choices[answer.choice!].label)}</strong>{mission.mode === 'heart' && <p className="tbo-caption text-muted-foreground">{tr(index === 0 ? 'Your guess: {answer}' : '{name}’s guess: {answer}', { name: partnerName, answer: tr(visual.choices[answer.guess!]?.label || '') })}</p>}{mission.followUps && <details className="quest-scenario-followup quest-help"><summary className="tbo-caption">💬 {tr('Try saying')}</summary><p className="tbo-supporting">{tr(mission.followUps[answer.choice!])}</p></details>}</div>)}</div><Button className="quest-wide-button" onClick={() => transition('action')}>{tr('Take it into real life')}<ArrowRight aria-hidden="true" /></Button></div>}
     {!completed && state.bothSubmitted && step === 'action' && <div className="quest-player-body"><p className="tbo-supporting">{tr(mission.mode === 'kindness' ? 'Tell each other what the surprise meant to you.' : mission.action)}</p><details className="quest-reflection quest-help tbo-glass-inset"><summary className="tbo-label">💬 {tr('Reflect together')}</summary><p className="tbo-supporting">{tr(mission.reflection)}</p><span className="tbo-caption">{tr(mission.scripture)}</span></details><label className="quest-confirm tbo-supporting"><input type="checkbox" checked={acknowledged} disabled={game.saving} onChange={event => setAcknowledged(event.target.checked)} />{tr('We tried this together.')}</label><Button className="quest-wide-button" disabled={!acknowledged || game.saving} onClick={() => void game.complete({ day: state.day, missionId: state.missionId })}>{game.saving && <LoadingMark />}{tr('Complete today’s challenge')}</Button></div>}
-    {completed && <Button className="quest-wide-button" onClick={onClose}>{tr('Close')}</Button>}
+    {completed && <div className="quest-player-body">
+      <div className="daily-faith-result tbo-glass-inset" role="status">
+        <p className="tbo-label"><span aria-hidden="true">{chapter.emoji} </span>{tr('Practised: {virtue}', { virtue: tr(chapter.virtue) })}</p>
+        {state.house ? <>
+          <p className="tbo-card-title"><span aria-hidden="true">{state.house.completedDays >= state.house.totalDays ? '🏡' : '🧱'} </span>{tr(state.house.completedDays >= state.house.totalDays ? 'Your house is complete' : !state.partner.completed ? 'Waiting for your partner to complete the activity.' : state.house.todayContributed ? '+1 shared block' : 'Your shared progress is saved.')}</p>
+          <p className="tbo-caption">{tr('{count} / {total} blocks', { count: state.house.completedDays, total: state.house.totalDays })}</p>
+        </> : <p className="tbo-supporting">{tr(state.house === null ? 'Start your house to turn daily challenges into building progress.' : 'House progress is unavailable. Open your house to check.')}</p>}
+      </div>
+      <details className="quest-reflection quest-help tbo-glass-inset"><summary className="tbo-label">🌱 {tr('Carry it into tomorrow')}</summary><p className="tbo-supporting">{tr(chapter.description)}</p></details>
+      {onOpenHouse && <Button className="quest-wide-button" onClick={onOpenHouse}><House aria-hidden="true" />{tr(state.house === null ? 'Start our house' : 'View our house')}</Button>}
+      <Button variant="ghost" className="quest-wide-button" onClick={onClose}>{tr('Close')}</Button>
+    </div>}
     <p className="daily-faith-day-note tbo-caption">{tr('New challenges follow a shared day for both partners.')}</p>
   </>;
 }

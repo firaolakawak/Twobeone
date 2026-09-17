@@ -1,0 +1,82 @@
+.simple-character-house {
+  color: var(--glass-foreground);
+  container-type: inline-size;
+  display: grid;
+  gap: 1.25rem;
+  margin-inline: auto;
+  max-width: 54rem;
+  padding-bottom: 2rem;
+  min-width: 0;
+}
+.simple-character-house p,
+.simple-character-house h1,
+.simple-character-house h2,
+.simple-character-house h3 { margin: 0; overflow-wrap: anywhere; }
+.simple-character-house :where(p.tbo-supporting, p.tbo-caption) { color: var(--glass-muted); }
+.simple-house-heading { display: flex; align-items: center; gap: .75rem; min-width: 0; }
+.simple-house-heading > div { min-width: 0; }
+.simple-house-heading .tbo-eyebrow { color: var(--glass-accent); margin-bottom: .2rem; }
+.simple-house-panel { border-radius: var(--glass-radius); padding: 1.25rem; display: grid; gap: 1.25rem; min-width: 0; }
+.simple-house-intro, .simple-house-empty { text-align: center; }
+.simple-house-intro > * + * { margin-top: .35rem; }
+.simple-house-emoji { display: inline-block; font-size: 2.5rem; line-height: 1.2; }
+.simple-house-fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+.simple-house-fieldset legend { padding: 0; margin-bottom: .8rem; }
+.simple-house-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; }
+.simple-house-option { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .4rem; padding: .8rem .45rem; min-width: 0; min-height: 6.25rem; border-radius: 1.1rem; cursor: pointer; color: var(--glass-foreground); }
+.simple-house-option > span:first-child { font-size: 2rem; line-height: 1.2; }
+.simple-house-option .tbo-label { overflow-wrap: anywhere; }
+.simple-house-option.is-selected, .simple-house-bedroom.is-selected { border-color: var(--glass-accent); outline: 2px solid var(--glass-accent); outline-offset: -2px; background: var(--glass-selected); color: var(--glass-selected-ink); }
+.simple-house-selection { position: absolute; top: .4rem; right: .4rem; width: 1rem; height: 1rem; color: var(--glass-accent); }
+.simple-house-bedrooms { display: flex; flex-wrap: wrap; gap: .5rem; }
+.simple-house-bedroom { display: flex; gap: .3rem; align-items: center; justify-content: center; flex: 1 0 3rem; min-height: 3.1rem; padding: .6rem; border-radius: .9rem; color: var(--glass-foreground); cursor: pointer; }
+.simple-house-bedroom > span { font-size: 1.2rem; }
+.simple-character-house button:focus-visible { outline: 3px solid var(--glass-accent); outline-offset: 3px; }
+.simple-house-fieldset:disabled button { cursor: wait; }
+.simple-house-promise, .simple-house-purpose { padding: 1rem; border-radius: 1.1rem; display: flex; align-items: flex-start; gap: .8rem; min-width: 0; }
+.simple-house-promise > span { font-size: 1.65rem; flex-shrink: 0; }
+.simple-house-purpose > span { flex-shrink: 0; }
+.simple-house-purpose > div { min-width: 0; display: grid; gap: .15rem; }
+.simple-house-primary { width: 100%; min-height: 3.1rem; height: auto; white-space: normal; padding: .85rem 1rem; gap: .5rem; text-align: center; overflow-wrap: anywhere; }
+.simple-house-primary > svg { flex-shrink: 0; }
+.simple-house-note { text-align: center; }
+.simple-house-loading { min-height: 16rem; }
+.simple-house-error { padding: 1rem; border-radius: 1rem; display: flex; flex-wrap: wrap; align-items: center; gap: .8rem; }
+.simple-house-error p { flex: 1 1 14rem; }
+.simple-house-build-heading { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: .65rem; }
+.simple-house-build-heading > div { min-width: 0; flex: 1 1 14rem; }
+.simple-house-build-heading .tbo-eyebrow { color: var(--glass-accent); margin-bottom: .3rem; }
+.simple-house-locked { display: inline-flex; align-items: center; gap: .3rem; color: var(--glass-muted); }
+.simple-house-locked > svg { width: .875rem; height: .875rem; flex-shrink: 0; }
+.character-house-illustration { display: block; width: 100%; max-width: 26rem; height: auto; margin-inline: auto; overflow: visible; }
+.simple-house-build > .character-house-illustration { margin-block: -1rem; }
+.simple-house-design { text-align: center; }
+.simple-house-progress { display: grid; gap: .6rem; }
+.simple-house-progress-label { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem; }
+.simple-house-progress-label > .tbo-label { color: var(--glass-accent); }
+.simple-house-today { display: grid; gap: .25rem; }
+.simple-house-milestones { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .6rem; list-style: none; padding: 0; margin: 0; }
+.simple-house-milestones li { border-radius: 1rem; padding: .8rem .45rem; display: flex; flex-direction: column; text-align: center; align-items: center; gap: .4rem; min-width: 0; }
+.simple-house-milestones li > span { font-size: 1.6rem; line-height: 1.2; }
+.simple-house-milestones li > div { min-width: 0; display: grid; gap: .1rem; overflow-wrap: anywhere; }
+.simple-house-milestones .tbo-caption { color: var(--glass-muted); }
+.simple-house-milestones .is-current { border-color: var(--glass-accent); box-shadow: inset 0 0 0 1px var(--glass-accent); }
+.dark .character-house-illustration { --house-wall-light: #655079; --house-wall: #382e55; }
+@container (max-width: 32rem) {
+  .simple-house-milestones { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .simple-house-milestones li { padding: .7rem; }
+}
+@container (max-width: 21rem) {
+  .simple-house-panel { padding: 1rem; }
+  .simple-house-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .simple-house-heading { align-items: flex-start; }
+}
+@container (max-width: 15rem) {
+  .simple-house-options, .simple-house-milestones { grid-template-columns: minmax(0, 1fr); }
+  .simple-house-option { flex-direction: row; min-height: 3.5rem; padding: .7rem; gap: .65rem; }
+  .simple-house-purpose, .simple-house-promise { flex-direction: column; }
+}
+@media (forced-colors: active) {
+  .simple-house-option.is-selected, .simple-house-bedroom.is-selected, .simple-house-milestones .is-current { outline: 2px solid Highlight; }
+  .character-house-illustration { --glass-accent: CanvasText; --glass-muted: GrayText; --glass-border: Canvas; --glass-rose: Highlight; --house-wall-light: Canvas; --house-wall: Canvas; }
+}
