@@ -716,10 +716,11 @@ export const partnerApi = {
   },
 };
 
-// One locked shared goal; progress is derived from both partners' daily activity.
+// One shared goal; design updates preserve progress derived from both partners' daily activity.
 export const characterHouse = {
   get: (...args: Parameters<typeof characterHouseApi.get>) => characterHouseApi.get(...args),
   start: (...args: Parameters<typeof characterHouseApi.start>) => characterHouseApi.start(...args),
+  update: (...args: Parameters<typeof characterHouseApi.update>) => characterHouseApi.update(...args),
 };
 
 // ── Overall (General) Compatibility ─────────────────────────────────────────

@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowRight, Check, LockKeyhole, RefreshCw } from 'lucide-react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { ArrowRight, Check, LockKeyhole, RefreshCw, Replace } from 'lucide-react';
 import { BackButton } from './BackButton';
 import { BrandLoader, LoadingMark } from './BrandLoader';
 import { Button } from './ui/button';
@@ -34,6 +34,9 @@ function SharedCharacterHouse({ onBack, onOpenChallenge, onConnect, currentUserI
   const [data, setData] = useState<Awaited<ReturnType<typeof api.characterHouse.get>> | null>(null);
   const [homeType, setHomeType] = useState<HomeType>('house');
   const [bedrooms, setBedrooms] = useState(3);
+  const [editingDesign, setEditingDesign] = useState(false);
+  const [draftHomeType, setDraftHomeType] = useState<HomeType>('house');
+  const [draftBedrooms, setDraftBedrooms] = useState(3);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<'load' | 'save' | null>(null);
@@ -41,13 +44,20 @@ function SharedCharacterHouse({ onBack, onOpenChallenge, onConnect, currentUserI
   const sequence = useRef(0);
   const mounted = useRef(true);
   const writing = useRef(false);
+  const editButtonRef = useRef<HTMLButtonElement>(null);
+  const editHeadingRef = useRef<HTMLHeadingElement>(null);
+  const editorWasOpen = useRef(false);
+  const editRegionId = useId();
   const connected = Boolean(currentUserId && partnerId);
   const active = data?.blueprint?.locked === true;
   const blocks = active ? safeHouseBlocks(data?.progress?.completedDays) : 0;
   const stage = getHouseJourneyStage(blocks);
   const definition = HOME_DEFINITIONS.find(home => home.id === homeType) ?? HOME_DEFINITIONS[0];
+  const draftDefinition = HOME_DEFINITIONS.find(home => home.id === draftHomeType) ?? HOME_DEFINITIONS[0];
   const houseLabel = SIMPLE_HOUSE_OPTIONS.find(home => home.id === homeType)?.label ?? 'House';
   const complete = blocks >= CHARACTER_HOUSE_GOAL;
+  const dailyChallengeComplete = data?.progress.currentUserCompletedToday === true;
+  const designChanged = draftHomeType !== data?.blueprint?.homeType || draftBedrooms !== data?.blueprint?.bedrooms;
 
   const accept = useCallback((result: Awaited<ReturnType<typeof api.characterHouse.get>>) => {
     setData(result);
@@ -93,6 +103,43 @@ function SharedCharacterHouse({ onBack, onOpenChallenge, onConnect, currentUserI
     };
   }, [connected, refresh]);
 
+  useEffect(() => {
+    if (editingDesign) {
+      editorWasOpen.current = true;
+      editHeadingRef.current?.focus();
+    } else if (editorWasOpen.current) {
+      editorWasOpen.current = false;
+      editButtonRef.current?.focus();
+    }
+  }, [editingDesign]);
+
+  const selectSetupHome = (next: HomeType) => {
+    const nextDefinition = HOME_DEFINITIONS.find(item => item.id === next)!;
+    setHomeType(next);
+    setBedrooms(value => Math.max(nextDefinition.bedroomRange[0], Math.min(nextDefinition.bedroomRange[1], value)));
+  };
+
+  const selectDraftHome = (next: HomeType) => {
+    const nextDefinition = HOME_DEFINITIONS.find(item => item.id === next)!;
+    setDraftHomeType(next);
+    setDraftBedrooms(value => Math.max(nextDefinition.bedroomRange[0], Math.min(nextDefinition.bedroomRange[1], value)));
+  };
+
+  const openDesignEditor = () => {
+    const saved = data?.blueprint;
+    if (!saved || saving) return;
+    setDraftHomeType(saved.homeType);
+    setDraftBedrooms(saved.bedrooms);
+    setEditingDesign(true);
+    setError(value => value === 'save' ? null : value);
+  };
+
+  const closeDesignEditor = () => {
+    if (saving) return;
+    setEditingDesign(false);
+    setError(value => value === 'save' ? null : value);
+  };
+
   const start = async () => {
     if (writing.current || !connected || active || !data) return;
     writing.current = true; const request = ++sequence.current;
@@ -101,6 +148,23 @@ function SharedCharacterHouse({ onBack, onOpenChallenge, onConnect, currentUserI
       const result = await api.characterHouse.start({ homeType, bedrooms });
       if (!mounted.current || request !== sequence.current) return;
       accept(result);
+    } catch {
+      if (mounted.current && request === sequence.current) setError('save');
+    } finally {
+      writing.current = false;
+      if (mounted.current && request === sequence.current) { setSaving(false); setLoading(false); }
+    }
+  };
+
+  const updateDesign = async () => {
+    if (writing.current || !connected || !active || !data || !designChanged) return;
+    writing.current = true; const request = ++sequence.current;
+    setSaving(true); setError(null);
+    try {
+      const result = await api.characterHouse.update({ homeType: draftHomeType, bedrooms: draftBedrooms });
+      if (!mounted.current || request !== sequence.current) return;
+      accept(result);
+      setEditingDesign(false);
     } catch {
       if (mounted.current && request === sequence.current) setError('save');
     } finally {
@@ -126,28 +190,36 @@ function SharedCharacterHouse({ onBack, onOpenChallenge, onConnect, currentUserI
       {data && !active && <section className="tbo-glass simple-house-panel simple-house-setup">
         <div className="simple-house-intro"><span className="simple-house-emoji" aria-hidden="true">🏡</span><h2 className="tbo-section-title">{tr('Let’s build your home')}</h2><p className="tbo-supporting">{tr('Two choices. One shared goal.')}</p></div>
         <fieldset disabled={saving} className="simple-house-fieldset"><legend className="tbo-card-title">{tr('1. What kind of house?')}</legend><div className="simple-house-options">
-          {SIMPLE_HOUSE_OPTIONS.map(home => <button type="button" key={home.id} aria-pressed={homeType === home.id} className={`tbo-glass-inset simple-house-option ${homeType === home.id ? 'is-selected' : ''}`} onClick={() => {
-            const definition = HOME_DEFINITIONS.find(item => item.id === home.id)!;
-            setHomeType(home.id); setBedrooms(value => Math.max(definition.bedroomRange[0], Math.min(definition.bedroomRange[1], value)));
-          }}><span aria-hidden="true">{home.emoji}</span><span className="tbo-label">{tr(home.label)}</span>{homeType === home.id && <Check className="simple-house-selection" aria-hidden="true" />}</button>)}
+          {SIMPLE_HOUSE_OPTIONS.map(home => <button type="button" key={home.id} aria-pressed={homeType === home.id} className={`tbo-glass-inset simple-house-option ${homeType === home.id ? 'is-selected' : ''}`} onClick={() => selectSetupHome(home.id)}><span aria-hidden="true">{home.emoji}</span><span className="tbo-label">{tr(home.label)}</span>{homeType === home.id && <Check className="simple-house-selection" aria-hidden="true" />}</button>)}
         </div></fieldset>
         <fieldset disabled={saving} className="simple-house-fieldset"><legend className="tbo-card-title">{tr('2. How many bedrooms?')}</legend><div className="simple-house-bedrooms">
           {Array.from({ length: definition.bedroomRange[1] - definition.bedroomRange[0] + 1 }, (_, index) => definition.bedroomRange[0] + index).map(number => <button key={number} type="button" aria-label={tr('{count} bedrooms', { count: number })} aria-pressed={bedrooms === number} onClick={() => setBedrooms(number)} className={`tbo-label tbo-glass-inset simple-house-bedroom ${bedrooms === number ? 'is-selected' : ''}`}><span aria-hidden="true">🛏️</span>{number}</button>)}
         </div></fieldset>
         <div className="tbo-glass-inset simple-house-promise"><span aria-hidden="true">🧱</span><p className="tbo-supporting">{tr('When you both finish the daily challenge, one block builds your house. Goal: 365 blocks.')}</p></div>
-        <Button variant="glass-primary" className="simple-house-primary" disabled={saving} onClick={() => void start()}>{saving ? <LoadingMark /> : <LockKeyhole aria-hidden="true" />}{tr(saving ? 'Saving your house…' : 'Lock & start building')}</Button>
-        <p className="tbo-caption simple-house-note">{tr('This saves your shared design. It stays locked while you build.')}</p>
+        <Button variant="glass-primary" className="simple-house-primary" disabled={saving} onClick={() => void start()}>{saving ? <LoadingMark /> : <Check aria-hidden="true" />}{tr(saving ? 'Saving your house…' : 'Start building')}</Button>
+        <p className="tbo-caption simple-house-note">{tr('This starts your shared house. You can change its design later without losing progress.')}</p>
       </section>}
 
       {data && active && <>
         <section className="tbo-glass simple-house-panel simple-house-build">
-          <div className="simple-house-build-heading"><div><p className="tbo-eyebrow">{tr(complete ? 'Built together' : 'One shared goal')}</p><h2 className="tbo-section-title">{tr(complete ? 'Your home is complete!' : 'Growing in character, together')}</h2></div><span className="tbo-caption simple-house-locked"><LockKeyhole aria-hidden="true" />{tr('Design locked')}</span></div>
+          <div className="simple-house-build-heading"><div><p className="tbo-eyebrow">{tr(complete ? 'Built together' : 'One shared goal')}</p><h2 className="tbo-section-title">{tr(complete ? 'Your home is complete!' : 'Growing in character, together')}</h2></div>{!editingDesign && <Button ref={editButtonRef} type="button" variant="ghost" size="icon" className="simple-house-edit-trigger" onClick={openDesignEditor} disabled={saving} aria-label={tr('Change house type')} title={tr('Change house type')}><Replace aria-hidden="true" /></Button>}</div>
           <CharacterHouseIllustration homeType={homeType} bedrooms={bedrooms} completedDays={blocks} />
           <p className="tbo-supporting simple-house-design">{tr('{house} · {bedrooms} bedrooms', { house: tr(houseLabel), bedrooms })}</p>
+          {editingDesign && <form id={editRegionId} className="tbo-glass-inset simple-house-design-editor" aria-labelledby={`${editRegionId}-title`} onSubmit={event => { event.preventDefault(); void updateDesign(); }}>
+            <div><h3 ref={editHeadingRef} tabIndex={-1} id={`${editRegionId}-title`} className="tbo-card-title">{tr('Change house type')}</h3><p className="tbo-supporting">{tr('Choose a house type and bedroom count. Your {count} blocks will stay.', { count: blocks })}</p></div>
+            <fieldset disabled={saving} className="simple-house-fieldset"><legend className="tbo-label">{tr('House type')}</legend><div className="simple-house-options">
+              {SIMPLE_HOUSE_OPTIONS.map(home => <button type="button" key={home.id} aria-pressed={draftHomeType === home.id} className={`tbo-glass-inset simple-house-option ${draftHomeType === home.id ? 'is-selected' : ''}`} onClick={() => selectDraftHome(home.id)}><span aria-hidden="true">{home.emoji}</span><span className="tbo-label">{tr(home.label)}</span>{draftHomeType === home.id && <Check className="simple-house-selection" aria-hidden="true" />}</button>)}
+            </div></fieldset>
+            <fieldset disabled={saving} className="simple-house-fieldset"><legend className="tbo-label">{tr('Bedrooms')}</legend><div className="simple-house-bedrooms">
+              {Array.from({ length: draftDefinition.bedroomRange[1] - draftDefinition.bedroomRange[0] + 1 }, (_, index) => draftDefinition.bedroomRange[0] + index).map(number => <button type="button" key={number} aria-label={tr('{count} bedrooms', { count: number })} aria-pressed={draftBedrooms === number} onClick={() => setDraftBedrooms(number)} className={`tbo-label tbo-glass-inset simple-house-bedroom ${draftBedrooms === number ? 'is-selected' : ''}`}><span aria-hidden="true">🛏️</span>{number}</button>)}
+            </div></fieldset>
+            <p className="tbo-caption">{tr('This changes the shared house for both of you.')}</p>
+            <div className="simple-house-edit-actions"><Button type="button" variant="glass" onClick={closeDesignEditor} disabled={saving}>{tr('Cancel')}</Button><Button type="submit" variant="glass-primary" disabled={saving || !designChanged}>{saving && <LoadingMark />}{tr(saving ? 'Saving changes…' : 'Save house changes')}</Button></div>
+          </form>}
           <div className="simple-house-progress"><div className="simple-house-progress-label"><strong className="tbo-card-title">{tr('{count} / 365 blocks', { count: blocks })}</strong><span className="tbo-label">{Math.floor(blocks / CHARACTER_HOUSE_GOAL * 100)}%</span></div><Progress value={blocks / CHARACTER_HOUSE_GOAL * 100} aria-label={tr('House construction progress')} /></div>
           <div className="tbo-glass-inset simple-house-purpose"><span className="simple-house-emoji" aria-hidden="true">{stage.emoji}</span><div><p className="tbo-caption">{tr('Building {stage}', { stage: tr(stage.name) })}</p><h3 className="tbo-card-title">{tr(stage.virtue)}</h3><p className="tbo-supporting">{tr(stage.purpose)}</p></div></div>
           <div className="simple-house-today"><p className="tbo-label">{tr(complete ? 'Keep living what you have practised.' : data.progress.todayContributed ? 'Today’s shared block is in place!' : 'Today’s challenge → one shared block')}</p><p className="tbo-supporting">{tr(complete ? '365 shared blocks. Keep choosing love in everyday life.' : 'Finish the game and its activity together. Your block appears after both of you complete it.')}</p></div>
-          <Button variant="glass-primary" className="simple-house-primary" onClick={onOpenChallenge} disabled={!onOpenChallenge}>{tr('Open today’s challenge')}<ArrowRight aria-hidden="true" /></Button>
+          <Button variant="glass-primary" className="simple-house-primary" onClick={onOpenChallenge} disabled={!onOpenChallenge || dailyChallengeComplete}>{tr(dailyChallengeComplete ? 'Today’s challenge complete' : 'Open today’s challenge')}{dailyChallengeComplete ? <LockKeyhole aria-hidden="true" /> : <ArrowRight aria-hidden="true" />}</Button>
           <p className="tbo-caption simple-house-note">{tr('One shared block per day. Missed days never remove progress.')}</p>
         </section>
 

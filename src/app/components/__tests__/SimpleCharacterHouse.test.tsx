@@ -1,4 +1,4 @@
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CharacterHouseBuilder } from '../CharacterHouseBuilder';
 import api from '../../utils/api';
@@ -8,16 +8,16 @@ import { translateUi } from '../../utils/uiTranslation';
 import { simpleCharacterHouseMessages } from '../../locales/simpleCharacterHouse';
 import { getHouseJourneyStage, safeHouseBlocks } from '../../data/characterHouseJourney';
 
-vi.mock('../../utils/api', () => ({ default: { characterHouse: { get: vi.fn(), start: vi.fn() } } }));
-const empty = (): CharacterHouseState => ({ blueprint: null, progress: { completedDays: 0, totalDays: 365, todayContributed: false, lastBlockDate: null }, day: '2026-09-17' });
-const built = (count = 12): CharacterHouseState => ({ ...empty(), blueprint: { homeType: 'villa', bedrooms: 4, homeName: 'Saved home', completedDays: count, locked: true, blueprintStatus: 'active', challengeStartedAt: '2026-09-01T00:00:00Z' }, progress: { completedDays: count, totalDays: 365, todayContributed: false, lastBlockDate: '2026-09-16' } });
+vi.mock('../../utils/api', () => ({ default: { characterHouse: { get: vi.fn(), start: vi.fn(), update: vi.fn() } } }));
+const empty = (): CharacterHouseState => ({ blueprint: null, progress: { completedDays: 0, totalDays: 365, todayContributed: false, currentUserCompletedToday: false, lastBlockDate: null }, day: '2026-09-17' });
+const built = (count = 12): CharacterHouseState => ({ ...empty(), blueprint: { homeType: 'villa', bedrooms: 4, homeName: 'Saved home', completedDays: count, locked: true, blueprintStatus: 'active', challengeStartedAt: '2026-09-01T00:00:00Z' }, progress: { completedDays: count, totalDays: 365, todayContributed: false, currentUserCompletedToday: false, lastBlockDate: '2026-09-16' } });
 const props = () => ({ currentUserId: 'a', partnerId: 'b', onBack: vi.fn(), onOpenChallenge: vi.fn(), onConnect: vi.fn() });
 
 describe('simple shared character house', () => {
   beforeEach(() => { vi.clearAllMocks(); localStorage.clear(); setCurrentLanguage('en'); vi.mocked(api.characterHouse.get).mockResolvedValue(empty()); });
   afterEach(() => { cleanup(); vi.restoreAllMocks(); setCurrentLanguage('en'); });
 
-  it('asks only house type and bedrooms and locks them in one request', async () => {
+  it('asks only house type and bedrooms and starts them in one request', async () => {
     vi.mocked(api.characterHouse.start).mockResolvedValue(built(0));
     const view = render(<CharacterHouseBuilder {...props()} />);
     await screen.findByText('1. What kind of house?');
@@ -26,8 +26,8 @@ describe('simple shared character house', () => {
     expect(screen.queryByText('Wall paint')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Villa', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: '4 bedrooms' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Lock & start building' }));
-    await screen.findByText('Design locked');
+    fireEvent.click(screen.getByRole('button', { name: 'Start building' }));
+    await screen.findByRole('button', { name: 'Change house type' });
     expect(api.characterHouse.start).toHaveBeenCalledExactlyOnceWith({ homeType: 'villa', bedrooms: 4 });
     expect(view.container.querySelectorAll('fieldset')).toHaveLength(0);
     expect(screen.getByText('0 / 365 blocks')).toBeInTheDocument();
@@ -39,12 +39,68 @@ describe('simple shared character house', () => {
     await screen.findByText('1. What kind of house?');
     fireEvent.click(screen.getByRole('button', { name: 'Apartment', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: '2 bedrooms' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Lock & start building' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Start building' }));
     await screen.findByRole('alert');
     expect(screen.getByRole('button', { name: 'Apartment', exact: true })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: '2 bedrooms' })).toHaveAttribute('aria-pressed', 'true');
     expect(api.characterHouse.start).toHaveBeenCalledTimes(1);
-    expect(screen.queryByText('Design locked')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Change house type' })).not.toBeInTheDocument();
+  });
+
+  it('changes the shared house design without losing progress', async () => {
+    const original = built(12);
+    original.blueprint!.bedrooms = 7;
+    const redesigned = built(12);
+    redesigned.blueprint = { ...redesigned.blueprint!, homeType: 'apartment', bedrooms: 4 };
+    vi.mocked(api.characterHouse.get).mockResolvedValue(original);
+    vi.mocked(api.characterHouse.update).mockResolvedValue(redesigned);
+    render(<CharacterHouseBuilder {...props()} />);
+    await screen.findByText('Villa · 7 bedrooms');
+
+    const editTrigger = screen.getByRole('button', { name: 'Change house type' });
+    expect(editTrigger).toHaveAttribute('title', 'Change house type');
+    expect(editTrigger).not.toHaveTextContent('Change house type');
+    fireEvent.click(editTrigger);
+    expect(await screen.findByRole('heading', { name: 'Change house type' })).toHaveFocus();
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(await screen.findByRole('button', { name: 'Change house type' })).toHaveFocus();
+    fireEvent.click(screen.getByRole('button', { name: 'Change house type' }));
+    expect(screen.getByRole('button', { name: '7 bedrooms' })).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.click(screen.getByRole('button', { name: 'Apartment', exact: true }));
+    expect(screen.getByRole('button', { name: '4 bedrooms' })).toHaveAttribute('aria-pressed', 'true');
+
+    await act(async () => { window.dispatchEvent(new Event('focus')); });
+    await waitFor(() => expect(api.characterHouse.get).toHaveBeenCalledTimes(2));
+    expect(screen.getByRole('button', { name: 'Apartment', exact: true })).toHaveAttribute('aria-pressed', 'true');
+
+    await act(async () => setCurrentLanguage('am'));
+    expect(screen.getByRole('heading', { name: translateUi('am', simpleCharacterHouseMessages, 'Change house type') })).toBeVisible();
+    await act(async () => setCurrentLanguage('om'));
+    expect(screen.getByRole('button', { name: translateUi('om', simpleCharacterHouseMessages, 'Save house changes') })).toBeEnabled();
+    await act(async () => setCurrentLanguage('en'));
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save house changes' }));
+    await screen.findByText('Apartment · 4 bedrooms');
+    expect(api.characterHouse.update).toHaveBeenCalledExactlyOnceWith({ homeType: 'apartment', bedrooms: 4 });
+    expect(screen.getByRole('button', { name: 'Change house type' })).toHaveFocus();
+    expect(screen.getByText('12 / 365 blocks')).toBeInTheDocument();
+    expect(api.characterHouse.start).not.toHaveBeenCalled();
+  });
+
+  it('keeps an unsaved redesign and earned progress after an update fails', async () => {
+    vi.mocked(api.characterHouse.get).mockResolvedValue(built(12));
+    vi.mocked(api.characterHouse.update).mockRejectedValue(new Error('offline'));
+    render(<CharacterHouseBuilder {...props()} />);
+    await screen.findByText('Villa · 4 bedrooms');
+    fireEvent.click(screen.getByRole('button', { name: 'Change house type' }));
+    fireEvent.click(screen.getByRole('button', { name: 'House', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save house changes' }));
+
+    await screen.findByRole('alert');
+    expect(screen.getByRole('button', { name: 'House', exact: true })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByText('Villa · 4 bedrooms')).toBeInTheDocument();
+    expect(screen.getByText('12 / 365 blocks')).toBeInTheDocument();
+    expect(api.characterHouse.update).toHaveBeenCalledTimes(1);
   });
 
   it('never imports browser progress or credits opening a daily challenge', async () => {
@@ -58,6 +114,36 @@ describe('simple shared character house', () => {
     expect(screen.getByText('12 / 365 blocks')).toBeInTheDocument();
     expect(api.characterHouse.start).not.toHaveBeenCalled();
     expect(screen.queryByText('Place Today’s Block')).not.toBeInTheDocument();
+  });
+
+  it('locks the completed daily challenge until the next server day', async () => {
+    const completedToday = built(12);
+    completedToday.progress.currentUserCompletedToday = true;
+    const nextDay = built(12);
+    nextDay.day = '2026-09-18';
+    vi.mocked(api.characterHouse.get).mockResolvedValueOnce(completedToday).mockResolvedValueOnce(completedToday).mockResolvedValue(nextDay);
+    const callbacks = props();
+    render(<CharacterHouseBuilder {...callbacks} />);
+
+    const locked = await screen.findByRole('button', { name: 'Today’s challenge complete' });
+    expect(locked).toBeDisabled();
+    fireEvent.click(locked);
+    expect(callbacks.onOpenChallenge).not.toHaveBeenCalled();
+
+    await act(async () => setCurrentLanguage('am'));
+    expect(screen.getByRole('button', { name: translateUi('am', simpleCharacterHouseMessages, 'Today’s challenge complete') })).toBeDisabled();
+    await act(async () => setCurrentLanguage('om'));
+    expect(screen.getByRole('button', { name: translateUi('om', simpleCharacterHouseMessages, 'Today’s challenge complete') })).toBeDisabled();
+
+    await act(async () => { setCurrentLanguage('en'); window.dispatchEvent(new Event('focus')); });
+    await waitFor(() => expect(api.characterHouse.get).toHaveBeenCalledTimes(2));
+    expect(screen.getByRole('button', { name: 'Today’s challenge complete' })).toBeDisabled();
+
+    await act(async () => { window.dispatchEvent(new Event('focus')); });
+    const unlocked = await screen.findByRole('button', { name: 'Open today’s challenge' });
+    expect(unlocked).toBeEnabled();
+    fireEvent.click(unlocked);
+    expect(callbacks.onOpenChallenge).toHaveBeenCalledOnce();
   });
 
   it('does not carry a previous couple’s late response to the new couple', async () => {
@@ -88,7 +174,8 @@ describe('simple shared character house', () => {
     render(<CharacterHouseBuilder {...props()} />);
     await screen.findByText('Your home is complete!');
     expect(screen.getByText('365 / 365 blocks')).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Lock & start building' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Start building' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Change house type' })).toBeEnabled();
     expect(api.characterHouse.start).not.toHaveBeenCalled();
   });
 
@@ -96,7 +183,7 @@ describe('simple shared character house', () => {
     vi.mocked(api.characterHouse.get).mockRejectedValueOnce(new Error('offline')).mockResolvedValue(empty());
     render(<CharacterHouseBuilder {...props()} />);
     await screen.findByRole('alert');
-    expect(screen.queryByRole('button', { name: 'Lock & start building' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Start building' })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Retry' }));
     await screen.findByText('1. What kind of house?');
   });

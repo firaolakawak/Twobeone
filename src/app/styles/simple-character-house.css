@@ -46,11 +46,15 @@
 .simple-house-build-heading { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: .65rem; }
 .simple-house-build-heading > div { min-width: 0; flex: 1 1 14rem; }
 .simple-house-build-heading .tbo-eyebrow { color: var(--glass-accent); margin-bottom: .3rem; }
-.simple-house-locked { display: inline-flex; align-items: center; gap: .3rem; color: var(--glass-muted); }
-.simple-house-locked > svg { width: .875rem; height: .875rem; flex-shrink: 0; }
+.simple-house-edit-trigger { inline-size: 2.75rem; block-size: 2.75rem; min-inline-size: 2.75rem; min-block-size: 2.75rem; padding: 0; border: 0; border-radius: 999px; background: transparent; box-shadow: none; color: var(--glass-muted); }
+.simple-house-edit-trigger:hover:not(:disabled) { background: transparent; color: var(--glass-accent); }
+.simple-house-edit-trigger > svg { inline-size: 1rem; block-size: 1rem; }
 .character-house-illustration { display: block; width: 100%; max-width: 26rem; height: auto; margin-inline: auto; overflow: visible; }
 .simple-house-build > .character-house-illustration { margin-block: -1rem; }
 .simple-house-design { text-align: center; }
+.simple-house-design-editor { padding: 1rem; border-radius: 1.1rem; display: grid; gap: 1rem; min-width: 0; }
+.simple-house-design-editor > div:first-child { display: grid; gap: .25rem; }
+.simple-house-edit-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .6rem; }
 .simple-house-progress { display: grid; gap: .6rem; }
 .simple-house-progress-label { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem; }
 .simple-house-progress-label > .tbo-label { color: var(--glass-accent); }
@@ -70,6 +74,7 @@
   .simple-house-panel { padding: 1rem; }
   .simple-house-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .simple-house-heading { align-items: flex-start; }
+  .simple-house-edit-actions > button { flex: 1 1 100%; }
 }
 @container (max-width: 15rem) {
   .simple-house-options, .simple-house-milestones { grid-template-columns: minmax(0, 1fr); }
