@@ -1,0 +1,106 @@
+.faith-quest-map {
+  container: faith-quest-map / inline-size;
+  min-width: 0;
+  color: var(--glass-foreground);
+}
+
+.faith-quest-map :is(button, p, h2, h3, span) { overflow-wrap: anywhere; }
+.faith-quest-map button { -webkit-tap-highlight-color: transparent; }
+.faith-quest-map button:focus-visible { outline: 3px solid var(--glass-accent); outline-offset: 4px; }
+
+.faith-quest-map__heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-block-end: 1rem; }
+.faith-quest-map__heading p { margin-block-start: .3rem; color: var(--glass-muted); }
+.faith-quest-map__heading-mark { display: grid; place-items: center; flex: none; width: 2.75rem; height: 2.75rem; color: var(--glass-rose); }
+.faith-quest-map__chapters { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: .65rem; margin-block-end: 1.25rem; }
+.faith-quest-map__chapter { display: flex; flex-direction: column; align-items: center; gap: .25rem; min-width: 0; min-height: 2.75rem; padding: .9rem .45rem .8rem; text-align: center; cursor: pointer; position: relative; }
+.faith-quest-map__chapter[aria-pressed="true"] { background: var(--glass-selected); color: var(--glass-selected-ink); border-color: var(--glass-accent); box-shadow: inset 0 0 0 1px var(--glass-accent), 0 8px 20px -12px var(--glass-accent); }
+.faith-quest-map__chapter-number { color: var(--glass-muted); }
+.faith-quest-map__chapter-icon { position: relative; display: grid; place-items: center; min-width: 2.5rem; min-height: 2.5rem; font-size: 1.8rem; margin-block-end: .2rem; }
+.faith-quest-map__chapter-check { display: grid; place-items: center; position: absolute; right: -.35rem; bottom: -.1rem; width: 1.1rem; height: 1.1rem; border-radius: 50%; background: var(--glass-success-soft); color: var(--glass-success); border: 1px solid var(--glass-success); }
+.faith-quest-map__landscape { position: relative; isolation: isolate; padding: 1.5rem; }
+.faith-quest-map__landscape::before { content: ''; position: absolute; z-index: -1; inset: 0; pointer-events: none; border-radius: inherit; background: radial-gradient(ellipse at 4% 30%, color-mix(in srgb, var(--glass-accent) 9%, transparent), transparent 45%), radial-gradient(ellipse at 95% 75%, color-mix(in srgb, var(--glass-rose) 8%, transparent), transparent 40%); }
+.faith-quest-map__chapter-intro { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1rem; align-items: start; }
+.faith-quest-map__chapter-emblem { display: grid; place-items: center; font-size: 2.5rem; width: 4.5rem; height: 4.5rem; background: var(--glass-inset-surface); border: 1px solid var(--glass-border); border-radius: 1.5rem; box-shadow: var(--glass-shadow); }
+.faith-quest-map__chapter-copy { min-width: 0; }
+.faith-quest-map__chapter-copy > :not(:last-child) { margin-block-end: .35rem; }
+.faith-quest-map__chapter-copy > .tbo-eyebrow { color: var(--glass-accent); }
+.faith-quest-map__chapter-copy > .tbo-supporting, .faith-quest-map__scripture { color: var(--glass-muted); }
+.faith-quest-map__chapter-progress { grid-column: 1 / -1; justify-self: start; display: flex; align-items: center; gap: .45rem; min-width: 0; padding: .4rem .65rem; border-radius: .75rem; color: var(--glass-accent); background: var(--glass-inset-surface); }
+.faith-quest-map__chapter-progress svg { width: 1rem; height: 1rem; flex: none; }
+
+.faith-quest-map__trail { display: grid; position: relative; gap: 1.25rem; margin-block: 1.75rem .5rem; padding: 0; list-style: none; }
+.faith-quest-map__trail::before { content: ''; position: absolute; pointer-events: none; inset-block: 2rem; left: 50%; width: 3px; transform: translateX(-50%); background: repeating-linear-gradient(to bottom, var(--glass-divider) 0, var(--glass-divider) 7px, transparent 7px, transparent 14px); }
+.faith-quest-map__stop { display: grid; grid-template-columns: minmax(0, 1fr) 4.5rem minmax(0, 1fr); min-width: 0; position: relative; }
+.faith-quest-map__mission { display: grid; grid-column: 1 / 3; grid-template-columns: minmax(0, 1fr) 4.5rem; align-items: center; gap: 1rem; min-width: 0; min-height: 2.75rem; padding: 0; text-align: left; color: var(--glass-foreground); cursor: pointer; border-radius: 1.25rem; background: transparent; }
+.faith-quest-map__stop:nth-child(even) .faith-quest-map__mission { grid-column: 2 / 4; grid-template-columns: 4.5rem minmax(0, 1fr); }
+.faith-quest-map__node { display: grid; place-items: center; grid-column: 2; grid-row: 1; justify-self: center; z-index: 1; width: 3.75rem; height: 3.75rem; color: var(--glass-muted); border: 2px solid var(--glass-border); border-radius: 50%; background: var(--glass-solid); box-shadow: var(--glass-shadow); }
+.faith-quest-map__node svg { width: 1.45rem; height: 1.45rem; }
+.faith-quest-map__stop:nth-child(even) .faith-quest-map__node { grid-column: 1; }
+.faith-quest-map__mission-card { display: flex; flex-direction: column; grid-column: 1; grid-row: 1; gap: .45rem; min-width: 0; padding: 1rem; }
+.faith-quest-map__stop:nth-child(even) .faith-quest-map__mission-card { grid-column: 2; }
+.faith-quest-map__mission-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .35rem .65rem; color: var(--glass-muted); }
+.faith-quest-map__mission-meta > span:last-child { display: inline-flex; align-items: center; gap: .25rem; }
+.faith-quest-map__mission-meta svg { width: .875rem; height: .875rem; flex: none; }
+.faith-quest-map__mission-title { display: block; }
+.faith-quest-map__mode { display: flex; align-items: center; gap: .35rem; color: var(--glass-muted); }
+.faith-quest-map__mode svg { width: 1rem; height: 1rem; flex: none; }
+.faith-quest-map__mission-status { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-block-start: .2rem; color: var(--glass-accent); }
+.faith-quest-map__mission-status svg { width: 1rem; height: 1rem; flex: none; }
+.faith-quest-map__locked-hint { color: var(--glass-muted); }
+.faith-quest-map__mission:disabled { cursor: default; }
+.faith-quest-map__stop[data-state="locked"] .faith-quest-map__mission-status { color: var(--glass-muted); }
+.faith-quest-map__stop[data-state="next"] .faith-quest-map__node { color: var(--glass-primary-ink); background: var(--glass-primary-solid); border-color: var(--glass-border); box-shadow: 0 0 0 .35rem var(--glass-selected), 0 8px 20px -8px var(--glass-accent); }
+.faith-quest-map__stop[data-state="next"] .faith-quest-map__mission-card { border-color: var(--glass-accent); box-shadow: inset 0 1px 0 var(--glass-border), 0 8px 24px -16px var(--glass-accent); }
+.faith-quest-map__stop[data-state="complete"] .faith-quest-map__node { color: var(--glass-success); background: var(--glass-success-soft); border-color: var(--glass-success); }
+.faith-quest-map__stop[data-state="complete"] .faith-quest-map__mission-status { color: var(--glass-success); }
+.faith-quest-map__chapter-finish { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .8rem; border-top: 1px solid var(--glass-divider); margin-block-start: 1.5rem; padding-block-start: 1.1rem; }
+.faith-quest-map__chapter-finish p { display: flex; align-items: center; gap: .4rem; color: var(--glass-success); }
+.faith-quest-map__chapter-finish p svg { flex: none; width: 1.25rem; height: 1.25rem; }
+.faith-quest-map__return { display: flex; justify-content: center; margin-block-start: 1.25rem; }
+
+@container faith-quest-map (max-width: 42rem) {
+  .faith-quest-map__chapters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .faith-quest-map__landscape { padding: 1.1rem; }
+  .faith-quest-map__trail::before { left: 1.75rem; }
+  .faith-quest-map__stop { display: block; }
+  .faith-quest-map__stop:nth-child(n) .faith-quest-map__mission { width: 100%; grid-template-columns: 3.5rem minmax(0, 1fr); gap: .8rem; }
+  .faith-quest-map__stop:nth-child(n) .faith-quest-map__node { grid-column: 1; width: 3rem; height: 3rem; }
+  .faith-quest-map__stop:nth-child(n) .faith-quest-map__mission-card { grid-column: 2; }
+}
+
+@container faith-quest-map (max-width: 23rem) {
+  .faith-quest-map__chapters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .faith-quest-map__heading-mark { display: none; }
+  .faith-quest-map__chapter-intro { grid-template-columns: minmax(0, 1fr); }
+  .faith-quest-map__chapter-emblem { width: 3.5rem; height: 3.5rem; font-size: 2rem; }
+  .faith-quest-map__trail::before { left: 50%; inset-block: 1.5rem; }
+  .faith-quest-map__stop:nth-child(n) .faith-quest-map__mission { grid-template-columns: minmax(0, 1fr); gap: .5rem; }
+  .faith-quest-map__stop:nth-child(n) .faith-quest-map__node { grid-column: 1; grid-row: 1; }
+  .faith-quest-map__stop:nth-child(n) .faith-quest-map__mission-card { grid-column: 1; grid-row: 2; z-index: 1; padding: .85rem; background: var(--glass-solid); }
+}
+
+@container faith-quest-map (max-width: 13rem) {
+  .faith-quest-map__chapters { grid-template-columns: minmax(0, 1fr); }
+  .faith-quest-map__chapter { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr); text-align: left; gap: .25rem .5rem; padding: .65rem; }
+  .faith-quest-map__chapter-icon { grid-row: 1 / 3; margin: 0; }
+  .faith-quest-map__landscape { padding: .65rem; }
+  .faith-quest-map__stop:nth-child(n) .faith-quest-map__mission-card { padding: .65rem; }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .faith-quest-map__chapter, .faith-quest-map__mission-card, .faith-quest-map__node { transition: transform .18s ease, box-shadow .18s ease; }
+  .faith-quest-map__chapter:hover { transform: translateY(-2px); }
+  .faith-quest-map__mission:not(:disabled):hover .faith-quest-map__mission-card { transform: translateY(-2px); box-shadow: var(--glass-shadow-raised); }
+  .faith-quest-map__mission:not(:disabled):hover .faith-quest-map__node { transform: scale(1.04); }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .faith-quest-map__landscape::before { display: none; }
+}
+
+@media (forced-colors: active) {
+  .faith-quest-map__landscape::before { display: none; }
+  .faith-quest-map__trail::before { background: CanvasText; }
+  .faith-quest-map__chapter[aria-pressed="true"], .faith-quest-map__stop[data-state="next"] .faith-quest-map__mission-card { outline: 2px solid Highlight; outline-offset: -2px; }
+  .faith-quest-map__stop[data-state="next"] .faith-quest-map__node { color: HighlightText; background: Highlight; }
+}

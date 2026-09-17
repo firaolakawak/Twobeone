@@ -23,6 +23,7 @@ import { LearningModulesCard } from './LearningModulesCard';
 import { PushNotificationSetup } from './PushNotificationSetup';
 import { DistanceConnector } from './DistanceConnector';
 import { DailyMoodCheckIn } from './DailyMoodCheckIn';
+import { DailyFaithChallenge } from './DailyFaithChallenge';
 import { CoupleHeroHeading, PartnerMoodEmoji } from './CoupleMoodHeading';
 import { RelationshipSummary } from './RelationshipJourney';
 import { DashboardFeatureSection } from './DashboardFeatureSection';
@@ -56,6 +57,8 @@ export interface CoupleDashboardProps {
   devotionals?: DashboardDevotional[];
   onOpenDevotional?: (id: string) => void;
   onStartQuestion?: (category?: string) => void;
+  dailyChallengeRequest?: number;
+  onDailyChallengeRequestConsumed?: () => void;
 }
 
 interface DashboardDevotional {
@@ -137,8 +140,11 @@ export function CoupleDashboard({
   devotionals = [],
   onOpenDevotional,
   onStartQuestion,
+  dailyChallengeRequest,
+  onDailyChallengeRequestConsumed,
 }: CoupleDashboardProps) {
   const tr = useUiCopy(coupleUiMessages);
+  const [moodOpenRequest, setMoodOpenRequest] = useState(0);
   const { t, language } = useLanguage();
   const heroCover = profile?.coverPicture || undefined;
   const [failedCover, setFailedCover] = useState<string>();
@@ -537,6 +543,7 @@ export function CoupleDashboard({
             <>
               {profile?.id && (
                 <DailyMoodCheckIn
+                  openRequest={moodOpenRequest}
                   showControls={false}
                   userId={profile.id}
                   userName={profile.name || t.mood.you}
@@ -825,6 +832,11 @@ export function CoupleDashboard({
           reminderOnly
         />
       )}
+
+      <DailyFaithChallenge userId={profile?.id} partnerId={partner?.id} userName={profile?.name} partnerName={partner?.name}
+        authenticated={Boolean(accessToken)} moodReady={moodsLoaded} hasMood={Boolean(userMood)}
+        openRequest={dailyChallengeRequest} onRequestConsumed={onDailyChallengeRequestConsumed}
+        onRequestMood={() => setMoodOpenRequest(value => value + 1)} onConnect={() => onNavigate?.('profile')} />
 
       {/* Character Development House */}
       <Card

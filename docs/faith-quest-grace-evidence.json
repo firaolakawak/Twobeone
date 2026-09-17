@@ -1,0 +1,124 @@
+{
+  "browser": "Edg/153.0.4234.32",
+  "layouts": [
+    {
+      "id": "en-390-light",
+      "phase": "grace-reveal-with-followup",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "am-320-200-light",
+      "phase": "grace-reveal-with-followup",
+      "language": "am",
+      "width": 320,
+      "rootSize": "32px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "om-320-200-dark",
+      "phase": "grace-reveal-with-followup",
+      "language": "om",
+      "width": 320,
+      "rootSize": "32px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "en-390-light-translated-followups-match-selected-choices",
+      "followups": [
+        "Try sayingI was looking forward to our call. Is everything okay?",
+        "Try sayingI missed you. I would love a little time together."
+      ],
+      "expected": [
+        "Try sayingI was looking forward to our call. Is everything okay?",
+        "Try sayingI missed you. I would love a little time together."
+      ],
+      "pass": true
+    },
+    {
+      "name": "am-320-200-light-translated-followups-match-selected-choices",
+      "followups": [
+        "እንዲህ ለማለት ይሞክሩጥሪያችንን በጉጉት እጠብቅ ነበር። ሁሉም ደህና ነው?",
+        "እንዲህ ለማለት ይሞክሩናፍቀውኛል። ትንሽ ጊዜ አብረን ማሳለፍ እፈልጋለሁ።"
+      ],
+      "expected": [
+        "እንዲህ ለማለት ይሞክሩጥሪያችንን በጉጉት እጠብቅ ነበር። ሁሉም ደህና ነው?",
+        "እንዲህ ለማለት ይሞክሩናፍቀውኛል። ትንሽ ጊዜ አብረን ማሳለፍ እፈልጋለሁ።"
+      ],
+      "pass": true
+    },
+    {
+      "name": "om-320-200-dark-translated-followups-match-selected-choices",
+      "followups": [
+        "Akkana jechuu yaaliBilbila keenya hawwiin eegan ture. Wanti hundi nagaadhaa?",
+        "Akkana jechuu yaaliIsin yaadeera. Yeroo xiqqaa waliin dabarsuun na gammachiisa."
+      ],
+      "expected": [
+        "Akkana jechuu yaaliBilbila keenya hawwiin eegan ture. Wanti hundi nagaadhaa?",
+        "Akkana jechuu yaaliIsin yaadeera. Yeroo xiqqaa waliin dabarsuun na gammachiisa."
+      ],
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "failedLocalAssets": [],
+  "externalRequests": [
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    }
+  ],
+  "screenshots": [
+    "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-faith-quest-qa/en-390-light-grace-reveal.png"
+  ],
+  "pass": true,
+  "scope": "Actual local playable preview in headless Windows Edge. Requests outside the local origin blocked. CSS root text enlargement used for 200% cases; no live partner accounts or server writes."
+}

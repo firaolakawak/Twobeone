@@ -1,0 +1,7 @@
+.daily-faith-dialog .quest-mission-number svg { width: 1.1rem; height: 1.1rem; flex-shrink: 0; }
+.daily-faith-encouragement { display: flex; align-items: center; gap: .65rem; padding: .8rem 1rem; margin-block: .5rem; text-align: start; color: var(--glass-muted); background: var(--glass-inset-surface); border: 1px solid var(--glass-border); border-radius: 1rem; }
+.daily-faith-encouragement > :first-child { font-size: 1.6rem; flex-shrink: 0; }
+.daily-faith-day-note { color: var(--glass-muted); text-align: center; }
+.daily-faith-error { padding: .75rem; border: 1px solid var(--glass-border); border-radius: 1rem; color: var(--glass-foreground); background: var(--glass-inset-surface); }
+.daily-faith-mood-hint { grid-column: 1 / -1; color: var(--glass-muted); }
+.daily-faith-dialog .quest-options:disabled { opacity: .7; }

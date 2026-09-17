@@ -10,6 +10,8 @@ import pushRoutes from './push_routes.tsx';
 import newsletterRoutes from './newsletter_routes.tsx';
 import landingRoutes from './landing_routes.tsx';
 import calendarRoutes from './calendar_routes.tsx';
+import { registerFaithChallengeRoutes } from './faith_challenge_routes.ts';
+import { sendFaithChallengePush } from './faith_challenge_push.ts';
 import { setupAdminRoutes } from './admin_routes.tsx';
 import { setupRecoveryRoutes } from './recovery_routes.tsx';
 import { migrateSeederFlags, seedAllCategoryQuestions } from './seed_questions.tsx';
@@ -77,6 +79,12 @@ const getSupabase = () => createClient(
 app.use('*', async (c, next) => {
   c.set('supabase', getSupabase());
   await next();
+});
+
+registerFaithChallengeRoutes(app, {
+  getUserFromToken,
+  rpc: async (name, args) => await getSupabase().rpc(name, args),
+  sendPush: sendFaithChallengePush,
 });
 
 // ============================================

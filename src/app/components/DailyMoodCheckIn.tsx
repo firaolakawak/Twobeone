@@ -26,6 +26,7 @@ export interface DailyMoodCheckInProps {
   onSave: (mood: MoodValue) => Promise<void>;
   onViewAnalytics?: () => void;
   showControls?: boolean;
+  openRequest?: number;
 }
 
 // A new account gets its own dialog, pending-save lifecycle and reminder state.
@@ -33,7 +34,7 @@ export function DailyMoodCheckIn(props: DailyMoodCheckInProps) {
   return <UserMoodCheckIn key={props.userId} {...props} />;
 }
 
-function UserMoodCheckIn({ userId, userName, partnerName, mood, loaded, onSave, onViewAnalytics, showControls = true }: DailyMoodCheckInProps) {
+function UserMoodCheckIn({ userId, userName, partnerName, mood, loaded, onSave, onViewAnalytics, showControls = true, openRequest = 0 }: DailyMoodCheckInProps) {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [automatic, setAutomatic] = useState(false);
@@ -44,6 +45,7 @@ function UserMoodCheckIn({ userId, userName, partnerName, mood, loaded, onSave, 
   const lastShown = useRef(0);
   const mounted = useRef(true);
   const saveInProgress = useRef(false);
+  const handledOpenRequest = useRef(0);
   const reminderKey = `twobeone:mood-check-in:last-shown:${userId}`;
   const canDismiss = !saving && (!automatic || saveError);
 
@@ -176,6 +178,12 @@ function UserMoodCheckIn({ userId, userName, partnerName, mood, loaded, onSave, 
       if (mounted.current) setSaving(false);
     }
   };
+
+  useEffect(() => {
+    if (!openRequest || handledOpenRequest.current === openRequest) return;
+    handledOpenRequest.current = openRequest;
+    openManually();
+  }, [openRequest, openManually]);
 
   return (
     <>

@@ -1,0 +1,670 @@
+{
+  "browser": "Edg/153.0.4234.32",
+  "layouts": [
+    {
+      "id": "en-390-light",
+      "phase": "overview",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "en-390-light",
+      "phase": "intro",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "en-390-light",
+      "phase": "choice",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "en-390-light",
+      "phase": "reveal",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "en-390-light",
+      "phase": "activity",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "en-390-dark",
+      "phase": "overview",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "en-390-dark",
+      "phase": "intro",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "en-390-dark",
+      "phase": "choice",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "en-390-dark",
+      "phase": "reveal",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "en-390-dark",
+      "phase": "activity",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "en-320-light",
+      "phase": "overview",
+      "language": "en",
+      "width": 320,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "en-320-light",
+      "phase": "intro",
+      "language": "en",
+      "width": 320,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "en-320-light",
+      "phase": "choice",
+      "language": "en",
+      "width": 320,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "en-320-light",
+      "phase": "reveal",
+      "language": "en",
+      "width": 320,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "en-320-light",
+      "phase": "activity",
+      "language": "en",
+      "width": 320,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "am-320-200-light",
+      "phase": "overview",
+      "language": "am",
+      "width": 320,
+      "rootSize": "32px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "am-320-200-light",
+      "phase": "intro",
+      "language": "am",
+      "width": 320,
+      "rootSize": "32px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "am-320-200-light",
+      "phase": "choice",
+      "language": "am",
+      "width": 320,
+      "rootSize": "32px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "am-320-200-light",
+      "phase": "reveal",
+      "language": "am",
+      "width": 320,
+      "rootSize": "32px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "am-320-200-light",
+      "phase": "activity",
+      "language": "am",
+      "width": 320,
+      "rootSize": "32px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "om-320-200-dark",
+      "phase": "overview",
+      "language": "om",
+      "width": 320,
+      "rootSize": "32px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "om-320-200-dark",
+      "phase": "intro",
+      "language": "om",
+      "width": 320,
+      "rootSize": "32px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "om-320-200-dark",
+      "phase": "choice",
+      "language": "om",
+      "width": 320,
+      "rootSize": "32px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "om-320-200-dark",
+      "phase": "reveal",
+      "language": "om",
+      "width": 320,
+      "rootSize": "32px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "om-320-200-dark",
+      "phase": "activity",
+      "language": "om",
+      "width": 320,
+      "rootSize": "32px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "en-1280-light",
+      "phase": "overview",
+      "language": "en",
+      "width": 1280,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "en-1280-light",
+      "phase": "intro",
+      "language": "en",
+      "width": 1280,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "en-1280-light",
+      "phase": "choice",
+      "language": "en",
+      "width": 1280,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "en-1280-light",
+      "phase": "reveal",
+      "language": "en",
+      "width": 1280,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "en-1280-light",
+      "phase": "activity",
+      "language": "en",
+      "width": 1280,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "practice",
+      "phase": "heart-reveal",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "practice",
+      "phase": "grace-reveal",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    },
+    {
+      "id": "practice",
+      "phase": "kindness-reveal",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "overflowElements": [],
+      "chapterButtons": 6,
+      "missionNodes": 5,
+      "pass": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "practice-heart-completion",
+      "pass": true
+    },
+    {
+      "name": "practice-grace-completion",
+      "pass": true
+    },
+    {
+      "name": "practice-kindness-completion",
+      "pass": true
+    },
+    {
+      "name": "three-completions-open-fourth-stop",
+      "pass": true
+    },
+    {
+      "name": "reload-preserves-three-practice-missions",
+      "pass": true,
+      "storedRecords": [
+        [
+          "twobeone:faith-quest:preview:v1:%5B%22guest%22%2C%22unlinked%22%2C%22practice%22%5D",
+          "{\"version\":1,\"completions\":[{\"id\":\"quest-01\",\"completedAt\":\"2026-09-17T16:13:53.332Z\"},{\"id\":\"quest-02\",\"completedAt\":\"2026-09-17T16:13:54.801Z\"},{\"id\":\"quest-03\",\"completedAt\":\"2026-09-17T16:13:56.610Z\"}]}"
+        ]
+      ]
+    },
+    {
+      "name": "pass-and-play-progress-is-separate",
+      "pass": true
+    },
+    {
+      "name": "handoff-removes-first-choice-and-guess-from-dom",
+      "pass": true
+    },
+    {
+      "name": "pass-and-play-reveals-both-actual-choices",
+      "pass": true
+    },
+    {
+      "name": "switch-back-preserves-practice-progress",
+      "pass": true
+    },
+    {
+      "name": "keyboard-open-escape-and-focus-return",
+      "pass": true
+    },
+    {
+      "name": "browse-future-chapter-without-unlocking",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "failedLocalAssets": [],
+  "externalRequests": [
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    }
+  ],
+  "screenshots": [
+    "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-faith-quest-qa/en-390-light-overview.png",
+    "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-faith-quest-qa/en-390-light-reveal.png",
+    "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-faith-quest-qa/en-390-dark-overview.png",
+    "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-faith-quest-qa/en-1280-light-overview.png"
+  ],
+  "pass": true,
+  "scope": "Actual local playable preview in headless Windows Edge. Requests outside the local origin blocked. CSS root text enlargement used for 200% cases; no live partner accounts or server writes. The preexisting production manifest requests were blocked before network delivery.",
+  "finalLayoutRecheck": "All 30 layout states rerun after correcting narrow-map selector specificity."
+}

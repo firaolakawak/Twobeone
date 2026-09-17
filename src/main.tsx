@@ -1,9 +1,14 @@
 
   import { createRoot } from "react-dom/client";
+  import { lazy, Suspense } from "react";
   import App from "./app/App.tsx";
+  import { BrandLoader } from "./app/components/BrandLoader.tsx";
   import { PWAInstallPrompt } from "./app/components/PWAInstallPrompt.tsx";
   import { isAppShellEnvironment } from "./app/utils/appShell.ts";
   import "./styles/index.css";
+
+  const FaithQuestPreview = lazy(() => import('./app/components/FaithQuest.tsx').then(module => ({ default: module.FaithQuestPreview })));
+  const isQuestPreview = new URLSearchParams(window.location.search).get('preview') === 'faith-quest';
 
   const reloadForFreshAssets = (event: Event) => {
     event.preventDefault();
@@ -26,9 +31,9 @@
 
   createRoot(document.getElementById("root")!).render(
     <>
-      <App />
+      {isQuestPreview ? <Suspense fallback={<BrandLoader />}><FaithQuestPreview /></Suspense> : <App />}
       {/* Keep the mobile installer outside App's auth/landing routes so it is
           available as soon as any shared link is opened. */}
-      {!isAppShellEnvironment() && <PWAInstallPrompt />}
+      {!isQuestPreview && !isAppShellEnvironment() && <PWAInstallPrompt />}
     </>,
   );

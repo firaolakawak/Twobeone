@@ -14,6 +14,7 @@ import {
   MessageCircle,
   Users,
   MessageSquareDot,
+  Target,
   Trash2,
 } from "lucide-react";
 import { Button } from "./ui/button";
@@ -37,6 +38,7 @@ interface Notification {
     | "partner_link"
     | "mood_report"
     | "mood_analysis"
+    | "faith_challenge"
     | "chat"
     | "profile_update"
     | "general"
@@ -235,6 +237,11 @@ export function NotificationCenter({
   const getNotificationDetails = (type: string) => {
     const iconClass = "w-4 h-4";
     switch (type) {
+      case "faith_challenge":
+        return {
+          icon: <Target className={`${iconClass} text-[var(--glass-accent)]`} aria-hidden="true" />,
+          bg: "tbo-glass-inset border border-[var(--glass-border)]",
+        };
       case "devotional":
         return {
           icon: (

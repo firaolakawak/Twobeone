@@ -1,0 +1,2396 @@
+{
+  "browser": "Edg/153.0.4234.32",
+  "layouts": [
+    {
+      "id": "en-538-light",
+      "phase": "grace-choice",
+      "language": "en",
+      "width": 538,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 147.0625,
+          "height": 120
+        },
+        {
+          "width": 147.078125,
+          "height": 120
+        },
+        {
+          "width": 147.078125,
+          "height": 120
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "en-538-light",
+      "phase": "grace-selected",
+      "language": "en",
+      "width": 538,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 147.0625,
+          "height": 120
+        },
+        {
+          "width": 147.078125,
+          "height": 120
+        },
+        {
+          "width": 147.078125,
+          "height": 120
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "en-538-light",
+      "phase": "grace-reveal-collapsed",
+      "language": "en",
+      "width": 538,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "en-538-light",
+      "phase": "grace-reveal-expanded",
+      "language": "en",
+      "width": 538,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "en-390-light",
+      "phase": "grace-choice",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        },
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        },
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "en-390-light",
+      "phase": "grace-selected",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        },
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        },
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "en-390-light",
+      "phase": "grace-reveal-collapsed",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "en-390-light",
+      "phase": "grace-reveal-expanded",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "en-390-dark",
+      "phase": "grace-choice",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        },
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        },
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "en-390-dark",
+      "phase": "grace-selected",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        },
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        },
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "en-390-dark",
+      "phase": "grace-reveal-collapsed",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "en-390-dark",
+      "phase": "grace-reveal-expanded",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "en-320-light",
+      "phase": "grace-choice",
+      "language": "en",
+      "width": 320,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 77.734375,
+          "height": 131.5625
+        },
+        {
+          "width": 77.734375,
+          "height": 131.5625
+        },
+        {
+          "width": 77.75,
+          "height": 131.5625
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "en-320-light",
+      "phase": "grace-selected",
+      "language": "en",
+      "width": 320,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 77.734375,
+          "height": 131.5625
+        },
+        {
+          "width": 77.734375,
+          "height": 131.5625
+        },
+        {
+          "width": 77.75,
+          "height": 131.5625
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "en-320-light",
+      "phase": "grace-reveal-collapsed",
+      "language": "en",
+      "width": 320,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "en-320-light",
+      "phase": "grace-reveal-expanded",
+      "language": "en",
+      "width": 320,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "en-1280-dark",
+      "phase": "grace-choice",
+      "language": "en",
+      "width": 1280,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 147.0625,
+          "height": 120
+        },
+        {
+          "width": 147.078125,
+          "height": 120
+        },
+        {
+          "width": 147.078125,
+          "height": 120
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "en-1280-dark",
+      "phase": "grace-selected",
+      "language": "en",
+      "width": 1280,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 147.0625,
+          "height": 120
+        },
+        {
+          "width": 147.078125,
+          "height": 120
+        },
+        {
+          "width": 147.078125,
+          "height": 120
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "en-1280-dark",
+      "phase": "grace-reveal-collapsed",
+      "language": "en",
+      "width": 1280,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "en-1280-dark",
+      "phase": "grace-reveal-expanded",
+      "language": "en",
+      "width": 1280,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "am-320-light",
+      "phase": "grace-choice",
+      "language": "am",
+      "width": 320,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 77.734375,
+          "height": 131.5625
+        },
+        {
+          "width": 77.734375,
+          "height": 131.5625
+        },
+        {
+          "width": 77.75,
+          "height": 131.5625
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "am-320-light",
+      "phase": "grace-selected",
+      "language": "am",
+      "width": 320,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 77.734375,
+          "height": 131.5625
+        },
+        {
+          "width": 77.734375,
+          "height": 131.5625
+        },
+        {
+          "width": 77.75,
+          "height": 131.5625
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "am-320-light",
+      "phase": "grace-reveal-collapsed",
+      "language": "am",
+      "width": 320,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "am-320-light",
+      "phase": "grace-reveal-expanded",
+      "language": "am",
+      "width": 320,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "am-390-dark",
+      "phase": "grace-choice",
+      "language": "am",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        },
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        },
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "am-390-dark",
+      "phase": "grace-selected",
+      "language": "am",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        },
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        },
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "am-390-dark",
+      "phase": "grace-reveal-collapsed",
+      "language": "am",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "am-390-dark",
+      "phase": "grace-reveal-expanded",
+      "language": "am",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "am-1280-light",
+      "phase": "grace-choice",
+      "language": "am",
+      "width": 1280,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 147.0625,
+          "height": 120
+        },
+        {
+          "width": 147.078125,
+          "height": 120
+        },
+        {
+          "width": 147.078125,
+          "height": 120
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "am-1280-light",
+      "phase": "grace-selected",
+      "language": "am",
+      "width": 1280,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 147.0625,
+          "height": 120
+        },
+        {
+          "width": 147.078125,
+          "height": 120
+        },
+        {
+          "width": 147.078125,
+          "height": 120
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "am-1280-light",
+      "phase": "grace-reveal-collapsed",
+      "language": "am",
+      "width": 1280,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "am-1280-light",
+      "phase": "grace-reveal-expanded",
+      "language": "am",
+      "width": 1280,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "om-320-dark",
+      "phase": "grace-choice",
+      "language": "om",
+      "width": 320,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 77.734375,
+          "height": 151.15625
+        },
+        {
+          "width": 77.734375,
+          "height": 151.15625
+        },
+        {
+          "width": 77.75,
+          "height": 151.15625
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "om-320-dark",
+      "phase": "grace-selected",
+      "language": "om",
+      "width": 320,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 77.734375,
+          "height": 151.15625
+        },
+        {
+          "width": 77.734375,
+          "height": 151.15625
+        },
+        {
+          "width": 77.75,
+          "height": 151.15625
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "om-320-dark",
+      "phase": "grace-reveal-collapsed",
+      "language": "om",
+      "width": 320,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "om-320-dark",
+      "phase": "grace-reveal-expanded",
+      "language": "om",
+      "width": 320,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "om-390-light",
+      "phase": "grace-choice",
+      "language": "om",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        },
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        },
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "om-390-light",
+      "phase": "grace-selected",
+      "language": "om",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        },
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        },
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "om-390-light",
+      "phase": "grace-reveal-collapsed",
+      "language": "om",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "om-390-light",
+      "phase": "grace-reveal-expanded",
+      "language": "om",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "om-1280-dark",
+      "phase": "grace-choice",
+      "language": "om",
+      "width": 1280,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 147.0625,
+          "height": 120
+        },
+        {
+          "width": 147.078125,
+          "height": 120
+        },
+        {
+          "width": 147.078125,
+          "height": 120
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "om-1280-dark",
+      "phase": "grace-selected",
+      "language": "om",
+      "width": 1280,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 147.0625,
+          "height": 120
+        },
+        {
+          "width": 147.078125,
+          "height": 120
+        },
+        {
+          "width": 147.078125,
+          "height": 120
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "om-1280-dark",
+      "phase": "grace-reveal-collapsed",
+      "language": "om",
+      "width": 1280,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "om-1280-dark",
+      "phase": "grace-reveal-expanded",
+      "language": "om",
+      "width": 1280,
+      "rootSize": "16px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "en-390-200-dark",
+      "phase": "grace-choice",
+      "language": "en",
+      "width": 390,
+      "rootSize": "32px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 244,
+          "height": 121.96875
+        },
+        {
+          "width": 244,
+          "height": 161.15625
+        },
+        {
+          "width": 244,
+          "height": 121.96875
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "en-390-200-dark",
+      "phase": "grace-selected",
+      "language": "en",
+      "width": 390,
+      "rootSize": "32px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 244,
+          "height": 121.96875
+        },
+        {
+          "width": 244,
+          "height": 161.15625
+        },
+        {
+          "width": 244,
+          "height": 121.96875
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "en-390-200-dark",
+      "phase": "grace-reveal-collapsed",
+      "language": "en",
+      "width": 390,
+      "rootSize": "32px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "en-390-200-dark",
+      "phase": "grace-reveal-expanded",
+      "language": "en",
+      "width": 390,
+      "rootSize": "32px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "am-320-200-light",
+      "phase": "grace-choice",
+      "language": "am",
+      "width": 320,
+      "rootSize": "32px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 190,
+          "height": 357.09375
+        },
+        {
+          "width": 190,
+          "height": 239.53125
+        },
+        {
+          "width": 190,
+          "height": 278.71875
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "am-320-200-light",
+      "phase": "grace-selected",
+      "language": "am",
+      "width": 320,
+      "rootSize": "32px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 190,
+          "height": 357.09375
+        },
+        {
+          "width": 190,
+          "height": 239.53125
+        },
+        {
+          "width": 190,
+          "height": 278.71875
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "am-320-200-light",
+      "phase": "grace-reveal-collapsed",
+      "language": "am",
+      "width": 320,
+      "rootSize": "32px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "am-320-200-light",
+      "phase": "grace-reveal-expanded",
+      "language": "am",
+      "width": 320,
+      "rootSize": "32px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "om-320-200-dark",
+      "phase": "grace-choice",
+      "language": "om",
+      "width": 320,
+      "rootSize": "32px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 190,
+          "height": 553.03125
+        },
+        {
+          "width": 190,
+          "height": 396.28125
+        },
+        {
+          "width": 190,
+          "height": 396.28125
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "om-320-200-dark",
+      "phase": "grace-selected",
+      "language": "om",
+      "width": 320,
+      "rootSize": "32px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 190,
+          "height": 553.03125
+        },
+        {
+          "width": 190,
+          "height": 396.28125
+        },
+        {
+          "width": 190,
+          "height": 396.28125
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "om-320-200-dark",
+      "phase": "grace-reveal-collapsed",
+      "language": "om",
+      "width": 320,
+      "rootSize": "32px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "om-320-200-dark",
+      "phase": "grace-reveal-expanded",
+      "language": "om",
+      "width": 320,
+      "rootSize": "32px",
+      "theme": "dark",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "heart-pass-play",
+      "phase": "guess",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        },
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        },
+        {
+          "width": 98.40625,
+          "height": 131.5625
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "heart-pass-play",
+      "phase": "handoff",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "heart-pass-play",
+      "phase": "reveal",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "kindness",
+      "phase": "secret-activity",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    },
+    {
+      "id": "kindness",
+      "phase": "reveal",
+      "language": "en",
+      "width": 390,
+      "rootSize": "16px",
+      "theme": "light",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "smallText": [],
+      "clippedText": [],
+      "optionRects": [],
+      "pass": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "en-538-light-emoji-radio-names-descriptions-and-confirm",
+      "pass": true,
+      "radios": [
+        {
+          "name": "Check in",
+          "description": "Send a gentle check-in",
+          "title": "Send a gentle check-in",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "Another time",
+          "description": "Suggest another time",
+          "title": "Suggest another time",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "Miss you",
+          "description": "Share that you missed them",
+          "title": "Share that you missed them",
+          "checked": false,
+          "emojiHidden": "true"
+        }
+      ],
+      "axRadios": [
+        {
+          "name": "Check in",
+          "description": "Send a gentle check-in"
+        },
+        {
+          "name": "Another time",
+          "description": "Suggest another time"
+        },
+        {
+          "name": "Miss you",
+          "description": "Share that you missed them"
+        }
+      ]
+    },
+    {
+      "name": "en-538-light-accessible-stage-list-and-practice-notice",
+      "pass": true,
+      "steps": [
+        {
+          "label": "Choose",
+          "current": "step"
+        },
+        {
+          "label": "Discover",
+          "current": null
+        },
+        {
+          "label": "Act",
+          "current": null
+        }
+      ]
+    },
+    {
+      "name": "en-538-light-select-card-enables-confirm",
+      "pass": true
+    },
+    {
+      "name": "en-538-light-grace-followups-initially-collapsed",
+      "pass": true
+    },
+    {
+      "name": "en-538-light-followup-keyboard-disclosure",
+      "pass": true
+    },
+    {
+      "name": "en-390-light-emoji-radio-names-descriptions-and-confirm",
+      "pass": true,
+      "radios": [
+        {
+          "name": "Check in",
+          "description": "Send a gentle check-in",
+          "title": "Send a gentle check-in",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "Another time",
+          "description": "Suggest another time",
+          "title": "Suggest another time",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "Miss you",
+          "description": "Share that you missed them",
+          "title": "Share that you missed them",
+          "checked": false,
+          "emojiHidden": "true"
+        }
+      ],
+      "axRadios": [
+        {
+          "name": "Check in",
+          "description": "Send a gentle check-in"
+        },
+        {
+          "name": "Another time",
+          "description": "Suggest another time"
+        },
+        {
+          "name": "Miss you",
+          "description": "Share that you missed them"
+        }
+      ]
+    },
+    {
+      "name": "en-390-light-accessible-stage-list-and-practice-notice",
+      "pass": true,
+      "steps": [
+        {
+          "label": "Choose",
+          "current": "step"
+        },
+        {
+          "label": "Discover",
+          "current": null
+        },
+        {
+          "label": "Act",
+          "current": null
+        }
+      ]
+    },
+    {
+      "name": "en-390-light-select-card-enables-confirm",
+      "pass": true
+    },
+    {
+      "name": "en-390-light-grace-followups-initially-collapsed",
+      "pass": true
+    },
+    {
+      "name": "en-390-light-followup-keyboard-disclosure",
+      "pass": true
+    },
+    {
+      "name": "en-390-dark-emoji-radio-names-descriptions-and-confirm",
+      "pass": true,
+      "radios": [
+        {
+          "name": "Check in",
+          "description": "Send a gentle check-in",
+          "title": "Send a gentle check-in",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "Another time",
+          "description": "Suggest another time",
+          "title": "Suggest another time",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "Miss you",
+          "description": "Share that you missed them",
+          "title": "Share that you missed them",
+          "checked": false,
+          "emojiHidden": "true"
+        }
+      ],
+      "axRadios": [
+        {
+          "name": "Check in",
+          "description": "Send a gentle check-in"
+        },
+        {
+          "name": "Another time",
+          "description": "Suggest another time"
+        },
+        {
+          "name": "Miss you",
+          "description": "Share that you missed them"
+        }
+      ]
+    },
+    {
+      "name": "en-390-dark-accessible-stage-list-and-practice-notice",
+      "pass": true,
+      "steps": [
+        {
+          "label": "Choose",
+          "current": "step"
+        },
+        {
+          "label": "Discover",
+          "current": null
+        },
+        {
+          "label": "Act",
+          "current": null
+        }
+      ]
+    },
+    {
+      "name": "en-390-dark-select-card-enables-confirm",
+      "pass": true
+    },
+    {
+      "name": "en-390-dark-grace-followups-initially-collapsed",
+      "pass": true
+    },
+    {
+      "name": "en-390-dark-followup-keyboard-disclosure",
+      "pass": true
+    },
+    {
+      "name": "en-320-light-emoji-radio-names-descriptions-and-confirm",
+      "pass": true,
+      "radios": [
+        {
+          "name": "Check in",
+          "description": "Send a gentle check-in",
+          "title": "Send a gentle check-in",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "Another time",
+          "description": "Suggest another time",
+          "title": "Suggest another time",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "Miss you",
+          "description": "Share that you missed them",
+          "title": "Share that you missed them",
+          "checked": false,
+          "emojiHidden": "true"
+        }
+      ],
+      "axRadios": [
+        {
+          "name": "Check in",
+          "description": "Send a gentle check-in"
+        },
+        {
+          "name": "Another time",
+          "description": "Suggest another time"
+        },
+        {
+          "name": "Miss you",
+          "description": "Share that you missed them"
+        }
+      ]
+    },
+    {
+      "name": "en-320-light-accessible-stage-list-and-practice-notice",
+      "pass": true,
+      "steps": [
+        {
+          "label": "Choose",
+          "current": "step"
+        },
+        {
+          "label": "Discover",
+          "current": null
+        },
+        {
+          "label": "Act",
+          "current": null
+        }
+      ]
+    },
+    {
+      "name": "en-320-light-select-card-enables-confirm",
+      "pass": true
+    },
+    {
+      "name": "en-320-light-grace-followups-initially-collapsed",
+      "pass": true
+    },
+    {
+      "name": "en-320-light-followup-keyboard-disclosure",
+      "pass": true
+    },
+    {
+      "name": "en-1280-dark-emoji-radio-names-descriptions-and-confirm",
+      "pass": true,
+      "radios": [
+        {
+          "name": "Check in",
+          "description": "Send a gentle check-in",
+          "title": "Send a gentle check-in",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "Another time",
+          "description": "Suggest another time",
+          "title": "Suggest another time",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "Miss you",
+          "description": "Share that you missed them",
+          "title": "Share that you missed them",
+          "checked": false,
+          "emojiHidden": "true"
+        }
+      ],
+      "axRadios": [
+        {
+          "name": "Check in",
+          "description": "Send a gentle check-in"
+        },
+        {
+          "name": "Another time",
+          "description": "Suggest another time"
+        },
+        {
+          "name": "Miss you",
+          "description": "Share that you missed them"
+        }
+      ]
+    },
+    {
+      "name": "en-1280-dark-accessible-stage-list-and-practice-notice",
+      "pass": true,
+      "steps": [
+        {
+          "label": "Choose",
+          "current": "step"
+        },
+        {
+          "label": "Discover",
+          "current": null
+        },
+        {
+          "label": "Act",
+          "current": null
+        }
+      ]
+    },
+    {
+      "name": "en-1280-dark-select-card-enables-confirm",
+      "pass": true
+    },
+    {
+      "name": "en-1280-dark-grace-followups-initially-collapsed",
+      "pass": true
+    },
+    {
+      "name": "en-1280-dark-followup-keyboard-disclosure",
+      "pass": true
+    },
+    {
+      "name": "am-320-light-emoji-radio-names-descriptions-and-confirm",
+      "pass": true,
+      "radios": [
+        {
+          "name": "ሁኔታውን ጠይቁ",
+          "description": "ሁኔታውን በርኅራኄ መጠየቅ",
+          "title": "ሁኔታውን በርኅራኄ መጠየቅ",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "በሌላ ጊዜ",
+          "description": "ሌላ ጊዜ መጠቆም",
+          "title": "ሌላ ጊዜ መጠቆም",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "ናፍቀውኛል",
+          "description": "እንደናፈቁዎት መግለጽ",
+          "title": "እንደናፈቁዎት መግለጽ",
+          "checked": false,
+          "emojiHidden": "true"
+        }
+      ],
+      "axRadios": [
+        {
+          "name": "ሁኔታውን ጠይቁ",
+          "description": "ሁኔታውን በርኅራኄ መጠየቅ"
+        },
+        {
+          "name": "በሌላ ጊዜ",
+          "description": "ሌላ ጊዜ መጠቆም"
+        },
+        {
+          "name": "ናፍቀውኛል",
+          "description": "እንደናፈቁዎት መግለጽ"
+        }
+      ]
+    },
+    {
+      "name": "am-320-light-accessible-stage-list-and-practice-notice",
+      "pass": true,
+      "steps": [
+        {
+          "label": "ይምረጡ",
+          "current": "step"
+        },
+        {
+          "label": "ይወቁ",
+          "current": null
+        },
+        {
+          "label": "ይተግብሩ",
+          "current": null
+        }
+      ]
+    },
+    {
+      "name": "am-320-light-select-card-enables-confirm",
+      "pass": true
+    },
+    {
+      "name": "am-320-light-grace-followups-initially-collapsed",
+      "pass": true
+    },
+    {
+      "name": "am-320-light-followup-keyboard-disclosure",
+      "pass": true
+    },
+    {
+      "name": "am-390-dark-emoji-radio-names-descriptions-and-confirm",
+      "pass": true,
+      "radios": [
+        {
+          "name": "ሁኔታውን ጠይቁ",
+          "description": "ሁኔታውን በርኅራኄ መጠየቅ",
+          "title": "ሁኔታውን በርኅራኄ መጠየቅ",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "በሌላ ጊዜ",
+          "description": "ሌላ ጊዜ መጠቆም",
+          "title": "ሌላ ጊዜ መጠቆም",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "ናፍቀውኛል",
+          "description": "እንደናፈቁዎት መግለጽ",
+          "title": "እንደናፈቁዎት መግለጽ",
+          "checked": false,
+          "emojiHidden": "true"
+        }
+      ],
+      "axRadios": [
+        {
+          "name": "ሁኔታውን ጠይቁ",
+          "description": "ሁኔታውን በርኅራኄ መጠየቅ"
+        },
+        {
+          "name": "በሌላ ጊዜ",
+          "description": "ሌላ ጊዜ መጠቆም"
+        },
+        {
+          "name": "ናፍቀውኛል",
+          "description": "እንደናፈቁዎት መግለጽ"
+        }
+      ]
+    },
+    {
+      "name": "am-390-dark-accessible-stage-list-and-practice-notice",
+      "pass": true,
+      "steps": [
+        {
+          "label": "ይምረጡ",
+          "current": "step"
+        },
+        {
+          "label": "ይወቁ",
+          "current": null
+        },
+        {
+          "label": "ይተግብሩ",
+          "current": null
+        }
+      ]
+    },
+    {
+      "name": "am-390-dark-select-card-enables-confirm",
+      "pass": true
+    },
+    {
+      "name": "am-390-dark-grace-followups-initially-collapsed",
+      "pass": true
+    },
+    {
+      "name": "am-390-dark-followup-keyboard-disclosure",
+      "pass": true
+    },
+    {
+      "name": "am-1280-light-emoji-radio-names-descriptions-and-confirm",
+      "pass": true,
+      "radios": [
+        {
+          "name": "ሁኔታውን ጠይቁ",
+          "description": "ሁኔታውን በርኅራኄ መጠየቅ",
+          "title": "ሁኔታውን በርኅራኄ መጠየቅ",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "በሌላ ጊዜ",
+          "description": "ሌላ ጊዜ መጠቆም",
+          "title": "ሌላ ጊዜ መጠቆም",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "ናፍቀውኛል",
+          "description": "እንደናፈቁዎት መግለጽ",
+          "title": "እንደናፈቁዎት መግለጽ",
+          "checked": false,
+          "emojiHidden": "true"
+        }
+      ],
+      "axRadios": [
+        {
+          "name": "ሁኔታውን ጠይቁ",
+          "description": "ሁኔታውን በርኅራኄ መጠየቅ"
+        },
+        {
+          "name": "በሌላ ጊዜ",
+          "description": "ሌላ ጊዜ መጠቆም"
+        },
+        {
+          "name": "ናፍቀውኛል",
+          "description": "እንደናፈቁዎት መግለጽ"
+        }
+      ]
+    },
+    {
+      "name": "am-1280-light-accessible-stage-list-and-practice-notice",
+      "pass": true,
+      "steps": [
+        {
+          "label": "ይምረጡ",
+          "current": "step"
+        },
+        {
+          "label": "ይወቁ",
+          "current": null
+        },
+        {
+          "label": "ይተግብሩ",
+          "current": null
+        }
+      ]
+    },
+    {
+      "name": "am-1280-light-select-card-enables-confirm",
+      "pass": true
+    },
+    {
+      "name": "am-1280-light-grace-followups-initially-collapsed",
+      "pass": true
+    },
+    {
+      "name": "am-1280-light-followup-keyboard-disclosure",
+      "pass": true
+    },
+    {
+      "name": "om-320-dark-emoji-radio-names-descriptions-and-confirm",
+      "pass": true,
+      "radios": [
+        {
+          "name": "Nagaa gaafadhu",
+          "description": "Nagaa gaafachuuf ergaa laafaa erguu",
+          "title": "Nagaa gaafachuuf ergaa laafaa erguu",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "Yeroo biraa",
+          "description": "Yeroo biraa yaada kennuu",
+          "title": "Yeroo biraa yaada kennuu",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "Si yaadeera",
+          "description": "Akka yaaddan itti himuu",
+          "title": "Akka yaaddan itti himuu",
+          "checked": false,
+          "emojiHidden": "true"
+        }
+      ],
+      "axRadios": [
+        {
+          "name": "Nagaa gaafadhu",
+          "description": "Nagaa gaafachuuf ergaa laafaa erguu"
+        },
+        {
+          "name": "Yeroo biraa",
+          "description": "Yeroo biraa yaada kennuu"
+        },
+        {
+          "name": "Si yaadeera",
+          "description": "Akka yaaddan itti himuu"
+        }
+      ]
+    },
+    {
+      "name": "om-320-dark-accessible-stage-list-and-practice-notice",
+      "pass": true,
+      "steps": [
+        {
+          "label": "Filadhu",
+          "current": "step"
+        },
+        {
+          "label": "Bari",
+          "current": null
+        },
+        {
+          "label": "Hojjedhu",
+          "current": null
+        }
+      ]
+    },
+    {
+      "name": "om-320-dark-select-card-enables-confirm",
+      "pass": true
+    },
+    {
+      "name": "om-320-dark-grace-followups-initially-collapsed",
+      "pass": true
+    },
+    {
+      "name": "om-320-dark-followup-keyboard-disclosure",
+      "pass": true
+    },
+    {
+      "name": "om-390-light-emoji-radio-names-descriptions-and-confirm",
+      "pass": true,
+      "radios": [
+        {
+          "name": "Nagaa gaafadhu",
+          "description": "Nagaa gaafachuuf ergaa laafaa erguu",
+          "title": "Nagaa gaafachuuf ergaa laafaa erguu",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "Yeroo biraa",
+          "description": "Yeroo biraa yaada kennuu",
+          "title": "Yeroo biraa yaada kennuu",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "Si yaadeera",
+          "description": "Akka yaaddan itti himuu",
+          "title": "Akka yaaddan itti himuu",
+          "checked": false,
+          "emojiHidden": "true"
+        }
+      ],
+      "axRadios": [
+        {
+          "name": "Nagaa gaafadhu",
+          "description": "Nagaa gaafachuuf ergaa laafaa erguu"
+        },
+        {
+          "name": "Yeroo biraa",
+          "description": "Yeroo biraa yaada kennuu"
+        },
+        {
+          "name": "Si yaadeera",
+          "description": "Akka yaaddan itti himuu"
+        }
+      ]
+    },
+    {
+      "name": "om-390-light-accessible-stage-list-and-practice-notice",
+      "pass": true,
+      "steps": [
+        {
+          "label": "Filadhu",
+          "current": "step"
+        },
+        {
+          "label": "Bari",
+          "current": null
+        },
+        {
+          "label": "Hojjedhu",
+          "current": null
+        }
+      ]
+    },
+    {
+      "name": "om-390-light-select-card-enables-confirm",
+      "pass": true
+    },
+    {
+      "name": "om-390-light-grace-followups-initially-collapsed",
+      "pass": true
+    },
+    {
+      "name": "om-390-light-followup-keyboard-disclosure",
+      "pass": true
+    },
+    {
+      "name": "om-1280-dark-emoji-radio-names-descriptions-and-confirm",
+      "pass": true,
+      "radios": [
+        {
+          "name": "Nagaa gaafadhu",
+          "description": "Nagaa gaafachuuf ergaa laafaa erguu",
+          "title": "Nagaa gaafachuuf ergaa laafaa erguu",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "Yeroo biraa",
+          "description": "Yeroo biraa yaada kennuu",
+          "title": "Yeroo biraa yaada kennuu",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "Si yaadeera",
+          "description": "Akka yaaddan itti himuu",
+          "title": "Akka yaaddan itti himuu",
+          "checked": false,
+          "emojiHidden": "true"
+        }
+      ],
+      "axRadios": [
+        {
+          "name": "Nagaa gaafadhu",
+          "description": "Nagaa gaafachuuf ergaa laafaa erguu"
+        },
+        {
+          "name": "Yeroo biraa",
+          "description": "Yeroo biraa yaada kennuu"
+        },
+        {
+          "name": "Si yaadeera",
+          "description": "Akka yaaddan itti himuu"
+        }
+      ]
+    },
+    {
+      "name": "om-1280-dark-accessible-stage-list-and-practice-notice",
+      "pass": true,
+      "steps": [
+        {
+          "label": "Filadhu",
+          "current": "step"
+        },
+        {
+          "label": "Bari",
+          "current": null
+        },
+        {
+          "label": "Hojjedhu",
+          "current": null
+        }
+      ]
+    },
+    {
+      "name": "om-1280-dark-select-card-enables-confirm",
+      "pass": true
+    },
+    {
+      "name": "om-1280-dark-grace-followups-initially-collapsed",
+      "pass": true
+    },
+    {
+      "name": "om-1280-dark-followup-keyboard-disclosure",
+      "pass": true
+    },
+    {
+      "name": "en-390-200-dark-emoji-radio-names-descriptions-and-confirm",
+      "pass": true,
+      "radios": [
+        {
+          "name": "Check in",
+          "description": "Send a gentle check-in",
+          "title": "Send a gentle check-in",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "Another time",
+          "description": "Suggest another time",
+          "title": "Suggest another time",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "Miss you",
+          "description": "Share that you missed them",
+          "title": "Share that you missed them",
+          "checked": false,
+          "emojiHidden": "true"
+        }
+      ],
+      "axRadios": [
+        {
+          "name": "Check in",
+          "description": "Send a gentle check-in"
+        },
+        {
+          "name": "Another time",
+          "description": "Suggest another time"
+        },
+        {
+          "name": "Miss you",
+          "description": "Share that you missed them"
+        }
+      ]
+    },
+    {
+      "name": "en-390-200-dark-accessible-stage-list-and-practice-notice",
+      "pass": true,
+      "steps": [
+        {
+          "label": "Choose",
+          "current": "step"
+        },
+        {
+          "label": "Discover",
+          "current": null
+        },
+        {
+          "label": "Act",
+          "current": null
+        }
+      ]
+    },
+    {
+      "name": "en-390-200-dark-select-card-enables-confirm",
+      "pass": true
+    },
+    {
+      "name": "en-390-200-dark-grace-followups-initially-collapsed",
+      "pass": true
+    },
+    {
+      "name": "en-390-200-dark-followup-keyboard-disclosure",
+      "pass": true
+    },
+    {
+      "name": "am-320-200-light-emoji-radio-names-descriptions-and-confirm",
+      "pass": true,
+      "radios": [
+        {
+          "name": "ሁኔታውን ጠይቁ",
+          "description": "ሁኔታውን በርኅራኄ መጠየቅ",
+          "title": "ሁኔታውን በርኅራኄ መጠየቅ",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "በሌላ ጊዜ",
+          "description": "ሌላ ጊዜ መጠቆም",
+          "title": "ሌላ ጊዜ መጠቆም",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "ናፍቀውኛል",
+          "description": "እንደናፈቁዎት መግለጽ",
+          "title": "እንደናፈቁዎት መግለጽ",
+          "checked": false,
+          "emojiHidden": "true"
+        }
+      ],
+      "axRadios": [
+        {
+          "name": "ሁኔታውን ጠይቁ",
+          "description": "ሁኔታውን በርኅራኄ መጠየቅ"
+        },
+        {
+          "name": "በሌላ ጊዜ",
+          "description": "ሌላ ጊዜ መጠቆም"
+        },
+        {
+          "name": "ናፍቀውኛል",
+          "description": "እንደናፈቁዎት መግለጽ"
+        }
+      ]
+    },
+    {
+      "name": "am-320-200-light-accessible-stage-list-and-practice-notice",
+      "pass": true,
+      "steps": [
+        {
+          "label": "ይምረጡ",
+          "current": "step"
+        },
+        {
+          "label": "ይወቁ",
+          "current": null
+        },
+        {
+          "label": "ይተግብሩ",
+          "current": null
+        }
+      ]
+    },
+    {
+      "name": "am-320-200-light-select-card-enables-confirm",
+      "pass": true
+    },
+    {
+      "name": "am-320-200-light-grace-followups-initially-collapsed",
+      "pass": true
+    },
+    {
+      "name": "am-320-200-light-followup-keyboard-disclosure",
+      "pass": true
+    },
+    {
+      "name": "om-320-200-dark-emoji-radio-names-descriptions-and-confirm",
+      "pass": true,
+      "radios": [
+        {
+          "name": "Nagaa gaafadhu",
+          "description": "Nagaa gaafachuuf ergaa laafaa erguu",
+          "title": "Nagaa gaafachuuf ergaa laafaa erguu",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "Yeroo biraa",
+          "description": "Yeroo biraa yaada kennuu",
+          "title": "Yeroo biraa yaada kennuu",
+          "checked": false,
+          "emojiHidden": "true"
+        },
+        {
+          "name": "Si yaadeera",
+          "description": "Akka yaaddan itti himuu",
+          "title": "Akka yaaddan itti himuu",
+          "checked": false,
+          "emojiHidden": "true"
+        }
+      ],
+      "axRadios": [
+        {
+          "name": "Nagaa gaafadhu",
+          "description": "Nagaa gaafachuuf ergaa laafaa erguu"
+        },
+        {
+          "name": "Yeroo biraa",
+          "description": "Yeroo biraa yaada kennuu"
+        },
+        {
+          "name": "Si yaadeera",
+          "description": "Akka yaaddan itti himuu"
+        }
+      ]
+    },
+    {
+      "name": "om-320-200-dark-accessible-stage-list-and-practice-notice",
+      "pass": true,
+      "steps": [
+        {
+          "label": "Filadhu",
+          "current": "step"
+        },
+        {
+          "label": "Bari",
+          "current": null
+        },
+        {
+          "label": "Hojjedhu",
+          "current": null
+        }
+      ]
+    },
+    {
+      "name": "om-320-200-dark-select-card-enables-confirm",
+      "pass": true
+    },
+    {
+      "name": "om-320-200-dark-grace-followups-initially-collapsed",
+      "pass": true
+    },
+    {
+      "name": "om-320-200-dark-followup-keyboard-disclosure",
+      "pass": true
+    },
+    {
+      "name": "heart-guess-confirm-and-accessible-options",
+      "pass": true
+    },
+    {
+      "name": "heart-handoff-removes-choice-and-guess-from-dom",
+      "pass": true
+    },
+    {
+      "name": "heart-reveals-real-emoji-choices-and-guesses",
+      "pass": true
+    },
+    {
+      "name": "heart-completes-after-activity",
+      "pass": true
+    },
+    {
+      "name": "kindness-emoji-secret-and-activity-gate",
+      "pass": true
+    },
+    {
+      "name": "kindness-completes-and-unlocks-next",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "failedLocalAssets": [],
+  "blockedRequests": [
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.twobeone.app/manifest.json"
+    }
+  ],
+  "screenshots": [
+    "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-faith-quest-emoji-qa/en-538-light-mission-2-choice.png",
+    "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-faith-quest-emoji-qa/en-390-light-mission-2-choice.png",
+    "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-faith-quest-emoji-qa/en-390-light-grace-reveal.png"
+  ],
+  "pass": true,
+  "scope": "Changed emoji-based mission dialogs on actual local playable preview in Windows Edge. Browser accessibility tree checked for radio names/descriptions; CSS root text enlargement used for200% cases. All requests outside local origin blocked; no real account/API writes. Seeded local completed IDs only to reach mission2 and3.",
+  "correction": "Initial390px English200% text overflow came from preview header tools. Root enabled header wrapping at all widths; all4 affected dialog states and5 accessibility/interaction checks then passed in report-header-recheck.json."
+}

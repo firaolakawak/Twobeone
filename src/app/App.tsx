@@ -2,6 +2,7 @@ import { formatUiDate } from './utils/uiDateTime';
 import { useProfileLanguage } from "./hooks/useProfileLanguage";
 import { useUiCopy, UI_LOCALES } from './utils/uiTranslation';
 import { shellMessages } from './locales/shell';
+import { dailyFaithChallengeMessages } from './locales/dailyFaithChallenge';
 import {
   useState,
   useEffect,
@@ -97,6 +98,7 @@ const PWAUpdateAvailable   = lazy(() => import("./components/PWAUpdateAvailable"
 const LegalFooter          = lazy(() => import("./components/LegalFooter").then(m => ({ default: m.LegalFooter })));
 const PartnerChat          = lazy(() => import("./components/PartnerChat").then(m => ({ default: m.PartnerChat })));
 const CharacterHouseBuilder = lazy(() => import("./components/CharacterHouseBuilder").then(m => ({ default: m.CharacterHouseBuilder })));
+const FaithQuest = lazy(() => import("./components/FaithQuest").then(m => ({ default: m.FaithQuest })));
 
 import { createClient } from "./utils/supabase/client";
 import {
@@ -273,6 +275,8 @@ export default function App() {
   const [selectedScreen, setSelectedScreenRaw] = useState<
     string | null
   >(initialScreenFromNotification);
+  const [dailyChallengeRequest, setDailyChallengeRequest] = useState(() => typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('daily-challenge') === '1' ? 1 : 0);
+  const dailyChallengeTr = useUiCopy(dailyFaithChallengeMessages);
 
   // Wrap navigation setters in startTransition so lazy-loaded screens
   // suspend gracefully instead of blocking synchronous input events.
@@ -281,6 +285,19 @@ export default function App() {
   }, []);
   const setSelectedScreen = useCallback((screen: string | null) => {
     startTransition(() => setSelectedScreenRaw(screen));
+  }, []);
+  const openDailyChallenge = useCallback(() => {
+    setActiveTab('home');
+    setSelectedScreen('dashboard');
+    setDailyChallengeRequest(value => value + 1);
+  }, [setActiveTab, setSelectedScreen]);
+  const consumeDailyChallengeRequest = useCallback(() => {
+    setDailyChallengeRequest(0);
+    const url = new URL(window.location.href);
+    if (url.searchParams.has('daily-challenge')) {
+      url.searchParams.delete('daily-challenge');
+      window.history.replaceState(window.history.state, '', url);
+    }
   }, []);
   const [user, setUser] = useState<any | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(
@@ -579,7 +596,13 @@ export default function App() {
 
         newNotifications.forEach((notification: any) => {
           const notificationCopy = getNotificationCopy(notification, getCurrentLanguage());
-          if (notification.type === "question_answered") {
+          if (notification.type === 'faith_challenge') {
+            toast.info(notificationCopy.title, {
+              description: notificationCopy.message,
+              duration: 8000,
+              action: { label: dailyChallengeTr('Open today’s challenge'), onClick: openDailyChallenge },
+            });
+          } else if (notification.type === "question_answered") {
             const categoryId = notification.data?.categoryId;
             toast.success(
               notificationCopy.title || tr("💬 Your partner answered!"),
@@ -730,7 +753,7 @@ export default function App() {
       checkForProfileUpdates();
     }, 60000);
     return () => clearInterval(interval);
-  }, [user, accessToken, selectedScreen, tr, currentLangCode]);
+  }, [user, accessToken, selectedScreen, tr, currentLangCode, dailyChallengeTr, openDailyChallenge]);
 
   const loadUserData = async (token?: string) => {
     const authToken = token || accessToken;
@@ -1466,7 +1489,9 @@ export default function App() {
                   projectId={projectId}
                   publicAnonKey={publicAnonKey}
                   onNotificationClick={(notification) => {
-                    if (notification.type === "devotional") {
+                    if (notification.type === 'faith_challenge') {
+                      openDailyChallenge();
+                    } else if (notification.type === "devotional") {
                       setActiveTab("devotions");
                       const devotionId =
                         getDevotionalNotificationId(notification);
@@ -1558,6 +1583,8 @@ export default function App() {
               {activeTab === "home" &&
                 selectedScreen === "dashboard" && (
                   <CoupleDashboard
+                    dailyChallengeRequest={dailyChallengeRequest}
+                    onDailyChallengeRequestConsumed={consumeDailyChallengeRequest}
                     profile={profile || undefined}
                     partner={partner || undefined}
                     journalEntries={journalEntries}
@@ -1692,6 +1719,16 @@ export default function App() {
                     partnerName={partner?.name}
                   />
                 )}
+
+              {activeTab === "home" && selectedScreen === "faith-quest" && (
+                <FaithQuest
+                  onBack={() => setSelectedScreen("dashboard")}
+                  currentUserId={profile?.id || user.id}
+                  partnerId={partner?.id}
+                  userName={profile?.name}
+                  partnerName={partner?.name}
+                />
+              )}
 
               {activeTab === "home" &&
                 selectedScreen === "character-house" && (

@@ -1,5 +1,5 @@
 .couple-dashboard {
-  container-type: inline-size;
+  container: couple-dashboard / inline-size;
   --foreground: var(--glass-foreground);
   --muted-foreground: var(--glass-muted);
   --primary: var(--glass-accent);
@@ -245,6 +245,36 @@
 .dashboard-glass-arrow {
   color: var(--glass-accent);
   background: color-mix(in srgb, var(--glass-accent) 10%, var(--glass-solid));
+}
+
+/* Keep the game invitation readable at the card's width, including enlarged text. */
+.dashboard-quest-content {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr);
+  grid-template-areas: 'icon heading' 'description description' 'action action';
+  align-items: center;
+  gap: 1rem;
+}
+.dashboard-quest-icon { grid-area: icon; }
+.dashboard-quest-heading { grid-area: heading; }
+.dashboard-quest-description { grid-area: description; min-width: 0; }
+.dashboard-quest-action { grid-area: action; width: 100%; height: auto; }
+.dashboard-quest-action > span { min-width: 0; }
+
+@container couple-dashboard (min-width: 48rem) {
+  .dashboard-quest-content {
+    grid-template-columns: 3.5rem minmax(0, 1fr) minmax(12rem, 18rem);
+    grid-template-areas: 'icon heading action' 'icon description action';
+    gap: .5rem 1.25rem;
+  }
+}
+
+@container couple-dashboard (max-width: 16rem) {
+  .dashboard-quest-content {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'icon' 'heading' 'description' 'action';
+  }
+  .dashboard-quest-action > svg { display: none; }
 }
 
 /* Preserve the approved hero placement while allowing unusually long names to wrap. */

@@ -42,6 +42,37 @@ describe('notification system template presentation', () => {
   });
 
   it.each([
+    'took today’s challenge and is waiting for you.',
+    'took today’s challenge. Your cards are ready to reveal.',
+  ])('translates daily challenge notices without changing a partner name: %s', (sentence) => {
+    const notification = Object.freeze({
+      type: 'faith_challenge',
+      title: '🎯 Your daily challenge',
+      message: `Keti {name} [home] ${sentence}`,
+    });
+    for (const language of ['am', 'om'] as const) {
+      const localized = getNotificationCopy(notification, language);
+      expect(localized.title).not.toBe(notification.title);
+      expect(localized.message).not.toBe(notification.message);
+      expect(localized.message).toContain('Keti {name} [home]');
+      // Stored editions can be presented in a new UI language without rewriting the record.
+      expect(getNotificationCopy({ type: 'faith_challenge', ...localized }, 'en')).toEqual({
+        title: notification.title,
+        message: notification.message,
+      });
+    }
+  });
+
+  it('keeps authored challenge-like broadcasts and unknown challenge messages intact', () => {
+    const title = '🎯 Your daily challenge';
+    const message = 'Keti took today’s challenge and is waiting for you.';
+    expect(translate('general', title, message)).toEqual({ title, message });
+    const authored = 'Keti took today’s challenge and is waiting for you. This is my own reflection.';
+    expect(translate('faith_challenge', title, authored).message).toBe(authored);
+    expect(translate('faith_challenge', 'A note from our group', message)).toEqual({ title: 'A note from our group', message });
+  });
+
+  it.each([
     ['profile_update', '💕 Relationship Date Set!', 'Firaol set your relationship start date. Check your profile!'],
     ['partner_disconnect_request', '💔 Partner Disconnect Request', 'Firaol has requested to disconnect. Both partners must agree to proceed.'],
     ['partner_disconnect_agreed', '💔 Partner Agreed to Disconnect', 'Firaol has agreed to disconnect. You have 30 days to cancel if you change your mind.'],

@@ -44,6 +44,10 @@ const rules: { type: string; title: string; messages: string[] }[] = [
   { type: 'devotional', title: 'New Prayer Message', messages: ['{name} shared a prayer thought'] },
   { type: 'mood_report', title: '💝 Weekly Mood Reflection', messages: ["This week's mood reflection: {first} ({firstAvg}/4) and {second} ({secondAvg}/4)"] },
   { type: 'mood_analysis', title: '🧠 AI analysis ready', messages: ['Your AI mood analysis is ready to review.'] },
+  { type: 'faith_challenge', title: '🎯 Your daily challenge', messages: [
+    '{name} took today’s challenge and is waiting for you.',
+    '{name} took today’s challenge. Your cards are ready to reveal.',
+  ] },
   { type: 'live_started', title: '🔴 Live Session Started', messages: ['{name} is live in {group}'] },
   { type: 'journal', title: '{name} added a new journal entry', messages: ['"{title}" - Check it out in the Journal tab!'] },
   // These bodies are authored chat/Scripture excerpts, even when they resemble UI copy.

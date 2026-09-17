@@ -1,0 +1,708 @@
+{
+  "browser": "Edg/153.0.4234.32",
+  "layouts": [
+    {
+      "id": "en-390-light",
+      "phase": "encouragement-choice",
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "en-390-light",
+      "phase": "selected-choice",
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "en-390-light",
+      "phase": "waiting",
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "en-390-dark",
+      "phase": "encouragement-choice",
+      "width": 390,
+      "language": "en",
+      "theme": "dark",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "en-390-dark",
+      "phase": "selected-choice",
+      "width": 390,
+      "language": "en",
+      "theme": "dark",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "en-390-dark",
+      "phase": "waiting",
+      "width": 390,
+      "language": "en",
+      "theme": "dark",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "am-390-light",
+      "phase": "encouragement-choice",
+      "width": 390,
+      "language": "am",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "am-390-light",
+      "phase": "selected-choice",
+      "width": 390,
+      "language": "am",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "am-390-light",
+      "phase": "waiting",
+      "width": 390,
+      "language": "am",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "am-390-dark",
+      "phase": "encouragement-choice",
+      "width": 390,
+      "language": "am",
+      "theme": "dark",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "am-390-dark",
+      "phase": "selected-choice",
+      "width": 390,
+      "language": "am",
+      "theme": "dark",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "am-390-dark",
+      "phase": "waiting",
+      "width": 390,
+      "language": "am",
+      "theme": "dark",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "om-390-light",
+      "phase": "encouragement-choice",
+      "width": 390,
+      "language": "om",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "om-390-light",
+      "phase": "selected-choice",
+      "width": 390,
+      "language": "om",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "om-390-light",
+      "phase": "waiting",
+      "width": 390,
+      "language": "om",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "om-390-dark",
+      "phase": "encouragement-choice",
+      "width": 390,
+      "language": "om",
+      "theme": "dark",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "om-390-dark",
+      "phase": "selected-choice",
+      "width": 390,
+      "language": "om",
+      "theme": "dark",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "om-390-dark",
+      "phase": "waiting",
+      "width": 390,
+      "language": "om",
+      "theme": "dark",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "en-320-light",
+      "phase": "encouragement-choice",
+      "width": 320,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "en-320-light",
+      "phase": "selected-choice",
+      "width": 320,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "en-320-light",
+      "phase": "waiting",
+      "width": 320,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "am-320-200-light",
+      "phase": "encouragement-choice",
+      "width": 320,
+      "language": "am",
+      "theme": "light",
+      "rootSize": "32px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "am-320-200-light",
+      "phase": "selected-choice",
+      "width": 320,
+      "language": "am",
+      "theme": "light",
+      "rootSize": "32px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "am-320-200-light",
+      "phase": "waiting",
+      "width": 320,
+      "language": "am",
+      "theme": "light",
+      "rootSize": "32px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "om-320-200-dark",
+      "phase": "encouragement-choice",
+      "width": 320,
+      "language": "om",
+      "theme": "dark",
+      "rootSize": "32px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "om-320-200-dark",
+      "phase": "selected-choice",
+      "width": 320,
+      "language": "om",
+      "theme": "dark",
+      "rootSize": "32px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "om-320-200-dark",
+      "phase": "waiting",
+      "width": 320,
+      "language": "om",
+      "theme": "dark",
+      "rootSize": "32px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "en-390-200-dark",
+      "phase": "encouragement-choice",
+      "width": 390,
+      "language": "en",
+      "theme": "dark",
+      "rootSize": "32px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "en-390-200-dark",
+      "phase": "selected-choice",
+      "width": 390,
+      "language": "en",
+      "theme": "dark",
+      "rootSize": "32px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "en-390-200-dark",
+      "phase": "waiting",
+      "width": 390,
+      "language": "en",
+      "theme": "dark",
+      "rootSize": "32px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "paired-flow",
+      "phase": "server-reveal",
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "heart",
+      "phase": "guess",
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "heart",
+      "phase": "paired-reveal",
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "kindness",
+      "phase": "before-act",
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "waiting-refresh",
+      "phase": "load-error",
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    },
+    {
+      "id": "waiting-refresh",
+      "phase": "retry-success",
+      "width": 390,
+      "language": "en",
+      "theme": "light",
+      "rootSize": "16px",
+      "pageOverflow": false,
+      "dialogOverflow": false,
+      "tiny": [],
+      "clipped": [],
+      "modalCount": 1,
+      "pass": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "en-390-light-real-server-waiting",
+      "pass": true
+    },
+    {
+      "name": "en-390-dark-real-server-waiting",
+      "pass": true
+    },
+    {
+      "name": "am-390-light-real-server-waiting",
+      "pass": true
+    },
+    {
+      "name": "am-390-dark-real-server-waiting",
+      "pass": true
+    },
+    {
+      "name": "om-390-light-real-server-waiting",
+      "pass": true
+    },
+    {
+      "name": "om-390-dark-real-server-waiting",
+      "pass": true
+    },
+    {
+      "name": "en-320-light-real-server-waiting",
+      "pass": true
+    },
+    {
+      "name": "am-320-200-light-real-server-waiting",
+      "pass": true
+    },
+    {
+      "name": "om-320-200-dark-real-server-waiting",
+      "pass": true
+    },
+    {
+      "name": "en-390-200-dark-real-server-waiting",
+      "pass": true
+    },
+    {
+      "name": "mood-first-without-daily-dialog",
+      "pass": true
+    },
+    {
+      "name": "daily-waits-while-mood-save-pending",
+      "pass": true
+    },
+    {
+      "name": "daily-auto-opens-only-after-saved-mood-dialog-closes",
+      "pass": true
+    },
+    {
+      "name": "dismissal-does-not-auto-reopen",
+      "pass": true
+    },
+    {
+      "name": "card-opens-popup-without-navigation",
+      "pass": true
+    },
+    {
+      "name": "failed-submit-keeps-choice-and-allows-retry",
+      "pass": true
+    },
+    {
+      "name": "waiting-has-no-fabricated-partner-answer",
+      "pass": true
+    },
+    {
+      "name": "foreground-refresh-reveals-real-partner-choice",
+      "pass": true
+    },
+    {
+      "name": "failed-completion-retains-acknowledgment-and-retry",
+      "pass": true
+    },
+    {
+      "name": "one-server-day-completion-without-next-mission",
+      "pass": true
+    },
+    {
+      "name": "notification-target-opens-popup-without-page-navigation",
+      "pass": true
+    },
+    {
+      "name": "initial-load-error-retry-opens-real-challenge",
+      "pass": true
+    },
+    {
+      "name": "real-thirty-second-interval-detects-partner-submit",
+      "pass": true,
+      "elapsedMs": 27563,
+      "todayReadsBefore": 1,
+      "todayReadsAfter": 2
+    },
+    {
+      "name": "heart-choice-stays-local-until-guess-is-confirmed",
+      "pass": true
+    },
+    {
+      "name": "heart-submission-contains-chosen-and-guessed-index",
+      "pass": true
+    },
+    {
+      "name": "heart-reveal-uses-server-answers-and-guesses",
+      "pass": true,
+      "texts": [
+        "Firaol Akawak👂Just listenYour guess: Encourage me",
+        "Keti Abira🫂Quiet companyKeti Abira’s guess: Just listen"
+      ]
+    },
+    {
+      "name": "kindness-must-be-done-before-sending",
+      "pass": true
+    },
+    {
+      "name": "kindness-submits-done-flag-and-waits-for-partner",
+      "pass": true
+    },
+    {
+      "name": "waiting-refresh-error-accurately-describes-failed-read",
+      "pass": true,
+      "actual": "Could not load today’s challenge. Please try again."
+    },
+    {
+      "name": "failed-refresh-keeps-saved-choice-private",
+      "pass": true
+    },
+    {
+      "name": "waiting-refresh-retry-clears-error-without-new-submit",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "externalRequests": [],
+  "screenshots": [
+    "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-daily-faith-qa/en-390-encouragement-choice.png",
+    "C:/Users/FIRAOL/AppData/Local/Temp/twobeone-daily-faith-qa/en-390-waiting.png"
+  ],
+  "requests": [
+    {
+      "url": "https://jhraxjlvmixhzvzbjjsw.supabase.co/functions/v1/make-server-6d579fee/faith-challenge/today",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "url": "https://jhraxjlvmixhzvzbjjsw.supabase.co/functions/v1/make-server-6d579fee/faith-challenge/today",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "url": "https://jhraxjlvmixhzvzbjjsw.supabase.co/functions/v1/make-server-6d579fee/faith-challenge/submit",
+      "method": "POST",
+      "body": {
+        "day": "2026-09-17",
+        "missionId": "quest-02",
+        "choice": 0
+      }
+    },
+    {
+      "url": "https://jhraxjlvmixhzvzbjjsw.supabase.co/functions/v1/make-server-6d579fee/faith-challenge/submit",
+      "method": "POST",
+      "body": {
+        "day": "2026-09-17",
+        "missionId": "quest-02",
+        "choice": 0
+      }
+    },
+    {
+      "url": "https://jhraxjlvmixhzvzbjjsw.supabase.co/functions/v1/make-server-6d579fee/faith-challenge/today",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "url": "https://jhraxjlvmixhzvzbjjsw.supabase.co/functions/v1/make-server-6d579fee/faith-challenge/complete",
+      "method": "POST",
+      "body": {
+        "day": "2026-09-17",
+        "missionId": "quest-02"
+      }
+    },
+    {
+      "url": "https://jhraxjlvmixhzvzbjjsw.supabase.co/functions/v1/make-server-6d579fee/faith-challenge/complete",
+      "method": "POST",
+      "body": {
+        "day": "2026-09-17",
+        "missionId": "quest-02"
+      }
+    }
+  ],
+  "pass": true,
+  "scope": "Actual CoupleDashboard, DailyMoodCheckIn, DailyFaithChallenge, API DTO parsing, and NotificationCenter with intercepted local fixtures. Supabase session is mocked; all API fetches intercepted in memory and all remaining external network requests blocked. Foreground refresh uses the polling hook read path; no live users or writes.",
+  "correction": "Waiting-state GET /today failure originally displayed save-error wording. Root added errorOperation metadata; targeted waiting-error and retry were rerun after source freeze and passed.",
+  "sourceReports": [
+    "report.json",
+    "report-extras.json",
+    "report-refresh-error.json"
+  ]
+}
