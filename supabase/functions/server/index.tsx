@@ -1704,6 +1704,10 @@ app.delete('/make-server-6d579fee/profile/delete-account', async (c) => {
 
     // Delete all user data from designated relational tables.
     console.log('[DELETE /profile/delete-account] Deleting user relational data...');
+
+    // Remove both owned prayer threads and comments authored on a former
+    // partner's prayers before deleting the profile identity.
+    await deletePrayerCommentsForUser(userId);
     
     // Delete profile
     await kv.del(`user:${userId}`);
@@ -2022,6 +2026,121 @@ function prayerForPartner(prayer: any) {
   };
 }
 
+const PRAYER_COMMENT_KIND = 'prayer_request_comment';
+
+type PrayerCommentAccess = {
+  prayer: any;
+  ownerId: string;
+  isOwner: boolean;
+  viewerProfile: any;
+  ownerProfile: any;
+  participantScope: string;
+  coupleId: string | null;
+};
+
+function prayerCommentPrefix(ownerId: string, prayerId: string) {
+  return `prayer-comment:${ownerId}:${prayerId}:`;
+}
+
+function prayerCommentParticipantScope(ownerId: string, partnerId?: string | null) {
+  return partnerId
+    ? `couple:${[ownerId, partnerId].sort().join(':')}`
+    : `owner:${ownerId}`;
+}
+
+function prayerCommentForViewer(comment: any, viewerId: string) {
+  return {
+    id: comment.id,
+    prayerId: comment.prayerId,
+    userId: comment.authorId,
+    userName: comment.authorName,
+    content: comment.message,
+    createdAt: comment.createdAt,
+    isMine: comment.authorId === viewerId,
+  };
+}
+
+async function resolvePrayerCommentAccess(userId: string, prayerId: string): Promise<PrayerCommentAccess | null> {
+  const [ownPrayer, viewerProfile] = await Promise.all([
+    kv.get(`prayer:${userId}:${prayerId}`).catch(() => null),
+    kv.get(`user:${userId}`).catch(() => null),
+  ]);
+
+  if (ownPrayer) {
+    let verifiedPartnerId: string | null = null;
+    let partnerProfile: any = null;
+    const candidatePartnerId = viewerProfile?.partnerId ? String(viewerProfile.partnerId) : '';
+    if (candidatePartnerId && prayerSharedWithPartner(ownPrayer)) {
+      partnerProfile = await kv.get(`user:${candidatePartnerId}`).catch(() => null);
+      if (String(partnerProfile?.partnerId || '') === userId) verifiedPartnerId = candidatePartnerId;
+    }
+    const coupleId = verifiedPartnerId && viewerProfile?.coupleId && viewerProfile.coupleId === partnerProfile?.coupleId
+      ? String(viewerProfile.coupleId)
+      : null;
+    return {
+      prayer: ownPrayer,
+      ownerId: userId,
+      isOwner: true,
+      viewerProfile,
+      ownerProfile: viewerProfile,
+      participantScope: prayerCommentParticipantScope(userId, verifiedPartnerId),
+      coupleId,
+    };
+  }
+
+  const ownerId = viewerProfile?.partnerId ? String(viewerProfile.partnerId) : '';
+  if (!ownerId) return null;
+  const [ownerProfile, partnerPrayer] = await Promise.all([
+    kv.get(`user:${ownerId}`).catch(() => null),
+    kv.get(`prayer:${ownerId}:${prayerId}`).catch(() => null),
+  ]);
+  if (
+    String(ownerProfile?.partnerId || '') !== userId
+    || !partnerPrayer
+    || !prayerSharedWithPartner(partnerPrayer)
+    || prayerLockedForPartner(partnerPrayer)
+  ) return null;
+
+  const coupleId = viewerProfile?.coupleId && viewerProfile.coupleId === ownerProfile?.coupleId
+    ? String(viewerProfile.coupleId)
+    : null;
+  return {
+    prayer: partnerPrayer,
+    ownerId,
+    isOwner: false,
+    viewerProfile,
+    ownerProfile,
+    participantScope: prayerCommentParticipantScope(ownerId, userId),
+    coupleId,
+  };
+}
+
+async function deletePrayerComments(ownerId: string, prayerId: string) {
+  const prefix = prayerCommentPrefix(ownerId, prayerId);
+  const comments = await kv.getAllByPrefix(prefix, 50_000, 500);
+  const matchingComments = comments.filter((comment: any) => comment?.kind === PRAYER_COMMENT_KIND
+    && comment?.prayerOwnerId === ownerId
+    && comment?.prayerId === prayerId);
+  await deletePrayerCommentRecords(matchingComments);
+}
+
+async function deletePrayerCommentRecords(comments: any[]) {
+  const keys = Array.from(new Set(comments.flatMap((comment: any) => {
+    if (!comment?.id || !comment?.prayerId || !comment?.prayerOwnerId) return [];
+    return [`${prayerCommentPrefix(String(comment.prayerOwnerId), String(comment.prayerId))}${comment.id}`];
+  })));
+  for (let index = 0; index < keys.length; index += 100) {
+    await kv.mdel(keys.slice(index, index + 100));
+  }
+  return keys.length;
+}
+
+async function deletePrayerCommentsForUser(userId: string) {
+  const comments = await kv.getAllByPrefix('prayer-comment:', 50_000, 500);
+  return deletePrayerCommentRecords(comments.filter((comment: any) => comment?.kind === PRAYER_COMMENT_KIND
+    && (comment?.prayerOwnerId === userId || comment?.authorId === userId)));
+}
+
 app.get('/make-server-6d579fee/prayer', async (c) => {
   try {
     const userId = await getUserFromToken(c.req.header('Authorization'));
@@ -2067,6 +2186,84 @@ app.get('/make-server-6d579fee/prayer', async (c) => {
   } catch (error: any) {
     console.error('[GET /prayer] Error:', error.message);
     return c.json({ error: error.message || 'Failed to fetch prayers' }, 500);
+  }
+});
+
+app.get('/make-server-6d579fee/prayer/:id/comments', async (c) => {
+  try {
+    const userId = await getUserFromToken(c.req.header('Authorization'));
+    if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+
+    const prayerId = c.req.param('id');
+    const access = await resolvePrayerCommentAccess(userId, prayerId);
+    if (!access) return c.json({ error: 'Prayer not found' }, 404);
+
+    const limit = listLimit(c, 50, 100);
+    const before = isoQuery(c, 'before');
+    const page = await kv.getByPrefixPage(prayerCommentPrefix(access.ownerId, prayerId), {
+      limit,
+      before,
+    });
+    const nextBefore = page.hasMore ? nextTimestampCursor(page.items) : null;
+    const allowedAuthors = new Set([access.ownerId, userId]);
+    const comments = page.items
+      .filter((comment: any) => comment?.kind === PRAYER_COMMENT_KIND
+        && comment?.prayerId === prayerId
+        && comment?.prayerOwnerId === access.ownerId
+        && (access.isOwner || (
+          comment?.participantScope === access.participantScope
+          && allowedAuthors.has(String(comment?.authorId || ''))
+        )))
+      .sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+      .map((comment: any) => prayerCommentForViewer(comment, userId));
+
+    return c.json({ comments, nextBefore });
+  } catch (error: any) {
+    console.error('Prayer comments fetch error:', error);
+    return c.json({ error: error.message || 'Failed to fetch prayer comments' }, 500);
+  }
+});
+
+app.post('/make-server-6d579fee/prayer/:id/comments', async (c) => {
+  try {
+    const userId = await getUserFromToken(c.req.header('Authorization'));
+    if (!userId) return c.json({ error: 'Unauthorized' }, 401);
+
+    const prayerId = c.req.param('id');
+    const access = await resolvePrayerCommentAccess(userId, prayerId);
+    if (!access) return c.json({ error: 'Prayer not found' }, 404);
+
+    const body = await c.req.json().catch(() => ({}));
+    const message = typeof body?.message === 'string' ? body.message.trim() : '';
+    if (!message) return c.json({ error: 'Comment is required' }, 400);
+    if (message.length > 2000) return c.json({ error: 'Comment must be 2000 characters or fewer' }, 400);
+    if (!await checkRateLimit(`prayer-comment:${userId}`, 30, 60_000)) {
+      return c.json({ error: 'Too many comments. Please wait a moment and try again.' }, 429);
+    }
+
+    const commentId = generateId();
+    const createdAt = new Date().toISOString();
+    const authorName = String(access.viewerProfile?.name || 'Partner').trim().slice(0, 120) || 'Partner';
+    const comment = {
+      kind: PRAYER_COMMENT_KIND,
+      id: commentId,
+      prayerId,
+      prayerOwnerId: access.ownerId,
+      authorId: userId,
+      authorName,
+      participantScope: access.participantScope,
+      coupleId: access.coupleId,
+      message,
+      createdAt,
+    };
+
+    await kv.set(`${prayerCommentPrefix(access.ownerId, prayerId)}${commentId}`, comment);
+    touchActivity(userId);
+
+    return c.json({ comment: prayerCommentForViewer(comment, userId) }, 201);
+  } catch (error: any) {
+    console.error('Prayer comment create error:', error);
+    return c.json({ error: error.message || 'Failed to add prayer comment' }, 500);
   }
 });
 
@@ -2199,6 +2396,7 @@ app.delete('/make-server-6d579fee/prayer/:id', async (c) => {
     // Prayer ownership is personal, even when the prayer is shared.
     const ownPrayer = await kv.get(userKey);
     if (ownPrayer) {
+      await deletePrayerComments(userId, prayerId);
       await kv.del(userKey);
     } else {
       return c.json({ error: 'Only the creator can delete this prayer' }, 403);
@@ -4232,7 +4430,9 @@ app.delete('/make-server-6d579fee/admin/users/:userId', async (c) => {
       }
     });
 
-    console.log('[DELETE /admin/users/:userId] Deleting', keysToDelete.length, 'keys');
+    const prayerCommentKeysDeleted = await deletePrayerCommentsForUser(userIdToDelete);
+    const totalKeysDeleted = keysToDelete.length + prayerCommentKeysDeleted;
+    console.log('[DELETE /admin/users/:userId] Deleting', totalKeysDeleted, 'keys');
 
     // Delete all keys
     await kv.mdel(keysToDelete);
@@ -4253,12 +4453,12 @@ app.delete('/make-server-6d579fee/admin/users/:userId', async (c) => {
     }
 
     console.log('[DELETE /admin/users/:userId] User deletion complete');
-    await logAudit('admin.user_deleted', adminUserId, { deletedUserId: userIdToDelete, deletedUserEmail: userToDelete.email, keysDeleted: keysToDelete.length });
+    await logAudit('admin.user_deleted', adminUserId, { deletedUserId: userIdToDelete, deletedUserEmail: userToDelete.email, keysDeleted: totalKeysDeleted });
 
     return c.json({
       success: true,
       message: `User ${userToDelete.name} (${userToDelete.email}) deleted successfully`,
-      keysDeleted: keysToDelete.length
+      keysDeleted: totalKeysDeleted
     });
   } catch (error: any) {
     console.error('Admin delete user error:', error);

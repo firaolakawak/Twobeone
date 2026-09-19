@@ -3,6 +3,7 @@ import { formatUiDate } from '../utils/uiDateTime';
 import { useUiCopy, UI_LOCALES } from '../utils/uiTranslation';
 import { prayerUiMessages } from '../locales/prayerUi';
 import { LoadingMark } from './BrandLoader';
+import { PrayerComments, type PrayerComment } from './PrayerComments';
 import { useState } from "react";
 import { useLanguage } from '../contexts/LanguageContext';
 import { Card, CardContent } from "./ui/card";
@@ -67,6 +68,8 @@ interface PrayerBoardProps {
   onUpdatePrayer: (id: string, updates: any) => Promise<void>;
   onDeletePrayer: (id: string) => Promise<void>;
   onMarkPrayed: (id: string) => Promise<void>;
+  onLoadComments: (prayerId: string) => Promise<PrayerComment[]>;
+  onAddComment: (prayerId: string, content: string) => Promise<PrayerComment>;
   onBackToHome?: () => void;
 }
 
@@ -133,6 +136,8 @@ export function PrayerBoard({
   onUpdatePrayer,
   onDeletePrayer,
   onMarkPrayed,
+  onLoadComments,
+  onAddComment,
 }: PrayerBoardProps) {
   const tr = useUiCopy(prayerUiMessages);
   const { t, language } = useLanguage();
@@ -147,6 +152,7 @@ export function PrayerBoard({
   const [expandedCards, setExpandedCards] = useState<
     Set<string>
   >(new Set());
+  const [openCommentThreads, setOpenCommentThreads] = useState<Set<string>>(new Set());
 
   // Form fields
   const [title, setTitle] = useState("");
@@ -158,6 +164,15 @@ export function PrayerBoard({
   const [isSharedWithPartner, setIsSharedWithPartner] = useState(true);
   const [isSurprise, setIsSurprise] = useState(false);
   const [unlockAt, setUnlockAt] = useState("");
+
+  const showPrayerError = (error: unknown, fallback: "Failed to save prayer request" | "Failed to update prayer") => {
+    console.error(fallback, error);
+    toast.error(
+      error instanceof Error && error.message === "Unauthorized"
+        ? tr("Your session expired. Please sign in again.")
+        : tr(fallback),
+    );
+  };
 
   // Check if user has a partner (based on whether there are any partner prayers)
   const hasPartner = prayers.some(
@@ -205,8 +220,7 @@ export function PrayerBoard({
       resetForm();
       setIsOpen(false);
     } catch (error) {
-      console.error("Failed to save prayer:", error);
-      toast.error(tr("Failed to save prayer request"));
+      showPrayerError(error, "Failed to save prayer request");
     } finally {
       setIsLoading(false);
     }
@@ -247,7 +261,7 @@ export function PrayerBoard({
         });
       }
     } catch (error) {
-      toast.error(tr("Failed to update prayer"));
+      showPrayerError(error, "Failed to update prayer");
     }
   };
 
@@ -262,7 +276,7 @@ export function PrayerBoard({
           : tr("Praise God! Prayer answered! 🎉"),
       );
     } catch (error) {
-      toast.error(tr("Failed to update prayer"));
+      showPrayerError(error, "Failed to update prayer");
     }
   };
 
@@ -274,6 +288,15 @@ export function PrayerBoard({
       newExpanded.add(id);
     }
     setExpandedCards(newExpanded);
+  };
+
+  const toggleComments = (id: string) => {
+    setOpenCommentThreads((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   };
 
   // Filter prayers
@@ -481,6 +504,8 @@ export function PrayerBoard({
             const canTrack = !prayer.isCommunity && !prayer.isLockedForPartner;
             const canManage = !prayer.isPartner && !prayer.isCommunity;
             const isExpanded = expandedCards.has(prayer.id);
+            const commentsOpen = openCommentThreads.has(prayer.id);
+            const commentsRegionId = `prayer-comments-${prayer.id}`;
             const prayerCount =
               (prayer.youPrayed ? 1 : 0) +
               (prayer.partnerPrayed ? 1 : 0);
@@ -571,11 +596,35 @@ export function PrayerBoard({
 
                         {tr("Partner prayed")}
                       </button>}
+                      {canTrack && (
+                        <button
+                          type="button"
+                          onClick={() => toggleComments(prayer.id)}
+                          aria-expanded={commentsOpen}
+                          aria-controls={commentsRegionId}
+                          className={`tbo-feature-small-action tbo-action flex min-h-10 items-center gap-2 rounded-full px-3.5 transition-colors ${commentsOpen ? "bg-[var(--glass-inset-surface)] text-[var(--glass-accent)] ring-1 ring-[var(--glass-rim)]" : "bg-[var(--glass-inset-surface)] text-muted-foreground hover:text-[var(--glass-accent)]"}`}
+                        >
+                          <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                          {tr("Comments")}
+                        </button>
+                      )}
                       <span className="tbo-caption ml-auto flex items-center gap-1.5 text-muted-foreground">
                         <Heart className="h-3.5 w-3.5 text-rose-500" aria-hidden="true" />
                         {prayerCount}  {tr("praying")}
                       </span>
                     </div>
+
+                    {commentsOpen && canTrack && (
+                      <div className="mt-4">
+                        <PrayerComments
+                          id={commentsRegionId}
+                          prayerId={prayer.id}
+                          prayerTitle={prayer.title}
+                          onLoadComments={onLoadComments}
+                          onAddComment={onAddComment}
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {isExpanded && canManage && (

@@ -408,6 +408,47 @@ export const prayer = {
       method: 'DELETE',
     });
   },
+
+  listComments: async (
+    id: string,
+    options: { limit?: number; before?: string } = {},
+  ) => {
+    const query = new URLSearchParams();
+    if (options.limit) query.set('limit', String(options.limit));
+    if (options.before) query.set('before', options.before);
+    const suffix = query.size ? `?${query}` : '';
+    return deduplicateRequest(`prayer-comments-${id}-${suffix}`, () =>
+      apiCall<{
+        comments: Array<{
+          id: string;
+          prayerId: string;
+          userId: string;
+          userName: string;
+          content: string;
+          createdAt: string;
+          isMine: boolean;
+        }>;
+        nextBefore?: string | null;
+      }>(`/prayer/${encodeURIComponent(id)}/comments${suffix}`, {}, 2, 15000)
+    );
+  },
+
+  addComment: async (id: string, content: string) => {
+    return apiCall<{
+      comment: {
+        id: string;
+        prayerId: string;
+        userId: string;
+        userName: string;
+        content: string;
+        createdAt: string;
+        isMine: boolean;
+      };
+    }>(`/prayer/${encodeURIComponent(id)}/comments`, {
+      method: 'POST',
+      body: JSON.stringify({ message: content }),
+    });
+  },
 };
 
 // ============================================

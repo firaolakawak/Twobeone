@@ -969,19 +969,7 @@ export default function App() {
   const handleAddPrayer = useCallback(
     async (prayer: any) => {
       try {
-        const response = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/prayer`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-            body: JSON.stringify(prayer),
-          },
-        );
-        if (!response.ok)
-          throw new Error("Failed to add prayer");
+        await api.prayer.create(prayer);
         await loadUserData();
       } catch (error) {
         throw error;
@@ -993,19 +981,7 @@ export default function App() {
   const handleUpdatePrayer = useCallback(
     async (id: string, updates: any) => {
       try {
-        const response = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/prayer/${id}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-            body: JSON.stringify(updates),
-          },
-        );
-        if (!response.ok)
-          throw new Error("Failed to update prayer");
+        await api.prayer.update(id, updates);
         await loadUserData();
       } catch (error) {
         throw error;
@@ -1017,15 +993,7 @@ export default function App() {
   const handleDeletePrayer = useCallback(
     async (id: string) => {
       try {
-        const response = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/make-server-6d579fee/prayer/${id}`,
-          {
-            method: "DELETE",
-            headers: { Authorization: `Bearer ${accessToken}` },
-          },
-        );
-        if (!response.ok)
-          throw new Error("Failed to delete prayer");
+        await api.prayer.delete(id);
         await loadUserData();
       } catch (error) {
         throw error;
@@ -1033,6 +1001,16 @@ export default function App() {
     },
     [accessToken],
   );
+
+  const handleLoadPrayerComments = useCallback(async (prayerId: string) => {
+    const { comments } = await api.prayer.listComments(prayerId);
+    return comments;
+  }, []);
+
+  const handleAddPrayerComment = useCallback(async (prayerId: string, content: string) => {
+    const { comment } = await api.prayer.addComment(prayerId, content);
+    return comment;
+  }, []);
 
   const handleMarkPrayed = useCallback(
     async (id: string) => {
@@ -1853,6 +1831,8 @@ export default function App() {
                   onUpdatePrayer={handleUpdatePrayer}
                   onDeletePrayer={handleDeletePrayer}
                   onMarkPrayed={handleMarkPrayed}
+                  onLoadComments={handleLoadPrayerComments}
+                  onAddComment={handleAddPrayerComment}
                   onBackToHome={() => {
                     setActiveTab("home");
                     setSelectedScreen("dashboard");

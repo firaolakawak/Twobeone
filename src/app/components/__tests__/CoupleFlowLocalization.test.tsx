@@ -42,17 +42,29 @@ describe('couple flow language switching', () => {
     expect(screen.getByText('Authored question stays unchanged')).toBeInTheDocument();
   });
 
-  it('translates prayer category display and search while preserving the prayer text', () => {
+  it('translates prayer controls while preserving authored prayer text and a comment draft', async () => {
     render(<PrayerBoard prayers={[{
       id: 'prayer', userId: 'user', title: 'Our authored prayer', description: 'A personal request',
       category: 'Family', isAnswered: false, isSharedWithCommunity: false, prayerCount: 0,
       createdAt: '2026-09-13', updatedAt: '2026-09-13',
-    }]} onAddPrayer={vi.fn()} onUpdatePrayer={vi.fn()} onDeletePrayer={vi.fn()} onMarkPrayed={vi.fn()} />, { wrapper: LanguageProvider });
+    }]} onAddPrayer={vi.fn()} onUpdatePrayer={vi.fn()} onDeletePrayer={vi.fn()} onMarkPrayed={vi.fn()}
+      onLoadComments={vi.fn().mockResolvedValue([{
+        id: 'comment', prayerId: 'prayer', userId: 'partner', userName: 'Authored name',
+        content: 'Authored encouragement', createdAt: '2026-09-13T12:00:00.000Z',
+      }])}
+      onAddComment={vi.fn()} />, { wrapper: LanguageProvider });
     expect(screen.getByText('Family')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Comments' }));
+    expect(await screen.findByText('Authored encouragement')).toBeInTheDocument();
+    const draft = screen.getByRole('textbox', { name: 'Add a comment' });
+    fireEvent.change(draft, { target: { value: 'Unsaved authored draft' } });
     switchLanguage('am');
     expect(screen.getByText('ቤተሰብ')).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: 'አስተያየት ያክሉ' })).toHaveValue('Unsaved authored draft');
     switchLanguage('om');
     expect(screen.getByText('Maatii')).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: 'Yaada dabali' })).toHaveValue('Unsaved authored draft');
+    expect(screen.getByText('Authored encouragement')).toBeInTheDocument();
     fireEvent.change(screen.getByRole('searchbox', { name: 'Kadhannaawwan barbaadi' }), { target: { value: 'Maatii' } });
     expect(screen.getByText('Our authored prayer')).toBeInTheDocument();
   });

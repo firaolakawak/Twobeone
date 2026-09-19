@@ -100,4 +100,92 @@ describe('API request wiring', () => {
       }),
     );
   });
+
+  it('retries prayer updates with a refreshed token while preserving the request', async () => {
+    getSession.mockResolvedValue({ data: { session: { access_token: 'expired-token' } } });
+    refreshSession.mockResolvedValue({ data: { session: { access_token: 'fresh-token' } } });
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { 'Content-Type': 'application/json' } },
+      ))
+      .mockResolvedValueOnce(new Response(
+        JSON.stringify({ success: true, prayer: { id: 'prayer-1', partnerPrayed: true } }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      ));
+
+    await expect(api.prayer.update('prayer-1', { partnerPrayed: true })).resolves.toEqual({
+      success: true,
+      prayer: { id: 'prayer-1', partnerPrayed: true },
+    });
+
+    expect(refreshSession).toHaveBeenCalledOnce();
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      'https://test-project.supabase.co/functions/v1/make-server-6d579fee/prayer/prayer-1',
+      expect.objectContaining({
+        method: 'PUT',
+        body: JSON.stringify({ partnerPrayed: true }),
+        headers: expect.objectContaining({ Authorization: 'Bearer expired-token' }),
+      }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      2,
+      'https://test-project.supabase.co/functions/v1/make-server-6d579fee/prayer/prayer-1',
+      expect.objectContaining({
+        method: 'PUT',
+        body: JSON.stringify({ partnerPrayed: true }),
+        headers: expect.objectContaining({ Authorization: 'Bearer fresh-token' }),
+      }),
+    );
+  });
+
+  it('lists prayer comments with an encoded prayer id and pagination', async () => {
+    getSession.mockResolvedValue({ data: { session: { access_token: 'user-token' } } });
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(
+      JSON.stringify({ comments: [], nextBefore: null }),
+      { status: 200, headers: { 'Content-Type': 'application/json' } },
+    ));
+
+    await expect(api.prayer.listComments('prayer/one', {
+      limit: 25,
+      before: '2026-09-19T12:00:00.000Z',
+    })).resolves.toEqual({ comments: [], nextBefore: null });
+
+    const requestUrl = new URL(String(fetchMock.mock.calls[0][0]));
+    expect(requestUrl.pathname).toContain('/prayer/prayer%2Fone/comments');
+    expect(requestUrl.searchParams.get('limit')).toBe('25');
+    expect(requestUrl.searchParams.get('before')).toBe('2026-09-19T12:00:00.000Z');
+  });
+
+  it('retries a prayer comment with fresh authentication and preserves its body', async () => {
+    getSession.mockResolvedValue({ data: { session: { access_token: 'expired-token' } } });
+    refreshSession.mockResolvedValue({ data: { session: { access_token: 'fresh-token' } } });
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { 'Content-Type': 'application/json' } },
+      ))
+      .mockResolvedValueOnce(new Response(
+        JSON.stringify({ comment: { id: 'comment-1', content: 'Amen' } }),
+        { status: 201, headers: { 'Content-Type': 'application/json' } },
+      ));
+
+    await expect(api.prayer.addComment('prayer-1', 'Amen')).resolves.toEqual({
+      comment: { id: 'comment-1', content: 'Amen' },
+    });
+
+    expect(refreshSession).toHaveBeenCalledOnce();
+    for (const [index, token] of ['expired-token', 'fresh-token'].entries()) {
+      expect(fetchMock).toHaveBeenNthCalledWith(
+        index + 1,
+        'https://test-project.supabase.co/functions/v1/make-server-6d579fee/prayer/prayer-1/comments',
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify({ message: 'Amen' }),
+          headers: expect.objectContaining({ Authorization: `Bearer ${token}` }),
+        }),
+      );
+    }
+  });
 });
