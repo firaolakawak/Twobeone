@@ -47,26 +47,42 @@ describe('couple flow language switching', () => {
       id: 'prayer', userId: 'user', title: 'Our authored prayer', description: 'A personal request',
       category: 'Family', isAnswered: false, isSharedWithCommunity: false, prayerCount: 0,
       createdAt: '2026-09-13', updatedAt: '2026-09-13',
-    }]} onAddPrayer={vi.fn()} onUpdatePrayer={vi.fn()} onDeletePrayer={vi.fn()} onMarkPrayed={vi.fn()}
+      latestComment: {
+        id: 'comment', prayerId: 'prayer', userId: 'partner', userName: 'Authored name',
+        content: 'Authored encouragement', createdAt: '2026-09-13T12:00:00.000Z',
+      },
+    }]} userName="Fira Alemu" partnerName="Mimi Abebe"
+      onAddPrayer={vi.fn()} onUpdatePrayer={vi.fn()} onDeletePrayer={vi.fn()} onMarkPrayed={vi.fn()}
+      onLoadLatestComment={vi.fn().mockResolvedValue(null)}
       onLoadComments={vi.fn().mockResolvedValue([{
         id: 'comment', prayerId: 'prayer', userId: 'partner', userName: 'Authored name',
         content: 'Authored encouragement', createdAt: '2026-09-13T12:00:00.000Z',
-      }])}
+    }])}
       onAddComment={vi.fn()} />, { wrapper: LanguageProvider });
+    expect(screen.getByText('Fira')).toBeInTheDocument();
+    expect(screen.queryByText('Fira Alemu')).not.toBeInTheDocument();
     expect(screen.getByText('Family')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Open comment from Authored' })).toBeInTheDocument();
+    expect(screen.queryByText('Authored name')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Comments' }));
     expect(await screen.findByText('Authored encouragement')).toBeInTheDocument();
     const draft = screen.getByRole('textbox', { name: 'Add a comment' });
     fireEvent.change(draft, { target: { value: 'Unsaved authored draft' } });
     switchLanguage('am');
+    expect(screen.getByText('Fira')).toBeInTheDocument();
     expect(screen.getByText('ቤተሰብ')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'አስተያየቶች' })).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: 'አስተያየት ያክሉ' })).toHaveValue('Unsaved authored draft');
     switchLanguage('om');
+    expect(screen.getByText('Fira')).toBeInTheDocument();
     expect(screen.getByText('Maatii')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Yaadota' })).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: 'Yaada dabali' })).toHaveValue('Unsaved authored draft');
     expect(screen.getByText('Authored encouragement')).toBeInTheDocument();
     fireEvent.change(screen.getByRole('searchbox', { name: 'Kadhannaawwan barbaadi' }), { target: { value: 'Maatii' } });
     expect(screen.getByText('Our authored prayer')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Yaadota' }));
+    expect(screen.getByRole('button', { name: 'Yaada Authored irraa bani' })).toBeInTheDocument();
   });
 
   it('reloads Q&A in the active language and ignores an older language response', async () => {

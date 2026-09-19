@@ -1007,8 +1007,16 @@ export default function App() {
     return comments;
   }, []);
 
+  const handleLoadLatestPrayerComment = useCallback(async (prayerId: string) => {
+    const { comments } = await api.prayer.listComments(prayerId, { limit: 1 });
+    return comments.at(-1) ?? null;
+  }, []);
+
   const handleAddPrayerComment = useCallback(async (prayerId: string, content: string) => {
     const { comment } = await api.prayer.addComment(prayerId, content);
+    setPrayers((current) => current.map((prayer) => prayer.id === prayerId
+      ? { ...prayer, latestComment: comment }
+      : prayer));
     return comment;
   }, []);
 
@@ -1827,11 +1835,14 @@ export default function App() {
               {activeTab === "prayer" && (
                 <PrayerBoard
                   prayers={prayers}
+                  userName={profile?.name || profile?.full_name}
+                  partnerName={partner?.name || partner?.full_name}
                   onAddPrayer={handleAddPrayer}
                   onUpdatePrayer={handleUpdatePrayer}
                   onDeletePrayer={handleDeletePrayer}
                   onMarkPrayed={handleMarkPrayed}
                   onLoadComments={handleLoadPrayerComments}
+                  onLoadLatestComment={handleLoadLatestPrayerComment}
                   onAddComment={handleAddPrayerComment}
                   onBackToHome={() => {
                     setActiveTab("home");

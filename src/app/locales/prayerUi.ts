@@ -3,6 +3,7 @@ import type { UiMessages } from '../utils/uiTranslation';
 export const prayerUiMessages = {
   'Update': ['አዘምን', 'Haaromsi'],
   'Private': ['የግል', 'Dhuunfaa'],
+  'Locked': ['ተቆልፏል', 'Cufameera'],
   'Surprise': ['ድንገተኛ ስጦታ', 'Kennaa dinqii'],
   'Shared': ['የተጋራ', 'Qoodame'],
   'Relationship': ['ግንኙነት', 'Hariiroo'],
@@ -45,6 +46,7 @@ export const prayerUiMessages = {
   'Partner prayed': ['አጋርዎ ጸልየዋል', 'Hiriyyaan kee kadhateera'],
   'praying': ['እየጸለዩ ነው', 'kadhachaa jiru'],
   'Comments': ['አስተያየቶች', 'Yaadota'],
+  'Open comment from {name}': ['የ{name}ን አስተያየት ክፈት', 'Yaada {name} irraa bani'],
   'Prayer comments': ['የጸሎት አስተያየቶች', 'Yaadota kadhannaa'],
   'Comments on {title}': ['በ{title} ላይ ያሉ አስተያየቶች', 'Yaadota {title} irratti'],
   'Loading comments...': ['አስተያየቶች በመጫን ላይ...', 'Yaadotni feʼamaa jiru...'],

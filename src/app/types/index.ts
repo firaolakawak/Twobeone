@@ -153,6 +153,15 @@ export interface PrayerRequest {
   isSurprise?: boolean;
   unlockAt?: string | null;
   isLockedForPartner?: boolean;
+  latestComment?: {
+    id: string;
+    prayerId: string;
+    userId: string;
+    userName: string;
+    content: string;
+    createdAt: string;
+    isMine?: boolean;
+  } | null;
 }
 
 export interface PrayerUpdate {

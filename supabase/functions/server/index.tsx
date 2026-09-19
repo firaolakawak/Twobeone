@@ -2180,9 +2180,42 @@ app.get('/make-server-6d579fee/prayer', async (c) => {
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, limit);
 
+    // Resolve the newest visible comment for the whole page in one database
+    // call. The RPC independently enforces ownership, reciprocal partnership,
+    // sharing, surprise locks, participant scope, and allowed authors.
+    const commentPreviews = new Map<string, any>();
+    let commentPreviewLookupSucceeded = prayers.length === 0;
+    if (prayers.length) {
+      const prayerIds = Array.from(new Set(prayers
+        .map((prayer: any) => String(prayer?.id || ''))
+        .filter(Boolean)));
+      try {
+        const { data, error } = await getSupabase().rpc('get_prayer_comment_previews', {
+          p_viewer_id: userId,
+          p_prayer_ids: prayerIds,
+        });
+        if (error) throw error;
+        commentPreviewLookupSucceeded = true;
+        for (const row of data ?? []) {
+          if (row?.prayer_id && row?.latest_comment) {
+            commentPreviews.set(String(row.prayer_id), row.latest_comment);
+          }
+        }
+      } catch (error: any) {
+        // A preview is optional card metadata; keep the prayer list available
+        // during a rolling deployment or a transient database failure.
+        console.warn('[GET /prayer] Comment previews unavailable:', error?.message || error);
+      }
+    }
+    const prayersWithPreviews = prayers.map((prayer: any) => {
+      if (!commentPreviewLookupSucceeded) return prayer;
+      const latestComment = commentPreviews.get(String(prayer?.id || ''));
+      return { ...prayer, latestComment: latestComment || null };
+    });
+
     console.log(`[GET /prayer] Returning ${prayers.length} total prayers`);
     const hasMore = userPage.hasMore || partnerHasMore || userPrayers.length + partnerPrayers.length > limit;
-    return c.json({ prayers, hasCoupleConnection: !!(profile as any)?.partnerId, nextBefore: hasMore ? nextTimestampCursor(prayers) : null });
+    return c.json({ prayers: prayersWithPreviews, hasCoupleConnection: !!(profile as any)?.partnerId, nextBefore: hasMore ? nextTimestampCursor(prayers) : null });
   } catch (error: any) {
     console.error('[GET /prayer] Error:', error.message);
     return c.json({ error: error.message || 'Failed to fetch prayers' }, 500);
