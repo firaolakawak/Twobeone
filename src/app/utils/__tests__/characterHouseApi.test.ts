@@ -3,9 +3,9 @@ import {getAccessToken} from '../api';
 import {characterHouseApi,dailyCharacterHouseIsValid,parseCharacterHouse} from '../characterHouseApi';
 vi.mock('../api',()=>({getAccessToken:vi.fn()}));
 vi.mock('../supabase/info',()=>({projectId:'test-project'}));
-const initial = {blueprint:null,progress:{completedDays:0,totalDays:365,todayContributed:false,currentUserCompletedToday:false,lastBlockDate:null},day:'2026-09-17'};
+const initial = {blueprint:null,progress:{completedDays:0,totalDays:365,todayContributed:false,currentUserCompletedToday:false,partnerCompletedToday:false,lastBlockDate:null},day:'2026-09-17'};
 const active = {...initial,blueprint:{homeType:'house',bedrooms:2,homeName:'Our house',blueprintStatus:'active',locked:true,completedDays:1,challengeStartedAt:'2026-09-17T12:00:00Z'},
-  progress:{completedDays:1,totalDays:365,todayContributed:true,currentUserCompletedToday:true,lastBlockDate:'2026-09-17'}};
+  progress:{completedDays:1,totalDays:365,todayContributed:true,currentUserCompletedToday:true,partnerCompletedToday:true,lastBlockDate:'2026-09-17'}};
 const respond=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json'}});
 describe('character house client boundary',()=>{
   beforeEach(()=>{
@@ -33,6 +33,9 @@ describe('character house client boundary',()=>{
   });
   it.each([null,{}, {...initial,day:'2026-02-30'},{...initial,progress:{...initial.progress,completedDays:5}},
     {...initial,progress:{...initial.progress,currentUserCompletedToday:'yes'}},
+    {...initial,progress:{...initial.progress,currentUserCompletedToday:null}},
+    {...initial,progress:{...initial.progress,partnerCompletedToday:'yes'}},
+    {...initial,progress:{...initial.progress,partnerCompletedToday:null}},
     {...active,progress:{...active.progress,completedDays:366}}, {...active,progress:{...active.progress,lastBlockDate:'2026-09-16'}},
     {...active,blueprint:{...active.blueprint,completedDays:0}}, {...active,blueprint:{...active.blueprint,challengeStartedAt:'tomorrow'}},
     {...active,blueprint:{...active.blueprint,homeType:'castle'}}])('rejects malformed or inconsistent progress: %j',(body)=>{
@@ -50,24 +53,37 @@ describe('character house client boundary',()=>{
   it('accepts unconfigured legacy design prefill without importing client credits',()=>{
     expect(parseCharacterHouse({...initial,blueprint:{...active.blueprint,blueprintStatus:'pending',locked:false,completedDays:0}}).progress.completedDays).toBe(0);
   });
-  it('loads older house responses and derives the missing flag from shared contribution',async()=>{
+  it('loads older house responses and derives missing completion flags from shared contribution',async()=>{
     const legacy={...initial,progress:{completedDays:0,totalDays:365,todayContributed:false,lastBlockDate:null}};
     vi.mocked(fetch).mockResolvedValueOnce(respond(legacy));
-    expect(await characterHouseApi.get()).toEqual({...legacy,progress:{...legacy.progress,currentUserCompletedToday:false}});
+    expect(await characterHouseApi.get()).toEqual({...legacy,progress:{...legacy.progress,currentUserCompletedToday:null,partnerCompletedToday:null}});
     const legacyContributed={...active,progress:{completedDays:1,totalDays:365,todayContributed:true,lastBlockDate:'2026-09-17'}};
-    expect(parseCharacterHouse(legacyContributed).progress.currentUserCompletedToday).toBe(true);
+    expect(parseCharacterHouse(legacyContributed).progress).toMatchObject({currentUserCompletedToday:null,partnerCompletedToday:null});
   });
-  it('keeps personal completion separate from shared construction credit',()=>{
+  it('keeps a missing partner flag unknown on the previous server instead of claiming not completed',()=>{
+    const previousServer={...initial,progress:{completedDays:0,totalDays:365,todayContributed:false,currentUserCompletedToday:false,lastBlockDate:null}};
+    expect(parseCharacterHouse(previousServer).progress).toMatchObject({currentUserCompletedToday:false,partnerCompletedToday:null});
+  });
+  it('accepts a legacy baseline credited today before either partner completes the daily activity',()=>{
+    const baseline={...active,progress:{...active.progress,currentUserCompletedToday:false,partnerCompletedToday:false}};
+    expect(parseCharacterHouse(baseline).progress).toEqual(baseline.progress);
+    const previousServer={...active,progress:{completedDays:1,totalDays:365,todayContributed:true,currentUserCompletedToday:false,lastBlockDate:'2026-09-17'}};
+    expect(parseCharacterHouse(previousServer).progress).toMatchObject({currentUserCompletedToday:false,partnerCompletedToday:null});
+  });
+  it('keeps each partner completion separate from shared construction credit',()=>{
     const completedByCurrentUser = parseCharacterHouse({...initial,progress:{...initial.progress,currentUserCompletedToday:true}});
-    expect(completedByCurrentUser.progress.currentUserCompletedToday).toBe(true);
+    expect(completedByCurrentUser.progress).toMatchObject({currentUserCompletedToday:true,partnerCompletedToday:false});
     expect(completedByCurrentUser.progress.todayContributed).toBe(false);
     expect(completedByCurrentUser.progress.completedDays).toBe(0);
+    const completedByPartner = parseCharacterHouse({...initial,progress:{...initial.progress,partnerCompletedToday:true}});
+    expect(completedByPartner.progress).toMatchObject({currentUserCompletedToday:false,partnerCompletedToday:true});
   });
-  it('accepts old and new daily summaries during rollout but rejects a forged completion flag',()=>{
+  it('accepts old and new daily summaries during rollout but rejects malformed completion flags',()=>{
     const summary = {configured:true,homeType:'house',bedrooms:2,completedDays:0,totalDays:365,todayContributed:false,lastBlockDate:null};
     expect(dailyCharacterHouseIsValid(summary)).toBe(true);
-    expect(dailyCharacterHouseIsValid({...summary,currentUserCompletedToday:true})).toBe(true);
+    expect(dailyCharacterHouseIsValid({...summary,currentUserCompletedToday:true,partnerCompletedToday:false})).toBe(true);
     expect(dailyCharacterHouseIsValid({...summary,currentUserCompletedToday:'yes'})).toBe(false);
+    expect(dailyCharacterHouseIsValid({...summary,partnerCompletedToday:'yes'})).toBe(false);
   });
   it('cancels a stale read',async()=>{
     vi.mocked(fetch).mockImplementationOnce(async(_url,options)=>new Promise((_resolve,reject)=>{

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
-import { ArrowRight, Check, LockKeyhole, RefreshCw, Replace } from 'lucide-react';
+import { ArrowRight, Check, RefreshCw, Replace } from 'lucide-react';
 import { BackButton } from './BackButton';
 import { BrandLoader, LoadingMark } from './BrandLoader';
 import { Button } from './ui/button';
@@ -29,7 +29,7 @@ export function CharacterHouseBuilder(props: CharacterHouseBuilderProps) {
   return <SharedCharacterHouse key={JSON.stringify([props.currentUserId, props.partnerId])} {...props} />;
 }
 
-function SharedCharacterHouse({ onBack, onOpenChallenge, onConnect, currentUserId, partnerId }: CharacterHouseBuilderProps) {
+function SharedCharacterHouse({ onBack, onOpenChallenge, onConnect, currentUserId, partnerId, partnerName }: CharacterHouseBuilderProps) {
   const tr = useUiCopy(simpleCharacterHouseMessages);
   const [data, setData] = useState<Awaited<ReturnType<typeof api.characterHouse.get>> | null>(null);
   const [homeType, setHomeType] = useState<HomeType>('house');
@@ -56,7 +56,45 @@ function SharedCharacterHouse({ onBack, onOpenChallenge, onConnect, currentUserI
   const draftDefinition = HOME_DEFINITIONS.find(home => home.id === draftHomeType) ?? HOME_DEFINITIONS[0];
   const houseLabel = SIMPLE_HOUSE_OPTIONS.find(home => home.id === homeType)?.label ?? 'House';
   const complete = blocks >= CHARACTER_HOUSE_GOAL;
-  const dailyChallengeComplete = data?.progress.currentUserCompletedToday === true;
+  const currentUserCompletion = data?.progress.currentUserCompletedToday;
+  const partnerCompletion = data?.progress.partnerCompletedToday;
+  const currentUserCompletedToday = currentUserCompletion === true;
+  const partnerCompletedToday = partnerCompletion === true;
+  const completionStatusUnavailable = currentUserCompletion === null || partnerCompletion === null;
+  const partnerLabel = partnerName?.trim() || tr('Your partner');
+  const todayHeading = complete
+    ? tr('Keep living what you have practised.')
+    : data?.progress.todayContributed
+      ? tr('Today’s shared block is in place!')
+      : currentUserCompletedToday && partnerCompletion === false
+        ? tr('Your part is complete')
+        : partnerCompletedToday && currentUserCompletion === false
+          ? tr('{name} completed their part', { name: partnerLabel })
+          : currentUserCompletedToday && partnerCompletedToday
+            ? tr('Both completions are recorded')
+            : completionStatusUnavailable
+              ? tr('Today’s completion status')
+              : tr('Today’s challenge → one shared block');
+  const todayDescription = complete
+    ? tr('365 shared blocks. Keep choosing love in everyday life.')
+    : data?.progress.todayContributed
+      ? currentUserCompletedToday && partnerCompletedToday
+        ? tr('You both completed today’s challenge. One block was added to your house.')
+        : tr('Today’s shared block is recorded. Check each partner’s activity status below.')
+      : currentUserCompletedToday && partnerCompletion === false
+        ? tr('Waiting for {name} to complete today’s challenge. The shared block will be added after both of you finish.', { name: partnerLabel })
+        : partnerCompletedToday && currentUserCompletion === false
+          ? tr('Your turn: complete today’s challenge to add the shared block.')
+          : currentUserCompletedToday && partnerCompletedToday
+            ? tr('You both completed today’s challenge. Your shared block is being confirmed.')
+            : completionStatusUnavailable
+              ? tr('Completion details are updating. This page refreshes automatically.')
+              : tr('Finish the game and its activity together. Your block appears after both of you complete it.');
+  const challengeAction = currentUserCompletedToday
+    ? tr('View today’s status')
+    : currentUserCompletion === false && partnerCompletedToday
+      ? tr('Complete your part')
+      : tr('Open today’s challenge');
   const designChanged = draftHomeType !== data?.blueprint?.homeType || draftBedrooms !== data?.blueprint?.bedrooms;
 
   const accept = useCallback((result: Awaited<ReturnType<typeof api.characterHouse.get>>) => {
@@ -218,8 +256,15 @@ function SharedCharacterHouse({ onBack, onOpenChallenge, onConnect, currentUserI
           </form>}
           <div className="simple-house-progress"><div className="simple-house-progress-label"><strong className="tbo-card-title">{tr('{count} / 365 blocks', { count: blocks })}</strong><span className="tbo-label">{Math.floor(blocks / CHARACTER_HOUSE_GOAL * 100)}%</span></div><Progress value={blocks / CHARACTER_HOUSE_GOAL * 100} aria-label={tr('House construction progress')} /></div>
           <div className="tbo-glass-inset simple-house-purpose"><span className="simple-house-emoji" aria-hidden="true">{stage.emoji}</span><div><p className="tbo-caption">{tr('Building {stage}', { stage: tr(stage.name) })}</p><h3 className="tbo-card-title">{tr(stage.virtue)}</h3><p className="tbo-supporting">{tr(stage.purpose)}</p></div></div>
-          <div className="simple-house-today"><p className="tbo-label">{tr(complete ? 'Keep living what you have practised.' : data.progress.todayContributed ? 'Today’s shared block is in place!' : 'Today’s challenge → one shared block')}</p><p className="tbo-supporting">{tr(complete ? '365 shared blocks. Keep choosing love in everyday life.' : 'Finish the game and its activity together. Your block appears after both of you complete it.')}</p></div>
-          <Button variant="glass-primary" className="simple-house-primary" onClick={onOpenChallenge} disabled={!onOpenChallenge || dailyChallengeComplete}>{tr(dailyChallengeComplete ? 'Today’s challenge complete' : 'Open today’s challenge')}{dailyChallengeComplete ? <LockKeyhole aria-hidden="true" /> : <ArrowRight aria-hidden="true" />}</Button>
+          <div className="simple-house-today"><p className="tbo-label">{todayHeading}</p><p className="tbo-supporting">{todayDescription}</p></div>
+          {!complete && <div className="tbo-glass-inset simple-house-completion-status" role="status" aria-live="polite" aria-atomic="true" aria-label={tr('Today’s completion status')}>
+            <p className="tbo-label">{tr('Today’s completion status')}</p>
+            <dl>
+              <div><dt className="tbo-supporting">{tr('You')}</dt><dd className={`tbo-caption ${currentUserCompletion === true ? 'is-complete' : currentUserCompletion === false ? 'is-pending' : 'is-unavailable'}`}><span aria-hidden="true">{currentUserCompletion === true ? '✓' : currentUserCompletion === false ? '○' : '…'}</span>{tr(currentUserCompletion === true ? 'Completed' : currentUserCompletion === false ? 'Not completed yet' : 'Status unavailable')}</dd></div>
+              <div><dt className="tbo-supporting">{partnerLabel}</dt><dd className={`tbo-caption ${partnerCompletion === true ? 'is-complete' : partnerCompletion === false ? 'is-pending' : 'is-unavailable'}`}><span aria-hidden="true">{partnerCompletion === true ? '✓' : partnerCompletion === false ? '○' : '…'}</span>{tr(partnerCompletion === true ? 'Completed' : partnerCompletion === false ? 'Not completed yet' : 'Status unavailable')}</dd></div>
+            </dl>
+          </div>}
+          <Button variant="glass-primary" className="simple-house-primary" onClick={onOpenChallenge} disabled={!onOpenChallenge}>{challengeAction}<ArrowRight aria-hidden="true" /></Button>
           <p className="tbo-caption simple-house-note">{tr('One shared block per day. Missed days never remove progress.')}</p>
         </section>
 

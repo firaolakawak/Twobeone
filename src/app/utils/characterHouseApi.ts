@@ -10,7 +10,8 @@ export interface CharacterHouseProgress {
   completedDays: number;
   totalDays: 365;
   todayContributed: boolean;
-  currentUserCompletedToday: boolean;
+  currentUserCompletedToday: boolean | null;
+  partnerCompletedToday: boolean | null;
   lastBlockDate: string | null;
 }
 export interface CharacterHouseBlueprint {
@@ -28,11 +29,12 @@ export interface CharacterHouseState {
   progress: CharacterHouseProgress;
   day: string;
 }
-export type DailyCharacterHouse = Omit<CharacterHouseProgress, 'currentUserCompletedToday'> & {
+export type DailyCharacterHouse = Omit<CharacterHouseProgress, 'currentUserCompletedToday' | 'partnerCompletedToday'> & {
   configured: true;
   homeType: CharacterHouseType;
   bedrooms: number;
   currentUserCompletedToday?: boolean;
+  partnerCompletedToday?: boolean;
 };
 export class CharacterHouseError extends Error {
   constructor(public code: string) { super(code); }
@@ -49,19 +51,32 @@ const sharedProgressIsValid = (value: Record<string, unknown>) => countIsValid(v
   && (value.lastBlockDate === null || dateIsValid(value.lastBlockDate))
   && (!value.todayContributed || Number(value.completedDays) > 0);
 export const houseProgressIsValid = (value: unknown): value is CharacterHouseProgress => isRecord(value)
-  && sharedProgressIsValid(value) && typeof value.currentUserCompletedToday === 'boolean';
+  && sharedProgressIsValid(value)
+  && (typeof value.currentUserCompletedToday === 'boolean' || value.currentUserCompletedToday === null)
+  && (typeof value.partnerCompletedToday === 'boolean' || value.partnerCompletedToday === null);
 export const dailyCharacterHouseIsValid = (value: unknown): value is DailyCharacterHouse => isRecord(value)
   && value.configured === true && designIsValid(value) && sharedProgressIsValid(value)
-  // Allow the previous summary during a rolling deployment; new responses always include the server-owned flag.
-  && (value.currentUserCompletedToday === undefined || typeof value.currentUserCompletedToday === 'boolean');
+  // Allow previous summaries during a rolling deployment; new responses include both server-owned flags.
+  && (value.currentUserCompletedToday === undefined || typeof value.currentUserCompletedToday === 'boolean')
+  && (value.partnerCompletedToday === undefined || typeof value.partnerCompletedToday === 'boolean');
 
 export function parseCharacterHouse(value: unknown): CharacterHouseState {
   if (!isRecord(value) || !dateIsValid(value.day) || !isRecord(value.progress)) throw new CharacterHouseError('invalid_response');
-  // During the Edge Function rollout, older responses do not have the viewer-specific flag.
-  // A shared contribution proves both partners completed; malformed explicit values still fail closed.
-  const progress = value.progress.currentUserCompletedToday === undefined
-    ? { ...value.progress, currentUserCompletedToday: value.progress.todayContributed === true }
-    : value.progress;
+  if (value.progress.currentUserCompletedToday === null || value.progress.partnerCompletedToday === null) {
+    throw new CharacterHouseError('invalid_response');
+  }
+  // During the Edge Function rollout, older responses may not have the viewer-specific flags.
+  // A contribution may come from a legacy baseline, so a missing flag is
+  // always unknown—not false or inferred—until the migration is available.
+  const progress = {
+    ...value.progress,
+    currentUserCompletedToday: value.progress.currentUserCompletedToday === undefined
+      ? null
+      : value.progress.currentUserCompletedToday,
+    partnerCompletedToday: value.progress.partnerCompletedToday === undefined
+      ? null
+      : value.progress.partnerCompletedToday,
+  };
   if (!houseProgressIsValid(progress)) throw new CharacterHouseError('invalid_response');
   const blueprint = value.blueprint;
   if (blueprint !== null && (!isRecord(blueprint) || !designIsValid(blueprint)

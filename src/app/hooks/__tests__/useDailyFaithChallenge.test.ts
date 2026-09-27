@@ -29,6 +29,7 @@ const advance = (milliseconds: number) => act(async () => { await vi.advanceTime
 describe('daily challenge request lifecycle', () => {
   beforeEach(() => {
     vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-09-17T12:00:00.000Z'));
     vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible');
     vi.mocked(dailyFaithChallengeApi.today).mockReset().mockResolvedValue(empty);
     vi.mocked(dailyFaithChallengeApi.submit).mockReset().mockResolvedValue(saved);
@@ -107,6 +108,22 @@ describe('daily challenge request lifecycle', () => {
     expect(dailyFaithChallengeApi.today).toHaveBeenCalledTimes(1);
     await advance(30_000);
     expect(dailyFaithChallengeApi.today).toHaveBeenCalledTimes(2);
+  });
+
+  it('refreshes just after the exact shared-day reset without waiting for the polling interval', async () => {
+    vi.setSystemTime(new Date('2026-09-17T23:59:59.500Z'));
+    const nextDay: DailyFaithChallengeState = {
+      ...empty, day: '2026-09-18', missionId: 'quest-02', resetsAt: '2026-09-19T00:00:00.000Z',
+    };
+    vi.mocked(dailyFaithChallengeApi.today).mockResolvedValueOnce(empty).mockResolvedValue(nextDay);
+    const { result } = renderHook(() => useDailyFaithChallenge(true));
+    await flush();
+    expect(dailyFaithChallengeApi.today).toHaveBeenCalledTimes(1);
+    await advance(749);
+    expect(dailyFaithChallengeApi.today).toHaveBeenCalledTimes(1);
+    await advance(1);
+    expect(dailyFaithChallengeApi.today).toHaveBeenCalledTimes(2);
+    expect(result.current.challenge).toEqual(nextDay);
   });
 
   it('aborts old reads on unmount and ignores old account results after a new keyed mount', async () => {

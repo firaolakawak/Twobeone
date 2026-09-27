@@ -59,6 +59,15 @@
 .simple-house-progress-label { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem; }
 .simple-house-progress-label > .tbo-label { color: var(--glass-accent); }
 .simple-house-today { display: grid; gap: .25rem; }
+.simple-house-completion-status { border-radius: 1.1rem; display: grid; gap: .7rem; padding: 1rem; }
+.simple-house-completion-status dl { display: grid; gap: .55rem; margin: 0; }
+.simple-house-completion-status dl > div { align-items: center; display: flex; flex-wrap: wrap; gap: .4rem 1rem; justify-content: space-between; min-width: 0; }
+.simple-house-completion-status dt { min-width: 0; overflow-wrap: anywhere; }
+.simple-house-completion-status dd { align-items: center; display: inline-flex; gap: .35rem; margin: 0; }
+.simple-house-completion-status dd > span { font-size: 1rem; line-height: 1; }
+.simple-house-completion-status .is-complete { color: var(--glass-success); }
+.simple-house-completion-status .is-pending { color: var(--glass-muted); }
+.simple-house-completion-status .is-unavailable { color: var(--glass-warning); }
 .simple-house-milestones { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .6rem; list-style: none; padding: 0; margin: 0; }
 .simple-house-milestones li { border-radius: 1rem; padding: .8rem .45rem; display: flex; flex-direction: column; text-align: center; align-items: center; gap: .4rem; min-width: 0; }
 .simple-house-milestones li > span { font-size: 1.6rem; line-height: 1.2; }

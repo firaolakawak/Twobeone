@@ -59,6 +59,18 @@ export function useDailyFaithChallenge(enabled: boolean) {
     };
   }, [refresh]);
 
+  useEffect(() => {
+    if (!enabled || !challenge) return;
+    const resetAt = Date.parse(challenge.resetsAt);
+    if (!Number.isFinite(resetAt)) return;
+    // Read just after the UTC boundary so the database clock has entered the
+    // new shared day. Focus/visibility listeners remain the fallback for a
+    // browser that throttles timers while backgrounded.
+    const delay = Math.max(0, resetAt - Date.now() + 250);
+    const timer = window.setTimeout(() => { void refresh(); }, Math.min(delay, 2_147_483_647));
+    return () => window.clearTimeout(timer);
+  }, [enabled, challenge?.day, challenge?.resetsAt, refresh]);
+
   const write = async (operation: 'save' | 'complete', work: () => Promise<DailyFaithChallengeState>) => {
     if (!enabled || !mounted.current || writing.current !== null) return false;
     reading.current?.abort();

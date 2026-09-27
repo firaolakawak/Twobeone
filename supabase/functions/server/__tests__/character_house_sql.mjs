@@ -7,6 +7,7 @@ const db = new PGlite();
 const base = await readFile(new URL('../../../migrations/20260917220000_daily_faith_challenges.sql', import.meta.url), 'utf8');
 const migration = await readFile(new URL('../../../migrations/20260917230000_character_house_daily_progress.sql', import.meta.url), 'utf8');
 const followup = await readFile(new URL('../../../migrations/20260917233000_character_house_completion_and_design_updates.sql', import.meta.url), 'utf8');
+const partnerStatus = await readFile(new URL('../../../migrations/20260927120000_character_house_partner_completion_status.sql', import.meta.url), 'utf8');
 const ids = Array.from({ length: 12 }, (_, i) => `00000000-0000-4000-8000-${String(i + 1).padStart(12, '0')}`);
 const [a,b,c,d,e,f,g,h,i,j,k,l] = ids;
 const pair = (one,two) => [one,two].sort().join(':');
@@ -45,6 +46,7 @@ try {
   await db.exec(base);
   await db.exec(migration);
   await db.exec(followup);
+  await db.exec(partnerStatus);
   await check('migration chain compiles and only imports independently approved shared designs', async () => {
     assert.equal((await house(a)).progress.completedDays,12);
     assert.equal((await house(g)).progress.completedDays,5);
@@ -60,9 +62,9 @@ try {
     .replaceAll('public.daily_faith_challenge(', 'public.daily_faith_challenge_answers(')
     .replace('v_now := clock_timestamp();', "v_now := current_setting('test.daily_faith_now')::timestamptz;");
   await db.exec(core);
-  const houseStart = followup.indexOf('create or replace function public.character_house(p_user_id');
-  const houseEnd = followup.indexOf('-- Retain the daily challenge response shape',houseStart);
-  await db.exec(followup.slice(houseStart,houseEnd).replace('v_now := clock_timestamp();',"v_now := current_setting('test.daily_faith_now')::timestamptz;"));
+  const houseStart = partnerStatus.indexOf('create or replace function public.character_house(p_user_id');
+  const houseEnd = partnerStatus.indexOf('-- Configured daily challenge responses',houseStart);
+  await db.exec(partnerStatus.slice(houseStart,houseEnd).replace('v_now := clock_timestamp();',"v_now := current_setting('test.daily_faith_now')::timestamptz;"));
   await setClock('2026-09-17');
   await db.query("update public.character_house_goals set started_at='2026-09-17T08:00:00Z'");
   await check('private house table and helpers reject direct client access',async () => {
@@ -78,6 +80,7 @@ try {
     assert.equal((await daily(c)).challenge.house,null);
     assert.equal((await house(c)).progress.todayContributed,false);
     assert.equal((await house(c)).progress.currentUserCompletedToday,false);
+    assert.equal((await house(c)).progress.partnerCompletedToday,false);
   });
   await check('invalid plans and forged progress are rejected or ignored',async () => {
     for (const action of ['start','update']) for (const plan of [{},{homeType:'villa'},{bedrooms:4},{homeType:'castle',bedrooms:2},{homeType:'house',bedrooms:0},{homeType:'villa',bedrooms:1.5},{homeType:'house',bedrooms:'2'},
@@ -103,17 +106,24 @@ try {
     await answer(c); await answer(d);
     assert.equal((await daily(c)).challenge.house.completedDays,0);
     assert.equal((await house(c)).progress.currentUserCompletedToday,false);
+    assert.equal((await house(c)).progress.partnerCompletedToday,false);
     const firstCompletion = await finish(c);
     assert.equal(firstCompletion.challenge.house.completedDays,0);
     assert.equal(firstCompletion.challenge.house.currentUserCompletedToday,true);
+    assert.equal(firstCompletion.challenge.house.partnerCompletedToday,false);
     assert.equal((await house(c)).progress.currentUserCompletedToday,true);
+    assert.equal((await house(c)).progress.partnerCompletedToday,false);
     assert.equal((await house(d)).progress.currentUserCompletedToday,false);
+    assert.equal((await house(d)).progress.partnerCompletedToday,true);
     assert.equal((await daily(d)).challenge.house.currentUserCompletedToday,false);
+    assert.equal((await daily(d)).challenge.house.partnerCompletedToday,true);
     const result = await finish(d);
     assert.equal(result.challenge.house.completedDays,1);
     assert.equal(result.challenge.house.todayContributed,true);
     assert.equal(result.challenge.house.currentUserCompletedToday,true);
+    assert.equal(result.challenge.house.partnerCompletedToday,true);
     assert.equal((await daily(c)).challenge.house.completedDays,1);
+    assert.equal((await daily(c)).challenge.house.partnerCompletedToday,true);
     assert.equal((await house(d)).progress.lastBlockDate,'2026-09-17');
   });
   await check('completion retries cannot create more than one shared block',async () => {
@@ -138,7 +148,9 @@ try {
   await check('missed days preserve progress and next shared completion adds one',async () => {
     await setClock('2026-09-18');
     assert.equal((await house(c)).progress.currentUserCompletedToday,false);
+    assert.equal((await house(c)).progress.partnerCompletedToday,false);
     assert.equal((await daily(c)).challenge.house.currentUserCompletedToday,false);
+    assert.equal((await daily(c)).challenge.house.partnerCompletedToday,false);
     await setClock('2026-09-20');
     assert.equal((await house(c)).progress.completedDays,1);
     assert.equal((await house(c)).progress.todayContributed,false);
@@ -149,6 +161,11 @@ try {
   });
   await check('legacy credited day is not counted again, but next day adds to preserved baseline',async () => {
     await setClock('2026-09-17');
+    const baselineToday=await house(a);
+    assert.equal(baselineToday.progress.todayContributed,true);
+    assert.equal(baselineToday.progress.currentUserCompletedToday,false);
+    assert.equal(baselineToday.progress.partnerCompletedToday,false);
+    assert.equal((await daily(a)).challenge.house.partnerCompletedToday,false);
     assert.equal((await both(a,b)).challenge.house.completedDays,12);
     assert.equal((await house(a)).progress.todayContributed,true);
     await setClock('2026-09-18');

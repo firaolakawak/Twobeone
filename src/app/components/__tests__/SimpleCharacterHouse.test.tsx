@@ -9,9 +9,9 @@ import { simpleCharacterHouseMessages } from '../../locales/simpleCharacterHouse
 import { getHouseJourneyStage, safeHouseBlocks } from '../../data/characterHouseJourney';
 
 vi.mock('../../utils/api', () => ({ default: { characterHouse: { get: vi.fn(), start: vi.fn(), update: vi.fn() } } }));
-const empty = (): CharacterHouseState => ({ blueprint: null, progress: { completedDays: 0, totalDays: 365, todayContributed: false, currentUserCompletedToday: false, lastBlockDate: null }, day: '2026-09-17' });
-const built = (count = 12): CharacterHouseState => ({ ...empty(), blueprint: { homeType: 'villa', bedrooms: 4, homeName: 'Saved home', completedDays: count, locked: true, blueprintStatus: 'active', challengeStartedAt: '2026-09-01T00:00:00Z' }, progress: { completedDays: count, totalDays: 365, todayContributed: false, currentUserCompletedToday: false, lastBlockDate: '2026-09-16' } });
-const props = () => ({ currentUserId: 'a', partnerId: 'b', onBack: vi.fn(), onOpenChallenge: vi.fn(), onConnect: vi.fn() });
+const empty = (): CharacterHouseState => ({ blueprint: null, progress: { completedDays: 0, totalDays: 365, todayContributed: false, currentUserCompletedToday: false, partnerCompletedToday: false, lastBlockDate: null }, day: '2026-09-17' });
+const built = (count = 12): CharacterHouseState => ({ ...empty(), blueprint: { homeType: 'villa', bedrooms: 4, homeName: 'Saved home', completedDays: count, locked: true, blueprintStatus: 'active', challengeStartedAt: '2026-09-01T00:00:00Z' }, progress: { completedDays: count, totalDays: 365, todayContributed: false, currentUserCompletedToday: false, partnerCompletedToday: false, lastBlockDate: '2026-09-16' } });
+const props = () => ({ currentUserId: 'a', partnerId: 'b', partnerName: 'Maya', onBack: vi.fn(), onOpenChallenge: vi.fn(), onConnect: vi.fn() });
 
 describe('simple shared character house', () => {
   beforeEach(() => { vi.clearAllMocks(); localStorage.clear(); setCurrentLanguage('en'); vi.mocked(api.characterHouse.get).mockResolvedValue(empty()); });
@@ -116,7 +116,7 @@ describe('simple shared character house', () => {
     expect(screen.queryByText('Place Today’s Block')).not.toBeInTheDocument();
   });
 
-  it('locks the completed daily challenge until the next server day', async () => {
+  it('shows that the viewer completed their part and keeps today’s status accessible while the partner is pending', async () => {
     const completedToday = built(12);
     completedToday.progress.currentUserCompletedToday = true;
     const nextDay = built(12);
@@ -125,25 +125,85 @@ describe('simple shared character house', () => {
     const callbacks = props();
     render(<CharacterHouseBuilder {...callbacks} />);
 
-    const locked = await screen.findByRole('button', { name: 'Today’s challenge complete' });
-    expect(locked).toBeDisabled();
-    fireEvent.click(locked);
-    expect(callbacks.onOpenChallenge).not.toHaveBeenCalled();
+    expect(await screen.findByText('Your part is complete')).toBeVisible();
+    expect(screen.getByText('Waiting for Maya to complete today’s challenge. The shared block will be added after both of you finish.')).toBeVisible();
+    expect(screen.getByText('Completed')).toBeVisible();
+    expect(screen.getByText('Not completed yet')).toBeVisible();
+    expect(screen.getByRole('status', { name: 'Today’s completion status' })).toBeVisible();
+    const statusButton = screen.getByRole('button', { name: 'View today’s status' });
+    expect(statusButton).toBeEnabled();
+    fireEvent.click(statusButton);
+    expect(callbacks.onOpenChallenge).toHaveBeenCalledOnce();
 
     await act(async () => setCurrentLanguage('am'));
-    expect(screen.getByRole('button', { name: translateUi('am', simpleCharacterHouseMessages, 'Today’s challenge complete') })).toBeDisabled();
+    expect(screen.getByRole('button', { name: translateUi('am', simpleCharacterHouseMessages, 'View today’s status') })).toBeEnabled();
+    expect(screen.getByText(translateUi('am', simpleCharacterHouseMessages, 'Waiting for {name} to complete today’s challenge. The shared block will be added after both of you finish.', { name: 'Maya' }))).toBeVisible();
     await act(async () => setCurrentLanguage('om'));
-    expect(screen.getByRole('button', { name: translateUi('om', simpleCharacterHouseMessages, 'Today’s challenge complete') })).toBeDisabled();
+    expect(screen.getByRole('button', { name: translateUi('om', simpleCharacterHouseMessages, 'View today’s status') })).toBeEnabled();
+    expect(screen.getByText(translateUi('om', simpleCharacterHouseMessages, 'Waiting for {name} to complete today’s challenge. The shared block will be added after both of you finish.', { name: 'Maya' }))).toBeVisible();
 
     await act(async () => { setCurrentLanguage('en'); window.dispatchEvent(new Event('focus')); });
     await waitFor(() => expect(api.characterHouse.get).toHaveBeenCalledTimes(2));
-    expect(screen.getByRole('button', { name: 'Today’s challenge complete' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'View today’s status' })).toBeEnabled();
 
     await act(async () => { window.dispatchEvent(new Event('focus')); });
     const unlocked = await screen.findByRole('button', { name: 'Open today’s challenge' });
     expect(unlocked).toBeEnabled();
     fireEvent.click(unlocked);
+    expect(callbacks.onOpenChallenge).toHaveBeenCalledTimes(2);
+  });
+
+  it('shows when the partner finished first and makes the viewer’s next step explicit', async () => {
+    const partnerFinished = built(12);
+    partnerFinished.progress.partnerCompletedToday = true;
+    vi.mocked(api.characterHouse.get).mockResolvedValue(partnerFinished);
+    const callbacks = props();
+    render(<CharacterHouseBuilder {...callbacks} />);
+
+    expect(await screen.findByText('Maya completed their part')).toBeVisible();
+    expect(screen.getByText('Your turn: complete today’s challenge to add the shared block.')).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Complete your part' })).toBeEnabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Complete your part' }));
     expect(callbacks.onOpenChallenge).toHaveBeenCalledOnce();
+  });
+
+  it('does not report a missing rollout completion flag as not completed', async () => {
+    const rolling = built(12);
+    rolling.progress.partnerCompletedToday = null;
+    vi.mocked(api.characterHouse.get).mockResolvedValue(rolling);
+    render(<CharacterHouseBuilder {...props()} />);
+
+    expect(await screen.findByText('Completion details are updating. This page refreshes automatically.')).toBeVisible();
+    expect(screen.getByText('Status unavailable')).toBeVisible();
+    expect(screen.queryByText('Maya completed their part')).not.toBeInTheDocument();
+  });
+
+  it('confirms both completions and the shared block without hiding today’s status', async () => {
+    const contributed = built(13);
+    contributed.progress.todayContributed = true;
+    contributed.progress.currentUserCompletedToday = true;
+    contributed.progress.partnerCompletedToday = true;
+    contributed.progress.lastBlockDate = contributed.day;
+    vi.mocked(api.characterHouse.get).mockResolvedValue(contributed);
+    render(<CharacterHouseBuilder {...props()} />);
+
+    expect(await screen.findByText('Today’s shared block is in place!')).toBeVisible();
+    expect(screen.getByText('You both completed today’s challenge. One block was added to your house.')).toBeVisible();
+    expect(screen.getAllByText('Completed')).toHaveLength(2);
+    expect(screen.getByRole('button', { name: 'View today’s status' })).toBeEnabled();
+  });
+
+  it('does not claim both partners completed when today’s block came from a legacy baseline', async () => {
+    const baselineToday = built(13);
+    baselineToday.progress.todayContributed = true;
+    baselineToday.progress.lastBlockDate = baselineToday.day;
+    vi.mocked(api.characterHouse.get).mockResolvedValue(baselineToday);
+    render(<CharacterHouseBuilder {...props()} />);
+
+    expect(await screen.findByText('Today’s shared block is in place!')).toBeVisible();
+    expect(screen.getByText('Today’s shared block is recorded. Check each partner’s activity status below.')).toBeVisible();
+    expect(screen.getAllByText('Not completed yet')).toHaveLength(2);
+    expect(screen.queryByText('You both completed today’s challenge. One block was added to your house.')).not.toBeInTheDocument();
   });
 
   it('does not carry a previous couple’s late response to the new couple', async () => {
@@ -176,6 +236,7 @@ describe('simple shared character house', () => {
     expect(screen.getByText('365 / 365 blocks')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Start building' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Change house type' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Open today’s challenge' })).toBeEnabled();
     expect(api.characterHouse.start).not.toHaveBeenCalled();
   });
 

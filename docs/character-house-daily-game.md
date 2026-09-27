@@ -8,7 +8,7 @@ The couple-facing house is now a shared goal for Together in Faith. Setup asks o
 - Both partners answer, reveal their cards, try the activity, and confirm completion. A submitted answer alone earns no block.
 - When both have completed, that shared UTC day contributes one block. Refreshing, reopening, and repeated completion requests do not add another block.
 - The result shows the practised quality and the house contribution. A partner who finishes first sees that the other partner still needs to complete the activity.
-- After a partner completes today’s activity, the Character House challenge button stays locked for that partner until the next shared UTC day.
+- After either partner completes today’s activity, the Character House remains open as a status view. It shows each partner’s completion separately and explains whose response is still needed.
 - The goal is 365 shared blocks. Missed days leave progress intact. Construction moves through Foundation, Walls, Windows, Roof, and Home in a simple 2D illustration.
 - House progress records participation in shared practice. It does not measure either person's character or verify offline behaviour.
 
@@ -26,7 +26,7 @@ The administrative 3D preview remains available for historical designs. It is no
 
 ## Release status
 
-Prepared locally; no production migration, function deployment, or live partner notification was performed for this change. Activation requires the earlier daily challenge and Character House migrations followed by `20260917233000_character_house_completion_and_design_updates.sql`, deployment of `make-server-6d579fee`, and the web release. Review the intended project and pending migrations before publishing; do not apply unrelated migrations.
+Prepared locally; no production migration, function deployment, or live partner notification was performed for this change. Activation requires the earlier daily challenge and Character House migrations followed by `20260917233000_character_house_completion_and_design_updates.sql` and `20260927120000_character_house_partner_completion_status.sql`, deployment of `make-server-6d579fee`, and the web release. Review the intended project and pending migrations before publishing; do not apply unrelated migrations.
 
 ## Verification
 

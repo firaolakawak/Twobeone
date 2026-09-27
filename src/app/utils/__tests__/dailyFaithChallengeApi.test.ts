@@ -54,6 +54,8 @@ describe('daily challenge API boundary', () => {
     ['invalid day', { challenge: { ...valid, day: 'today' } }],
     ['unknown mission', { challenge: { ...valid, missionId: 'quest-99' } }],
     ['invalid reset time', { challenge: { ...valid, resetsAt: 'tomorrow' } }],
+    ['offsetless reset time', { challenge: { ...valid, resetsAt: '2026-09-18T00:00:00' } }],
+    ['reset time unrelated to the shared day', { challenge: { ...valid, resetsAt: '2026-09-18T00:00:01Z' } }],
     ['missing own', { challenge: { day: valid.day, missionId: valid.missionId, resetsAt: valid.resetsAt, partner: valid.partner, bothSubmitted: false } }],
     ['invalid own choice', { challenge: { ...valid, own: { ...own, choice: 3 } } }],
     ['invalid own guess', { challenge: { ...valid, own: { ...own, guess: 9 } } }],
@@ -62,6 +64,10 @@ describe('daily challenge API boundary', () => {
     ['invalid submission time', { challenge: { ...valid, own: { ...own, submittedAt: 'soon' } } }],
     ['missing partner completed flag', { challenge: { ...valid, partner: { submitted: false } } }],
     ['invalid partner completed flag', { challenge: { ...valid, partner: { submitted: false, completed: 'yes' } } }],
+    ['partner completion before both submitted', { challenge: { ...valid, partner: { submitted: false, completed: true } } }],
+    ['own completion before both submitted', { challenge: { ...valid, own: { ...own, completedAt: '2026-09-17T11:00:00Z' } } }],
+    ['early partner choice', { challenge: { ...valid, partner: { submitted: true, completed: false, choice: 1 } } }],
+    ['early partner guess', { challenge: { ...valid, partner: { submitted: true, completed: false, guess: 2 } } }],
     ['inconsistent reveal status', { challenge: { ...valid, own, bothSubmitted: true, partner: { submitted: false, completed: false, choice: 1 } } }],
     ['missing revealed choice', { challenge: { ...valid, own, bothSubmitted: true, partner: { submitted: true, completed: false } } }],
     ['missing revealed heart guess', { challenge: { ...valid, own, bothSubmitted: true, partner: { submitted: true, completed: false, choice: 1 } } }],
@@ -97,11 +103,14 @@ describe('daily challenge API boundary', () => {
 
   it('accepts optional house state and rejects forged or malformed progress', async () => {
     const house = { configured: true, homeType: 'house', bedrooms: 2, completedDays: 1, totalDays: 365, todayContributed: true, lastBlockDate: valid.day };
-    for (const value of [undefined, null, house]) {
+    const legacyBaselineToday = { ...house, currentUserCompletedToday: false, partnerCompletedToday: false };
+    for (const value of [undefined, null, house, legacyBaselineToday]) {
       vi.mocked(fetch).mockResolvedValueOnce(respond({ challenge: { ...valid, house: value } }));
       expect((await dailyFaithChallengeApi.today()).house).toEqual(value);
     }
-    for (const value of [{ ...house, completedDays: 999 }, { ...house, lastBlockDate: '2026-09-16' }, { ...house, todayContributed: 'yes' }]) {
+    for (const value of [{ ...house, completedDays: 999 }, { ...house, lastBlockDate: '2026-09-16' }, { ...house, todayContributed: 'yes' },
+      { ...house, todayContributed: false, lastBlockDate: '2026-09-16', currentUserCompletedToday: true },
+      { ...house, todayContributed: false, lastBlockDate: '2026-09-16', partnerCompletedToday: true }]) {
       vi.mocked(fetch).mockResolvedValueOnce(respond({ challenge: { ...valid, house: value } }));
       await expect(dailyFaithChallengeApi.today()).rejects.toMatchObject({ code: 'invalid_response' });
     }

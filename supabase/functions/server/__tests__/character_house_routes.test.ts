@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { registerCharacterHouseRoutes } from '../character_house_routes';
-const state = { blueprint:null, progress:{completedDays:0,totalDays:365,todayContributed:false,currentUserCompletedToday:false,lastBlockDate:null},day:'2026-09-17' };
+const state = { blueprint:null, progress:{completedDays:0,totalDays:365,todayContributed:false,currentUserCompletedToday:false,partnerCompletedToday:false,lastBlockDate:null},day:'2026-09-17' };
 const dependencies = {getUserFromToken:vi.fn(),rpc:vi.fn()};
 let app:Hono;
 type Action = 'get' | 'start' | 'update';

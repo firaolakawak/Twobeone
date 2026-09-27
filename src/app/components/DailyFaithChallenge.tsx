@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { ArrowRight, Check, House, RefreshCw, Target } from 'lucide-react';
+import { ArrowRight, Check, Clock3, House, RefreshCw, Target } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
@@ -13,12 +13,35 @@ import { faithQuestVisualMessages } from '../locales/faithQuestVisuals';
 import { faithQuestUiMessages } from '../locales/faithQuestUi';
 import { dailyFaithChallengeMessages } from '../locales/dailyFaithChallenge';
 import { dailyFaithHouseMessages } from '../locales/dailyFaithHouse';
-import { useUiCopy } from '../utils/uiTranslation';
+import { useCurrentLanguage } from '../utils/languageStore';
+import { formatUiDateTime } from '../utils/uiDateTime';
+import { UI_LOCALES, useUiCopy } from '../utils/uiTranslation';
 import type { DailyFaithChallengeState } from '../utils/dailyFaithChallengeApi';
 import '../styles/faith-quest.css';
 import '../styles/daily-faith-challenge.css';
 
 const messages = { ...faithQuestContentMessages, ...faithQuestVisualMessages, ...faithQuestUiMessages, ...dailyFaithChallengeMessages, ...dailyFaithHouseMessages };
+const resetTimeOptions: Intl.DateTimeFormatOptions = {
+  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+  hour: 'numeric', minute: '2-digit', timeZoneName: 'short',
+};
+
+function ChallengeResetTime({ resetsAt, className = '' }: { resetsAt: string; className?: string }) {
+  const tr = useUiCopy(messages);
+  const language = useCurrentLanguage();
+  const marker = '__TBO_CHALLENGE_RESET__';
+  const copy = tr('Next challenge: {date}', { date: marker });
+  const markerIndex = copy.indexOf(marker);
+  const before = markerIndex < 0 ? copy : copy.slice(0, markerIndex);
+  const after = markerIndex < 0 ? '' : copy.slice(markerIndex + marker.length);
+  const formatted = formatUiDateTime(new Date(resetsAt), UI_LOCALES[language], resetTimeOptions);
+
+  return <p className={`daily-faith-reset-time tbo-caption ${className}`.trim()}>
+    <Clock3 aria-hidden="true" />
+    <span>{before}<time dateTime={resetsAt}>{formatted}</time>{after}</span>
+  </p>;
+}
+
 interface DailyFaithChallengeProps {
   userId?: string;
   partnerId?: string;
@@ -44,8 +67,10 @@ function DailyChallengeCard({ userId, partnerId, userName, partnerName, authenti
   const game = useDailyFaithChallenge(enabled);
   const [open, setOpen] = useState(false);
   const [requested, setRequested] = useState(false);
+  const [notificationRefreshing, setNotificationRefreshing] = useState(false);
   const seen = useRef(new Set<string>());
   const lastRequest = useRef(0);
+  const notificationSequence = useRef(0);
   const moodRequested = useRef(false);
   const launchRef = useRef<HTMLButtonElement>(null);
   const descriptionId = useId();
@@ -69,9 +94,16 @@ function DailyChallengeCard({ userId, partnerId, userName, partnerName, authenti
     if (lastRequest.current === openRequest || !enabled) return;
     lastRequest.current = openRequest;
     moodRequested.current = false;
+    // A notification means the partner state may have changed since the last
+    // poll. The open effect waits for this refresh before showing the card.
+    const request = ++notificationSequence.current;
+    setNotificationRefreshing(true);
+    void game.refresh().finally(() => {
+      if (notificationSequence.current === request) setNotificationRefreshing(false);
+    });
     setRequested(true);
     onRequestConsumed?.();
-  }, [openRequest, enabled, moodReady, hasMood, onRequestConsumed, onRequestMood]);
+  }, [openRequest, enabled, game.refresh, onRequestConsumed]);
 
   useEffect(() => {
     if (!requested || hasMood) { moodRequested.current = false; return; }
@@ -82,7 +114,7 @@ function DailyChallengeCard({ userId, partnerId, userName, partnerName, authenti
   }, [requested, moodReady, hasMood, onRequestMood]);
 
   useEffect(() => {
-    if (!enabled || !moodReady || !hasMood || open) return;
+    if (!enabled || !moodReady || !hasMood || notificationRefreshing || open) return;
     const automatic = Boolean(storageKey && game.challenge && !game.challenge.own && !alreadyShown(storageKey));
     if (!requested && !automatic) return;
     // Mood saves update the dashboard before its dialog has finished closing.
@@ -107,7 +139,7 @@ function DailyChallengeCard({ userId, partnerId, userName, partnerName, authenti
     document.addEventListener('visibilitychange', consider);
     consider();
     return () => { stopped = true; clearTimeout(timer); observer.disconnect(); document.removeEventListener('visibilitychange', consider); };
-  }, [enabled, moodReady, hasMood, open, requested, storageKey, game.challenge?.own]);
+  }, [enabled, moodReady, hasMood, notificationRefreshing, open, requested, storageKey, game.challenge?.own]);
 
   const launch = () => {
     if (!enabled) { onConnect(); return; }
@@ -120,17 +152,22 @@ function DailyChallengeCard({ userId, partnerId, userName, partnerName, authenti
     : game.error === 'save' ? 'Could not save your choice. Please try again.'
     : game.error === 'complete' ? 'Could not complete this challenge. Please try again.'
     : 'Could not load today’s challenge. Please try again.';
-  const cardStatus = game.challenge?.own?.completedAt ? 'Today’s challenge complete'
-    : game.challenge?.bothSubmitted ? 'Your cards are ready'
-    : game.challenge?.own ? 'Continue today’s challenge'
-    : game.challenge?.partner.submitted ? 'Your partner is waiting' : 'One small challenge. Together.';
+  const partnerLabel = partnerName?.trim() || tr('Partner');
+  const cardStatus = game.challenge?.own?.completedAt && game.challenge.partner.completed ? 'Today’s challenge complete'
+    : game.challenge?.own?.completedAt ? 'Your activity is complete. Waiting for {name}.'
+    : game.challenge?.bothSubmitted ? 'Both answers are saved. Open to continue.'
+    : game.challenge?.own ? 'Your answer is saved. Waiting for {name}.'
+    : game.challenge?.partner.submitted ? '{name} answered. It’s your turn.' : 'One small challenge. Together.';
 
   return <>
     <Card className="tbo-glass dashboard-quest-card overflow-hidden">
       <CardContent className="dashboard-quest-content p-5">
         <span className="dashboard-quest-icon tbo-glass-orb grid h-14 w-14 shrink-0 place-items-center rounded-2xl"><Target aria-hidden="true" className="h-7 w-7" /></span>
         <div className="dashboard-quest-heading min-w-0"><p className="tbo-eyebrow text-[var(--glass-accent)]">{tr('Daily challenge')}</p><h3 className="tbo-card-title mt-1">{tr('Together in Faith')}</h3></div>
-        <p className="dashboard-quest-description tbo-supporting text-muted-foreground">{tr(enabled ? cardStatus : 'Connect with your partner to play your daily challenge.')}</p>
+        <div className="dashboard-quest-description">
+          <p className="tbo-supporting text-muted-foreground">{tr(enabled ? cardStatus : 'Connect with your partner to play your daily challenge.', { name: partnerLabel })}</p>
+          {game.challenge && <ChallengeResetTime resetsAt={game.challenge.resetsAt} className="dashboard-quest-reset" />}
+        </div>
         <Button ref={launchRef} variant="ghost" className="tbo-action dashboard-quest-action" onClick={launch}><span>{tr('Open today’s challenge')}</span><ArrowRight aria-hidden="true" /></Button>
         {requested && !hasMood && <p className="daily-faith-mood-hint tbo-caption" role="status">{tr('Save your mood, then your challenge will open.')}</p>}
       </CardContent>
@@ -166,11 +203,12 @@ function DailyChallengePlayer({ game, userName, partnerName, descriptionId, onCl
   const titleRef = useRef<HTMLHeadingElement>(null);
   const choiceId = useId();
   const completed = Boolean(state.own?.completedAt);
+  const coupleCompleted = completed && state.partner.completed;
   const waiting = Boolean(state.own && !state.bothSubmitted);
   const ready = state.bothSubmitted && step !== 'reveal' && step !== 'action' && !completed;
   const choosing = !state.own && (step === 'choice' || step === 'guess');
   const selected = step === 'guess' ? guess : choice;
-  const title = completed ? tr('Today’s challenge complete') : waiting ? tr('Waiting for {name}', { name: partnerName })
+  const title = coupleCompleted ? tr('Today’s challenge complete') : completed ? tr('Your activity is complete') : waiting ? tr('Waiting for {name}', { name: partnerName })
     : ready ? tr('Your cards are ready') : step === 'guess' ? tr('What would {name} choose?', { name: partnerName })
     : step === 'kindness' ? tr('Try this kindness first') : step === 'reveal' ? tr('Your choices')
     : step === 'action' ? tr('Take it into real life') : tr(visual.prompt);
@@ -198,8 +236,9 @@ function DailyChallengePlayer({ game, userName, partnerName, descriptionId, onCl
       {choosing && step === 'choice' && <blockquote className="daily-faith-encouragement tbo-supporting"><span aria-hidden="true">{encouragement.emoji}</span><span><span className="sr-only">{tr('Today’s encouragement')}: </span>{tr(encouragement.text)}</span></blockquote>}
       <span className="quest-scene-emoji" aria-hidden="true">{completed ? '🏆' : waiting ? '💌' : ready ? '🎉' : step === 'reveal' ? '💞' : step === 'action' ? '🤝' : visual.emoji}</span>
       <DialogTitle className="tbo-section-title" ref={titleRef} tabIndex={-1}>{title}</DialogTitle>
-      <DialogDescription id={descriptionId} className={waiting || completed ? '' : 'sr-only'}>{tr(completed ? 'Come back tomorrow for a new challenge.' : waiting ? 'Your choice is saved. We’ll reveal your cards when you’ve both played.' : 'Your choice is private until you both finish.')}</DialogDescription>
+      <DialogDescription id={descriptionId} className={waiting || completed ? '' : 'sr-only'}>{tr(coupleCompleted ? 'Come back tomorrow for a new challenge.' : completed ? 'Your completion is saved. We’re waiting for {name}.' : waiting ? 'Your choice is saved. We’ll reveal your cards when you’ve both played.' : 'Your choice is private until you both finish.', { name: partnerName })}</DialogDescription>
     </DialogHeader>
+    <DailyChallengeProgress state={state} partnerName={partnerName} step={step} />
     {game.error && <div role="alert" className="daily-faith-error tbo-supporting"><p>{tr(error)}</p><Button variant="ghost" disabled={game.saving || game.loading} onClick={() => void game.refresh()}><RefreshCw aria-hidden="true" />{tr('Refresh')}</Button></div>}
     {choosing && <div className="quest-player-body">
       {step === 'guess' && <p className="quest-scene-caption tbo-supporting">{tr(visual.prompt)}</p>}
@@ -227,6 +266,48 @@ function DailyChallengePlayer({ game, userName, partnerName, descriptionId, onCl
       {onOpenHouse && <Button className="quest-wide-button" onClick={onOpenHouse}><House aria-hidden="true" />{tr(state.house === null ? 'Start our house' : 'View our house')}</Button>}
       <Button variant="ghost" className="quest-wide-button" onClick={onClose}>{tr('Close')}</Button>
     </div>}
-    <p className="daily-faith-day-note tbo-caption">{tr('New challenges follow a shared day for both partners.')}</p>
   </>;
+}
+
+function DailyChallengeProgress({ state, partnerName, step }: {
+  state: DailyFaithChallengeState;
+  partnerName: string;
+  step: 'choice' | 'guess' | 'kindness' | 'reveal' | 'action';
+}) {
+  const tr = useUiCopy(messages);
+  const titleId = useId();
+  const ownCompleted = Boolean(state.own?.completedAt);
+  const rows = [
+    { label: tr('Your answer'), done: Boolean(state.own), status: state.own ? 'Submitted' : 'Not started' },
+    { label: tr('{name}’s answer', { name: partnerName }), done: state.partner.submitted, status: state.partner.submitted ? 'Submitted' : 'Waiting' },
+    { label: tr('Your activity'), done: ownCompleted, status: ownCompleted ? 'Completed' : step === 'action' ? 'In progress' : 'Not started' },
+    { label: tr('{name}’s activity', { name: partnerName }), done: state.partner.completed, status: state.partner.completed ? 'Completed' : 'Waiting' },
+  ];
+  const nextStep = !state.own
+    ? step === 'guess' ? 'Next step: Guess what {name} would choose, then save.'
+      : step === 'kindness' ? 'Next step: Try the selected kindness, then confirm and save.'
+        : state.partner.submitted ? 'Next step: Submit your answer to reveal both cards.' : 'Next step: Choose and save your answer.'
+    : !state.partner.submitted ? 'Next step: Wait for {name} to submit an answer.'
+    : !ownCompleted
+      ? step === 'reveal' ? 'Next step: Continue to the shared activity.'
+        : step === 'action' ? 'Next step: Complete the shared activity.'
+          : 'Next step: Reveal your cards.'
+      : !state.partner.completed ? 'Next step: Wait for {name} to complete the shared activity.'
+        : 'Next step: Your shared activity is complete.';
+
+  return <section className="daily-faith-progress tbo-glass-inset" aria-labelledby={titleId}>
+    <h3 className="tbo-label" id={titleId}>{tr('Today’s progress')}</h3>
+    <ul className="daily-faith-progress-list">
+      {rows.map(row => {
+        const rowState = row.done ? 'complete' : row.status === 'In progress' ? 'active' : 'waiting';
+        return <li key={row.label} data-state={rowState}>
+          <span className="daily-faith-progress-icon" aria-hidden="true">{row.done ? <Check /> : <Clock3 />}</span>
+          <span className="tbo-label">{row.label}</span>
+          <span className="tbo-caption">{tr(row.status)}</span>
+        </li>;
+      })}
+    </ul>
+    <p className="daily-faith-next-step tbo-supporting" role="status">{tr(nextStep, { name: partnerName })}</p>
+    <ChallengeResetTime resetsAt={state.resetsAt} />
+  </section>;
 }

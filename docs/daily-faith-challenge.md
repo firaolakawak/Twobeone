@@ -9,6 +9,7 @@ The dashboard invitation now uses a distinct Target icon and opens today's emoji
 - Heart missions collect a private answer and a guess. Grace missions collect a response. Kindness missions require trying the selected activity before submission.
 - The first saved submission creates one durable notification for the other partner. If that partner already submitted, it says the cards are ready. Notification clicks open the current day's popup, after mood check-in if needed.
 - Choices stay private until both have submitted. The view refreshes every 30 seconds while visible and on return to the app. After revealing their cards, each partner can mark the shared activity complete.
+- The popup shows separate answer and activity status for each partner, a state-specific next step, and the exact next reset rendered in the viewer's local date, time, and timezone. A notification refreshes partner state before opening, and the dashboard schedules a refresh immediately after the shared UTC-day boundary.
 
 The encouragement sentences are original application copy, not Bible quotations. Interface copy supports English, Amharic, and Afaan Oromo. Native-speaker editorial review has not been performed.
 

@@ -8,3 +8,25 @@
 .daily-faith-purpose { color: var(--glass-accent); margin-block: .25rem; }
 .daily-faith-result { display: grid; gap: .65rem; padding: 1rem; color: var(--glass-foreground); overflow-wrap: anywhere; }
 .daily-faith-result .tbo-caption { color: var(--glass-muted); }
+.daily-faith-progress { display: grid; gap: .75rem; min-width: 0; padding: 1rem; color: var(--glass-foreground); overflow-wrap: anywhere; }
+.daily-faith-progress-list { display: grid; gap: .55rem; margin: 0; padding: 0; list-style: none; }
+.daily-faith-progress-list li { display: grid; grid-template-columns: 1.5rem minmax(0, 1fr) auto; align-items: center; gap: .5rem; min-width: 0; padding-top: .55rem; border-top: 1px solid var(--glass-border); }
+.daily-faith-progress-list li:first-child { padding-top: 0; border-top: 0; }
+.daily-faith-progress-list li > .tbo-caption { color: var(--glass-muted); text-align: end; }
+.daily-faith-progress-icon { display: grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: 50%; color: var(--glass-muted); background: var(--glass-solid); }
+.daily-faith-progress-icon svg { width: .9rem; height: .9rem; }
+.daily-faith-progress-list li[data-state='complete'] .daily-faith-progress-icon { color: var(--glass-success); background: var(--glass-success-soft); }
+.daily-faith-progress-list li[data-state='complete'] > .tbo-caption { color: var(--glass-success); }
+.daily-faith-progress-list li[data-state='waiting'] .daily-faith-progress-icon { color: var(--glass-warning); background: var(--glass-warning-soft); }
+.daily-faith-progress-list li[data-state='active'] .daily-faith-progress-icon { color: var(--glass-accent); background: var(--glass-selected); }
+.daily-faith-progress-list li[data-state='active'] > .tbo-caption { color: var(--glass-accent); }
+.daily-faith-next-step { margin: 0; padding: .7rem .8rem; border-radius: .8rem; color: var(--glass-selected-ink); background: var(--glass-selected); }
+.daily-faith-reset-time { display: flex; align-items: flex-start; gap: .4rem; min-width: 0; margin: 0; color: var(--glass-muted); }
+.daily-faith-reset-time svg { width: 1rem; height: 1rem; margin-top: .08rem; flex: 0 0 auto; }
+.daily-faith-reset-time time { color: var(--glass-foreground); }
+.dashboard-quest-reset { margin-top: .4rem; }
+
+@container (max-width: 20rem) {
+  .daily-faith-progress-list li { grid-template-columns: 1.5rem minmax(0, 1fr); }
+  .daily-faith-progress-list li > .tbo-caption { grid-column: 2; text-align: start; }
+}
