@@ -6,7 +6,7 @@ The couple-facing house is now a shared goal for Together in Faith. Setup asks o
 
 - A saved mood check-in leads to the existing daily emoji challenge. Each mission names the quality being practised: love, patience, kindness, peace, faithfulness, or joy.
 - Both partners answer, reveal their cards, try the activity, and confirm completion. A submitted answer alone earns no block.
-- When both have completed, that shared UTC day contributes one block. Refreshing, reopening, and repeated completion requests do not add another block.
+- When both have completed, that shared Abu Dhabi calendar day contributes one block. The day resets at **12:00 AM (00:00) Abu Dhabi time** (`Asia/Dubai`, UTC+4). Refreshing, reopening, and repeated completion requests do not add another block.
 - The result shows the practised quality and the house contribution. A partner who finishes first sees that the other partner still needs to complete the activity.
 - After either partner completes today’s activity, the Character House remains open as a status view. It shows each partner’s completion separately and explains whose response is still needed.
 - The goal is 365 shared blocks. Missed days leave progress intact. Construction moves through Foundation, Walls, Windows, Roof, and Home in a simple 2D illustration.
@@ -18,7 +18,7 @@ The house page opens the same daily popup through the dashboard's existing mood 
 
 The server owns the shared design and progress. A new `character_house_goals` table stores each pair's house. Authenticated design updates can change only the house type and valid bedroom count; the start date, baseline, and earned blocks remain server-owned. Construction is derived from the existing daily challenge records with completed activities from both members, capped at 365. There is no client-writeable block count or local “place a block” action.
 
-New construction counts from the house's starting UTC day, including a challenge completed earlier on that same day. Earlier daily challenges are not backfilled into a newly started house. Server-stored, mutually approved legacy designs retain their saved progress as a baseline, and their original decoration data remains untouched. The old browser-only prototype cache is not imported into another account's shared progress.
+New construction counts from the house's starting Abu Dhabi calendar day, including a challenge completed earlier on that same day. Existing houses retain the start-day boundary that governed them before the timezone migration, so the rollout cannot remove a previously earned first block. Earlier daily challenges are not backfilled into a newly started house. Server-stored, mutually approved legacy designs retain their saved progress as a baseline, and their original decoration data remains untouched. The old browser-only prototype cache is not imported into another account's shared progress.
 
 The canonical Edge Function now provides authenticated `GET /character-house`, `POST /character-house/start`, and `POST /character-house/update`. Daily challenge responses include a house summary so both completion and background refresh show current shared progress. Mutual partner links are checked before access; unrelated accounts cannot read, redesign, or advance a couple's house.
 
@@ -26,9 +26,11 @@ The administrative 3D preview remains available for historical designs. It is no
 
 ## Release status
 
-Prepared locally; no production migration, function deployment, or live partner notification was performed for this change. Activation requires the earlier daily challenge and Character House migrations followed by `20260917233000_character_house_completion_and_design_updates.sql` and `20260927120000_character_house_partner_completion_status.sql`, deployment of `make-server-6d579fee`, and the web release. Review the intended project and pending migrations before publishing; do not apply unrelated migrations.
+Prepared locally; no production migration, function deployment, or live partner notification was performed for this change. Activation requires the earlier daily challenge and Character House migrations followed by `20260917233000_character_house_completion_and_design_updates.sql`, `20260927120000_character_house_partner_completion_status.sql`, and `20260928120000_daily_faith_challenge_abu_dhabi_midnight.sql`. Publish the `v7` service-worker compatibility build before the timezone migration, verify installed clients receive and reload onto it, apply the database change between 04:00 and 23:59 Abu Dhabi time, and then deploy `make-server-6d579fee`. Review the intended project and pending migrations before publishing; do not apply unrelated migrations.
 
 ## Verification
+
+The Abu Dhabi reset update was verified on 28 September 2026. The current Character House SQL harness passed **17/17** scenarios, including the exact UAE midnight rollover, existing first-block preservation, the new-house start boundary, one-sided completion status, and shared-credit deduplication. The full **530-test** suite and production build also passed.
 
 Verified on 17 September 2026:
 

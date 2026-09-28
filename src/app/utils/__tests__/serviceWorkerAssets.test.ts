@@ -36,6 +36,14 @@ async function requestAsset(path: string, destination: string, contentType: stri
 }
 
 describe('service worker code assets', () => {
+  it('publishes the cache generation required by the staged Abu Dhabi reset rollout', () => {
+    const shellVersion = workerSource.match(/twobeone-shell-v(\d+)/)?.[1];
+    const runtimeVersion = workerSource.match(/twobeone-runtime-v(\d+)/)?.[1];
+
+    expect(Number(shellVersion)).toBeGreaterThanOrEqual(7);
+    expect(runtimeVersion).toBe(shellVersion);
+  });
+
   it.each([
     ['Vite CSS-module imports', '/src/app/components/OnboardingScreen.module.css', 'script', 'text/javascript'],
     ['stylesheets with query parameters', '/assets/app.css?v=2', 'style', 'text/css'],

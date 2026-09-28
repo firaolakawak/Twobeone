@@ -4,6 +4,8 @@ import { DailyFaithChallenge } from '../DailyFaithChallenge';
 import { dailyFaithChallengeApi, type DailyFaithChallengeState } from '../../utils/dailyFaithChallengeApi';
 import { setCurrentLanguage } from '../../utils/languageStore';
 import { getFaithQuestVisuals } from '../../data/faithQuestVisuals';
+import { DAILY_FAITH_CHALLENGE_TIME_ZONE } from '../../utils/dailyFaithChallengeTime';
+import { formatUiDateTime } from '../../utils/uiDateTime';
 
 vi.mock('../../utils/dailyFaithChallengeApi', () => ({
   dailyFaithChallengeApi: { today: vi.fn(), submit: vi.fn(), complete: vi.fn() },
@@ -11,14 +13,15 @@ vi.mock('../../utils/dailyFaithChallengeApi', () => ({
 }));
 
 const initial = (): DailyFaithChallengeState => ({
-  day: '2026-09-17', missionId: 'quest-01', resetsAt: '2026-09-18T00:00:00Z',
+  day: '2026-09-17', missionId: 'quest-01', resetsAt: '2026-09-17T20:00:00Z',
   own: null, partner: { submitted: false, completed: false }, bothSubmitted: false,
 });
 const resetTimeOptions: Intl.DateTimeFormatOptions = {
   weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   hour: 'numeric', minute: '2-digit', timeZoneName: 'short',
+  timeZone: DAILY_FAITH_CHALLENGE_TIME_ZONE,
 };
-const formattedReset = (value: string, locale = 'en-US') => new Intl.DateTimeFormat(locale, resetTimeOptions).format(new Date(value));
+const formattedReset = (value: string, locale = 'en-US') => formatUiDateTime(new Date(value), locale, resetTimeOptions);
 let remote: DailyFaithChallengeState;
 const props = () => ({
   userId: 'firaol', partnerId: 'keti', userName: 'Firaol', partnerName: 'Keti',
@@ -165,6 +168,29 @@ describe('daily Together in Faith card', () => {
     expect(screen.queryByText('Your partner’s choice')).not.toBeInTheDocument();
   });
 
+  it('shows Abu Dhabi midnight and localizes the reset label without closing the challenge', async () => {
+    render(<DailyFaithChallenge {...props()} />);
+    await advance();
+
+    const expectReset = (locale: string, label: string) => {
+      const times = screen.getAllByText(formattedReset(initial().resetsAt, locale), { selector: 'time' });
+      expect(times).toHaveLength(2);
+      for (const time of times) {
+        expect(time).toHaveAttribute('datetime', initial().resetsAt);
+        expect(time.closest('p')).toHaveTextContent(label);
+      }
+    };
+
+    expectReset('en-US', 'Abu Dhabi time');
+    expect(screen.getAllByText(formattedReset(initial().resetsAt), { selector: 'time' })[0]).toHaveTextContent('12:00 AM');
+    await act(async () => { setCurrentLanguage('am'); });
+    expect(screen.getByRole('dialog')).toBeVisible();
+    expectReset('am-ET', 'በአቡ ዳቢ ሰዓት');
+    await act(async () => { setCurrentLanguage('om'); });
+    expect(screen.getByRole('dialog')).toBeVisible();
+    expectReset('om-ET', 'sa’aatii Abu Dhabi');
+  });
+
   it('saves actual heart choices, waits for the partner, then reveals the remote answer and completes', async () => {
     render(<DailyFaithChallenge {...props()} />);
     await advance();
@@ -214,7 +240,7 @@ describe('daily Together in Faith card', () => {
   });
 
   it('requires trying the selected kindness before submitting or notifying', async () => {
-    remote = { ...initial(), day: '2026-09-19', missionId: 'quest-03', resetsAt: '2026-09-20T00:00:00Z' };
+    remote = { ...initial(), day: '2026-09-19', missionId: 'quest-03', resetsAt: '2026-09-19T20:00:00Z' };
     render(<DailyFaithChallenge {...props()} />);
     await advance(); pick(2); click('Confirm');
     expect(screen.getByRole('heading', { name: 'Try this kindness first' })).toBeVisible();
@@ -228,7 +254,7 @@ describe('daily Together in Faith card', () => {
   });
 
   it('keeps a failed choice selected and retries without showing a saved or waiting state', async () => {
-    remote = { ...initial(), day: '2026-09-18', missionId: 'quest-02', resetsAt: '2026-09-19T00:00:00Z' };
+    remote = { ...initial(), day: '2026-09-18', missionId: 'quest-02', resetsAt: '2026-09-18T20:00:00Z' };
     vi.mocked(dailyFaithChallengeApi.submit).mockRejectedValueOnce(new Error('Network interrupted'));
     render(<DailyFaithChallenge {...props()} />);
     await advance(); pick(1); click('Save and notify partner'); await advance(0);
@@ -246,7 +272,7 @@ describe('daily Together in Faith card', () => {
     await advance();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(screen.getByText('Your answer is saved. Waiting for Keti.')).toBeVisible();
-    remote = { ...initial(), day: '2026-09-18', missionId: 'quest-02', resetsAt: '2026-09-19T00:00:00Z' };
+    remote = { ...initial(), day: '2026-09-18', missionId: 'quest-02', resetsAt: '2026-09-18T20:00:00Z' };
     await advance(30_500);
     await advance();
     expect(screen.getByRole('heading', { name: getFaithQuestVisuals('quest-02')!.prompt })).toBeVisible();

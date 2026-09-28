@@ -71,7 +71,7 @@ export const dailyFaithChallengeMessages: UiMessages = {
   'Next step: Complete the shared activity.': ['ቀጣይ እርምጃ፦ የጋራ ተግባሩን ያጠናቅቁ።', 'Tarkaanfii itti aanu: Gocha waloo xumuraa.'],
   'Next step: Wait for {name} to complete the shared activity.': ['ቀጣይ እርምጃ፦ {name} የጋራ ተግባሩን እስኪያጠናቅቁ ይጠብቁ።', 'Tarkaanfii itti aanu: {name} gocha waloo hanga xumuranitti eegaa.'],
   'Next step: Your shared activity is complete.': ['ቀጣይ እርምጃ፦ የጋራ ተግባራችሁ ተጠናቋል።', 'Tarkaanfii itti aanu: Gocha keessan waloo xumurameera.'],
-  'Next challenge: {date}': ['ቀጣዩ ተግዳሮት፦ {date}', 'Qormaata itti aanu: {date}'],
+  'Next challenge: {date} (Abu Dhabi time)': ['ቀጣዩ ተግዳሮት፦ {date} (በአቡ ዳቢ ሰዓት)', 'Qormaata itti aanu: {date} (sa’aatii Abu Dhabi)'],
   'Your activity is complete': ['የእርስዎ ተግባር ተጠናቋል', 'Gocha keessan xumurameera'],
   'Your completion is saved. We’re waiting for {name}.': ['ማጠናቀቅዎ ተቀምጧል። {name}ን እየጠበቅን ነው።', 'Xumuruun keessan olkaa’ameera. {name} eegaa jirra.'],
   'Your activity is complete. Waiting for {name}.': ['የእርስዎ ተግባር ተጠናቋል። {name}ን በመጠባበቅ ላይ።', 'Gocha keessan xumurameera. {name} eegaa jira.'],

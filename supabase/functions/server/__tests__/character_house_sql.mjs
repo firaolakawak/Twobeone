@@ -8,15 +8,17 @@ const base = await readFile(new URL('../../../migrations/20260917220000_daily_fa
 const migration = await readFile(new URL('../../../migrations/20260917230000_character_house_daily_progress.sql', import.meta.url), 'utf8');
 const followup = await readFile(new URL('../../../migrations/20260917233000_character_house_completion_and_design_updates.sql', import.meta.url), 'utf8');
 const partnerStatus = await readFile(new URL('../../../migrations/20260927120000_character_house_partner_completion_status.sql', import.meta.url), 'utf8');
-const ids = Array.from({ length: 12 }, (_, i) => `00000000-0000-4000-8000-${String(i + 1).padStart(12, '0')}`);
-const [a,b,c,d,e,f,g,h,i,j,k,l] = ids;
+const abuDhabiMidnight = await readFile(new URL('../../../migrations/20260928120000_daily_faith_challenge_abu_dhabi_midnight.sql', import.meta.url), 'utf8');
+const ids = Array.from({ length: 18 }, (_, i) => `00000000-0000-4000-8000-${String(i + 1).padStart(12, '0')}`);
+const [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r] = ids;
 const pair = (one,two) => [one,two].sort().join(':');
 let checks = 0;
 const check = async (name, fn) => { await fn(); checks++; console.log(`PASS ${name}`); };
 const call = async (rpc, user, action, payload = {}) => (await db.query(`select public.${rpc}($1::uuid,$2,$3::jsonb) as value`, [user,action,JSON.stringify(payload)])).rows[0].value;
 const house = (user, action = 'get', payload = {}) => call('character_house', user, action, payload);
 const daily = (user, action = 'today', payload = {}) => call('daily_faith_challenge', user, action, payload);
-const setClock = (day) => db.query("select set_config('test.daily_faith_now', $1, false)", [`${day}T12:00:00Z`]);
+const setClockAt = (instant) => db.query("select set_config('test.daily_faith_now', $1, false)", [instant]);
+const setClock = (day) => setClockAt(`${day}T12:00:00Z`);
 const finish = async (user) => {
   const state = (await daily(user)).challenge;
   return daily(user,'complete',{day:state.day,missionId:state.missionId});
@@ -47,6 +49,17 @@ try {
   await db.exec(migration);
   await db.exec(followup);
   await db.exec(partnerStatus);
+  // Model a house that earned its first block after a 21:00 UTC start under
+  // the former UTC-day convention. The timezone migration must preserve it.
+  await db.query(`insert into public.character_house_goals(
+      couple_key,member_a,member_b,home_type,bedrooms,started_at
+    ) values ($1,$2::uuid,$3::uuid,'house',2,'2026-09-17T21:00:00Z')`,[pair(m,n),m,n]);
+  await db.query(`insert into public.daily_faith_challenges(
+      couple_key,challenge_day,user_id,partner_id,mission_id,choice,guess,submitted_at,completed_at
+    ) values
+      ($1,'2026-09-17',$2::uuid,$3::uuid,'quest-01',1,2,'2026-09-17T21:01:00Z','2026-09-17T21:02:00Z'),
+      ($1,'2026-09-17',$3::uuid,$2::uuid,'quest-01',2,1,'2026-09-17T21:01:00Z','2026-09-17T21:02:00Z')`,[pair(m,n),m,n]);
+  await db.exec(abuDhabiMidnight);
   await check('migration chain compiles and only imports independently approved shared designs', async () => {
     assert.equal((await house(a)).progress.completedDays,12);
     assert.equal((await house(g)).progress.completedDays,5);
@@ -58,22 +71,45 @@ try {
     assert.deepEqual((await db.query('select payload from public.app_records where source_key=$1',[`character-house:${pair(a,b)}`])).rows[0].payload,preserved);
   });
   // Replace only clock reads in this disposable database for deterministic days.
-  const core = base.slice(base.indexOf('create or replace function public.daily_faith_challenge('))
-    .replaceAll('public.daily_faith_challenge(', 'public.daily_faith_challenge_answers(')
-    .replace('v_now := clock_timestamp();', "v_now := current_setting('test.daily_faith_now')::timestamptz;");
-  await db.exec(core);
-  const houseStart = partnerStatus.indexOf('create or replace function public.character_house(p_user_id');
-  const houseEnd = partnerStatus.indexOf('-- Configured daily challenge responses',houseStart);
-  await db.exec(partnerStatus.slice(houseStart,houseEnd).replace('v_now := clock_timestamp();',"v_now := current_setting('test.daily_faith_now')::timestamptz;"));
+  for (const signature of [
+    'public.daily_faith_challenge_answers(uuid,text,jsonb)',
+    'public.character_house(uuid,text,jsonb)',
+  ]) {
+    const currentDefinition = (await db.query(
+      'select pg_get_functiondef($1::regprocedure) as definition',
+      [signature],
+    )).rows[0].definition;
+    const testDefinition = currentDefinition.replace(
+      'v_now := clock_timestamp();',
+      "v_now := current_setting('test.daily_faith_now')::timestamptz;",
+    );
+    assert.notEqual(testDefinition,currentDefinition);
+    await db.exec(testDefinition);
+  }
   await setClock('2026-09-17');
-  await db.query("update public.character_house_goals set started_at='2026-09-17T08:00:00Z'");
+  await db.query("update public.character_house_goals set started_at='2026-09-17T08:00:00Z',started_challenge_day='2026-09-17' where couple_key <> $1",[pair(m,n)]);
   await check('private house table and helpers reject direct client access',async () => {
     for (const role of ['anon','authenticated']) {
       assert.equal((await db.query(`select has_table_privilege('${role}','public.character_house_goals','select') as allowed`)).rows[0].allowed,false);
       for (const signature of ['character_house(uuid,text,jsonb)','character_house_state(text,date)','character_house_legacy(uuid,uuid,text)','daily_faith_challenge_answers(uuid,text,jsonb)']) {
         assert.equal((await db.query('select has_function_privilege($1,$2,$3) as allowed',[role,`public.${signature}`,'execute'])).rows[0].allowed,false);
       }
+      assert.equal((await db.query(
+        "select has_function_privilege($1,'public.character_house_set_started_challenge_day()',$2) as allowed",
+        [role,'execute'],
+      )).rows[0].allowed,false);
     }
+  });
+  await check('timezone rollout preserves a first block earned under the former UTC day',async () => {
+    await setClockAt('2026-09-17T20:00:00Z');
+    const stored=(await db.query('select started_at::text,started_challenge_day::text from public.character_house_goals where couple_key=$1',[pair(m,n)])).rows[0];
+    assert.equal(new Date(stored.started_at).toISOString(),'2026-09-17T21:00:00.000Z');
+    assert.equal(stored.started_challenge_day,'2026-09-17');
+    const state=await house(m);
+    assert.equal(state.day,'2026-09-18');
+    assert.equal(state.progress.completedDays,1);
+    assert.equal(state.progress.lastBlockDate,'2026-09-17');
+    await setClock('2026-09-17');
   });
   await check('unconfigured pair has no invented house or construction credit',async () => {
     assert.equal((await house(c)).blueprint,null);
@@ -208,6 +244,35 @@ try {
     assert.equal(started.progress.completedDays,23);
     assert.equal(started.progress.lastBlockDate,null);
     assert.equal((await both(i,j)).challenge.house.completedDays,24);
+  });
+  await check('Abu Dhabi midnight advances both challenge and house status at 20:00 UTC',async () => {
+    await setClockAt('2026-09-17T19:59:59.999Z');
+    const beforeMidnight=await daily(o);
+    assert.equal(beforeMidnight.challenge.day,'2026-09-17');
+    assert.equal(new Date(beforeMidnight.challenge.resetsAt).toISOString(),'2026-09-17T20:00:00.000Z');
+    await house(o,'start',{homeType:'house',bedrooms:2});
+    assert.equal((await both(o,p)).challenge.house.completedDays,1);
+    assert.equal((await house(o)).progress.todayContributed,true);
+    await both(q,r);
+
+    await setClockAt('2026-09-17T20:00:00Z');
+    const afterMidnight=await daily(o);
+    assert.equal(afterMidnight.challenge.day,'2026-09-18');
+    assert.equal(afterMidnight.challenge.missionId,'quest-02');
+    assert.equal(new Date(afterMidnight.challenge.resetsAt).toISOString(),'2026-09-18T20:00:00.000Z');
+    assert.equal(afterMidnight.challenge.own,null);
+    assert.equal(afterMidnight.challenge.house.completedDays,1);
+    assert.equal(afterMidnight.challenge.house.todayContributed,false);
+    assert.equal((await house(o)).progress.currentUserCompletedToday,false);
+    assert.equal((await house(o)).progress.partnerCompletedToday,false);
+    assert.equal((await daily(o,'complete',{day:'2026-09-17',missionId:'quest-01'})).code,'day_changed');
+    assert.equal((await both(o,p)).challenge.house.completedDays,2);
+    const startedAfterMidnight=await house(q,'start',{homeType:'house',bedrooms:2});
+    assert.equal(startedAfterMidnight.progress.completedDays,0);
+    assert.equal((await db.query(
+      'select started_challenge_day::text as day from public.character_house_goals where couple_key=$1',
+      [pair(q,r)],
+    )).rows[0].day,'2026-09-18');
   });
   await check('disconnection revokes house reads and writes and daily house access',async () => {
     await db.query("update public.user_profiles set kv_payload = kv_payload - 'partnerId' where id=$1::uuid",[c]);

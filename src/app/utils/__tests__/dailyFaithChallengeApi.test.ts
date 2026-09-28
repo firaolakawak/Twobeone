@@ -6,7 +6,7 @@ vi.mock('../api', () => ({ getAccessToken: vi.fn() }));
 vi.mock('../supabase/info', () => ({ projectId: 'test-project' }));
 
 const valid: DailyFaithChallengeState = {
-  day: '2026-09-17', missionId: 'quest-01', resetsAt: '2026-09-18T00:00:00.000Z',
+  day: '2026-09-17', missionId: 'quest-01', resetsAt: '2026-09-18T00:00:00.000+04:00',
   own: null, partner: { submitted: false, completed: false }, bothSubmitted: false,
 };
 const own = { choice: 0, guess: 1, submittedAt: '2026-09-17T10:00:00.000Z', completedAt: null };
@@ -40,6 +40,20 @@ describe('daily challenge API boundary', () => {
     expect(fetch).toHaveBeenCalledTimes(1);
   });
 
+  it('accepts the UTC representation of the next Abu Dhabi midnight', async () => {
+    const challenge = { ...valid, resetsAt: '2026-09-17T20:00:00.000Z' };
+    vi.mocked(fetch).mockResolvedValueOnce(respond({ challenge }));
+
+    expect(await dailyFaithChallengeApi.today()).toEqual(challenge);
+  });
+
+  it('temporarily accepts the former UTC-midnight reset during staged rollout', async () => {
+    const challenge = { ...valid, resetsAt: '2026-09-18T00:00:00.000Z' };
+    vi.mocked(fetch).mockResolvedValueOnce(respond({ challenge }));
+
+    expect(await dailyFaithChallengeApi.today()).toEqual(challenge);
+  });
+
   it('propagates server error codes without retrying a rejected submission', async () => {
     vi.useFakeTimers();
     vi.mocked(fetch).mockResolvedValueOnce(respond({ code: 'mood_required' }, 409));
@@ -55,7 +69,7 @@ describe('daily challenge API boundary', () => {
     ['unknown mission', { challenge: { ...valid, missionId: 'quest-99' } }],
     ['invalid reset time', { challenge: { ...valid, resetsAt: 'tomorrow' } }],
     ['offsetless reset time', { challenge: { ...valid, resetsAt: '2026-09-18T00:00:00' } }],
-    ['reset time unrelated to the shared day', { challenge: { ...valid, resetsAt: '2026-09-18T00:00:01Z' } }],
+    ['reset time unrelated to the shared day', { challenge: { ...valid, resetsAt: '2026-09-17T20:00:01Z' } }],
     ['missing own', { challenge: { day: valid.day, missionId: valid.missionId, resetsAt: valid.resetsAt, partner: valid.partner, bothSubmitted: false } }],
     ['invalid own choice', { challenge: { ...valid, own: { ...own, choice: 3 } } }],
     ['invalid own guess', { challenge: { ...valid, own: { ...own, guess: 9 } } }],

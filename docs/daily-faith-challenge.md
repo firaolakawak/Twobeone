@@ -5,17 +5,17 @@ The dashboard invitation now uses a distinct Target icon and opens today's emoji
 ## Couple experience
 
 - After a saved mood check-in, a short original Christian encouragement and today's three emoji choices open together. Existing dialogs close first. Dismissing the automatic prompt is remembered for that account, partner, and day; the dashboard card can reopen it.
-- Both partners receive the same challenge for a shared UTC day, resetting at 00:00 UTC. Thirty missions rotate in order from 17 September 2026. There is no next-mission button in daily mode.
+- Both partners receive the same challenge for a shared Abu Dhabi calendar day. It resets at **12:00 AM (00:00) Abu Dhabi time** (`Asia/Dubai`, UTC+4). Thirty missions rotate in order from 17 September 2026. There is no next-mission button in daily mode.
 - Heart missions collect a private answer and a guess. Grace missions collect a response. Kindness missions require trying the selected activity before submission.
 - The first saved submission creates one durable notification for the other partner. If that partner already submitted, it says the cards are ready. Notification clicks open the current day's popup, after mood check-in if needed.
 - Choices stay private until both have submitted. The view refreshes every 30 seconds while visible and on return to the app. After revealing their cards, each partner can mark the shared activity complete.
-- The popup shows separate answer and activity status for each partner, a state-specific next step, and the exact next reset rendered in the viewer's local date, time, and timezone. A notification refreshes partner state before opening, and the dashboard schedules a refresh immediately after the shared UTC-day boundary.
+- The popup shows separate answer and activity status for each partner, a state-specific next step, and the exact next reset in Abu Dhabi time. A notification refreshes partner state before opening, and the dashboard schedules a refresh immediately after the shared Abu Dhabi-day boundary.
 
 The encouragement sentences are original application copy, not Bible quotations. Interface copy supports English, Amharic, and Afaan Oromo. Native-speaker editorial review has not been performed.
 
 ## Storage and notifications
 
-`20260917220000_daily_faith_challenges.sql` creates a private table and a service-role-only RPC. The function verifies a mutual partner link, serializes operations for the couple, reads the database UTC clock after the lock, and stores immutable daily answers. Answer submission and the in-app notification commit together. Repeated requests do not change the answer or resend the notice. Completing a challenge is also idempotent. An unlinked or disconnected account cannot access a previous couple's answers through the endpoint.
+`20260917220000_daily_faith_challenges.sql` creates a private table and a service-role-only RPC. `20260928120000_daily_faith_challenge_abu_dhabi_midnight.sql` moves the active shared-day boundary to `Asia/Dubai` while preserving existing house start-day credit. The function verifies a mutual partner link, serializes operations for the couple, derives the shared calendar day from the database clock after the lock, and stores immutable daily answers. Answer submission and the in-app notification commit together. Repeated requests do not change the answer or resend the notice. Completing a challenge is also idempotent. An unlinked or disconnected account cannot access a previous couple's answers through the endpoint.
 
 The authenticated Edge Function provides `GET /faith-challenge/today`, `POST /faith-challenge/submit`, and `POST /faith-challenge/complete`. Clients cannot choose another date or mission, impersonate a partner, or read a partner's answer early. Before both submit, the response omits the partner's answer and guess entirely.
 
@@ -25,11 +25,13 @@ The original practice route `/?preview=faith-quest` remains a separate local dem
 
 ## Activation
 
-The migration and function are prepared locally and have **not been published**. To activate real partner syncing, apply the new migration to the intended Supabase project, then deploy `make-server-6d579fee` with its current project configuration. Publish the web build through the app's existing release process when desired; Vite already serves the frontend changes locally.
+The migration and function are prepared locally and have **not been published**. Use a staged release because installed PWA clients can retain an older bundle: first publish this compatibility web build, which accepts both the old UTC reset and the new Abu Dhabi reset. Its service-worker cache version is bumped to `v7`; verify the update is offered and the client reloads onto that release before the database cutover. After the update has reached active clients, apply migrations through `20260928120000_daily_faith_challenge_abu_dhabi_midnight.sql` between **04:00 and 23:59 Abu Dhabi time**, then deploy `make-server-6d579fee` with its current project configuration. Remove the temporary legacy timestamp acceptance only in a later release.
 
 Do not apply unrelated pending migrations as part of this change. After activation, verify the authenticated daily read before a voluntary two-person playtest; a submission intentionally creates a real partner notification.
 
 ## Verification
+
+The Abu Dhabi reset update was verified on 28 September 2026: all **530 tests in 99 files** passed; the faith challenge SQL harness passed **14/14** scenarios; and the production build passed with the existing large-chunk advisory. A rendered Edge check covered the reset label at 320px in English, Amharic, and Afaan Oromo at normal size and representative 200% root text scaling. All six states showed 12:00 AM Abu Dhabi time without page, dialog, or reset-row horizontal overflow.
 
 Tests cover mood-to-dialog sequencing, daily dismissal/manual reopening, deferred notification requests, real answer/guess payloads, waiting/reveal/completion, retry behavior, storage separation, disabled/auth boundaries, stale requests, response validation, translation coverage, and route authorization. An isolated PostgreSQL/PGlite harness executes the migration and verifies 14 database scenarios, including notification rollback, privacy, daily rotation, immutable retries, and privileges. PGlite uses one connection, so it does not prove true multi-session lock contention.
 

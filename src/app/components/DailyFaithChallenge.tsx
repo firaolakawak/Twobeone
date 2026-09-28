@@ -16,6 +16,7 @@ import { dailyFaithHouseMessages } from '../locales/dailyFaithHouse';
 import { useCurrentLanguage } from '../utils/languageStore';
 import { formatUiDateTime } from '../utils/uiDateTime';
 import { UI_LOCALES, useUiCopy } from '../utils/uiTranslation';
+import { DAILY_FAITH_CHALLENGE_TIME_ZONE } from '../utils/dailyFaithChallengeTime';
 import type { DailyFaithChallengeState } from '../utils/dailyFaithChallengeApi';
 import '../styles/faith-quest.css';
 import '../styles/daily-faith-challenge.css';
@@ -24,13 +25,14 @@ const messages = { ...faithQuestContentMessages, ...faithQuestVisualMessages, ..
 const resetTimeOptions: Intl.DateTimeFormatOptions = {
   weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   hour: 'numeric', minute: '2-digit', timeZoneName: 'short',
+  timeZone: DAILY_FAITH_CHALLENGE_TIME_ZONE,
 };
 
 function ChallengeResetTime({ resetsAt, className = '' }: { resetsAt: string; className?: string }) {
   const tr = useUiCopy(messages);
   const language = useCurrentLanguage();
   const marker = '__TBO_CHALLENGE_RESET__';
-  const copy = tr('Next challenge: {date}', { date: marker });
+  const copy = tr('Next challenge: {date} (Abu Dhabi time)', { date: marker });
   const markerIndex = copy.indexOf(marker);
   const before = markerIndex < 0 ? copy : copy.slice(0, markerIndex);
   const after = markerIndex < 0 ? '' : copy.slice(markerIndex + marker.length);

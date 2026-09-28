@@ -2,6 +2,7 @@ import { getAccessToken } from './api';
 import { projectId } from './supabase/info';
 import { getFaithQuestMission } from '../data/faithQuest';
 import { dailyCharacterHouseIsValid, type DailyCharacterHouse } from './characterHouseApi';
+import { getDailyFaithChallengeResetTime, getLegacyUtcChallengeResetTime } from './dailyFaithChallengeTime';
 
 export interface DailyFaithChallengeState {
   day: string;
@@ -29,7 +30,12 @@ const dayIsValid = (value: unknown): value is string => typeof value === 'string
   && timestampIsValid(`${value}T00:00:00.000Z`) && new Date(`${value}T00:00:00.000Z`).toISOString().slice(0, 10) === value;
 const resetTimestampIsValid = (value: unknown, day: string): value is string => typeof value === 'string'
   && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/i.test(value)
-  && Date.parse(value) === Date.parse(`${day}T00:00:00.000Z`) + 86_400_000;
+  && (
+    Date.parse(value) === getDailyFaithChallengeResetTime(day)
+    // Keep the compatibility client usable while it is released ahead of the
+    // database migration. Remove this legacy UTC shape after PWA adoption.
+    || Date.parse(value) === getLegacyUtcChallengeResetTime(day)
+  );
 const optionalGuessIsValid = (value: unknown) => value === undefined || value === null || choiceIsValid(value);
 
 function parseChallenge(value: unknown): DailyFaithChallengeState {

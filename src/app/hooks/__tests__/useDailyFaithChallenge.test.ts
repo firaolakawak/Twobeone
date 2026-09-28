@@ -16,7 +16,7 @@ function deferred<T>() {
 }
 
 const empty: DailyFaithChallengeState = {
-  day: '2026-09-17', missionId: 'quest-01', resetsAt: '2026-09-18T00:00:00.000Z',
+  day: '2026-09-17', missionId: 'quest-01', resetsAt: '2026-09-17T20:00:00.000Z',
   own: null, partner: { submitted: false, completed: false }, bothSubmitted: false,
 };
 const saved: DailyFaithChallengeState = {
@@ -111,9 +111,9 @@ describe('daily challenge request lifecycle', () => {
   });
 
   it('refreshes just after the exact shared-day reset without waiting for the polling interval', async () => {
-    vi.setSystemTime(new Date('2026-09-17T23:59:59.500Z'));
+    vi.setSystemTime(new Date('2026-09-17T19:59:59.500Z'));
     const nextDay: DailyFaithChallengeState = {
-      ...empty, day: '2026-09-18', missionId: 'quest-02', resetsAt: '2026-09-19T00:00:00.000Z',
+      ...empty, day: '2026-09-18', missionId: 'quest-02', resetsAt: '2026-09-18T20:00:00.000Z',
     };
     vi.mocked(dailyFaithChallengeApi.today).mockResolvedValueOnce(empty).mockResolvedValue(nextDay);
     const { result } = renderHook(() => useDailyFaithChallenge(true));

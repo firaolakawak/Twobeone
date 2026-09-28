@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { registerFaithChallengeRoutes } from '../faith_challenge_routes';
 
 const challenge = {
-  day: '2026-09-17', missionId: 'quest-01', resetsAt: '2026-09-18T00:00:00+00:00',
+  day: '2026-09-17', missionId: 'quest-01', resetsAt: '2026-09-17T20:00:00+00:00',
   own: null, partner: { submitted: false, completed: false }, bothSubmitted: false,
 };
 const dependencies = {

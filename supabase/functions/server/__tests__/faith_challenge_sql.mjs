@@ -13,6 +13,10 @@ if (!process.argv[2]) throw new Error('Pass the local PGlite module path; no liv
 const { PGlite } = await import(pathToFileURL(process.argv[2]).href);
 const db = new PGlite();
 const migration = await readFile(new URL('../../../migrations/20260917220000_daily_faith_challenges.sql', import.meta.url), 'utf8');
+const houseMigration = await readFile(new URL('../../../migrations/20260917230000_character_house_daily_progress.sql', import.meta.url), 'utf8');
+const completionMigration = await readFile(new URL('../../../migrations/20260917233000_character_house_completion_and_design_updates.sql', import.meta.url), 'utf8');
+const partnerStatusMigration = await readFile(new URL('../../../migrations/20260927120000_character_house_partner_completion_status.sql', import.meta.url), 'utf8');
+const abuDhabiMidnightMigration = await readFile(new URL('../../../migrations/20260928120000_daily_faith_challenge_abu_dhabi_midnight.sql', import.meta.url), 'utf8');
 const ids = ['00000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000002',
   '00000000-0000-4000-8000-000000000003', '00000000-0000-4000-8000-000000000004'];
 const [a, b, c, d] = ids;
@@ -41,22 +45,38 @@ try {
     ) partition by list(domain);
     create table public.app_notifications partition of public.app_records for values in ('notifications');
   `);
-  // Execute the unmodified migration first, including the real PostgreSQL clock.
+  // Execute the current migration chain first, including the real PostgreSQL clock.
   await db.exec(migration);
+  await db.exec(houseMigration);
+  await db.exec(completionMigration);
+  await db.exec(partnerStatusMigration);
+  await db.exec(abuDhabiMidnightMigration);
   await profile(a, b, 'Firaol'); await profile(b, a, 'Keti');
   await profile(c, d, 'Other A'); await profile(d, c, 'Other B');
 
-  await check('unmodified migration compiles and uses the database UTC date', async () => {
+  await check('current migration chain compiles and uses the Abu Dhabi civil date', async () => {
     const result = await rpc(a);
-    const actual = (await db.query("select (clock_timestamp() at time zone 'UTC')::date::text as day")).rows[0].day;
+    const actual = (await db.query("select (clock_timestamp() at time zone 'Asia/Dubai')::date::text as day")).rows[0].day;
     assert.equal(result.challenge.day, actual);
     assert.equal(result.challenge.own, null);
+    const expectedReset = (await db.query(
+      "select (($1::date + 1)::timestamp at time zone 'Asia/Dubai')::text as reset",
+      [result.challenge.day],
+    )).rows[0].reset;
+    assert.equal(new Date(result.challenge.resetsAt).toISOString(), new Date(expectedReset).toISOString());
   })();
 
   // Inject only the clock read in this disposable database to cover all days,
-  // midnight boundaries and three mission modes without waiting real days.
-  const functionStart = migration.indexOf('create or replace function public.daily_faith_challenge(');
-  await db.exec(migration.slice(functionStart).replace('v_now := clock_timestamp();', "v_now := current_setting('test.daily_faith_now')::timestamptz;"));
+  // Abu Dhabi midnight boundaries and three mission modes without waiting.
+  const currentDefinition = (await db.query(
+    "select pg_get_functiondef('public.daily_faith_challenge_answers(uuid,text,jsonb)'::regprocedure) as definition",
+  )).rows[0].definition;
+  const testDefinition = currentDefinition.replace(
+    'v_now := clock_timestamp();',
+    "v_now := current_setting('test.daily_faith_now')::timestamptz;",
+  );
+  assert.notEqual(testDefinition, currentDefinition);
+  await db.exec(testDefinition);
   await clock('2026-09-17T12:00:00Z');
 
   await check('private table and RPC are accessible only to service role', async () => {
@@ -168,16 +188,16 @@ try {
     await profile(b, a, 'Keti');
   })();
 
-  await check('UTC rollover resets the challenge and rejects stale open cards', async () => {
-    await clock('2026-09-17T23:59:59.999Z');
+  await check('Abu Dhabi midnight resets the challenge and rejects stale open cards', async () => {
+    await clock('2026-09-17T19:59:59.999Z');
     assert.equal((await rpc(a)).challenge.day, '2026-09-17');
-    await clock('2026-09-18T00:00:00Z');
+    await clock('2026-09-17T20:00:00Z');
     const today = (await rpc(a)).challenge;
     assert.equal(today.day, '2026-09-18');
     assert.equal(today.missionId, 'quest-02');
     assert.equal(today.own, null);
     assert.equal(today.partner.submitted, false);
-    assert.equal(new Date(today.resetsAt).toISOString(), '2026-09-19T00:00:00.000Z');
+    assert.equal(new Date(today.resetsAt).toISOString(), '2026-09-18T20:00:00.000Z');
     assert.equal((await submit(a)).code, 'day_changed');
     assert.equal((await rpc(a, 'complete', { day: '2026-09-17', missionId: 'quest-01' })).code, 'day_changed');
   })();
@@ -192,7 +212,7 @@ try {
     assert.equal((await submit(a, '2026-09-19', 'quest-03', 1, { kindnessDone: true })).challenge.own.choice, 1);
   })();
 
-  await check('rotation covers 30 missions and wraps at UTC boundaries', async () => {
+  await check('rotation covers 30 missions and wraps on Abu Dhabi civil dates', async () => {
     const seen = new Set();
     for (let day = 0; day <= 30; day++) {
       const time = new Date(Date.UTC(2026, 8, 17 + day, 2)).toISOString();
